@@ -17,16 +17,17 @@ class DocumentHandler:
 
 	def __init__(self, filename):
 		self._pages = {}
-		self._content = textract.process(filename).decode("utf-8")
+		self.__content = textract.process(filename).decode("utf-8")
 
-		self._split_pages()
+		self.__split_pages()
+		# self.clean_hyphens()
 
-	def _split_pages(self):
+	def __split_pages(self):
 		self.header = "%d%s" + self.in_header + "%d%s"
-		content = self._content
+		content = self.__content
 		fcol = re.search(self.column_number, content).start()
 		count = int(content[fcol:fcol + 2]); letter = content[fcol + 2: fcol + 3]
-		self._first_key = str(count) + letter
+		self.__first_key = str(count) + letter
 		prev_key = None; more = True
 		doc_pages = {}
 
@@ -43,13 +44,13 @@ class DocumentHandler:
 					count += 1
 				letter = 'a' if letter == 'c' else 'c'
 			else:
-				self._last_key = str(count) + chr(ord(letter) + 1)
-		self._pages_content = doc_pages
-		for k in self._pages_content.keys():
+				self.__last_key = str(count) + chr(ord(letter) + 1)
+		self.__pages_content = doc_pages
+		for k in self.__pages_content.keys():
 			self._process_page(k)
 
 	def _page_parts(self, page: str, part: int):
-		return re.split(self.page_separator, self._pages_content[page])[part]
+		return re.split(self.page_separator, self.__pages_content[page])[part]
 
 	def _process_page(self, page: str):
 		"""Process page for column-based parsers"""
@@ -89,8 +90,8 @@ class DocumentHandler:
 			prevpage = nextpage
 	
 	def stats(self):
-		print("format: {:s}; total columns: {:d} ({:s}-{:s})".format(self.ext, len(self.pages()), self._first_key, self._last_key))
-		print("page chars: {:s}".format(",".join(str(len(p)) for p in self._pages_content.values())))
+		print("format: {:s}; total columns: {:d} ({:s}-{:s})".format(self.ext, len(self.pages()), self.__first_key, self.__last_key))
+		print("page chars: {:s}".format(",".join(str(len(p)) for p in self.__pages_content.values())))
 		print("column rows: {:s}".format("; ".join("{:s}: {:d}".format(k, len(self.page(k))) for k in self._pages.keys())))
 		print()
 
