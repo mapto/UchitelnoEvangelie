@@ -20,7 +20,7 @@ class DocumentHandler:
 		self.__content = textract.process(filename).decode("utf-8")
 
 		self.__split_pages()
-		# self.clean_hyphens()
+		self.clean_hyphens()
 
 	def __split_pages(self):
 		self.header = "%d%s" + self.in_header + "%d%s"
@@ -73,21 +73,27 @@ class DocumentHandler:
 
 	def clean_hyphens(self):
 		# WIP
-		prevpage = None; prevline = None
-		for nextpage in self._pages:
-			if prevpage:
-				for nextline in prevpage:
-					if prevline:
-						if prevline[-1] == '-':
-							prevwords = re.split('\w', prevline)
-							nextwords = re.split('\w', nextline)
-							prevwords[-1] = prevwords[-1][:-1] + nextwords[1]
-							# print(prevline + "|" + nextline)
-							prevline = " ".join(prevwords)
-							nextline = " ".join(nextwords[1:])
-							# print(prevline + "|" + nextline)
-					prevline = nextline
-			prevpage = nextpage
+		prevpage = None; ppi = None; prevline = None
+		for npi, nextpage in self._pages.items():
+			for nli, nextline in enumerate(nextpage):
+				if prevline and prevline[-1] == '-':
+					prevwords = re.split('\s', prevline)
+					nextwords = re.split('\s', nextline)
+					assert(len(nextwords) > 0)
+					assert(len(prevwords) > 0)
+					prevwords[-1] = prevwords[-1][:-1] + nextwords[0]
+					prevline = " ".join(prevwords)
+					nextline = " ".join(nextwords[1:])
+					if nli == 0:
+						self._pages[ppi][-1] = prevline
+					else:
+						self._pages[npi][nli-1] = prevline
+					if len(self._pages[npi]) == nli:
+						self._pages[npi].append(nextline)
+					else:
+						self._pages[npi][nli] = nextline
+				prevline = nextline
+			prevpage = nextpage; ppi = npi
 	
 	def stats(self):
 		print("format: {:s}; total columns: {:d} ({:s}-{:s})".format(self.ext, len(self.pages()), self.__first_key, self.__last_key))
