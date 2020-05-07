@@ -20,7 +20,8 @@ class DocumentHandler:
 		self.__content = textract.process(filename).decode("utf-8")
 
 		self.__split_pages()
-		self.clean_hyphens()
+		self.__clean_footnotes()
+		# self.clean_hyphens()
 
 	def __split_pages(self):
 		self.header = "%d%s" + self.in_header + "%d%s"
@@ -62,6 +63,8 @@ class DocumentHandler:
 		# 	print(dirty_pages)
 		rows = re.split(self.line_separator, dirty_pages[1])
 		rows = [r.strip() for r in rows]
+		while not rows[-1]:
+			rows = rows[:-1]
 		self._pages[first].extend(rows)
 		if len(dirty_pages) > 2:
 			rows = re.split(self.line_separator, dirty_pages[2])
@@ -69,7 +72,16 @@ class DocumentHandler:
 			dirty_pages = re.split(self.column_index, self._page_parts(page, 1))
 			rows = re.split(self.line_separator, dirty_pages[1])
 		rows = [r.strip() for r in rows]
+		while not rows[-1]:
+			rows = rows[:-1]
 		self._pages[second].extend(rows)
+
+	def _clean_page(self, page_num):
+		pass
+
+	def __clean_footnotes(self):
+		for k in self._pages.keys():
+			self._clean_page(k)
 
 	def clean_hyphens(self):
 		# WIP
@@ -88,7 +100,7 @@ class DocumentHandler:
 						self._pages[ppi][-1] = prevline
 					else:
 						self._pages[npi][nli-1] = prevline
-					if len(self._pages[npi]) == nli:
+					if len(self._pages[npi]) == nli and nextline:
 						self._pages[npi].append(nextline)
 					else:
 						self._pages[npi][nli] = nextline
@@ -109,11 +121,17 @@ class DocumentHandler:
 
 
 class OdtHandler(DocumentHandler):
+	""" Incomplete because .odt import adds further dirty characters on footnotes """
 	ext = "odt"
 	in_header = r"\n\n"
 	page_separator = r"\D\n\n\n"
 	line_separator = r"\n"
 	column_index = r"3\n{3}6\n{3}9\n{3}12\n{3}15\n{3}18\n{3}21\n{0,3}"
+	
+	def _clean_page(self, page_num):
+		# TODO: .odt import adds further dirty characters on footnotes
+		for i, l in enumerate(self._pages[page_num]):
+			self._pages[page_num][i] = re.sub('\d+', '', l)
 
 
 class DocxHandler(DocumentHandler):
@@ -141,12 +159,16 @@ class DocHandler(DocumentHandler):
 		for l in dirty_lines:
 			if l:
 				next = re.split(self.column_separator, l)
-				# if len(next) != 2:
-				# 	print(first)
-				# 	print(dirty_lines)
-				# 	print(next)
-				self._pages[first].append(next[0].strip())
-				self._pages[second].append(next[1].strip())
+				if next[0].strip():
+					self._pages[first].append(next[0].strip())
+				if next[1].strip():
+					self._pages[second].append(next[1].strip())		
+	
+	def _clean_page(self, page_num):
+		p = ";".join(self._pages[page_num])
+		p = re.sub('\[\d+\];', ' ', p)
+		p = re.sub('\[\d+\]', '', p)
+		self._pages[page_num] = p.split(';')
 
 def parallel():
 	path = "/home/mapto/work/uchenie-evangelsko/UE-Comp"
