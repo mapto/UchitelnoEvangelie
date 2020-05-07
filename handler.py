@@ -107,6 +107,15 @@ class DocumentHandler:
 				prevline = nextline
 			prevpage = nextpage; ppi = npi
 	
+	def extract_words(self, delims = r'[\s\.\(\)\!⁘]*'):
+		result = []
+		for page, content in self._pages.items():
+			for num, row in enumerate(content):
+				for word in re.split(delims, row):
+					if word:
+						result.append(("{}{}".format(page,num+1),word,row))
+		return result
+
 	def stats(self):
 		print("format: {:s}; total columns: {:d} ({:s}-{:s})".format(self.ext, len(self.pages()), self.__first_key, self.__last_key))
 		print("page chars: {:s}".format(",".join(str(len(p)) for p in self.__pages_content.values())))
