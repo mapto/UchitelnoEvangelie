@@ -9,7 +9,7 @@ from bottle import Bottle
 from bottle import request, redirect, abort, static_file
 
 from settings import allowed_extensions, allowed_mime_types
-from settings import upload_folder, max_content_length, static_path
+from settings import upload_path, max_content_length, static_path
 
 app = Bottle(__name__)
 
@@ -35,10 +35,10 @@ def upload():
     if not allowed_file(newfile.filename, newfile.content_type):
         return redirect("/?" + quote("Файлът не може да бъде разчетен"))
 
-    if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
+    if not os.path.exists(upload_path):
+        os.makedirs(upload_path)
     timestamped = datetime.now().strftime("%Y%m%d%H%M%S") + newfile.filename
-    save_path = os.path.join(upload_folder, timestamped)
+    save_path = os.path.join(upload_path, timestamped)
     newfile.save(save_path)
 
     # redirect to home page if it all works ok
@@ -55,12 +55,20 @@ def robots():
     return "User-agent: *\nDisallow: /"
 
 
-@app.get("/health")
+@app.get("/healthcheck")
 def root():
-    uploads = os.path.exists(upload_folder)
+    uploads = os.path.exists(upload_path)
     if uploads:
-        uploads = len([name for name in os.listdir(upload_folder)])
-    return {"uploads": uploads if uploads else "absent"}
+        uploads = len([name for name in os.listdir(upload_path)])
+
+    static = os.path.exists(static_path)
+    if static:
+        static = len([name for name in os.listdir(static_path)])
+
+    return {
+        "uploads": {"path": upload_path, "files": uploads if uploads else "absent"},
+        "static": {"path": static_path, "files": static if static else "absent"},
+    }
 
 
 if __name__ == "__main__":

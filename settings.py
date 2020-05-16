@@ -1,4 +1,9 @@
-upload_folder = "./uploads"
+import os
+
+curdir = os.path.dirname(os.path.realpath(__file__))
+os.path.curdir = curdir
+
+upload_path = os.path.join(curdir, "uploads")
 
 allowed_uploads = {
     "doc": "application/msword",
@@ -8,13 +13,6 @@ allowed_uploads = {
 allowed_extensions = allowed_uploads.keys()
 max_content_length = 16 * 1024 * 1024
 
-# flask-uploads
-UPLOADS_DEFAULT_DEST = upload_folder + "/project/static/img/"
-UPLOADS_DEFAULT_URL = "http://localhost:5000/static/img/"
-
-UPLOADED_IMAGES_DEST = upload_folder + "/project/static/img/"
-UPLOADED_IMAGES_URL = "http://localhost:5000/static/img/"
-
 allowed_mime_types = allowed_uploads.values()
 
-static_path = "./static"
+static_path = os.path.join(curdir, "static")
