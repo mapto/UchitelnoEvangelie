@@ -7,10 +7,12 @@ from urllib.parse import quote
 from zipfile import ZipFile
 
 from bottle import Bottle
-from bottle import request, redirect, abort, static_file
+from bottle import request, redirect, response, abort, static_file
 
 from settings import allowed_extensions, allowed_mime_types
 from settings import upload_path, max_content_length, static_path
+
+import exporter
 
 app = Bottle(__name__)
 
@@ -40,8 +42,10 @@ def upload():
     save_path = os.path.join(upload_path, "{}-{}".format(ts, newfile.filename))
     newfile.save(save_path)
 
+    exporter.read(save_path)
+
     # redirect to home page if it all works ok
-    return redirect("/?" + quote("Файлът е качен!"))
+    return redirect("/?" + quote(save_path))
 
 
 @app.get("/")
@@ -51,22 +55,25 @@ def root():
 
 @app.get("/dump")
 def dump():
-    fname = 'dump.zip'
+    fname = "dump.zip"
 
     full_path = os.path.join(static_path, fname)
     if os.path.exists(full_path):
         os.remove(full_path)
 
-    with ZipFile(full_path, 'w') as zipobj:
+    with ZipFile(full_path, "w") as zipobj:
         for f in os.listdir(upload_path):
-            zipobj.write(f)
+            zipobj.write(os.path.join(upload_path, f))
 
-   return static_file(fname, root=static_path)
+    return static_file(
+        fname, root=static_path, mimetype="application/zip", download=True
+    )
 
 
 @app.get("/robots.txt")
 def robots():
-    return "User-agent: *<br/>Disallow: /"
+    response.content_type = "text/plain"
+    return "User-agent: *\nDisallow: /"
 
 
 @app.get("/healthcheck")
