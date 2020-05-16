@@ -35,28 +35,26 @@ def upload():
     if not allowed_file(newfile.filename, newfile.content_type):
         return redirect("/?" + quote("Файлът не може да бъде разчетен"))
 
-    if not os.path.exists(upload_path):
-        os.makedirs(upload_path)
-    timestamped = datetime.now().strftime("%Y%m%d%H%M%S") + newfile.filename
-    save_path = os.path.join(upload_path, timestamped)
+    ts = datetime.now().strftime("%Y%m%d%H%M%S")
+    save_path = os.path.join(upload_path, "{}-{}".format(ts, newfile.filename))
     newfile.save(save_path)
 
     # redirect to home page if it all works ok
     return redirect("/?" + quote("Файлът е качен!"))
 
 
-@app.get("robots")
+@app.get("/")
 def root():
     return static_file("index.html", root=static_path)
 
 
 @app.get("/robots.txt")
 def robots():
-    return "User-agent: *\nDisallow: /"
+    return "User-agent: *<br/>Disallow: /"
 
 
 @app.get("/healthcheck")
-def root():
+def healthcheck():
     uploads = os.path.exists(upload_path)
     if uploads:
         uploads = len(os.listdir(upload_path))
@@ -68,7 +66,6 @@ def root():
     return {
         "uploads": {"path": upload_path, "files": uploads if uploads else "absent"},
         "static": {"path": static_path, "files": static if static else "absent"},
-        "files": os.listdir(os.path.curdir)
     }
 
 
