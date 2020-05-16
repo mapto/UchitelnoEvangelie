@@ -45,9 +45,15 @@ def upload():
     return redirect("/?" + quote("Файлът е качен!"))
 
 
-@app.get("/")
+@app.get("robots")
 def root():
     return static_file("index.html", root=static_path)
+
+
+@app.get("/robots.txt")
+def robots():
+    return "User-agent: *\nDisallow: /"
+
 
 @app.get("/health")
 def root():

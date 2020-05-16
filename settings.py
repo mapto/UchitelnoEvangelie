@@ -1,4 +1,4 @@
-upload_folder = "uploads"
+upload_folder = "./uploads"
 
 allowed_uploads = {
     "doc": "application/msword",
@@ -17,4 +17,4 @@ UPLOADED_IMAGES_URL = "http://localhost:5000/static/img/"
 
 allowed_mime_types = allowed_uploads.values()
 
-static_path = "static"
+static_path = "./static"
