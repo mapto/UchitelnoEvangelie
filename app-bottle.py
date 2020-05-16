@@ -4,6 +4,7 @@ import os
 
 from datetime import datetime
 from urllib.parse import quote
+from zipfile import ZipFile
 
 from bottle import Bottle
 from bottle import request, redirect, abort, static_file
@@ -46,6 +47,21 @@ def upload():
 @app.get("/")
 def root():
     return static_file("index.html", root=static_path)
+
+
+@app.get("/dump")
+def dump():
+    fname = 'dump.zip'
+
+    full_path = os.path.join(static_path, fname)
+    if os.path.exists(full_path):
+        os.remove(full_path)
+
+    with ZipFile(full_path, 'w') as zipobj:
+        for f in os.listdir(upload_path):
+            zipobj.write(f)
+
+   return static_file(fname, root=static_path)
 
 
 @app.get("/robots.txt")
