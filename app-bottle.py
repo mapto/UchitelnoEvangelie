@@ -59,15 +59,16 @@ def robots():
 def root():
     uploads = os.path.exists(upload_path)
     if uploads:
-        uploads = len([name for name in os.listdir(upload_path)])
+        uploads = len(os.listdir(upload_path))
 
     static = os.path.exists(static_path)
     if static:
-        static = len([name for name in os.listdir(static_path)])
+        static = len(os.listdir(static_path))
 
     return {
         "uploads": {"path": upload_path, "files": uploads if uploads else "absent"},
         "static": {"path": static_path, "files": static if static else "absent"},
+        "files": os.listdir(os.path.curdir)
     }
 
 

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang='bg'>
+<head>
+  <meta charset='utf-8'>
+  <style>
+@font-face {
+  font-family: 'CyrillicaOchrid10U';
+  src: url(OC10U.ttf) format('truetype');
+}
+table.script {
+    font-family: 'CyrillicaOchrid10U';
+    width: 100%;  /* percent sign is a placeholder in python templates */
+    display: inline-table;
+}
+table.script {
+  font-size: 1.5em;
+}
+table.script .index {
+	width: 1em;
+}
+  </style>
+  <script>
+    function parseParam(params) {
+      if (window.location.search.substr(1)) {
+        var label = document.getElementById("uploadlabel");
+        label.innerHTML = decodeURIComponent(window.location.search.substr(1));
+        setTimeout(function() {
+        label.innerHTML = "Можете да изберете друг файл за качване.";        
+      }, 5000);
+      }
+    }
+
+    function submit() {
+      this.form.submit();
+      // var label = document.getElementById("uploadlabel");
+      // label.innerHTML = "Файлът е качен!";
+    }
+  </script>
+</head>
+
+<body onload="parseParam()">
+  <form action="/" method="post" enctype="multipart/form-data">
+    <label id="uploadlabel" for="fileupload">Изберете файл за качване:</label>
+    <br/>
+    <input id="fileupload" type="file" name="fileupload" onchange="submit()">
+  </form>
+</body>
+</html>
