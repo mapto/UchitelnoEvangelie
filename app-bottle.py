@@ -49,6 +49,13 @@ def upload():
 def root():
     return static_file("index.html", root=static_path)
 
+@app.get("/health")
+def root():
+    uploads = os.path.exists(upload_folder)
+    if uploads:
+        uploads = len([name for name in os.listdir(upload_folder)])
+    return {"uploads": uploads if uploads else "absent"}
+
 
 if __name__ == "__main__":
     app.run(debug=True, reloader=True)
