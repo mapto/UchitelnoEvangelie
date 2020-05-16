@@ -7,9 +7,9 @@ from urllib.parse import quote
 from zipfile import ZipFile
 
 from bottle import Bottle
-from bottle import request, redirect, response, abort, static_file
+from bottle import request, redirect, response, abort, error, static_file
 
-from settings import allowed_extensions, allowed_mime_types
+from settings import allowed_extensions, allowed_mimetypes
 from settings import upload_path, max_content_length, static_path
 
 import exporter
@@ -17,15 +17,36 @@ import exporter
 app = Bottle(__name__)
 
 
-def allowed_file(filename: str, file_mime_type: str) -> bool:
+def allowed_file(filename: str, file_mimetype: str) -> bool:
     return (
         "." in filename
         and filename.rsplit(".", 1)[1].lower() in allowed_extensions
-        and file_mime_type in allowed_mime_types
+        and file_mimetype in allowed_mimetypes
     )
 
 
-@app.post("/")
+return_link = '<a href="/">Започнете отначало.</a>'
+
+
+@error(404)
+def mistake404(msg):
+    response.content_type = "text/html"
+    return "Несъществуваща страница: {}. {}".format(msg, return_link)
+
+
+@error(405)
+def mistake405(msg):
+    response.content_type = "text/html"
+    return "Непозволена заявка: {}. {}".format(msg, return_link)
+
+
+@error(500)
+def mistake500(msg):
+    response.content_type = "text/html"
+    return "Неочаквана грешка: {}. {}".format(msg, return_link)
+
+
+@app.post("/upload")
 def upload():
     """Handle file upload form"""
 
@@ -33,19 +54,33 @@ def upload():
     try:
         newfile = request.files.get("fileupload")
     except:
-        return redirect("/?" + quote("Неочаквана грешка"))
+        abort(405, "Каченият файл не може да бъде прочетен")
 
     if not allowed_file(newfile.filename, newfile.content_type):
-        return redirect("/?" + quote("Файлът не може да бъде разчетен"))
+        abort(
+            405,
+            "Каченият файл не може да бъде разчетен. Поддържат се слените формати: {}".format(
+                "|".join(allowed_extensions)
+            ),
+        )
 
     ts = datetime.now().strftime("%Y%m%d%H%M%S")
-    save_path = os.path.join(upload_path, "{}-{}".format(ts, newfile.filename))
+    xls_name = "{}-{}".format(ts, newfile.filename)
+    save_path = os.path.join(upload_path, xls_name)
     newfile.save(save_path)
 
     exporter.read(save_path)
 
     # redirect to home page if it all works ok
-    return redirect("/?" + quote(save_path))
+    return redirect("/?f=" + quote(xls_name))
+
+
+upload_ext_regex = ".+\.({})\.xlsx".format("|".join(allowed_extensions))
+
+
+@app.get("/download/<url:re:" + upload_ext_regex + ">")
+def download(url: str):
+    return static_file(url, root=upload_path)
 
 
 @app.get("/")
