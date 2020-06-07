@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+"""Using textract seems to be a very bad method to extract text from tables.
+One of the reasons: it parses the text in tables in different formats in different order."""
+
 import re
 import textract
 
@@ -91,7 +94,6 @@ class DocumentHandler:
             self._clean_page(k)
 
     def clean_hyphens(self):
-        # WIP
         prevpage = None
         ppi = None
         prevline = None
