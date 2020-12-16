@@ -6,7 +6,7 @@ from datetime import datetime
 from urllib.parse import quote
 from zipfile import ZipFile
 
-from bottle import Bottle
+from bottle import Bottle  # type: ignore
 from bottle import request, redirect, response, abort, error, static_file
 
 from settings import allowed_extensions, allowed_mimetypes

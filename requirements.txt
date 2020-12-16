@@ -1,0 +1,4 @@
+docopt
+flask
+flask_uploads
+python-docx

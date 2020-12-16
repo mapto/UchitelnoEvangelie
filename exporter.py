@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-from typing import List
+from typing import List, Tuple
 
 from openpyxl import Workbook  # type: ignore
 from openpyxl.cell import WriteOnlyCell  # type: ignore
 from openpyxl.styles import Font  # type: ignore
 
-import handler  # type: ignore
 
-
-def export_sheet(data: List[List[str]], fname: str = "sample.xlsx") -> None:
+def export_sheet(
+    data: List[Tuple[str, str, str, str]], fname: str = "sample.xlsx"
+) -> None:
     wb = Workbook(write_only=True)
     ws = wb.create_sheet()
 
@@ -28,12 +28,14 @@ def export_sheet(data: List[List[str]], fname: str = "sample.xlsx") -> None:
     wb.save(fname)
 
 
+"""
 def read(fname: str = "4slovo-Bg-LT.docx"):
     doc = handler.DocxHandler(fname)
     doc.clean_hyphens()
 
     export_sheet([[l, w, r] for l, w, r in doc.extract_words()], fname + ".xlsx")
-
+"""
 
 if __name__ == "__main__":
-    read()
+    # read()
+    pass
