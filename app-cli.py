@@ -25,8 +25,11 @@ if __name__ == "__main__":
     # fname = "../text/00-Prolog-tab.docx"
     # # fname = "../text/01-slovo1-tab.docx"
     book_index = import_lines(fname)
-    # print(clean_hyphens(book_index))
-    # print(transform_clean(book_index))
+    # print(book_index)
     comments = import_comments(Document(fname))
-    book_lines = split_rows(transform_clean(book_index), comments)
+    # print(comments)
+    transformed = transform_clean(book_index)
+    # print(transformed)
+    book_lines = split_rows(transformed, comments)
+    # print(book_lines)
     export_sheet(book_lines, fname + ".xlsx")

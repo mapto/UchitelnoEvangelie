@@ -13,7 +13,8 @@ def export_sheet(
     wb = Workbook(write_only=True)
     ws = wb.create_sheet()
 
-    for row in data:
+    for next in data:
+        row = [next[3], "", next[0], next[1], next[2]]
         line = []
         for v in row:
             cell = WriteOnlyCell(ws, value=v)

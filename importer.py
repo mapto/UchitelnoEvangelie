@@ -17,10 +17,10 @@ tag_paragraph = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p
 tag_run = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r"
 
 
-def import_comments(doc: Document) -> Dict[int, str]:
-    """Returns idx->content"""
+def import_comments(doc: Document) -> Dict[int, Tuple[str, str]]:
+    """Returns idx->ref_text,content"""
     xml = None
-    result: Dict[int, str] = {}
+    result: Dict[int, Tuple[str, str]] = {}
     for part in doc.part.package.parts:
         if part.partname == "/word/comments.xml":
             xml = part.blob
@@ -32,7 +32,21 @@ def import_comments(doc: Document) -> Dict[int, str]:
         # print(next.attrib)
         id = int(next.xpath("./@w:id", namespaces=ns)[0])
         text = "".join(next.xpath(".//w:t/text()", namespaces=ns))
-        result[id] = text
+        result[id] = ("", text)
+
+    for page in doc.tables:
+        anchors = locate_comments(page.cell(1, 1))
+        for c in anchors.keys():
+            result[c] = (anchors[c], result[c][1])
+
+    # comments without anchors are outside of the text, thus irrelevant
+    to_remove = []
+    for k, v in result.items():
+        if not v[0]:
+            to_remove.append(k)
+    for k in to_remove:
+        result.pop(k, None)
+
     return result
 
 
@@ -59,6 +73,10 @@ def locate_comments(cell: _Cell) -> Dict[int, str]:
                 anchors[id] = text
                 id = None
                 text = ""
+
+    # assertion: comment selections do not contain newline
+    assert not [v for v in anchors.values() if v.find("\n") != -1]
+
     return anchors
 
 
@@ -69,8 +87,8 @@ def import_lines(fname: str = "sample.docx") -> Dict[str, Tuple[str, List[int]]]
     book_prefix = int(fname.split("/")[-1].split("-")[0])
     print("Book: %s" % book_prefix)
 
-    comments = import_comments(doc)
-    comments_found: List[int] = []
+    # comments = import_comments(doc)
+    # comments_found: List[int] = []
 
     book_index = {}
     for page in doc.tables:
@@ -81,10 +99,7 @@ def import_lines(fname: str = "sample.docx") -> Dict[str, Tuple[str, List[int]]]
 
         # print(cell._element.getchildren())
         anchors = locate_comments(cell)
-        comments_found.extend(anchors.keys())
-
-        # assertion: comment selections do not contain newline
-        assert not [v for v in anchors.values() if v.find("\n") != -1]
+        # comments_found.extend(anchors.keys())
 
         page_rows = text.split("\n")
         # if nums less then rows, extend nums counter
@@ -97,14 +112,14 @@ def import_lines(fname: str = "sample.docx") -> Dict[str, Tuple[str, List[int]]]
 
         assert len(page_rows_nums) == len(page_rows)
         for i, n in enumerate(page_rows_nums):
-            row_idx = "%d/%s%d" % (book_prefix, page_name, int(n))
+            row_idx = "%02d/%s%02d" % (book_prefix, page_name, int(n))
             relevant_comments = [k for k, v in anchors.items() if v in page_rows[i]]
             book_index[row_idx] = (page_rows[i], relevant_comments)
 
     # print(comments_found)
     # print(list(comments.keys()))
     # not all comments are in text
-    assert len(comments_found) <= len(comments.keys())
+    # assert len(comments_found) <= len(comments.keys())
     return book_index
 
 
