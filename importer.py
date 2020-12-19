@@ -28,7 +28,7 @@ def import_comments(doc: Document) -> Dict[int, Comment]:
     for page in doc.tables:
         anchors = locate_comments(page.cell(1, 1))
         for i in anchors.keys():
-            result[i].ref.append(anchors[i])
+            result[i].ref = anchors[i].split("\n")
 
     # comments without anchors are outside of the text, thus irrelevant
     to_remove = []
@@ -42,36 +42,33 @@ def import_comments(doc: Document) -> Dict[int, Comment]:
 
 
 def locate_comments(cell: _Cell) -> Dict[int, str]:
-    id = None
-    text = ""
-    anchors = {}
+    """Read comment references from document (core) part of docx).
+    This contains ids and selections in text"""
+    ids: List[int] = []
+    anchors: Dict[int, str] = {}
 
     for par in cell._element:
         if par.tag != tag_paragraph:
             continue
         for child in par:
-            if id is not None and child.tag == tag_run:
-                # take only last line of marked text
-                if "\n" in child.text:
-                    text = child.text.split("\n")[-1]
-                else:
-                    text += child.text
+            if ids and child.tag == tag_run:
+                for id in ids:
+                    anchors[id] += child.text
             elif child.tag == tag_commentStart:
                 id = int(child.xpath("./@w:id", namespaces=ns)[0])
-                text = ""
+                ids.append(id)
+                anchors[id] = ""
             elif child.tag == tag_commentEnd:
-                assert id == int(child.xpath("./@w:id", namespaces=ns)[0])
-                anchors[id] = text
-                id = None
-                text = ""
+                assert int(child.xpath("./@w:id", namespaces=ns)[0]) in ids
+                ids.remove(id)
 
-    # assertion: comment selections do not contain newline
-    assert not [v for v in anchors.values() if v.find("\n") != -1]
+    # at end all comment starts should be matched by comment ends
+    assert not ids
 
     return anchors
 
 
-def import_lines(fname: str = "sample.docx") -> Dict[str, Tuple[str, List[int]]]:
+def import_lines(fname: str = "sample.docx") -> Dict[str, Tuple[str, List[str]]]:
     """Returns line_num->line_text,line_comments"""
     print("File: %s" % fname)
     doc = Document(fname)
@@ -88,9 +85,7 @@ def import_lines(fname: str = "sample.docx") -> Dict[str, Tuple[str, List[int]]]
         cell = page.cell(1, 1)
         text = cell.text
 
-        # print(cell._element.getchildren())
         anchors = locate_comments(cell)
-        # comments_found.extend(anchors.keys())
 
         page_rows = text.split("\n")
         # if nums less then rows, extend nums counter
@@ -104,7 +99,14 @@ def import_lines(fname: str = "sample.docx") -> Dict[str, Tuple[str, List[int]]]
         assert len(page_rows_nums) == len(page_rows)
         for i, n in enumerate(page_rows_nums):
             row_idx = "%02d/%s%02d" % (book_prefix, page_name, int(n))
-            relevant_comments = [k for k, v in anchors.items() if v in page_rows[i]]
+            # TODO: adapt to multiline comments
+            relevant_comments = []
+            for ak, av in anchors.items():
+                lines = av.split("\n")
+                for cri, crl in enumerate(lines):
+                    if crl in page_rows[i]:
+                        relevant_comments.append(f"{ak}-{cri}")
+            # relevant_comments = [k for k, v in anchors.items() if v in page_rows[i]]
             book_index[row_idx] = (page_rows[i], relevant_comments)
 
     # print(comments_found)
