@@ -43,8 +43,8 @@ def split_rows(
     """Returns line_num, word, line, comment
 
     01-slovo1-tab-p1
-    >>> comments = {0: Comment(0, 'оана', '+ на вь\ue010скрсен\ue205\ue201 ї\ue010с хⷭ҇а H'), \
-        1: Comment(1, 'семоу', 'семь WGH'), 2: Comment(2, 'рекъ• \ue205', 'рекы WGH')}
+    >>> comments = {0: Comment(0, 'оана', addition=' на вь\ue010скрсен\ue205\ue201 ї\ue010с хⷭ҇а H'), \
+        1: Comment(1, 'семоу', annotation='семь WGH'), 2: Comment(2, 'рекъ• \ue205', annotation='рекы WGH')}
     >>> transformed = [('1/4b6', 'С\ue010ТГО \ue204ОАНА', []), ('1/4b7', 'Ꙁлатооустааго•', []), ('1/4b8', 'съкаꙁан\ue205\ue201 с\ue010тааго', []), ('1/4b9', 'евангел\ue205ꙗ⁘', []), ('1/4b10', 'ѿ \ue205оана⁘', [0]), ('1/4b11', '\ue20cьсо рад\ue205 \ue205н\ue205', []), ('1/4b12', 'евангел\ue205ст\ue205•', []), ('1/4b13', 'отъ съмотрен\ue205ꙗ', []), ('1/4b14', 'на\ue20dаша• \ue205', []), ('1/4b15', 'се въ малѣ• по', []), ('1/4b16', 'семоу на\ue20dатъ', [1]), ('1/4b17', 'рекъ• \ue205 слово плъть', [2]), ('1/4b18', 'бꙑсть• а дроугое', []), ('1/4b19', 'вьсе м\ue205моте\ue20dе•', []), ('1/4b20', 'ꙁа\ue20dѧт\ue205\ue201•', []), ('1/4b21', 'рожьство въсп\ue205тѣн\ue205е', []), ('1/4b22', 'въꙁдращен\ue205е⁘', []), ('1/4b23', '', [])]
     >>> split_rows(transformed, comments)
     [('1/4b6', 'С\ue010ТГО', 'С\ue010ТГО \ue204ОАНА', ''), ('1/4b6', '\ue204ОАНА', 'С\ue010ТГО \ue204ОАНА', ''), ('1/4b7', 'Ꙁлатооустааго•', 'Ꙁлатооустааго•', ''), ('1/4b8', 'съкаꙁан\ue205\ue201', 'съкаꙁан\ue205\ue201 с\ue010тааго', ''), ('1/4b8', 'с\ue010тааго', 'съкаꙁан\ue205\ue201 с\ue010тааго', ''), ('1/4b9', 'евангел\ue205ꙗ⁘', 'евангел\ue205ꙗ⁘', ''), ('1/4b10', 'ѿ', 'ѿ \ue205оана⁘', ''), ('1/4b10', '\ue205оана⁘', 'ѿ \ue205оана⁘', ''), ('1/4b10', '', 'ѿ \ue205оана⁘', ' на вь\ue010скрсен\ue205\ue201 ї\ue010с хⷭ҇а H'), ('1/4b11', '\ue20cьсо', '\ue20cьсо рад\ue205 \ue205н\ue205', ''), ('1/4b11', 'рад\ue205', '\ue20cьсо рад\ue205 \ue205н\ue205', ''), ('1/4b11', '\ue205н\ue205', '\ue20cьсо рад\ue205 \ue205н\ue205', ''), ('1/4b12', 'евангел\ue205ст\ue205•', 'евангел\ue205ст\ue205•', ''), ('1/4b13', 'отъ', 'отъ съмотрен\ue205ꙗ', ''), ('1/4b13', 'съмотрен\ue205ꙗ', 'отъ съмотрен\ue205ꙗ', ''), ('1/4b14', 'на\ue20dаша•', 'на\ue20dаша• \ue205', ''), ('1/4b14', '\ue205', 'на\ue20dаша• \ue205', ''), ('1/4b15', 'се', 'се въ малѣ• по', ''), ('1/4b15', 'въ', 'се въ малѣ• по', ''), ('1/4b15', 'малѣ•', 'се въ малѣ• по', ''), ('1/4b15', 'по', 'се въ малѣ• по', ''), ('1/4b16', 'семоу', 'семоу на\ue20dатъ', 'семь WGH'), ('1/4b16', 'на\ue20dатъ', 'семоу на\ue20dатъ', ''), ('1/4b17', 'рекъ•', 'рекъ• \ue205 слово плъть', ''), ('1/4b17', '\ue205', 'рекъ• \ue205 слово плъть', 'рекы WGH'), ('1/4b17', 'слово', 'рекъ• \ue205 слово плъть', ''), ('1/4b17', 'плъть', 'рекъ• \ue205 слово плъть', ''), ('1/4b18', 'бꙑсть•', 'бꙑсть• а дроугое', ''), ('1/4b18', 'а', 'бꙑсть• а дроугое', ''), ('1/4b18', 'дроугое', 'бꙑсть• а дроугое', ''), ('1/4b19', 'вьсе', 'вьсе м\ue205моте\ue20dе•', ''), ('1/4b19', 'м\ue205моте\ue20dе•', 'вьсе м\ue205моте\ue20dе•', ''), ('1/4b20', 'ꙁа\ue20dѧт\ue205\ue201•', 'ꙁа\ue20dѧт\ue205\ue201•', ''), ('1/4b21', 'рожьство', 'рожьство въсп\ue205тѣн\ue205е', ''), ('1/4b21', 'въсп\ue205тѣн\ue205е', 'рожьство въсп\ue205тѣн\ue205е', ''), ('1/4b22', 'въꙁдращен\ue205е⁘', 'въꙁдращен\ue205е⁘', ''), ('1/4b23', '', '', '')]
@@ -64,33 +64,49 @@ def split_rows(
         for word in re.split(r"\s", row_text):
             if row_comments:
                 for cref in row_comments:
-                    comment = comments[cref].content
-                    # only last word of selection is relevant
-                    marked = re.split(r"\s", comments[cref].ref)[-1]
+                    comment = comments[cref]
+                    # only last word of last row of selection is relevant
+                    marked = re.split(r"\s", comments[cref].ref[-1])[-1]
                     # print(marked)
                     # print(word)
                     # print(marked in word)
                     if marked in word:
                         if cref not in to_find:
+                            print(f"Found reference to already used comment: {cref}")
                             continue
                         to_find.remove(cref)
-                        if comment.find("+") != -1:
-                            parts = re.split("\+", comment)
-                            assert len(parts) < 3
-                            word_index.append((row_num, word, row_text, parts[0]))
-                            word_index.append((row_num, "", row_text, parts[1]))
-                        else:
-                            word_index.append((row_num, word, row_text, comment))
+                        word_index.append((row_num, word, row_text, comment.annotation))
+                        if comment.addition:
+                            word_index.append((row_num, "", row_text, comment.addition))
                     else:
                         word_index.append((row_num, word, row_text, ""))
                         if len(marked) == 1 and marked in [".", "!"]:
                             to_find.pop(cref)
-                            word_index.append((row_num, "", row_text, comment))
+                            if comment.annotation:
+                                print(
+                                    f"Annotation present for punctuation comment {comment}"
+                                )
+                                word_index.append(
+                                    (row_num, "", row_text, comment.annotation)
+                                )
+                            if comment.addition:
+                                print(
+                                    f"Addition present for punctuation comment {comment}"
+                                )
+                                word_index.append(
+                                    (row_num, "", row_text, comment.addition)
+                                )
             else:
                 word_index.append((row_num, word, row_text, ""))
 
         # if no row_comments, to_find is empty
         for r in to_find:
-            word_index.append((row_num, "", row_text, comments[r].content))
+            print(f"Unallocated comment {comments[r]}")
+            if comments[r].annotation:
+                print(f"Annotation present for punctuation comment {comments[r]}")
+                word_index.append((row_num, "", row_text, comments[r].annotation))
+            if comments[r].addition:
+                print(f"Addition present for punctuation comment {comments[r]}")
+                word_index.append((row_num, "", row_text, comments[r].addition))
 
     return word_index

@@ -28,7 +28,7 @@ def import_comments(doc: Document) -> Dict[int, Comment]:
     for page in doc.tables:
         anchors = locate_comments(page.cell(1, 1))
         for i in anchors.keys():
-            result[i].ref = anchors[i]
+            result[i].ref.append(anchors[i])
 
     # comments without anchors are outside of the text, thus irrelevant
     to_remove = []
