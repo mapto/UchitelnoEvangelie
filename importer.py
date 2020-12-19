@@ -6,21 +6,14 @@ from docx import Document  # type: ignore
 from docx.table import _Cell  # type: ignore
 from lxml import etree  # type: ignore
 
-ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
-tag_commentStart = (
-    "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}commentRangeStart"
-)
-tag_commentEnd = (
-    "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}commentRangeEnd"
-)
-tag_paragraph = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p"
-tag_run = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r"
+from schema import ns
+from schema import tag_paragraph, tag_run, tag_commentStart, tag_commentEnd
+from model import Comment
 
 
-def import_comments(doc: Document) -> Dict[int, Tuple[str, str]]:
-    """Returns idx->ref_text,content"""
+def import_comments(doc: Document) -> Dict[int, Comment]:
     xml = None
-    result: Dict[int, Tuple[str, str]] = {}
+    result: Dict[int, Comment] = {}
     for part in doc.part.package.parts:
         if part.partname == "/word/comments.xml":
             xml = part.blob
@@ -29,20 +22,18 @@ def import_comments(doc: Document) -> Dict[int, Tuple[str, str]]:
 
     root = etree.fromstring(xml)
     for next in root.getchildren():
-        # print(next.attrib)
-        id = int(next.xpath("./@w:id", namespaces=ns)[0])
-        text = "".join(next.xpath(".//w:t/text()", namespaces=ns))
-        result[id] = ("", text)
+        c = Comment.fromXml(next)
+        result[c.id] = c
 
     for page in doc.tables:
         anchors = locate_comments(page.cell(1, 1))
-        for c in anchors.keys():
-            result[c] = (anchors[c], result[c][1])
+        for i in anchors.keys():
+            result[i].ref = anchors[i]
 
     # comments without anchors are outside of the text, thus irrelevant
     to_remove = []
     for k, v in result.items():
-        if not v[0]:
+        if not v.ref:
             to_remove.append(k)
     for k in to_remove:
         result.pop(k, None)

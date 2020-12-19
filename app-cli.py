@@ -22,6 +22,9 @@ from exporter import export_sheet
 if __name__ == "__main__":
     args = docopt(__doc__)
     fname = args["<docx>"]
+    if not fname.lower().endswith(".docx"):
+        print("Файлът трябва да е във формат .docx. Моля конвертирайте го.")
+        exit()
     # fname = "../text/00-Prolog-tab.docx"
     # # fname = "../text/01-slovo1-tab.docx"
     book_index = import_lines(fname)
