@@ -1,4 +1,4 @@
-from typing import List
+from typing import Optional, List
 from dataclasses import dataclass, field
 
 import re
@@ -27,3 +27,21 @@ class Comment:
         assert 1 <= len(parts) <= 2
         addition = parts[1] if len(parts) == 2 else ""
         return Comment(id, annotation=parts[0], addition=addition)
+
+
+@dataclass(init=True, repr=True)
+class Word:
+    ch: int
+    page: str
+    row: int
+    word: str = ""
+    line_context: str = ""
+    variant: str = ""
+    prev: Optional["Word"] = field(init=False, repr=False, default=None)
+    next: Optional["Word"] = field(init=False, repr=False, default=None)
+
+    def index(self):
+        return f"{self.ch:02d}/{self.page}{self.row:02d}"
+
+    def __str__(self):
+        return f"{self.index()}: {self.word}, '{self.variant}'"

@@ -15,24 +15,31 @@ from docopt import docopt  # type: ignore
 
 from docx import Document  # type: ignore
 
-from importer import import_lines, import_comments
-from processor import transform_clean, split_rows
+# from importer import import_lines, parse_comments
+from importer import import_chapter
+from processor import dehyphenate, condense
 from exporter import export_sheet
 
 if __name__ == "__main__":
     args = docopt(__doc__)
     fname = args["<docx>"]
     if not fname.lower().endswith(".docx"):
-        print("Файлът трябва да е във формат .docx. Моля конвертирайте го.")
+        print("Файлът трябва да е във формат .docx. Моля конвертирайте го")
         exit()
     # fname = "../text/00-Prolog-tab.docx"
     # # fname = "../text/01-slovo1-tab.docx"
-    book_index = import_lines(fname)
+    # book_index = import_lines(fname)
     # print(book_index)
-    comments = import_comments(Document(fname))
+    # comments = parse_comments(Document(fname))
     # print(comments)
-    transformed = transform_clean(book_index)
+    # transformed = transform_clean(book_index)
     # print(transformed)
-    book_lines = split_rows(transformed, comments)
+    # book_lines = split_rows(transformed, comments)
     # print(book_lines)
-    export_sheet(book_lines, fname + ".xlsx")
+    lines = import_chapter(fname)
+    # print(lines)
+    # export_sheet(lines, fname + ".1.xlsx")
+    lines = dehyphenate(lines)
+    # export_sheet(lines, fname + ".2.xlsx")
+    lines = condense(lines)
+    export_sheet(lines, fname + ".xlsx")

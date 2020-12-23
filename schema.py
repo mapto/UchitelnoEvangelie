@@ -9,3 +9,5 @@ tag_commentEnd = (
 )
 tag_paragraph = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p"
 tag_run = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r"
+tag_text = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t"
+tag_br = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}br"

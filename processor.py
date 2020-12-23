@@ -4,7 +4,7 @@ from typing import List, Tuple, Dict
 
 import re
 
-from model import Comment
+from model import Comment, Word
 
 
 def transform_clean(
@@ -119,3 +119,27 @@ def split_rows(
                 word_index.append((row_num, "", row_text, comments[r].addition))
 
     return word_index
+
+
+def dehyphenate(words: List[Word]) -> List[Word]:
+    result: List[Word] = []
+    for w in words:
+        while w.word and w.next and w.word[-1] == "-":
+            w.word = w.word[:-1] + w.next.word
+            # print(w.next)
+            if w.next.next:
+                w.next.next.prev = w
+                w.next = w.next.next
+            else:
+                w.next = None
+        result.append(w)
+    return result
+
+
+def condense(words: List[Word]) -> List[Word]:
+    """Remove empty words"""
+    result = list(words)
+    for w in words:
+        if not w.word.strip() and not w.variant.strip():
+            result.remove(w)
+    return result

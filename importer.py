@@ -2,16 +2,25 @@
 
 from typing import List, Tuple, Dict
 
+import re
+
 from docx import Document  # type: ignore
 from docx.table import _Cell  # type: ignore
-from lxml import etree  # type: ignore
+from lxml import etree, html  # type: ignore
 
 from schema import ns
-from schema import tag_paragraph, tag_run, tag_commentStart, tag_commentEnd
-from model import Comment
+from schema import (
+    tag_paragraph,
+    tag_run,
+    tag_commentStart,
+    tag_commentEnd,
+    tag_text,
+    tag_br,
+)
+from model import Comment, Word
 
 
-def import_comments(doc: Document) -> Dict[int, Comment]:
+def parse_comments(doc: Document) -> Dict[int, Comment]:
     xml = None
     result: Dict[int, Comment] = {}
     for part in doc.part.package.parts:
@@ -25,100 +34,116 @@ def import_comments(doc: Document) -> Dict[int, Comment]:
         c = Comment.fromXml(next)
         result[c.id] = c
 
-    for page in doc.tables:
-        anchors = locate_comments(page.cell(1, 1))
-        for i in anchors.keys():
-            result[i].ref = anchors[i].split("\n")
+    return result
 
-    # comments without anchors are outside of the text, thus irrelevant
-    to_remove = []
-    for k, v in result.items():
-        if not v.ref:
-            to_remove.append(k)
-    for k in to_remove:
-        result.pop(k, None)
+
+def compile_words(ch: int, page: str, row: int, line: str, comment: str) -> List[Word]:
+    result: List[Word] = []
+    words = re.split(r"\s", line)
+    for w in words:
+        new_word = Word(ch, page, row, w, line, variant=comment)
+        if result:
+            result[-1].next = new_word
+            new_word.prev = result[-1]
+        result.append(new_word)
+    return result
+
+
+def parse_page(
+    ch: int, page: str, rows: List[int], cell: _Cell, comments: Dict[int, Comment]
+) -> List[Word]:
+    result: List[Word] = []
+    open_comments: List[int] = []
+    # anchors: Dict[int, str] = {}
+    line = ""
+    row = rows.pop(0)
+    for par in cell._element:
+        if par.tag != tag_paragraph:
+            continue
+        for sec in par:
+            if sec.tag == tag_run:
+                for content in sec:
+                    if content.tag == tag_text:
+                        line += content.text
+                    elif content.tag == tag_br:
+                        comment = ",".join(
+                            [comments[c].annotation for c in open_comments]
+                        )
+                        compiled = compile_words(ch, page, row, line, comment)
+                        if result:
+                            result[-1].next = compiled[0]
+                            compiled[0].prev = result[-1]
+                        result.extend(compiled)
+                        line = ""
+                        row = rows.pop(0)
+                        if not rows:
+                            rows.append(row + 1)
+            elif sec.tag == tag_commentStart:
+                comment = ",".join([comments[c].annotation for c in open_comments])
+                compiled = compile_words(ch, page, row, line, comment)
+                if result:
+                    result[-1].next = compiled[0]
+                    compiled[0].prev = result[-1]
+                result.extend(compiled)
+                line = ""
+
+                id = int(sec.xpath("./@w:id", namespaces=ns)[0])
+                open_comments.append(id)
+            elif sec.tag == tag_commentEnd:
+                # print(open_comments)
+                # print(comments)
+                comment = ",".join([comments[c].annotation for c in open_comments])
+                compiled = compile_words(ch, page, row, line, comment)
+                if result:
+                    result[-1].next = compiled[0]
+                    compiled[0].prev = result[-1]
+                result.extend(compiled)
+                line = ""
+
+                comment = ",".join([comments[c].addition for c in open_comments])
+                if comment:
+                    new_word = Word(ch, page, row, variant=comment)
+                    result[-1].next = new_word
+                    new_word.prev = result[-1]
+                    result.append(new_word)
+
+                id = int(sec.xpath("./@w:id", namespaces=ns)[0])
+                open_comments.remove(id)
+
+    # at end all comment starts should be matched by comment ends
+    assert not open_comments
 
     return result
 
 
-def locate_comments(cell: _Cell) -> Dict[int, str]:
-    """Read comment references from document (core) part of docx).
-    This contains ids and selections in text"""
-    ids: List[int] = []
-    anchors: Dict[int, str] = {}
-
-    for par in cell._element:
-        if par.tag != tag_paragraph:
-            continue
-        for child in par:
-            if ids and child.tag == tag_run:
-                for id in ids:
-                    anchors[id] += child.text
-            elif child.tag == tag_commentStart:
-                id = int(child.xpath("./@w:id", namespaces=ns)[0])
-                ids.append(id)
-                anchors[id] = ""
-            elif child.tag == tag_commentEnd:
-                assert int(child.xpath("./@w:id", namespaces=ns)[0]) in ids
-                ids.remove(id)
-
-    # at end all comment starts should be matched by comment ends
-    assert not ids
-
-    return anchors
-
-
-def import_lines(fname: str = "sample.docx") -> Dict[str, Tuple[str, List[str]]]:
-    """Returns line_num->line_text,line_comments"""
-    print("File: %s" % fname)
-    doc = Document(fname)
-    book_prefix = int(fname.split("/")[-1].split("-")[0])
-    print("Book: %s" % book_prefix)
-
-    # comments = import_comments(doc)
-    # comments_found: List[int] = []
-
-    book_index = {}
+def parse_document(ch: int, doc: Document, comments: Dict[int, Comment]) -> List[Word]:
+    words: List[Word] = []
     for page in doc.tables:
         page_name = page.cell(0, 0).text
-        page_rows_nums = page.cell(1, 0).text.split("\n")
+        page_rows_nums = [int(r) for r in page.cell(1, 0).text.split("\n") if r]
         cell = page.cell(1, 1)
-        text = cell.text
+        page_words = parse_page(ch, page_name, page_rows_nums, cell, comments)
+        if words:
+            words[-1].next = page_words[0].prev
+            page_words[0].prev = words[-1].next
+        words.extend(page_words)
+    return words
 
-        anchors = locate_comments(cell)
 
-        page_rows = text.split("\n")
-        # if nums less then rows, extend nums counter
-        if len(page_rows_nums) < len(page_rows):
-            extension = [
-                str(int(page_rows_nums[-1]) + i)
-                for i in range(1, 1 + len(page_rows) - len(page_rows_nums))
-            ]
-            page_rows_nums.extend(extension)
-
-        assert len(page_rows_nums) == len(page_rows)
-        for i, n in enumerate(page_rows_nums):
-            row_idx = "%02d/%s%02d" % (book_prefix, page_name, int(n))
-            # TODO: adapt to multiline comments
-            relevant_comments = []
-            for ak, av in anchors.items():
-                lines = av.split("\n")
-                for cri, crl in enumerate(lines):
-                    if crl in page_rows[i]:
-                        relevant_comments.append(f"{ak}-{cri}")
-            # relevant_comments = [k for k, v in anchors.items() if v in page_rows[i]]
-            book_index[row_idx] = (page_rows[i], relevant_comments)
-
-    # print(comments_found)
-    # print(list(comments.keys()))
-    # not all comments are in text
-    # assert len(comments_found) <= len(comments.keys())
-    return book_index
+def import_chapter(fname: str) -> List[Word]:
+    """Import a preformatted chapter of a manuscript
+    """
+    doc = Document(fname)
+    book_prefix = int(fname.split("/")[-1].split("-")[0])
+    comments = parse_comments(doc)
+    # print(comments)
+    return parse_document(book_prefix, doc, comments)
 
 
 if __name__ == "__main__":
     # import_lines("../text/01-slovo1-tab.docx")
     # book_lines = import_lines("../text/00-Prolog-tab.docx")
-    print(import_lines("../new/01-slovo1-tab.docx"))
+    # print(import_lines("../new/01-slovo1-tab.docx"))
     # print(import_comments(Document('../new/01-slovo1-tab.docx')))
     # print(locate_comments(Document('../new/01-slovo1-tab.docx').tables[0].cell(1,1)._element[1]))
+    import_chapter("test/01-slovo1-4b.docx")

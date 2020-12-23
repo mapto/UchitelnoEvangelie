@@ -6,15 +6,15 @@ from openpyxl import Workbook  # type: ignore
 from openpyxl.cell import WriteOnlyCell  # type: ignore
 from openpyxl.styles import Font  # type: ignore
 
+from model import Word
 
-def export_sheet(
-    data: List[Tuple[str, str, str, str]], fname: str = "sample.xlsx"
-) -> None:
+
+def export_sheet(data: List[Word], fname: str) -> None:
     wb = Workbook(write_only=True)
     ws = wb.create_sheet()
 
     for next in data:
-        row = [next[3], "", next[0], next[1], next[2]]
+        row = [next.variant, "", next.index(), next.word, next.line_context]
         line = []
         for v in row:
             cell = WriteOnlyCell(ws, value=v)
