@@ -17,7 +17,7 @@ from docx import Document  # type: ignore
 
 # from importer import import_lines, parse_comments
 from importer import import_chapter
-from processor import dehyphenate, condense
+from processor import dehyphenate, condense, integrate_words
 from exporter import export_sheet
 
 if __name__ == "__main__":
@@ -36,10 +36,27 @@ if __name__ == "__main__":
     # print(transformed)
     # book_lines = split_rows(transformed, comments)
     # print(book_lines)
+
+    print("Импорт...")
     lines = import_chapter(fname)
+    print(f"{len(lines)} думи")
+
     # print(lines)
     # export_sheet(lines, fname + ".1.xlsx")
+
+    print("Премахване на пренос...")
     lines = dehyphenate(lines)
+    print(f"{len(lines)} думи")
+
+    print("Възстановяване на думи, разделени от коментари...")
+    lines = integrate_words(lines)
+    print(f"{len(lines)} думи")
+
     # export_sheet(lines, fname + ".2.xlsx")
+
+    print("Премахване на празни думи...")
     lines = condense(lines)
+    print(f"{len(lines)} думи")
+
+    print("Експорт")
     export_sheet(lines, fname + ".xlsx")
