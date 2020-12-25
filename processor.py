@@ -16,9 +16,9 @@ def dehyphenate(words: List[Word]) -> List[Word]:
             # print(w)
             w.word = w.word[:-1] + w.next.word
             if w.next.variant:
-                assert not w.variant or "=" in w.variant or w.variant.startswith("om.")
+                assert not w.variant or "↓" in w.variant or w.variant.startswith("om.")
                 if w.variant:
-                    w.variant = w.variant.replace("=", w.next.variant)
+                    w.variant = w.variant.replace("↓", w.next.variant)
                 else:
                     w.variant = w.next.variant
             # print(w.next)

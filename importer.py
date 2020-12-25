@@ -58,7 +58,7 @@ def _compile_buffer(
         if comments[c].annotation.startswith("om."):
             parts.add(comments[c].annotation)
         else:
-            parts.add("=")
+            parts.add("↓")
     comment = ",".join(parts)
     return _compile_words(idx, buffer, comment)
 
@@ -119,7 +119,7 @@ def parse_page(
                 idx = Index(ch, page, row)
                 compiled = _compile_buffer(idx, buff, comments, open_comments)
                 compiled[-1].variant = compiled[-1].variant.replace(
-                    "=", comments[id].annotation
+                    "↓", comments[id].annotation
                 )
                 line_words = _merge(line_words, compiled)
                 line += buff
