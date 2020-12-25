@@ -23,7 +23,9 @@ from exporter import export_sheet
 if __name__ == "__main__":
     args = docopt(__doc__)
     fname = args["<docx>"]
-    if not fname.lower().endswith(".docx"):
+    if len(fname) < 6 or "." not in fname[2:]:
+      fname += ".docx"
+    elif not fname.lower().endswith(".docx"):
         print("Файлът трябва да е във формат .docx. Моля конвертирайте го")
         exit()
     # fname = "../text/00-Prolog-tab.docx"
@@ -59,4 +61,4 @@ if __name__ == "__main__":
     print(f"{len(lines)} думи")
 
     print("Експорт")
-    export_sheet(lines, fname + ".xlsx")
+    export_sheet(lines, fname[:-5] + ".xlsx")
