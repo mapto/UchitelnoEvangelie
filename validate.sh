@@ -6,8 +6,8 @@ echo '>>> Skipping Pylint'
 echo '>>> Running Mypy'
 mypy .
 
-echo '>>> Skipping Pytest'
-# pytest -vv --doctest-modules -s . # --disable-warnings
+echo '>>> Running Pytest'
+pytest -vv --doctest-modules -s . # --disable-warnings
 
 echo '>>> Running Black'
 black .

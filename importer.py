@@ -130,9 +130,9 @@ def parse_page(
                     for comment in comments[c].addition:
                         idx = Index(ch, page, row)
                         new_word = Word(idx, variant=comment)
-                        if result:
-                            new_word.appendTo(result[-1])
-                        result.append(new_word)
+                        if line_words:
+                            new_word.appendTo(line_words[-1])
+                        line_words.append(new_word)
 
                 open_comments.remove(id)
 

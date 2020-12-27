@@ -24,7 +24,7 @@ if __name__ == "__main__":
     args = docopt(__doc__)
     fname = args["<docx>"]
     if len(fname) < 6 or "." not in fname[2:]:
-      fname += ".docx"
+        fname += ".docx"
     elif not fname.lower().endswith(".docx"):
         print("Файлът трябва да е във формат .docx. Моля конвертирайте го")
         exit()
@@ -48,16 +48,21 @@ if __name__ == "__main__":
 
     print("Премахване на пренос...")
     lines = dehyphenate(lines)
+    # export_sheet(lines, fname[:-5] + ".1.xlsx")
     print(f"{len(lines)} думи")
 
     print("Възстановяване на думи, разделени от коментари...")
+    # print(lines)
     lines = integrate_words(lines)
+    # export_sheet(lines, fname[:-5] + ".2.xlsx")
+    # print(lines)
     print(f"{len(lines)} думи")
 
     # export_sheet(lines, fname + ".2.xlsx")
 
     print("Премахване на празни думи...")
     lines = condense(lines)
+    # export_sheet(lines, fname[:-5] + ".3.xlsx")
     print(f"{len(lines)} думи")
 
     print("Експорт")
