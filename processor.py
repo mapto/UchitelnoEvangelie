@@ -42,7 +42,7 @@ def condense(words: List[Word]) -> List[Word]:
 
 def integrate_words(words: List[Word]) -> List[Word]:
     """Merge words that were split by comments"""
-    result = list(words)
+    result = []
     token: Optional[Word] = words[0]
     while token:
         line = re.split(r"\s", token.line_context)
@@ -60,6 +60,7 @@ def integrate_words(words: List[Word]) -> List[Word]:
                     print(token)
                     print(token.variant)
                     print(token.next.variant)
+
                 if not token.variant:
                     token.variant = token.next.variant
                 if token.next.next:
@@ -67,5 +68,6 @@ def integrate_words(words: List[Word]) -> List[Word]:
                 else:
                     token.next = None
             # print(token.word)
+        result.append(token)
         token = token.next
     return result
