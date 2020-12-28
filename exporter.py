@@ -14,7 +14,7 @@ def export_sheet(data: List[Word], fname: str) -> None:
     ws = wb.create_sheet()
 
     for next in data:
-        row = [next.variant, "", next.index(), next.word, next.line_context]
+        row = [next.variant, "", "", next.index(), next.word, next.line_context]
         line = []
         for v in row:
             cell = WriteOnlyCell(ws, value=v)
