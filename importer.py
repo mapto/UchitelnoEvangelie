@@ -55,7 +55,7 @@ def _compile_buffer(
 ):
     parts = set()
     for c in current:
-        if comments[c].annotation.startswith("om."):
+        if comments[c].annotation.startswith("om"):
             parts.add(comments[c].annotation)
         else:
             parts.add("↓")
@@ -129,7 +129,7 @@ def parse_page(
                 for c in open_comments:
                     for comment in comments[c].addition:
                         idx = Index(ch, page, row)
-                        new_word = Word(idx, variant=comment)
+                        new_word = Word(idx, variant=f"+{comment}")
                         if line_words:
                             new_word.appendTo(line_words[-1])
                         line_words.append(new_word)

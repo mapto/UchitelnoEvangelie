@@ -2,7 +2,13 @@
 """App-cli.
 
 Usage:
-  app-cli.py <docx>
+  app-cli.py [-dic] <docx>
+
+Options:
+  -h --help          This information
+  -d --dehyphenate   Remove hyphens and merge words
+  -i --integrate     Put together words that have been separated by comment selection
+  -c --condense      Remove words that are blank and have no annotation
 """
 """Създаване на индекс за Учително евангелие - изпълнение чрез команден интерфейс.
 Запишете файла в директорията където 
@@ -22,6 +28,7 @@ from exporter import export_sheet
 
 if __name__ == "__main__":
     args = docopt(__doc__)
+    # print(args)
     fname = args["<docx>"]
     if len(fname) < 6 or "." not in fname[2:]:
         fname += ".docx"
@@ -46,24 +53,34 @@ if __name__ == "__main__":
     # print(lines)
     # export_sheet(lines, fname + ".1.xlsx")
 
-    print("Премахване на пренос...")
-    lines = dehyphenate(lines)
-    # export_sheet(lines, fname[:-5] + ".1.xlsx")
-    print(f"{len(lines)} думи")
 
-    print("Възстановяване на думи, разделени от коментари...")
-    # print(lines)
-    lines = integrate_words(lines)
-    # export_sheet(lines, fname[:-5] + ".2.xlsx")
-    # print(lines)
-    print(f"{len(lines)} думи")
+    if args["--dehyphenate"]:
+      print("Премахване на пренос...")
+      lines = dehyphenate(lines)
+      # export_sheet(lines, fname[:-5] + ".d.xlsx")
+      print(f"{len(lines)} думи")
+    else:
+      print("Оставяне на пренос.")
+
+    if args["--integrate"]:
+      print("Възстановяване на думи, разделени от коментари...")
+      # print(lines)
+      lines = integrate_words(lines)
+      # export_sheet(lines, fname[:-5] + ".i.xlsx")
+      # print(lines)
+      print(f"{len(lines)} думи")
+    else:
+      print("Оставяне на думи, разделени от коментари.")
 
     # export_sheet(lines, fname + ".2.xlsx")
 
-    print("Премахване на празни думи...")
-    lines = condense(lines)
-    # export_sheet(lines, fname[:-5] + ".3.xlsx")
-    print(f"{len(lines)} думи")
+    if args["--condense"]:
+      print("Премахване на празни думи...")
+      lines = condense(lines)
+      # export_sheet(lines, fname[:-5] + ".c.xlsx")
+      print(f"{len(lines)} думи")
+    else:
+      print("Оставяне на празни думи.")
 
-    print("Експорт")
+    print("Експорт...")
     export_sheet(lines, fname[:-5] + ".xlsx")
