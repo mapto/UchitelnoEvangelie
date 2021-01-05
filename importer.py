@@ -55,10 +55,11 @@ def _compile_buffer(
 ):
     parts = set()
     for c in current:
-        if comments[c].annotation.startswith("om"):
-            parts.add(comments[c].annotation)
-        else:
-            parts.add("↓")
+        if comments[c].annotation:
+            if comments[c].annotation.startswith("om"):
+                parts.add(comments[c].annotation)
+            else:
+                parts.add("↓")
     comment = ",".join(parts)
     return _compile_words(idx, buffer, comment)
 
