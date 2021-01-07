@@ -78,7 +78,7 @@ def integrate_words(words: List[Word]) -> List[Word]:
                     token.prependTo(extension)
                     extension.prependTo(addition)
                     addition.prependTo(next)
-                
+
                 token.word = token.word + token.next.word
                 if (
                     token.variant
