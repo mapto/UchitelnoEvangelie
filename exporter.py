@@ -4,9 +4,21 @@ from typing import List, Dict, Tuple
 
 from openpyxl import Workbook  # type: ignore
 from openpyxl.cell import WriteOnlyCell  # type: ignore
-from openpyxl.styles import Font  # type: ignore
+from openpyxl.styles import Font, PatternFill, Side, Border  # type: ignore
+from openpyxl.styles.borders import BORDER_HAIR as BORDER_WIDTH  # type: ignore
+from openpyxl.styles.fills import FILL_SOLID as FILL  # type: ignore
 
 from model import Word
+
+LIGHT_YELLOW = "FFFFE0"
+DARK_GRAY = "A9A9A9"
+LIGHT_GRAY = "D3D3D3"
+
+BG_EDIT = PatternFill(start_color=LIGHT_YELLOW, fill_type=FILL)
+BG_RESERVED = PatternFill(start_color=DARK_GRAY, fill_type=FILL)
+
+_SIDE = Side(border_style=BORDER_WIDTH, color=LIGHT_GRAY)
+BORDER = Border(left=_SIDE, right=_SIDE, top=_SIDE, bottom=_SIDE)
 
 
 def row(row: Dict[str, str]) -> List[str]:
@@ -19,8 +31,8 @@ def row(row: Dict[str, str]) -> List[str]:
 def ifna_vlookup(ref: str, ret: str, rows: int) -> str:
     """
     https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1
-    https://support.microsoft.com/en-us/office/ifna-function-6626c961-a569-42fc-a49d-79b4951fd461    
-    
+    https://support.microsoft.com/en-us/office/ifna-function-6626c961-a569-42fc-a49d-79b4951fd461
+
     >>> ifna_vlookup("A3", "C", 5)
     '=_xlfn.IFNA(VLOOKUP(A3,A1:C5,3,FALSE),"")'
     """
@@ -33,7 +45,7 @@ def if_isformula(ref: str) -> str:
     """
     https://support.microsoft.com/en-us/office/isformula-function-e4d1355f-7121-4ef2-801e-3839bfd6b1e5
     https://support.microsoft.com/en-us/office/if-function-69aed7c9-4e8a-4755-a9bc-aa8bbff73be2
-    
+
     >>> if_isformula("B3")
     '=IF(_xlfn.ISFORMULA(B3),"",B3)'
     """
@@ -76,8 +88,13 @@ def export_sheet(data: List[Word], fname: str) -> None:
         line = []
         for v in row(content):
             cell = WriteOnlyCell(ws, value=v)
-            if cell.value and cell.value[0] != "=":
+            if cell.value:
                 cell.font = Font("CyrillicaOchrid10U")
+                cell.border = BORDER
+                if cell.value.startswith("=IF"):
+                    cell.fill = BG_RESERVED
+                elif cell.value.startswith("=_xlfn.IFNA"):
+                    cell.fill = BG_EDIT
             line.append(cell)
         ws.append(line)
 

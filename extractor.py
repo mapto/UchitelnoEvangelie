@@ -12,7 +12,7 @@ Options:
   -I --integrate        Put together words that have been separated by comment selection
   -c --no-condense      Disable removal of words that are blank and have no annotation
 """
-__version__ = '0.0.1'
+__version__ = "0.0.1"
 
 from docopt import docopt  # type: ignore
 
