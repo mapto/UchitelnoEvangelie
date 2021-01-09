@@ -11,12 +11,14 @@ Options:
   -d --no-dehyphenate   Disable removal of hyphens and word merging
   -I --integrate        Put together words that have been separated by comment selection
   -c --no-condense      Disable removal of words that are blank and have no annotation
+  -p --no-pause         Disable pause at end of execution
 """
 __version__ = "0.0.1"
 
 from docopt import docopt  # type: ignore
 
 from docx import Document  # type: ignore
+from docx.opc.exceptions import OpcError  # type: ignore
 
 # from importer import import_lines, parse_comments
 from importer import import_chapter
@@ -32,6 +34,13 @@ if __name__ == "__main__":
     elif not fname.lower().endswith(".docx"):
         print("Файлът трябва да е във формат .docx. Моля конвертирайте го")
         exit()
+
+    try:
+        doc = Document(fname)
+    except OpcError:
+        print("Файлът трябва да е във формат .docx. Посоченият файл изглежда развален. Моля регенерирайте го")
+        exit()
+
     # fname = "../text/00-Prolog-tab.docx"
     # # fname = "../text/01-slovo1-tab.docx"
     # book_index = import_lines(fname)
@@ -80,3 +89,6 @@ if __name__ == "__main__":
 
     print("Експорт...")
     export_sheet(lines, fname[:-5] + ".xlsx")
+
+    if not args["--no-pause"]:
+        input("Натиснете Enter, за да приключите изпълнението.")

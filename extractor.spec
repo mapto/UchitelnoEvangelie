@@ -1,10 +1,10 @@
-# -*- mode: python -*-
+# -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
 
 
 a = Analysis(['extractor.py'],
-             pathex=['/home/mapto/work2/uchitelno-evangelie/UchitelnoEvangelie'],
+             pathex=[],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -26,7 +26,7 @@ exe = EXE(pyz,
           name='extractor',
           debug=False,
           bootloader_ignore_signals=False,
-          strip=True,
+          strip=False,
           upx=False,
           runtime_tmpdir=None,
           console=True )

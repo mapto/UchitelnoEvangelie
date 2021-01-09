@@ -2,6 +2,7 @@
 
 from typing import List, Tuple, Dict, Set
 
+from pathlib import Path
 import re
 
 from docx import Document  # type: ignore
@@ -173,7 +174,7 @@ def parse_document(ch: int, doc: Document, comments: Dict[int, Comment]) -> List
 def import_chapter(fname: str) -> List[Word]:
     """Import a preformatted chapter of a manuscript"""
     doc = Document(fname)
-    book_prefix = int(fname.split("/")[-1].split("-")[0])
+    book_prefix = int(Path(fname).name.split("-")[0])
     comments = parse_comments(doc)
     # print(comments)
     return parse_document(book_prefix, doc, comments)
