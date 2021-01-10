@@ -3,8 +3,8 @@
 Licensed under MIT License, detailed here: https://mit-license.org/
 
 Usage:
-  extractor.py [-dIc] <docx>
-  extractor.py [--no-dehyphenate] [--integrate] [--no-condense] <docx>
+  extractor.py [-dIcp] <docx>
+  extractor.py [--no-dehyphenate] [--integrate] [--no-condense] [--no-pause] <docx>
 
 Options:
   --help                This information
@@ -12,6 +12,7 @@ Options:
   -I --integrate        Put together words that have been separated by comment selection
   -c --no-condense      Disable removal of words that are blank and have no annotation
   -p --no-pause         Disable pause at end of execution
+
 """
 __version__ = "0.0.1"
 
@@ -38,7 +39,9 @@ if __name__ == "__main__":
     try:
         doc = Document(fname)
     except OpcError:
-        print("Файлът трябва да е във формат .docx. Посоченият файл изглежда развален. Моля регенерирайте го")
+        print(
+            "Файлът трябва да е във формат .docx. Посоченият файл изглежда развален. Моля регенерирайте го"
+        )
         exit()
 
     # fname = "../text/00-Prolog-tab.docx"
