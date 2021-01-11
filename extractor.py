@@ -30,6 +30,8 @@ if __name__ == "__main__":
     args = docopt(__doc__)
     # print(args)
     fname = args["<docx>"]
+    print(f"Прочитане: {fname}")
+
     if len(fname) < 6 or "." not in fname[2:]:
         fname += ".docx"
     elif not fname.lower().endswith(".docx"):
@@ -91,7 +93,9 @@ if __name__ == "__main__":
         print("Оставяне на празни думи.")
 
     print("Експорт...")
-    export_sheet(lines, fname[:-5] + ".xlsx")
-
+    export_fname = fname[:-5] + ".xlsx"
+    export_sheet(lines, export_fname)
+    print(f"Записване: {export_fname}")
+    
     if not args["--no-pause"]:
         input("Натиснете Enter, за да приключите изпълнението.")
