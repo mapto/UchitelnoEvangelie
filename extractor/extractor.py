@@ -96,6 +96,6 @@ if __name__ == "__main__":
     export_fname = fname[:-5] + ".xlsx"
     export_sheet(lines, export_fname)
     print(f"Записване: {export_fname}")
-    
+
     if not args["--no-pause"]:
         input("Натиснете Enter, за да приключите изпълнението.")
