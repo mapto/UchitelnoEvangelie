@@ -25,7 +25,7 @@ from importer import import_mapping
 
 from processor import aggregate
 
-from exporter import export_html
+from exporter import export_html, export_docx
 
 if __name__ == "__main__":
     args = docopt(__doc__)
@@ -102,13 +102,15 @@ if __name__ == "__main__":
     #     print("Оставяне на празни думи.")
 
     print("Експорт слявянски...")
-    export_fname = fname[:-5] + "-sla.html"
-    export_html(sla, export_fname)
+    # export_fname = fname[:-5] + "-sla.html"
+    # export_html(sla, "sl", export_fname)
+    export_fname = fname[:-5] + "-sla.docx"
+    export_docx(sla, "sl", export_fname)
     print(f"Записване: {export_fname}")
 
     print("Експорт гръцки...")
-    export_fname = fname[:-5] + "-gre.html"
-    export_html(gre, export_fname)
+    export_fname = fname[:-5] + "-gre.docx"
+    export_docx(gre, "gr", export_fname)
     print(f"Записване: {export_fname}")
 
     if not args["--no-pause"]:
