@@ -1,127 +1,66 @@
+from typing import List, Set
+
+
 sl = "а б в г д е ж ꙃ(ꙅ,ѕ) ꙁ (і,и) к л м н о п р с т оу(ѹ,ꙋ) ф х ш ц  щ ъ ꙑ(ы) ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ у(ѵ)".split()
 sl2 = "а б в г д е ж ꙃ ꙁ  к л м н о п р с т ѹ ф х ш ц  щ ъ ꙑ ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ у".split()
 gr = "α β γ δ ε ζ η θ(ϑ) ι κ(ϰ) λ μ ν ξ ο π ρ σ τ υ ϕ(φ) χ ψ ω".split()
 
+remap = {
+    "ꙃ": ord("ж") + 0.5,
+    "ꙅ": ord("ж") + 0.5,
+    "ѕ": ord("ж") + 0.5,
+    "ꙁ": ord("ж") + 1,
+    "": ord("и"),
+    "і": ord("и"),
+    "ꙋ": ord("т") + 0.5,
+    "ѹ": ord("т") + 0.5,
+    "ш": ord("х") + 0.5,
+    "": ord("ц") + 0.5,
+    "ꙑ": ord("ы"),
+    "ѣ": ord("ь") + 0.5,
+    "ꙗ": ord("ю") + 0.5,
+    "": ord("ю") + 1,
+    "ѩ": ord("ѫ") + 0.5,
+    "у": ord("ѵ"),
+    "ϕ": ord("υ") + 0.5,
+    "ϑ": ord("η") + 0.5,
+    "ϰ": ord("ι") + 0.5,
+}
+
+max_char = ord("ѵ") - ord("α") + 1
+# max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
+
+max_len = 65
+
+
+def chars(cells: List[List[str]]) -> Set:
+    s: Set[str] = set()
+    for r in cells:
+        if not r:
+            continue
+        for cell in [r[4], r[6], r[7], r[8], r[10], r[11], r[12], r[13]]:
+            if not cell:
+                continue
+            s = s.union([ch for ch in cell])
+    return s
+
 
 def _ord(a: str) -> float:
-    """
-    >>> _ord("а")
-    1072
-    >>> _ord("ж")
-    1078
-    >>> _ord("к")
-    1082
-
-    >>> _ord("ꙃ")
-    1078.5
-    
-    >>> _ord("ꙅ")
-    1078.5
-    
-    >>> _ord("ѕ")
-    1078.5
-    
-    >>> _ord("ꙁ")
-    1079
-    >>> _ord("и")
-    1080
-    >>> _ord("і")
-    1080
-    >>> _ord("")
-    1080
-    >>> _ord("т")
-    1090
-    >>> _ord("ѹ")
-    1090.5
-    >>> _ord("ꙋ")
-    1090.5
-    >>> _ord("ш")
-    1093.5
-    >>> _ord("ц")
-    1094
-    >>> _ord("")
-    1094.5
-    >>> _ord("ъ")
-    1098
-    >>> _ord("ꙑ")
-    1099
-    >>> _ord("ы")
-    1099
-    >>> _ord("ь")
-    1100
-    >>> _ord("ѣ")
-    1100.5
-    >>> _ord("ю")
-    1102
-    >>> _ord("ꙗ")
-    1102.5
-    >>> _ord("")
-    1102.7
-    >>> _ord("ѧ")
-    1127
-    >>> _ord("ѫ")
-    1131
-    >>> _ord("ѩ")
-    1131.5
-    >>> _ord("ѭ")
-    1133
-    >>> _ord("ѯ")
-    1135
-    >>> _ord("ѱ")
-    1137
-    >>> _ord("ѳ")
-    1139
-    >>> _ord("у")
-    1141
-    >>> _ord("ѵ")
-    1141
-    """
     assert len(a) == 1
-
-    if a == "ꙃ" or a == "ꙅ" or a == "ѕ":
-        return ord("ж") + 0.5
-    if a == "ꙁ":
-        return ord("ж") + 1
-    if a == "" or a == "і":
-        return ord("и")
-    if a == "ꙋ" or a == "ѹ":
-        return ord("т") + 0.5
-    if a == "ш":
-        return ord("х") + 0.5
-    if a == "":
-        return ord("ц") + 0.5
-    if a == "ꙑ":
-        return ord("ы")
-    if a == "ѣ":
-        return ord("ь") + 0.5
-    if a == "ꙗ":
-        return ord("ю") + 0.5
-    if a == "":
-        return ord("ю") + 0.7
-    if a == "ѩ":
-        return ord("ѫ") + 0.5
-    if a == "у":
-        return ord("ѵ")
-
-    if a == "ϕ":
-        return ord("υ") + 0.5
-    if a == "ϑ":
-        return ord("η") + 0.5
-    if a == "ϰ":
-        return ord("ι") + 0.5
-
-    return ord(a)
+    if a in remap:
+        return remap[a] - ord("α")
+    return ord(a) - ord("α")
 
 
-def cmp(a: str, b: str) -> float:
+def cmp_chr(a: str, b: str) -> int:
     """
-    >>> cmp("а", "б")
+    >>> cmp_chr("а", "б")
     -1
 
-    >>> cmp("", "к")
+    >>> cmp_chr("", "к")
     -1
 
-    >>> cmp("ꙁ", "")
+    >>> cmp_chr("ꙁ", "")
     -1
 
     >>> sl = "а б в г д е ж ꙃ ꙁ  к л м н о п р с т ѹ ф х ш ц  щ ъ ꙑ ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ у"
@@ -158,3 +97,22 @@ def cmp(a: str, b: str) -> float:
 
     return 0 if _ord(a) - _ord(b) == 0 else 1 if _ord(a) - _ord(b) > 0 else -1
     # return _ord(a) - _ord(b)
+
+
+def ord_word(a: str, max_len=max_len) -> int:
+    """
+    >>> ord_word("свѣтъ",6)
+    6956114563282
+    >>> ord_word("свѧтъ",6)
+    6956122790790
+    >>> ord_word("свѣтъ") < ord_word("свѧтъ")
+    True
+    """
+    a.replace("оу", "ѹ")
+    assert max_len > len(a)
+    base = 2 * max_char
+    r = 0
+    for ch in a:
+        r = r * base + int(2 * _ord(ch))
+    r *= (max_len - len(a)) ** base
+    return r
