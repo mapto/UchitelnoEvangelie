@@ -7,7 +7,7 @@ from util import ord_word
 
 
 def aggregate(
-    corpus: List[List[str]], word_col: int, trans_col: int, lem_col: int
+    corpus: List[List[str]], word_col: int, trans_col: int, lem_col: int, tlem_col: int
 ) -> SortedDict:
     result = SortedDict(ord_word)
     for row in corpus:
@@ -18,6 +18,7 @@ def aggregate(
         l1 = row[lem_col].strip() if row[lem_col] else ""
         l2 = row[lem_col + 1].strip() if row[lem_col + 1] else ""
         l3 = row[lem_col + 2].strip() if row[lem_col + 2] else ""
+        t = row[tlem_col].strip() if row[tlem_col] else ""
         # TODO: multiple usages
         key = (
             row[word_col].strip() if row[word_col] else "",
@@ -28,16 +29,26 @@ def aggregate(
         if l1 in result:
             if l2 in result[l1]:
                 if l3 in result[l1][l2]:
-                    if key in result[l1][l2][l3]:
-                        result[l1][l2][l3][key].append(val)
+                    if t in result[l1][l2][l3]:
+                        if key in result[l1][l2][l3]:
+                            result[l1][l2][l3][t][key].append(val)
+                        else:
+                            result[l1][l2][l3][t][key] = [val]
                     else:
-                        result[l1][l2][l3][key] = [val]
+                        result[l1][l2][l3][t] = {key: [val]}
                 else:
-                    result[l1][l2][l3] = {key: [val]}
+                    result[l1][l2][l3] = SortedDict(ord_word, {t: {key: [val]}})
             else:
-                result[l1][l2] = SortedDict(ord_word, {l3: {key: [val]}})
+                result[l1][l2] = SortedDict(
+                    ord_word, {l3: SortedDict(ord_word, {t: {key: [val]}})}
+                )
         else:
             result[l1] = SortedDict(
-                ord_word, {l2: SortedDict(ord_word, {l3: {key: [val]}})}
+                ord_word,
+                {
+                    l2: SortedDict(
+                        ord_word, {l3: SortedDict(ord_word, {t: {key: [val]}})}
+                    )
+                },
             )
     return result

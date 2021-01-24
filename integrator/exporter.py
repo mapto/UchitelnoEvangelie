@@ -3,7 +3,7 @@ from typing import Tuple, List
 from sortedcontainers import SortedDict  # type: ignore
 
 from docx import Document  # type: ignore
-from docx.shared import Pt  # type: ignore
+from docx.shared import RGBColor, Pt  # type: ignore
 
 html = """
 <html>
@@ -16,6 +16,7 @@ html = """
 """
 
 fonts = {"gr": "Times New Roman", "sl": "CyrillicaOchrid10U"}
+colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
 
 
 def html_usage(key: Tuple[str, str], usage: List[str], src_style: str) -> str:
@@ -53,6 +54,7 @@ def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> N
 
     run = par.add_run()
     run.font.name = fonts[src_style]
+    run.font.color.rgb = colors[src_style]
     run.add_text(key[0])
 
     run = par.add_run()
@@ -60,6 +62,7 @@ def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> N
 
     run = par.add_run()
     run.font.name = fonts[other_style]
+    run.font.color.rgb = colors[other_style]
     run.add_text(key[1])
 
     run = par.add_run()
@@ -67,6 +70,7 @@ def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> N
 
 
 def export_docx(d: SortedDict, src_style: str, fname: str) -> None:
+    other_style = "gr" if src_style == "sl" else "sl"
     doc = Document()
     for l1, d1 in d.items():
         run = doc.add_paragraph().add_run()
@@ -85,8 +89,13 @@ def export_docx(d: SortedDict, src_style: str, fname: str) -> None:
                     run.font.name = fonts[src_style]
                     run.font.size = Pt(14)
                     run.add_text("|| " + l3)
-                par = doc.add_paragraph()
-                for key, u in d3.items():
-                    docx_usage(par, key, u, src_style)
+                for t, d4 in d3.items():
+                    par = doc.add_paragraph()
+                    par.paragraph_format.left_indent = Pt(10)
+                    run = par.add_run()
+                    run.font.name = fonts[other_style]
+                    run.add_text(t + ": ")
+                    for key, u in d4.items():
+                        docx_usage(par, key, u, src_style)
 
     doc.save(fname)

@@ -63,11 +63,11 @@ if __name__ == "__main__":
     print(f"{len(lines)} думи")
 
     print("Кондензиране славянски...")
-    sla = aggregate(lines, 4, 10, 6)
+    sla = aggregate(lines, 4, 10, 6, 11)
     print(f"{len(sla)} леми")
 
     print("Кондензиране гръцки...")
-    gre = aggregate(lines, 10, 4, 11)
+    gre = aggregate(lines, 10, 4, 11, 6)
     print(f"{len(gre)} леми")
 
     # print(lines)
