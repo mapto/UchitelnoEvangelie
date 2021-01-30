@@ -1,31 +1,6 @@
 from typing import List, Set
 
-
-sl = "а б в г д е ж ꙃ(ꙅ,ѕ) ꙁ (і,и) к л м н о п р с т оу(ѹ,ꙋ) ф х ш ц  щ ъ ꙑ(ы) ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ у(ѵ)".split()
-sl2 = "а б в г д е ж ꙃ ꙁ  к л м н о п р с т ѹ ф х ш ц  щ ъ ꙑ ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ у".split()
-gr = "α β γ δ ε ζ η θ(ϑ) ι κ(ϰ) λ μ ν ξ ο π ρ σ τ υ ϕ(φ) χ ψ ω".split()
-
-remap = {
-    "ꙃ": ord("ж") + 0.5,
-    "ꙅ": ord("ж") + 0.5,
-    "ѕ": ord("ж") + 0.5,
-    "ꙁ": ord("ж") + 1,
-    "": ord("и"),
-    "і": ord("и"),
-    "ꙋ": ord("т") + 0.5,
-    "ѹ": ord("т") + 0.5,
-    "ш": ord("х") + 0.5,
-    "": ord("ц") + 0.5,
-    "ꙑ": ord("ы"),
-    "ѣ": ord("ь") + 0.5,
-    "ꙗ": ord("ю") + 0.5,
-    "": ord("ю") + 1,
-    "ѩ": ord("ѫ") + 0.5,
-    "у": ord("ѵ"),
-    "ϕ": ord("υ") + 0.5,
-    "ϑ": ord("η") + 0.5,
-    "ϰ": ord("ι") + 0.5,
-}
+from alphabet import remap
 
 max_char = ord("ѵ") - ord("α") + 1
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
@@ -108,6 +83,7 @@ def ord_word(a: str, max_len=max_len) -> int:
     >>> ord_word("свѣтъ") < ord_word("свѧтъ")
     True
     """
+    a = a.lower()
     a.replace("оу", "ѹ")
     assert max_len > len(a)
     base = 2 * max_char

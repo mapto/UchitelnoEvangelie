@@ -24,7 +24,7 @@ def html_usage(key: Tuple[str, str], usage: List[str], src_style: str) -> str:
     other_style = "gr" if src_style == "sl" else "sl"
     return (
         f"""<span style="font-family: {fonts[src_style]}">{key[0]}</span>/<span class="font-family: {fonts[other_style]}">{key[1]}</span>({u});"""
-        # f"""<span class="{src_style}">{key[0]}</span>/<span class="{other_style}">{key[1]}</span>({u});"""
+        # f"""<span class="{src_style}">{key[0]}</span>/<span class="{other_style}">{key[1]}</span>({u}); """
     )
 
 
@@ -66,7 +66,7 @@ def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> N
     run.add_text(key[1])
 
     run = par.add_run()
-    run.add_text(f"({u});")
+    run.add_text(f"({u}); ")
 
 
 def export_docx(d: SortedDict, src_style: str, fname: str) -> None:

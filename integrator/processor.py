@@ -1,9 +1,11 @@
 from typing import List
 
-from sortedcontainers import SortedDict  # type: ignore
+from sortedcontainers import SortedDict, SortedList  # type: ignore
 
 # from model import Usage
 from util import ord_word
+
+ord_tuple = lambda x: ord_word(x[0])
 
 
 def aggregate(
@@ -33,21 +35,37 @@ def aggregate(
                         if key in result[l1][l2][l3]:
                             result[l1][l2][l3][t][key].append(val)
                         else:
-                            result[l1][l2][l3][t][key] = [val]
+                            result[l1][l2][l3][t][key] = SortedList([val])
                     else:
-                        result[l1][l2][l3][t] = {key: [val]}
+                        result[l1][l2][l3][t] = SortedDict(
+                            ord_tuple, {key: SortedList([val])}
+                        )
                 else:
-                    result[l1][l2][l3] = SortedDict(ord_word, {t: {key: [val]}})
+                    result[l1][l2][l3] = SortedDict(
+                        ord_word, {t: SortedDict(ord_tuple, {key: SortedList([val])})},
+                    )
             else:
                 result[l1][l2] = SortedDict(
-                    ord_word, {l3: SortedDict(ord_word, {t: {key: [val]}})}
+                    ord_word,
+                    {
+                        l3: SortedDict(
+                            ord_word,
+                            {t: SortedDict(ord_tuple, {key: SortedList([val])})},
+                        )
+                    },
                 )
         else:
             result[l1] = SortedDict(
                 ord_word,
                 {
                     l2: SortedDict(
-                        ord_word, {l3: SortedDict(ord_word, {t: {key: [val]}})}
+                        ord_word,
+                        {
+                            l3: SortedDict(
+                                ord_word,
+                                {t: SortedDict(ord_tuple, {key: SortedList([val])})},
+                            )
+                        },
                     )
                 },
             )
