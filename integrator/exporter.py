@@ -91,7 +91,8 @@ def export_docx(d: SortedDict, src_style: str, fname: str) -> None:
                     run.add_text("|| " + l3)
                 for t, d4 in d3.items():
                     par = doc.add_paragraph()
-                    par.paragraph_format.left_indent = Pt(10)
+                    par.paragraph_format.left_indent = Pt(20)
+                    par.paragraph_format.first_line_indent = Pt(-10)
                     run = par.add_run()
                     run.font.name = fonts[other_style]
                     run.add_text(t + ": ")

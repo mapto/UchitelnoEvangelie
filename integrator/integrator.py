@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
-"""Vocabulary extractor for Uchitelno Evangelie.
+"""Index integrator for Uchitelno Evangelie.
 Licensed under MIT License, detailed here: https://mit-license.org/
 
 Usage:
-  extractor.py [-dIcp] <docx>
-  extractor.py [--no-dehyphenate] [--integrate] [--no-condense] [--no-pause] <docx>
-
-Options:
-  --help                This information
-  -d --no-dehyphenate   Disable removal of hyphens and word merging
-  -I --integrate        Put together words that have been separated by comment selection
-  -c --no-condense      Disable removal of words that are blank and have no annotation
-  -p --no-pause         Disable pause at end of execution
+  integrator.py <xlsx>
 
 """
 __version__ = "0.0.1"
@@ -23,14 +15,14 @@ from docx.opc.exceptions import OpcError  # type: ignore
 
 from importer import import_mapping
 
-from processor import aggregate
+from processor import merge, aggregate
 
 from exporter import export_html, export_docx
 
 if __name__ == "__main__":
     args = docopt(__doc__)
     # print(args)
-    fname = args["<docx>"]
+    fname = args["<xlsx>"]
     print(f"Прочитане: {fname}")
 
     if len(fname) < 6 or "." not in fname[2:]:
@@ -60,6 +52,10 @@ if __name__ == "__main__":
 
     print("Импорт...")
     lines = import_mapping(fname)
+    print(f"{len(lines)} думи")
+
+    print("Събиране на многоредови преводи...")
+    lines = merge(lines)
     print(f"{len(lines)} думи")
 
     print("Кондензиране славянски...")
@@ -113,5 +109,5 @@ if __name__ == "__main__":
     export_docx(gre, "gr", export_fname)
     print(f"Записване: {export_fname}")
 
-    if not args["--no-pause"]:
-        input("Натиснете Enter, за да приключите изпълнението.")
+    # if not args["--no-pause"]:
+    input("Натиснете Enter, за да приключите изпълнението.")

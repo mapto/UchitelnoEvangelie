@@ -3,9 +3,25 @@ from typing import List
 from sortedcontainers import SortedDict, SortedList  # type: ignore
 
 # from model import Usage
-from util import ord_word
+from util import ord_word, base_word
 
 ord_tuple = lambda x: ord_word(x[0])
+
+
+def merge(corpus: List[List[str]]) -> List[List[str]]:
+    result: List[List[str]] = []
+    for row in corpus:
+        presence = [e for e in row if e == "="]
+        if presence:
+            for col in range(len(row)):
+                if row[col] and row[col] != "=":
+                    if result[-1][col]:
+                        result[-1][col] += " " + row[col]
+                    else:
+                        result[-1][col] = row[col]
+        else:
+            result.append(row)
+    return result
 
 
 def aggregate(
@@ -17,11 +33,10 @@ def aggregate(
             continue
         # word = row[word_col]
         # translation = row[trans_col]
-        l1 = row[lem_col].strip() if row[lem_col] else ""
-        l2 = row[lem_col + 1].strip() if row[lem_col + 1] else ""
-        l3 = row[lem_col + 2].strip() if row[lem_col + 2] else ""
-        t = row[tlem_col].strip() if row[tlem_col] else ""
-        # TODO: multiple usages
+        l1 = base_word(row[lem_col])
+        l2 = base_word(row[lem_col + 1])
+        l3 = base_word(row[lem_col + 2])
+        t = base_word(row[tlem_col])
         key = (
             row[word_col].strip() if row[word_col] else "",
             row[trans_col].strip() if row[trans_col] else "",

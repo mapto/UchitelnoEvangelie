@@ -1,6 +1,6 @@
 from typing import List, Set
 
-from alphabet import remap
+from alphabet import reduce, remap
 
 max_char = ord("ѵ") - ord("α") + 1
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
@@ -22,6 +22,8 @@ def chars(cells: List[List[str]]) -> Set:
 
 def _ord(a: str) -> float:
     assert len(a) == 1
+    if a in reduce:
+        a = reduce[a]
     if a in remap:
         return remap[a] - ord("α")
     return ord(a) - ord("α")
@@ -74,6 +76,12 @@ def cmp_chr(a: str, b: str) -> int:
     # return _ord(a) - _ord(b)
 
 
+def base_word(w: str) -> str:
+    if not w:
+        return ""
+    return "".join([reduce[c] if c in reduce else c for c in w.strip()])
+
+
 def ord_word(a: str, max_len=max_len) -> int:
     """
     >>> ord_word("свѣтъ",6)
@@ -81,6 +89,8 @@ def ord_word(a: str, max_len=max_len) -> int:
     >>> ord_word("свѧтъ",6)
     6956122790790
     >>> ord_word("свѣтъ") < ord_word("свѧтъ")
+    True
+    >>> ord_word("μαρτυρέω") == ord_word("μαρτυρέω")
     True
     """
     a = a.lower()
