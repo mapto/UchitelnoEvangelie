@@ -1,6 +1,6 @@
 from typing import List
 
-from sortedcontainers import SortedDict, SortedList  # type: ignore
+from sortedcontainers import SortedDict, SortedList, SortedSet  # type: ignore
 
 # from model import Usage
 from util import ord_word, base_word
@@ -22,6 +22,14 @@ def merge(corpus: List[List[str]]) -> List[List[str]]:
         else:
             result.append(row)
     return result
+
+
+def extract_letters(corpus: List[List[str]], tlem_col: int) -> SortedSet:
+    letters = SortedSet()
+    for row in corpus:
+        if row[tlem_col]:
+            letters = letters.union([ch for ch in row[tlem_col].lower()])        
+    return letters
 
 
 def aggregate(
@@ -57,7 +65,8 @@ def aggregate(
                         )
                 else:
                     result[l1][l2][l3] = SortedDict(
-                        ord_word, {t: SortedDict(ord_tuple, {key: SortedList([val])})},
+                        ord_word,
+                        {t: SortedDict(ord_tuple, {key: SortedList([val])})},
                     )
             else:
                 result[l1][l2] = SortedDict(

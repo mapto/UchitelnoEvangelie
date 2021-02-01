@@ -25,8 +25,8 @@ def _ord(a: str) -> float:
     if a in reduce:
         a = reduce[a]
     if a in remap:
-        return remap[a] - ord("α")
-    return ord(a) - ord("α")
+        return remap[a] - ord("α") + 1
+    return ord(a) - ord("α") + 1
 
 
 def cmp_chr(a: str, b: str) -> int:
@@ -40,7 +40,7 @@ def cmp_chr(a: str, b: str) -> int:
     >>> cmp_chr("ꙁ", "")
     -1
 
-    >>> sl = "а б в г д е ж ꙃ ꙁ  к л м н о п р с т ѹ ф х ш ц  щ ъ ꙑ ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ у"
+    >>> sl = "а б в г д е ж ꙃ ꙁ \ue205 к л м н о п р с т ѹ ф х ш ц \ue20d щ ъ ꙑ ь ѣ ю ꙗ \ue201 ѧ ѫ ѩ ѭ ѯ ѱ ѳ у"
     >>> sl2 = sl.split()
     >>> sl2.sort(key=_ord)
     >>> sl == " ".join(sl2)
@@ -79,18 +79,19 @@ def cmp_chr(a: str, b: str) -> int:
 def base_word(w: str) -> str:
     if not w:
         return ""
+    w = w.lower()
+    w.replace("оу", "ѹ")
     return "".join([reduce[c] if c in reduce else c for c in w.strip()])
 
 
 def ord_word(a: str, max_len=max_len) -> int:
     """
-    >>> ord_word("свѣтъ",6)
-    6956114563282
-    >>> ord_word("свѧтъ",6)
-    6956122790790
     >>> ord_word("свѣтъ") < ord_word("свѧтъ")
     True
     >>> ord_word("μαρτυρέω") == ord_word("μαρτυρέω")
+    True
+
+    >>> ord_word("διαλεγομαι") < ord_word("διαλεγω") < ord_word("διατριβω")
     True
     """
     a = a.lower()
@@ -100,5 +101,9 @@ def ord_word(a: str, max_len=max_len) -> int:
     r = 0
     for ch in a:
         r = r * base + int(2 * _ord(ch))
-    r *= (max_len - len(a)) ** base
+        # print("%s%d"%(ch,r))
+    # print(max_len - len(a))
+    r *= base ** (max_len - len(a))
+    # print(r)
     return r
+
