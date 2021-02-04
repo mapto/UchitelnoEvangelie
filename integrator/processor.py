@@ -1,5 +1,5 @@
 from typing import List
-
+import unicodedata
 from sortedcontainers import SortedDict, SortedList, SortedSet  # type: ignore
 
 # from model import Usage
@@ -24,12 +24,13 @@ def merge(corpus: List[List[str]]) -> List[List[str]]:
     return result
 
 
-def extract_letters(corpus: List[List[str]], tlem_col: int) -> SortedSet:
+def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
     letters = SortedSet()
     for row in corpus:
-        if row[tlem_col]:
-            letters = letters.union([ch for ch in row[tlem_col].lower()])        
-    return letters
+        if row[col]:
+           letters = letters.union([ch for ch in unicodedata.normalize('NFC', row[col].lower())])
+           # letters = letters.union([ch for ch in row[col].lower()])
+    return {l:ord(l) for l in letters}
 
 
 def aggregate(

@@ -15,7 +15,7 @@ from docx.opc.exceptions import OpcError  # type: ignore
 
 from importer import import_mapping
 
-from processor import merge, aggregate
+from processor import merge, aggregate, extract_letters
 
 from exporter import export_html, export_docx
 
@@ -57,6 +57,13 @@ if __name__ == "__main__":
     print("Събиране на многоредови преводи...")
     lines = merge(lines)
     print(f"{len(lines)} думи")
+
+    cols = [6, 11]
+    for c in cols: 
+        print(f"Обзор на буквите в колона {chr(ord('A') + c)}...")
+        letters = extract_letters(lines, c)
+        print(letters)
+        print(f"{len(letters)} символа")
 
     print("Кондензиране славянски...")
     sla = aggregate(lines, 4, 10, 6, 11)

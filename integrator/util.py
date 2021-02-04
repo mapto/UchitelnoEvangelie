@@ -1,5 +1,5 @@
 from typing import List, Set
-
+import unicodedata
 from alphabet import reduce, remap
 
 max_char = ord("ѵ") - ord("α") + 1
@@ -22,8 +22,8 @@ def chars(cells: List[List[str]]) -> Set:
 
 def _ord(a: str) -> float:
     assert len(a) == 1
-    if a in reduce:
-        a = reduce[a]
+    # if a in reduce:
+    #     a = reduce[a]
     if a in remap:
         return remap[a] - ord("α") + 1
     return ord(a) - ord("α") + 1
@@ -81,10 +81,12 @@ def base_word(w: str) -> str:
         return ""
     w = w.lower()
     w.replace("оу", "ѹ")
-    return "".join([reduce[c] if c in reduce else c for c in w.strip()])
+    w = unicodedata.normalize('NFKC', w)
+    # return "".join([reduce[c] if c in reduce else c for c in w.strip()])
+    return w
 
 
-def ord_word(a: str, max_len=max_len) -> int:
+def ord_word(w: str, max_len=max_len) -> int:
     """
     >>> ord_word("свѣтъ") < ord_word("свѧтъ")
     True
@@ -94,8 +96,7 @@ def ord_word(a: str, max_len=max_len) -> int:
     >>> ord_word("διαλεγομαι") < ord_word("διαλεγω") < ord_word("διατριβω")
     True
     """
-    a = a.lower()
-    a.replace("оу", "ѹ")
+    a = base_word(w)
     assert max_len > len(a)
     base = 2 * max_char
     r = 0
