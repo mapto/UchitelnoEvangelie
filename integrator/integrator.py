@@ -58,21 +58,22 @@ if __name__ == "__main__":
     lines = merge(lines)
     print(f"{len(lines)} думи")
 
-    word_cols = [6, 11]
-    for c in word_cols:
+    sl_lem_cols = [6, 7, 8]
+    gr_lem_cols = [11, 12, 13]
+    lem_cols = [sl_lem_cols[0], gr_lem_cols[0]]
+
+    for c in lem_cols:
         print(f"Обзор на буквите в колона {chr(ord('A') + c)}...")
         letters = extract_letters(lines, c)
         print(f"{len(letters)} символа")
 
-    sl_lem_cols = [6, 7, 8, 11]
-    gr_lem_cols = [11, 12, 13, 6]
 
     print("Кондензиране славянски...")
-    sla = aggregate(lines, 4, 10, sl_lem_cols, gr_lem_cols[:-1])
+    sla = aggregate(lines, 4, 10, sl_lem_cols, gr_lem_cols)
     print(f"{len(sla)} леми")
 
     print("Кондензиране гръцки...")
-    gre = aggregate(lines, 10, 4, gr_lem_cols, sl_lem_cols[:-1])
+    gre = aggregate(lines, 10, 4, gr_lem_cols, sl_lem_cols)
     print(f"{len(gre)} леми")
 
     # print(lines)

@@ -40,11 +40,24 @@ def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
 def _agg_lemma(
     row: List[str], col: int, lem_col: List[int], tlem_col: List[int], key: Tuple[str, str], d: SortedDict
 ) -> SortedDict:
-    if col == lem_col[-1]:
-        val = row[3]
-        cols = [base_word(row[col]) for col in tlem_col if row[col]]
+    """[summary]
+
+    Args:
+        row (List[str]): spreadsheet row
+        col (int): lemma column being currently processed
+        lem_col (List[int]): all lemma columns in original language
+        tlem_col (List[int]): translation lemma columns
+        key (Tuple[str, str]): word pair
+        d (SortedDict): see return value
+
+    Returns:
+        SortedDict: *IN PLACE* hierarchical dictionary
+    """
+    if col == -1:
+        cols = [base_word(row[c]) for c in tlem_col if row[c]]
         cols.reverse()
         next = "→".join(cols)
+        val = row[3]
         if next in d:
             if key not in d[next]:
                 d[next][key] = SortedList()
@@ -55,7 +68,11 @@ def _agg_lemma(
         next = base_word(row[col])
         if next not in d:
             d[next] = SortedDict(ord_word)
-        d[next] = _agg_lemma(row, lem_col[lem_col.index(col) + 1], lem_col, tlem_col, key, d[next])
+        next_idx = lem_col.index(col) + 1
+        next_col = lem_col[next_idx] if next_idx < len(lem_col) else -1
+        d[next] = _agg_lemma(row, next_col, lem_col, tlem_col, key, d[next])
+
+
     return d
 
 
