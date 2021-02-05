@@ -38,9 +38,14 @@ def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
 
 
 def _agg_lemma(
-    row: List[str], col: int, lem_col: List[int], tlem_col: List[int], key: Tuple[str, str], d: SortedDict
+    row: List[str],
+    col: int,
+    lem_col: List[int],
+    tlem_col: List[int],
+    key: Tuple[str, str],
+    d: SortedDict,
 ) -> SortedDict:
-    """[summary]
+    """Adds a lemma. Recursion ensures that this works with variable depth.
 
     Args:
         row (List[str]): spreadsheet row
@@ -72,14 +77,17 @@ def _agg_lemma(
         next_col = lem_col[next_idx] if next_idx < len(lem_col) else -1
         d[next] = _agg_lemma(row, next_col, lem_col, tlem_col, key, d[next])
 
-
     return d
 
 
 def aggregate(
-    corpus: List[List[str]], word_col: int, trans_col: int, lem_col: List[int], tlem_col: List[int]
+    corpus: List[List[str]],
+    word_col: int,
+    trans_col: int,
+    lem_col: List[int],
+    tlem_col: List[int],
 ) -> SortedDict:
-    """Generate an aggregated index of translations
+    """Generate an aggregated index of translations. Recursion ensures that this works with variable depth.
 
     Args:
         corpus (List[List[str]]): input spreadsheet

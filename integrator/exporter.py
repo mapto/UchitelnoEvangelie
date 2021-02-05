@@ -1,6 +1,6 @@
 from typing import Tuple, List
 
-from sortedcontainers import SortedDict  # type: ignore
+from sortedcontainers import SortedDict, SortedList  # type: ignore
 
 from docx import Document  # type: ignore
 from docx.shared import RGBColor, Pt  # type: ignore
@@ -69,34 +69,39 @@ def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> N
     run.add_text(f"({u}); ")
 
 
-def export_docx(d: SortedDict, src_style: str, fname: str) -> None:
-    other_style = "gr" if src_style == "sl" else "sl"
-    doc = Document()
-    for l1, d1 in d.items():
-        run = doc.add_paragraph().add_run()
-        run.font.name = fonts[src_style]
-        run.font.size = Pt(18)
-        run.add_text(l1)
-        for l2, d2 in d1.items():
-            if l2:
-                run = doc.add_paragraph().add_run()
-                run.font.name = fonts[src_style]
-                run.font.size = Pt(16)
-                run.add_text("| " + l2)
-            for l3, d3 in d2.items():
-                if l3:
-                    run = doc.add_paragraph().add_run()
-                    run.font.name = fonts[src_style]
-                    run.font.size = Pt(14)
-                    run.add_text("|| " + l3)
-                for t, d4 in d3.items():
-                    par = doc.add_paragraph()
-                    par.paragraph_format.left_indent = Pt(20)
-                    par.paragraph_format.first_line_indent = Pt(-10)
-                    run = par.add_run()
-                    run.font.name = fonts[other_style]
-                    run.add_text(t + ": ")
-                    for key, u in d4.items():
-                        docx_usage(par, key, u, src_style)
+def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
+    """Builds the hierarchical entries of the dictionary. Recursion ensures that this works with variable depth.
 
+    Args:
+        level (int): 0-indexed depth, runs along with dict depth
+        lang (str): original language
+        d (SortedDict): level of dictionary to be exported
+        doc (Document): export document
+    """
+    for li, next_d in d.items():
+        if li:
+            run = doc.add_paragraph().add_run()
+            run.font.name = fonts[lang]
+            run.font.size = Pt(18 - 2 * level)
+            run.add_text(f"{'| '*level} {li}")
+        any_child = next(iter(next_d.values()))
+        any_of_any = next(iter(any_child.values()))
+        if type(any_of_any) is SortedList:
+            trans_lang = "gr" if lang == "sl" else "sl"
+            for t, bottom_d in next_d.items():
+                par = doc.add_paragraph()
+                par.paragraph_format.left_indent = Pt(20)
+                par.paragraph_format.first_line_indent = Pt(-10)
+                run = par.add_run()
+                run.font.name = fonts[trans_lang]
+                run.add_text(t + ": ")
+                for key, usage in bottom_d.items():
+                    docx_usage(par, key, usage, lang)
+        else:
+            _export_line(level + 1, lang, next_d, doc)
+
+
+def export_docx(d: SortedDict, lang: str, fname: str) -> None:
+    doc = Document()
+    _export_line(0, lang, d, doc)
     doc.save(fname)
