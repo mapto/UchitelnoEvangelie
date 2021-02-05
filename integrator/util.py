@@ -81,7 +81,7 @@ def base_word(w: str) -> str:
         return ""
     w = w.lower()
     w.replace("оу", "ѹ")
-    w = unicodedata.normalize('NFKC', w)
+    w = unicodedata.normalize("NFKC", w)
     # return "".join([reduce[c] if c in reduce else c for c in w.strip()])
     return w
 
@@ -107,4 +107,3 @@ def ord_word(w: str, max_len=max_len) -> int:
     r *= base ** (max_len - len(a))
     # print(r)
     return r
-
