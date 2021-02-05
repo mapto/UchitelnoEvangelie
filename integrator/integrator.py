@@ -62,17 +62,16 @@ if __name__ == "__main__":
     for c in word_cols:
         print(f"Обзор на буквите в колона {chr(ord('A') + c)}...")
         letters = extract_letters(lines, c)
-        print(letters)
         print(f"{len(letters)} символа")
 
-    sl_lem_cols = [6, 7, 8]
+    sl_lem_cols = [6, 7, 8, 11]
     print("Кондензиране славянски...")
-    sla = aggregate(lines, 4, 10, sl_lem_cols, 11)
+    sla = aggregate(lines, 4, 10, sl_lem_cols)
     print(f"{len(sla)} леми")
 
-    gr_lem_cols = [11, 12, 13]
+    gr_lem_cols = [11, 12, 13, 6]
     print("Кондензиране гръцки...")
-    gre = aggregate(lines, 10, 4, gr_lem_cols, 6)
+    gre = aggregate(lines, 10, 4, gr_lem_cols)
     print(f"{len(gre)} леми")
 
     # print(lines)

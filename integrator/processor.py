@@ -1,4 +1,6 @@
-from typing import List
+#!/usr/bin/env python3
+
+from typing import List, Tuple
 import unicodedata
 from sortedcontainers import SortedDict, SortedList, SortedSet  # type: ignore
 
@@ -35,67 +37,32 @@ def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
     return {l: ord(l) for l in letters}
 
 
+def _agg_lemma(
+    row: List[str], col: int, agg_col: List[int], key: Tuple[str, str], d: SortedDict
+) -> SortedDict:
+    next = base_word(row[col])
+    if col == agg_col[-1]:
+        val = row[3]
+        if next in d:
+            if key not in d[next]:
+                d[next][key] = SortedList()
+            d[next][key].add(val)
+        else:
+            d[next] = SortedDict(ord_tuple, {key: SortedList([val])})
+    else:
+        if next not in d:
+            d[next] = SortedDict(ord_word)
+        d[next] = _agg_lemma(row, agg_col[agg_col.index(col) + 1], agg_col, key, d[next])
+    return d
+
+
 def aggregate(
-    corpus: List[List[str]],
-    word_col: int,
-    trans_col: int,
-    lem_col: List[int],
-    tlem_col: int,
+    corpus: List[List[str]], word_col: int, trans_col: int, lem_col: List[int]
 ) -> SortedDict:
     result = SortedDict(ord_word)
     for row in corpus:
         if not row[3]:
             continue
-        # word = row[word_col]
-        # translation = row[trans_col]
-        l = [base_word(row[i]) for i in lem_col]
-        t = base_word(row[tlem_col])
-        key = (
-            row[word_col].strip() if row[word_col] else "",
-            row[trans_col].strip() if row[trans_col] else "",
-        )
-        val = row[3]
-        # usage = Usage(row[word_col], row[trans_col], [row[3]])
-        if l[0] in result:
-            if l[1] in result[l[0]]:
-                if l[2] in result[l[0]][l[1]]:
-                    if t in result[l[0]][l[1]][l[2]]:
-                        if key in result[l[0]][l[1]][l[2]]:
-                            result[l[0]][l[1]][l[2]][t][key].append(val)
-                        else:
-                            result[l[0]][l[1]][l[2]][t][key] = SortedList([val])
-                    else:
-                        result[l[0]][l[1]][l[2]][t] = SortedDict(
-                            ord_tuple, {key: SortedList([val])}
-                        )
-                else:
-                    result[l[0]][l[1]][l[2]] = SortedDict(
-                        ord_word,
-                        {t: SortedDict(ord_tuple, {key: SortedList([val])})},
-                    )
-            else:
-                result[l[0]][l[1]] = SortedDict(
-                    ord_word,
-                    {
-                        l[2]: SortedDict(
-                            ord_word,
-                            {t: SortedDict(ord_tuple, {key: SortedList([val])})},
-                        )
-                    },
-                )
-        else:
-            result[l[0]] = SortedDict(
-                ord_word,
-                {
-                    l[1]: SortedDict(
-                        ord_word,
-                        {
-                            l[2]: SortedDict(
-                                ord_word,
-                                {t: SortedDict(ord_tuple, {key: SortedList([val])})},
-                            )
-                        },
-                    )
-                },
-            )
+        key = (base_word(row[word_col]), base_word(row[trans_col]))
+        result = _agg_lemma(row, lem_col[0], lem_col, key, result)
     return result

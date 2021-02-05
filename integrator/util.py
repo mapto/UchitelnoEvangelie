@@ -79,7 +79,7 @@ def cmp_chr(a: str, b: str) -> int:
 def base_word(w: str) -> str:
     if not w:
         return ""
-    w = w.lower()
+    w = w.lower().strip()
     w.replace("оу", "ѹ")
     w = unicodedata.normalize("NFKC", w)
     # return "".join([reduce[c] if c in reduce else c for c in w.strip()])
