@@ -38,11 +38,13 @@ def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
 
 
 def _agg_lemma(
-    row: List[str], col: int, agg_col: List[int], key: Tuple[str, str], d: SortedDict
+    row: List[str], col: int, lem_col: List[int], tlem_col: List[int], key: Tuple[str, str], d: SortedDict
 ) -> SortedDict:
-    next = base_word(row[col])
-    if col == agg_col[-1]:
+    if col == lem_col[-1]:
         val = row[3]
+        cols = [base_word(row[col]) for col in tlem_col if row[col]]
+        cols.reverse()
+        next = "→".join(cols)
         if next in d:
             if key not in d[next]:
                 d[next][key] = SortedList()
@@ -50,19 +52,32 @@ def _agg_lemma(
         else:
             d[next] = SortedDict(ord_tuple, {key: SortedList([val])})
     else:
+        next = base_word(row[col])
         if next not in d:
             d[next] = SortedDict(ord_word)
-        d[next] = _agg_lemma(row, agg_col[agg_col.index(col) + 1], agg_col, key, d[next])
+        d[next] = _agg_lemma(row, lem_col[lem_col.index(col) + 1], lem_col, tlem_col, key, d[next])
     return d
 
 
 def aggregate(
-    corpus: List[List[str]], word_col: int, trans_col: int, lem_col: List[int]
+    corpus: List[List[str]], word_col: int, trans_col: int, lem_col: List[int], tlem_col: List[int]
 ) -> SortedDict:
+    """Generate an aggregated index of translations
+
+    Args:
+        corpus (List[List[str]]): input spreadsheet
+        word_col (int): word column
+        trans_col (int): translation word column
+        lem_col (List[int]): lemma columns
+        tlem_col (List[int]): translation lemma columns
+
+    Returns:
+        SortedDict: hierarchical dictionary of all lemma levels in original language, that contains rows of the form: translation_lemma: word/tword (index)
+    """
     result = SortedDict(ord_word)
     for row in corpus:
         if not row[3]:
             continue
         key = (base_word(row[word_col]), base_word(row[trans_col]))
-        result = _agg_lemma(row, lem_col[0], lem_col, key, result)
+        result = _agg_lemma(row, lem_col[0], lem_col, tlem_col, key, result)
     return result

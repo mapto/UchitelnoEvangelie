@@ -65,13 +65,14 @@ if __name__ == "__main__":
         print(f"{len(letters)} символа")
 
     sl_lem_cols = [6, 7, 8, 11]
+    gr_lem_cols = [11, 12, 13, 6]
+
     print("Кондензиране славянски...")
-    sla = aggregate(lines, 4, 10, sl_lem_cols)
+    sla = aggregate(lines, 4, 10, sl_lem_cols, gr_lem_cols[:-1])
     print(f"{len(sla)} леми")
 
-    gr_lem_cols = [11, 12, 13, 6]
     print("Кондензиране гръцки...")
-    gre = aggregate(lines, 10, 4, gr_lem_cols)
+    gre = aggregate(lines, 10, 4, gr_lem_cols, sl_lem_cols[:-1])
     print(f"{len(gre)} леми")
 
     # print(lines)
