@@ -9,20 +9,27 @@ from util import ord_word, base_word
 
 ord_tuple = lambda x: ord_word(x[0])
 
+def merge(corpus: List[List[str]], word_col: str, tr_lem_col: List[str]) -> List[List[str]]:
+    """Merge lines according to distribution of =
 
-def merge(corpus: List[List[str]]) -> List[List[str]]:
+    Args:
+        corpus (List[List[str]]): original corpus
+        sl_word (str): word
+        gr_slem (List[str]): translation lemmas
+
+    Returns:
+        List[List[str]]: merged corpus
+    """
     result: List[List[str]] = []
     for row in corpus:
-        presence = [e for e in row if e == "="]
-        if presence:
-            for col in range(len(row)):
-                if row[col] and row[col] != "=":
-                    if result[-1][col]:
-                        result[-1][col] += " " + row[col]
-                    else:
-                        result[-1][col] = row[col]
-        else:
-            result.append(row)
+        if row[word_col] == "=":
+            row[3] = result[-1][3]
+            row[word_col] = result[-1][word_col]
+            for col in tr_lem_col:
+                if result[-1][col] and row[col] == "=":
+                    # result[-1][col] = result[-1][col] + " " + row[col]
+                    row[col] = result[-1][col]
+        result.append(row)
     return result
 
 

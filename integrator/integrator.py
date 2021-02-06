@@ -54,13 +54,17 @@ if __name__ == "__main__":
     lines = import_mapping(fname)
     print(f"{len(lines)} думи")
 
-    print("Събиране на многоредови преводи...")
-    lines = merge(lines)
-    print(f"{len(lines)} думи")
-
     sl_lem_cols = [6, 7, 8, 9]
     gr_lem_cols = [11, 12, 13]
     lem_cols = [sl_lem_cols[0], gr_lem_cols[0]]
+
+    print("Събиране на многоредови преводи от славянски...")
+    lines = merge(lines, 4, gr_lem_cols)
+    print(f"{len(lines)} думи")
+
+    print("Събиране на многоредови преводи от гръцки...")
+    lines = merge(lines, 10, sl_lem_cols)
+    print(f"{len(lines)} думи")
 
     for c in lem_cols:
         print(f"Обзор на буквите в колона {chr(ord('A') + c)}...")
