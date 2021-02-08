@@ -9,7 +9,10 @@ from util import ord_word, base_word
 
 ord_tuple = lambda x: ord_word(x[0])
 
-def merge(corpus: List[List[str]], word_col: str, tr_lem_col: List[str]) -> List[List[str]]:
+
+def merge(
+    corpus: List[List[str]], word_col: int, tr_lem_col: List[int]
+) -> List[List[str]]:
     """Merge lines according to distribution of =
 
     Args:
@@ -69,7 +72,8 @@ def _agg_lemma(
         cols = [base_word(row[c]) for c in tlem_col if row[c]]
         cols.reverse()
         next = "→".join(cols)
-        val = row[3]
+        # include style in index string
+        val = f"{row[3]}~{row[16]}"
         if next in d:
             if key not in d[next]:
                 d[next][key] = SortedList()

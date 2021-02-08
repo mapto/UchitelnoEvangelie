@@ -49,7 +49,10 @@ def export_html(d: SortedDict, src_style: str, fname: str) -> None:
 
 
 def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> None:
-    u = ",".join(usage)
+    """
+    key: (word,translation)
+    usage: list of indices of usages also containing their styles
+    """
     other_style = "gr" if src_style == "sl" else "sl"
 
     run = par.add_run()
@@ -63,10 +66,22 @@ def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> N
     run = par.add_run()
     run.font.name = fonts[other_style]
     run.font.color.rgb = colors[other_style]
-    run.add_text(key[1])
+    run.add_text(f"{key[1]} (")
 
+    first = True
+    for next in usage:
+        if not first:
+            run = par.add_run()
+            run.add_text(", ")
+        run = par.add_run()
+        # extract style from string
+        (idx, style) = next.split("~")
+        run.font.bold = "bold" in style
+        run.font.italic = "italic" in style
+        run.add_text(idx)
+        first = False
     run = par.add_run()
-    run.add_text(f"({u}); ")
+    run.add_text("); ")
 
 
 def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
@@ -105,3 +120,4 @@ def export_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
     _export_line(0, lang, d, doc)
     doc.save(fname)
+

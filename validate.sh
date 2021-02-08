@@ -1,5 +1,9 @@
 #!/bin/sh -e
 
+echo '>>> Cleaning cache'
+rm -rf extractor/__pycache__
+rm -rf integrator/__pycache__
+
 echo '>>> Skipping Pylint'
 # pylint -E extractor
 # pylint -E integrator/
