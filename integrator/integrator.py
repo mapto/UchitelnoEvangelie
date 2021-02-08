@@ -59,12 +59,12 @@ if __name__ == "__main__":
     lem_cols = [sl_lem_cols[0], gr_lem_cols[0]]
 
     print("Събиране на многоредови преводи от славянски...")
-    lines = merge(lines, 4, gr_lem_cols)
-    print(f"{len(lines)} думи")
+    lines_sl = merge(lines, 4, sl_lem_cols, 10, gr_lem_cols)
+    print(f"{len(lines_sl)} думи")
 
     print("Събиране на многоредови преводи от гръцки...")
-    lines = merge(lines, 10, sl_lem_cols)
-    print(f"{len(lines)} думи")
+    lines_gr = merge(lines, 10, gr_lem_cols, 4, sl_lem_cols)
+    print(f"{len(lines_gr)} думи")
 
     for c in lem_cols:
         print(f"Обзор на буквите в колона {chr(ord('A') + c)}...")
@@ -72,11 +72,11 @@ if __name__ == "__main__":
         print(f"{len(letters)} символа")
 
     print("Кондензиране славянски...")
-    sla = aggregate(lines, 4, 10, sl_lem_cols, gr_lem_cols)
+    sla = aggregate(lines_sl, 4, 10, sl_lem_cols, gr_lem_cols)
     print(f"{len(sla)} леми")
 
     print("Кондензиране гръцки...")
-    gre = aggregate(lines, 10, 4, gr_lem_cols, sl_lem_cols)
+    gre = aggregate(lines_gr, 10, 4, gr_lem_cols, sl_lem_cols)
     print(f"{len(gre)} леми")
 
     # print(lines)

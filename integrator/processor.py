@@ -11,9 +11,9 @@ ord_tuple = lambda x: ord_word(x[0])
 
 
 def merge(
-    corpus: List[List[str]], word_col: int, tr_lem_col: List[int]
+    corpus: List[List[str]], word_col: int, lem_col: List[int], tr_col: int, tr_lem_col: List[int]
 ) -> List[List[str]]:
-    """Merge lines according to distribution of =
+    """Merge lines according to distribution of =. This is an asymmetric operation
 
     Args:
         corpus (List[List[str]]): original corpus
@@ -28,10 +28,15 @@ def merge(
         if row[word_col] == "=":
             row[3] = result[-1][3]
             row[word_col] = result[-1][word_col]
-            for col in tr_lem_col:
-                if result[-1][col] and row[col] == "=":
-                    # result[-1][col] = result[-1][col] + " " + row[col]
+            row[lem_col[0]] = result[-1][lem_col[0]]
+            result[-1][tr_col] = result[-1][tr_col] + " " + row[tr_col]
+            row[tr_col] = result[-1][tr_col]
+            for col in tr_lem_col[1:]:
+                if result[-1][col]:
+                    if row[col] and row[col] != "=":
+                        result[-1][col] = result[-1][col] + " " + row[col]
                     row[col] = result[-1][col]
+
         result.append(row)
     return result
 

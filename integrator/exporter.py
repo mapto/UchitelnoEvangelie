@@ -120,4 +120,3 @@ def export_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
     _export_line(0, lang, d, doc)
     doc.save(fname)
-
