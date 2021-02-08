@@ -79,7 +79,7 @@ def cmp_chr(a: str, b: str) -> int:
 def base_word(w: str) -> str:
     if not w:
         return ""
-    w = w.lower().strip()
+    w = w.strip()
     w.replace("оу", "ѹ")
     w = unicodedata.normalize("NFKC", w)
     # return "".join([reduce[c] if c in reduce else c for c in w.strip()])
@@ -92,11 +92,10 @@ def ord_word(w: str, max_len=max_len) -> int:
     True
     >>> ord_word("μαρτυρέω") == ord_word("μαρτυρέω")
     True
-
     >>> ord_word("διαλεγομαι") < ord_word("διαλεγω") < ord_word("διατριβω")
     True
     """
-    a = base_word(w)
+    a = base_word(w).lower()
     assert max_len > len(a)
     base = 2 * max_char
     r = 0
