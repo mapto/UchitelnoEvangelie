@@ -13,10 +13,9 @@ from docopt import docopt  # type: ignore
 from docx import Document  # type: ignore
 from docx.opc.exceptions import OpcError  # type: ignore
 
+from model import TableSemantics, LangSemantics
 from importer import import_mapping
-
 from processor import merge, aggregate, extract_letters
-
 from exporter import export_html, export_docx
 
 if __name__ == "__main__":
@@ -54,29 +53,28 @@ if __name__ == "__main__":
     lines = import_mapping(fname)
     print(f"{len(lines)} думи")
 
-    sl_lem_cols = [6, 7, 8, 9]
-    gr_lem_cols = [11, 12, 13]
-    lem_cols = [sl_lem_cols[0], gr_lem_cols[0]]
+    sl_sem = LangSemantics("sl", 4, [6, 7, 8, 9])
+    gr_sem = LangSemantics("gr", 10, [11, 12, 13])
 
     print("Събиране на многоредови преводи от славянски...")
-    lines_sl = merge(lines, 4, sl_lem_cols, 10, gr_lem_cols)
+    lines_sl = merge(lines, sl_sem, gr_sem)
     print(f"{len(lines_sl)} думи")
 
     print("Събиране на многоредови преводи от гръцки...")
-    lines_gr = merge(lines, 10, gr_lem_cols, 4, sl_lem_cols)
+    lines_gr = merge(lines, gr_sem, sl_sem)
     print(f"{len(lines_gr)} думи")
 
-    for c in lem_cols:
+    for c in [sl_sem.lemmas[0], gr_sem.lemmas[0]]:
         print(f"Обзор на буквите в колона {chr(ord('A') + c)}...")
         letters = extract_letters(lines, c)
         print(f"{len(letters)} символа")
 
     print("Кондензиране славянски...")
-    sla = aggregate(lines_sl, 4, 10, sl_lem_cols, gr_lem_cols)
+    sla = aggregate(lines_sl, sl_sem, gr_sem)
     print(f"{len(sla)} леми")
 
     print("Кондензиране гръцки...")
-    gre = aggregate(lines_gr, 10, 4, gr_lem_cols, sl_lem_cols)
+    gre = aggregate(lines_gr, gr_sem, sl_sem)
     print(f"{len(gre)} леми")
 
     # print(lines)

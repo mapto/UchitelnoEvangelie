@@ -5,6 +5,8 @@ from sortedcontainers import SortedDict, SortedList  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import RGBColor, Pt  # type: ignore
 
+from model import Index
+
 html = """
 <html>
 <head>
@@ -48,7 +50,7 @@ def export_html(d: SortedDict, src_style: str, fname: str) -> None:
         f.write(html % body)
 
 
-def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> None:
+def docx_usage(par, key: Tuple[str, str], usage: List[Index], src_style: str) -> None:
     """
     key: (word,translation)
     usage: list of indices of usages also containing their styles
@@ -74,11 +76,9 @@ def docx_usage(par, key: Tuple[str, str], usage: List[str], src_style: str) -> N
             run = par.add_run()
             run.add_text(", ")
         run = par.add_run()
-        # extract style from string
-        (idx, style) = next.split("~")
-        run.font.bold = "bold" in style
-        run.font.italic = "italic" in style
-        run.add_text(idx)
+        run.font.bold = next.bold
+        run.font.italic = next.italic
+        run.add_text(next.value)
         first = False
     run = par.add_run()
     run.add_text("); ")

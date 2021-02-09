@@ -4,14 +4,14 @@ from typing import List, Tuple
 import unicodedata
 from sortedcontainers import SortedDict, SortedList, SortedSet  # type: ignore
 
-# from model import Usage
+from model import Index, LangSemantics
 from util import ord_word, base_word
 
 ord_tuple = lambda x: ord_word(x[0])
 
 
 def merge(
-    corpus: List[List[str]], word_col: int, lem_col: List[int], tr_col: int, tr_lem_col: List[int]
+    corpus: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> List[List[str]]:
     """Merge lines according to distribution of =. This is an asymmetric operation
 
@@ -23,6 +23,11 @@ def merge(
     Returns:
         List[List[str]]: merged corpus
     """
+    word_col = orig.word
+    lem_col = orig.lemmas
+    tr_col = trans.word
+    tr_lem_col = trans.lemmas
+
     result: List[List[str]] = []
     for row in corpus:
         if row[word_col] == "=":
@@ -77,8 +82,7 @@ def _agg_lemma(
         cols = [base_word(row[c]) for c in tlem_col if row[c]]
         cols.reverse()
         next = "→".join(cols)
-        # include style in index string
-        val = f"{row[3]}~{row[16]}"
+        val = Index(row[3], "bold" in row[16], "italic" in row[16])
         if next in d:
             if key not in d[next]:
                 d[next][key] = SortedList()
@@ -97,11 +101,7 @@ def _agg_lemma(
 
 
 def aggregate(
-    corpus: List[List[str]],
-    word_col: int,
-    trans_col: int,
-    lem_col: List[int],
-    tlem_col: List[int],
+    corpus: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> SortedDict:
     """Generate an aggregated index of translations. Recursion ensures that this works with variable depth.
 
@@ -115,6 +115,11 @@ def aggregate(
     Returns:
         SortedDict: hierarchical dictionary of all lemma levels in original language, that contains rows of the form: translation_lemma: word/tword (index)
     """
+    word_col = orig.word
+    lem_col = orig.lemmas
+    trans_col = trans.word
+    tlem_col = trans.lemmas
+
     result = SortedDict(ord_word)
     for row in corpus:
         if not row[3]:
