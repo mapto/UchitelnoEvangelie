@@ -98,7 +98,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             run = doc.add_paragraph().add_run()
             run.font.name = fonts[lang]
             run.font.size = Pt(18 - 2 * level)
-            run.add_text(f"{'| '*level} {li}")
+            run.add_text(f"{' | '*level}{li}")
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
         if type(any_of_any) is SortedList:

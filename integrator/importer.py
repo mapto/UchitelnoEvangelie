@@ -7,7 +7,9 @@ from openpyxl import load_workbook  # type: ignore
 from openpyxl.styles import Font  # type: ignore
 
 
-def style2str(s: Font):
+def style2str(s: Font) -> str:
+    if not s:
+        return ""
     result = []
     if s.bold:
         result.append("bold")
