@@ -3,11 +3,27 @@
 from typing import List, Tuple
 import unicodedata
 from sortedcontainers import SortedDict, SortedList, SortedSet  # type: ignore
+import re
 
 from model import Index, LangSemantics
 from util import ord_word, base_word
 
 ord_tuple = lambda x: ord_word(x[0])
+
+
+def expand_idx(corpus: List[List[str]]) -> List[List[str]]:
+    """*IN_PLACE*"""
+    for row in corpus:
+        if row[3]:
+            # print(row[3])
+            m = re.search(r"(\d{1,2})/((\d{1,2}|W?\d{3})[abcd])(\d{1,2})", row[3])
+            assert m
+            # print(m.groups())
+            ch = int(m.group(1))
+            page = m.group(2)
+            line = int(m.group(4))
+            row[3] = f"{ch:02d}/{page}{line:02d}"
+    return corpus
 
 
 def merge(
