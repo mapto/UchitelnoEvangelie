@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+
 from typing import List, Set
 import unicodedata
 from alphabet import reduce, remap
 
-max_char = ord("ѵ") - ord("α") + 1
+max_char = ord("ѵ") - ord(" ") + 1
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
 
 max_len = 65
@@ -25,8 +27,8 @@ def _ord(a: str) -> float:
     # if a in reduce:
     #     a = reduce[a]
     if a in remap:
-        return remap[a] - ord("α") + 1
-    return ord(a) - ord("α") + 1
+        return remap[a]
+    return ord(a)
 
 
 def cmp_chr(a: str, b: str) -> int:
@@ -94,6 +96,12 @@ def ord_word(w: str, max_len=max_len) -> int:
     True
     >>> ord_word("διαλεγομαι") < ord_word("διαλεγω") < ord_word("διατριβω")
     True
+    >>> ord_word("а conj.") > ord_word("а")
+    True
+    >>> ord_word("на + Acc.") > ord_word("на")
+    True
+    >>> ord_word("*") > ord_word(" conj.: н*") > ord_word(" conj.")
+    True
     """
     a = base_word(w).lower()
     a.replace("оу", "ѹ")
@@ -107,3 +115,9 @@ def ord_word(w: str, max_len=max_len) -> int:
     r *= base ** (max_len - len(a))
     # print(r)
     return r
+
+
+if __name__ == "__main__":
+    print(ord_word(" conj.: н*"))
+    print(ord_word(" conj."))
+    print(ord_word("*"))
