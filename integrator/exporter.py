@@ -21,35 +21,6 @@ fonts = {"gr": "Times New Roman", "sl": "CyrillicaOchrid10U"}
 colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
 
 
-def html_usage(key: Tuple[str, str], usage: List[str], src_style: str) -> str:
-    u = ",".join(usage)
-    other_style = "gr" if src_style == "sl" else "sl"
-    return (
-        f"""<span style="font-family: {fonts[src_style]}">{key[0]}</span>/<span class="font-family: {fonts[other_style]}">{key[1]}</span>({u});"""
-        # f"""<span class="{src_style}">{key[0]}</span>/<span class="{other_style}">{key[1]}</span>({u}); """
-    )
-
-
-def export_html(d: SortedDict, src_style: str, fname: str) -> None:
-    # TODO: swap styles for greek
-    body = ""
-    for l1, d1 in d.items():
-        body += f"""<h2 style="font-family: {fonts[src_style]}">{l1}</h1>\n"""
-        for l2, d2 in d1.items():
-            if l2:
-                body += f"""<h3 style="font-family: {fonts[src_style]}">| {l2}</h2>\n"""
-            for l3, d3 in d2.items():
-                if l3:
-                    body += f"""<h4 style="font-family: {fonts[src_style]}">|| {l3}</h3>\n"""
-                body += (
-                    "<ul><li>"
-                    + " ".join([html_usage(key, u, src_style) for key, u in d3.items()])
-                    + "</li></ul>\n"
-                )
-    with open(fname, "w") as f:
-        f.write(html % body)
-
-
 def docx_usage(par, key: Tuple[str, str], usage: List[Index], src_style: str) -> None:
     """
     key: (word,translation)
@@ -78,10 +49,10 @@ def docx_usage(par, key: Tuple[str, str], usage: List[Index], src_style: str) ->
         run = par.add_run()
         run.font.bold = next.bold
         run.font.italic = next.italic
-        run.add_text(next.value)
+        run.add_text(str(next))
         first = False
     run = par.add_run()
-    run.add_text("); ")
+    run.add_text(")")
 
 
 def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
@@ -96,24 +67,31 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
     for li, next_d in d.items():
         if li:
             par = doc.add_paragraph()
-            par.paragraph_format.first_line_indent = Pt(10 * level - 10)
+            if level > 0:
+                par.paragraph_format.first_line_indent = Pt(10)
             run = par.add_run()
             run.font.name = fonts[lang]
-            run.font.size = Pt(18 - 2 * level)
-            run.add_text(f"{'| '*level} {li}")
+            run.font.size = Pt(18 if level == 0 else 14)
+            prefix = "| " * level
+            run.add_text(f"{prefix} {li}")
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
         if type(any_of_any) is SortedList:
             trans_lang = "gr" if lang == "sl" else "sl"
             for t, bottom_d in next_d.items():
                 par = doc.add_paragraph()
-                par.paragraph_format.left_indent = Pt(20)
+                par.paragraph_format.left_indent = Pt(30)
                 par.paragraph_format.first_line_indent = Pt(-10)
                 run = par.add_run()
                 run.font.name = fonts[trans_lang]
                 run.add_text(t + ": ")
+                first = True
                 for key, usage in bottom_d.items():
+                    if not first:
+                        par.add_run().add_text("; ")
                     docx_usage(par, key, usage, lang)
+                    first = False
+
         else:
             _export_line(level + 1, lang, next_d, doc)
 

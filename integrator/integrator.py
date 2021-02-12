@@ -16,7 +16,7 @@ from docx.opc.exceptions import OpcError  # type: ignore
 from model import TableSemantics, LangSemantics
 from importer import import_mapping
 from processor import merge, aggregate, extract_letters, expand_idx
-from exporter import export_html, export_docx
+from exporter import export_docx
 
 if __name__ == "__main__":
     args = docopt(__doc__)
@@ -53,9 +53,9 @@ if __name__ == "__main__":
     lines = import_mapping(fname)
     print(f"{len(lines)} думи")
 
-    print("Раздуване на индекси...")
-    lines = expand_idx(lines)
-    print(f"{len(lines)} реда")
+    # print("Раздуване на индекси...")
+    # lines = expand_idx(lines)
+    # print(f"{len(lines)} реда")
 
     sl_sem = LangSemantics("sl", 4, [6, 7, 8, 9])
     gr_sem = LangSemantics("gr", 10, [11, 12, 13])

@@ -15,14 +15,7 @@ def expand_idx(corpus: List[List[str]]) -> List[List[str]]:
     """*IN_PLACE*"""
     for row in corpus:
         if row[3]:
-            # print(row[3])
-            m = re.search(r"(\d{1,2})/((\d{1,2}|W?\d{3})[abcd])(\d{1,2})", row[3])
-            assert m
-            # print(m.groups())
-            ch = int(m.group(1))
-            page = m.group(2)
-            line = int(m.group(4))
-            row[3] = f"{ch:02d}/{page}{line:02d}"
+            row[3] = Index.unpack(row[3]).longstr()
     return corpus
 
 
@@ -45,20 +38,44 @@ def merge(
     tr_lem_col = trans.lemmas
 
     result: List[List[str]] = []
-    for row in corpus:
+    for old_row in corpus:
+        row = [v if v else "" for v in old_row]
         if row[word_col] == "=":
-            row[3] = result[-1][3]
-            row[word_col] = result[-1][word_col]
-            row[lem_col[0]] = result[-1][lem_col[0]]
+            # if not row[tr_lem_col[0]]:
             result[-1][tr_col] = result[-1][tr_col] + " " + row[tr_col]
-            row[tr_col] = result[-1][tr_col]
+            if row[tr_lem_col[0]]:
+                result[-1][tr_lem_col[0]] = (
+                    result[-1][tr_lem_col[0]] + " & " + row[tr_lem_col[0]]
+                )
             for col in tr_lem_col[1:]:
-                if result[-1][col]:
-                    if row[col] and row[col] != "=":
-                        result[-1][col] = result[-1][col] + " " + row[col]
-                    row[col] = result[-1][col]
+                if not row[col]:
+                    continue
+                if row[col] != "=":
+                    result[-1][col] = result[-1][col] + " " + row[col]
+                else:
+                    row[tr_lem_col[0]] = result[-1][tr_lem_col[0]]
+                row[col] = result[-1][col]
 
-        result.append(row)
+        else:
+            if row[tr_col] == "=":
+                result[-1][word_col] = result[-1][word_col] + " " + row[word_col]
+                row[word_col] = result[-1][word_col]
+                row[tr_col] = result[-1][tr_col]
+                if row[tr_lem_col[0]]:
+                    result[-1][tr_lem_col[0]] = (
+                        result[-1][tr_lem_col[0]] + " & " + row[tr_lem_col[0]]
+                    )
+                row[tr_lem_col[0]] = result[-1][tr_lem_col[0]]
+                if not row[3]:  # relevant only for gr-sl index
+                    row[3] = result[-1][3]
+            for col in tr_lem_col[1:]:
+                if row[col] == "=":
+                    row[col] = result[-1][col]
+            for col in lem_col[1:]:
+                if row[col] == "=":
+                    row[col] = result[-1][col]
+            result.append(row)
+
     return result
 
 
@@ -95,23 +112,39 @@ def _agg_lemma(
         SortedDict: *IN PLACE* hierarchical dictionary
     """
     if col == -1:
-        cols = [base_word(row[c]) for c in tlem_col if row[c]]
+        cols = [base_word(row[c]) for c in tlem_col]
         cols.reverse()
-        next = "→".join(cols)
-        val = Index(row[3], "bold" in row[16], "italic" in row[16])
+        empty = True
+        while empty:
+            if not cols[0]:
+                cols.pop(0)
+                if not len(cols):
+                    print(row)
+                # TODO: Might need to be removed
+                empty = len(cols) > 0  # empty = False
+            else:
+                empty = False
+        next = "→ ".join(cols)
+
+        val = Index.unpack(row[3])
+        val.bold = "bold" in row[16]
+        val.italic = "italic" in row[16]
         if next in d:
             if key not in d[next]:
                 d[next][key] = SortedList()
             d[next][key].add(val)
         else:
             d[next] = SortedDict(ord_tuple, {key: SortedList([val])})
+
     else:
-        next = base_word(row[col])
-        if next not in d:
-            d[next] = SortedDict(ord_word)
-        next_idx = lem_col.index(col) + 1
-        next_col = lem_col[next_idx] if next_idx < len(lem_col) else -1
-        d[next] = _agg_lemma(row, next_col, lem_col, tlem_col, key, d[next])
+        lemmas = row[col].split("&") if row[col] else [""]
+        for l in lemmas:
+            next = base_word(l)
+            if next not in d:
+                d[next] = SortedDict(ord_word)
+            next_idx = lem_col.index(col) + 1
+            next_col = lem_col[next_idx] if next_idx < len(lem_col) else -1
+            d[next] = _agg_lemma(row, next_col, lem_col, tlem_col, key, d[next])
 
     return d
 
