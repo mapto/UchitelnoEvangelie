@@ -13,7 +13,7 @@ from docopt import docopt  # type: ignore
 from docx import Document  # type: ignore
 from docx.opc.exceptions import OpcError  # type: ignore
 
-from model import TableSemantics, LangSemantics
+from model import LangSemantics
 from importer import import_mapping
 from processor import merge, aggregate, extract_letters, expand_idx
 from exporter import export_docx

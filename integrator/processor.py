@@ -20,7 +20,58 @@ def expand_idx(corpus: List[List[str]]) -> List[List[str]]:
 
 
 def _present(word: str) -> bool:
-    return not not word and word.strip().lower()[:2] != "om"
+    if not word:
+        return False
+    word = word.strip().lower()
+    if word == "=":
+        return False
+    if len(word) > 1 and word[:2] == "om":
+        return False
+    return True
+
+
+def _collect(group: List[List[str]], col: int) -> List[str]:
+    return [group[i][col] for i in range(len(group)) if _present(group[i][col])]
+
+
+def _close(
+    group: List[List[str]], orig: LangSemantics, trans: LangSemantics
+) -> List[List[str]]:
+    """*IN_PLACE*"""
+    if not group:
+        return []
+
+    idx = Index.unpack(group[0][3])
+    i_end = None
+    for i in range(len(group) - 1, 0, -1):
+        s_end = group[i][3]
+        if s_end:
+            i_end = Index.unpack(s_end)
+            break
+    idx.end = i_end
+
+    word = " ".join(_collect(group, orig.word))
+    tr_word = " ".join(_collect(group, trans.word))
+    tr_lemma = " & ".join(_collect(group, trans.lemmas[0]))
+
+    tr_subl = [" ".join(_collect(group, c)) for c in trans.lemmas[1:]]
+    subl = [" ".join(_collect(group, c)) for c in orig.lemmas[1:]]
+
+    for i in range(len(group)):
+        row = group[i]
+
+        row[3] = idx.longstr()
+        row[orig.word] = word
+        row[trans.word] = tr_word
+        row[trans.lemmas[0]] = tr_lemma
+
+        # subl are missing the first lemma
+        for c in range(1, len(orig.lemmas)):
+            row[orig.lemmas[c]] = subl[c - 1]
+        for c in range(1, len(trans.lemmas)):
+            row[trans.lemmas[c]] = tr_subl[c - 1]
+
+    return group
 
 
 def merge(
@@ -36,59 +87,25 @@ def merge(
     Returns:
         List[List[str]]: merged corpus
     """
-    word_col = orig.word
-    lem_col = orig.lemmas
-    tr_col = trans.word
-    tr_lem_col = trans.lemmas
-
+    group: List[List[str]] = []
     result: List[List[str]] = []
+
     for old_row in corpus:
+        # no original lema -> no dictionary entry
+        if not _present(old_row[orig.lemmas[0]]):
+            continue
         row = [v if v else "" for v in old_row]
-        if row[word_col] == "=":
-            row[word_col] = result[-1][word_col]
-            # if not row[tr_lem_col[0]]:
-            result[-1][tr_col] = result[-1][tr_col] + " " + row[tr_col]
-            if row[tr_lem_col[0]]:
-                result[-1][tr_lem_col[0]] = (
-                    result[-1][tr_lem_col[0]] + " & " + row[tr_lem_col[0]]
-                )
-            for col in tr_lem_col[1:]:
-                if not row[col]:
-                    continue
-                if row[col] == "=":
-                    row[tr_lem_col[0]] = result[-1][tr_lem_col[0]]
-                else:
-                    result[-1][col] = result[-1][col] + " " + row[col]
-                row[col] = result[-1][col]
-            for col in lem_col[1:]:
-                if row[col] == "=":
-                    row[col] = result[-1][col]
 
-        else:
-            if row[tr_col] == "=":
-                result[-1][word_col] = result[-1][word_col] + " " + row[word_col]
-                row[word_col] = result[-1][word_col]
-                row[tr_col] = result[-1][tr_col]
-                if row[tr_lem_col[0]]:
-                    result[-1][tr_lem_col[0]] = (
-                        result[-1][tr_lem_col[0]] + " & " + row[tr_lem_col[0]]
-                    )
-                row[tr_lem_col[0]] = result[-1][tr_lem_col[0]]
-            for col in tr_lem_col[1:]:
-                if row[col] == "=":
-                    row[col] = result[-1][col]
-            for col in lem_col[1:]:
-                if row[col] == "=":
-                    row[col] = result[-1][col]
-            # result.append(row)
+        absence = [row[c] for c in (orig.word, trans.word) if not _present(row[c])]
+        absence.extend([row[c] for c in orig.lemmas[1:] if row[c] == "="])
+        if not absence and group:
+            group = _close(group, orig, trans)
+            result.extend(group)
+            group = []
+        group.append(row)
 
-        if not row[tr_col] or row[tr_col] == "=":
-            row[tr_col] = result[-1][tr_col]
-        if not row[3]:
-            row[3] = result[-1][3]
-        if _present(row[lem_col[0]]) and _present(row[word_col]):
-            result.append(row)
-
+    group = _close(group, orig, trans)
+    result.extend(group)
     return result
 
 
@@ -177,15 +194,10 @@ def aggregate(
     Returns:
         SortedDict: hierarchical dictionary of all lemma levels in original language, that contains rows of the form: translation_lemma: word/tword (index)
     """
-    word_col = orig.word
-    lem_col = orig.lemmas
-    trans_col = trans.word
-    tlem_col = trans.lemmas
-
     result = SortedDict(ord_word)
     for row in corpus:
         if not row[3]:
             continue
-        key = (base_word(row[word_col]), base_word(row[trans_col]))
-        result = _agg_lemma(row, lem_col[0], lem_col, tlem_col, key, result)
+        key = (base_word(row[orig.word]), base_word(row[trans.word]))
+        result = _agg_lemma(row, orig.lemmas[0], orig.lemmas, trans.lemmas, key, result)
     return result
