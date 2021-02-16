@@ -19,6 +19,10 @@ def expand_idx(corpus: List[List[str]]) -> List[List[str]]:
     return corpus
 
 
+def _present(word: str) -> bool:
+    return not not word and word.strip().lower()[:2] != "om"
+
+
 def merge(
     corpus: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> List[List[str]]:
@@ -41,6 +45,7 @@ def merge(
     for old_row in corpus:
         row = [v if v else "" for v in old_row]
         if row[word_col] == "=":
+            row[word_col] = result[-1][word_col]
             # if not row[tr_lem_col[0]]:
             result[-1][tr_col] = result[-1][tr_col] + " " + row[tr_col]
             if row[tr_lem_col[0]]:
@@ -50,11 +55,14 @@ def merge(
             for col in tr_lem_col[1:]:
                 if not row[col]:
                     continue
-                if row[col] != "=":
-                    result[-1][col] = result[-1][col] + " " + row[col]
-                else:
+                if row[col] == "=":
                     row[tr_lem_col[0]] = result[-1][tr_lem_col[0]]
+                else:
+                    result[-1][col] = result[-1][col] + " " + row[col]
                 row[col] = result[-1][col]
+            for col in lem_col[1:]:
+                if row[col] == "=":
+                    row[col] = result[-1][col]
 
         else:
             if row[tr_col] == "=":
@@ -66,14 +74,19 @@ def merge(
                         result[-1][tr_lem_col[0]] + " & " + row[tr_lem_col[0]]
                     )
                 row[tr_lem_col[0]] = result[-1][tr_lem_col[0]]
-                if not row[3]:  # relevant only for gr-sl index
-                    row[3] = result[-1][3]
             for col in tr_lem_col[1:]:
                 if row[col] == "=":
                     row[col] = result[-1][col]
             for col in lem_col[1:]:
                 if row[col] == "=":
                     row[col] = result[-1][col]
+            # result.append(row)
+
+        if not row[tr_col] or row[tr_col] == "=":
+            row[tr_col] = result[-1][tr_col]
+        if not row[3]:
+            row[3] = result[-1][3]
+        if _present(row[lem_col[0]]) and _present(row[word_col]):
             result.append(row)
 
     return result
@@ -118,8 +131,8 @@ def _agg_lemma(
         while empty:
             if not cols[0]:
                 cols.pop(0)
-                if not len(cols):
-                    print(row)
+                # if not len(cols):
+                # print(row)
                 # TODO: Might need to be removed
                 empty = len(cols) > 0  # empty = False
             else:
