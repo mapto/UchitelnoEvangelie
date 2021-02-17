@@ -25,8 +25,8 @@ def _present(word: str) -> bool:
     word = word.strip().lower()
     if word == "=":
         return False
-    if len(word) > 1 and word[:2] == "om":
-        return False
+    # if len(word) > 1 and word[:2] == "om":
+        # return False
     return True
 
 
@@ -92,8 +92,8 @@ def merge(
 
     for old_row in corpus:
         # no original lema -> no dictionary entry
-        if not _present(old_row[orig.lemmas[0]]):
-            continue
+        # if not _present(old_row[orig.lemmas[0]]):
+        #     continue
         row = [v if v else "" for v in old_row]
 
         absence = [row[c] for c in (orig.word, trans.word) if not _present(row[c])]
@@ -154,7 +154,8 @@ def _agg_lemma(
                 empty = len(cols) > 0  # empty = False
             else:
                 empty = False
-        next = "→ ".join(cols)
+        # next = "→ ".join(cols)
+        next = " >> ".join(cols)
 
         val = Index.unpack(row[3])
         val.bold = "bold" in row[16]
