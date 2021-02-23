@@ -163,7 +163,7 @@ def _agg_lemma(
                 d[next][key] = SortedList()
             d[next][key].add(val)
         else:
-            d[next] = SortedDict(ord_tuple, {key: SortedList([val])})
+            d[next] = {key: SortedList([val])}
 
     else:
         lemmas = row[col].split("&") if row[col] else [""]

@@ -65,6 +65,8 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
         doc (Document): export document
     """
     for li, next_d in d.items():
+        if level == 0 and not li:
+            continue
         if li:
             par = doc.add_paragraph()
             if level > 0:
@@ -86,7 +88,9 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
                 run.font.name = fonts[trans_lang]
                 run.add_text(t + ": ")
                 first = True
-                for key, usage in bottom_d.items():
+                pairs = dict(bottom_d.items())
+                for key in sorted(pairs, key=pairs.__getitem__):
+                    usage = bottom_d[key]
                     if not first:
                         par.add_run().add_text("; ")
                     docx_usage(par, key, usage, lang)
