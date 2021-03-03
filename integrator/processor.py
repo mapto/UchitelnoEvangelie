@@ -32,13 +32,6 @@ def _collect(group: List[List[str]], col: int) -> List[str]:
     return [group[i][col] for i in range(len(group)) if _present(group[i][col])]
 
 
-def _valid_group(group: List[List[str]], word_col: int, trans_col: int) -> bool:
-    """Handling missing words (ₓ)"""
-    if not group:
-        return True
-    return not not ["ₓ" for r in group if r[word_col] != "ₓ" and r[trans_col] != "ₓ"]
-
-
 def _close(
     group: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> List[List[str]]:
@@ -102,8 +95,7 @@ def merge(
             row[3] = group[-1][3] if group else result[-1][3]
         absence = [row[c] for c in (orig.word, trans.word) if not _present(row[c])]
         absence.extend([row[c] for c in orig.lemmas[1:] if row[c] == "="])
-        valid_group = _valid_group(group, orig.word, trans.word)
-        if not absence and valid_group:
+        if not absence and group:
             group = _close(group, orig, trans)
             result.extend(group)
             group = []
