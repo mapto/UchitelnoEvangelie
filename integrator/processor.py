@@ -5,6 +5,7 @@ import unicodedata
 from sortedcontainers import SortedDict, SortedList, SortedSet  # type: ignore
 import re
 
+from const import IDX_COL, STYLE_COL
 from model import Index, LangSemantics
 from util import ord_word, base_word
 
@@ -14,8 +15,8 @@ ord_tuple = lambda x: ord_word(x[0])
 def expand_idx(corpus: List[List[str]]) -> List[List[str]]:
     """*IN_PLACE*"""
     for row in corpus:
-        if row[3]:
-            row[3] = Index.unpack(row[3]).longstr()
+        if row[IDX_COL]:
+            row[IDX_COL] = Index.unpack(row[IDX_COL]).longstr()
     return corpus
 
 
@@ -39,11 +40,11 @@ def _close(
     if not group:
         return []
 
-    assert group[0][3]
-    idx = Index.unpack(group[0][3])
+    assert group[0][IDX_COL]
+    idx = Index.unpack(group[0][IDX_COL])
     i_end = None
     for i in range(len(group) - 1, 0, -1):
-        s_end = group[i][3]
+        s_end = group[i][IDX_COL]
         if s_end:
             i_end = Index.unpack(s_end)
             break
@@ -59,7 +60,7 @@ def _close(
     for i in range(len(group)):
         row = group[i]
 
-        row[3] = idx.longstr()
+        row[IDX_COL] = idx.longstr()
         row[orig.word] = word
         row[trans.word] = tr_word
         row[trans.lemmas[0]] = tr_lemma
@@ -91,8 +92,8 @@ def merge(
 
     for old_row in corpus:
         row = [v if v else "" for v in old_row]
-        if not row[3]:
-            row[3] = group[-1][3] if group else result[-1][3]
+        if not row[IDX_COL]:
+            row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
         absence = [row[c] for c in (orig.word, trans.word) if not _present(row[c])]
         absence.extend([row[c] for c in orig.lemmas[1:] if row[c] == "="])
         if not absence and group:
@@ -154,10 +155,10 @@ def _agg_lemma(
         # next = "→ ".join(cols)
         next = " >> ".join(cols)
 
-        assert row[3]
-        val = Index.unpack(row[3])
-        val.bold = "bold" in row[16]
-        val.italic = "italic" in row[16]
+        assert row[IDX_COL]
+        val = Index.unpack(row[IDX_COL])
+        val.bold = "bold" in row[STYLE_COL]
+        val.italic = "italic" in row[STYLE_COL]
         if next in d:
             if key not in d[next]:
                 d[next][key] = SortedList()
@@ -195,7 +196,7 @@ def aggregate(
     """
     result = SortedDict(ord_word)
     for row in corpus:
-        if not row[3]:
+        if not row[IDX_COL]:
             continue
         key = (base_word(row[orig.word]), base_word(row[trans.word]))
         result = _agg_lemma(row, orig.lemmas[0], orig.lemmas, trans.lemmas, key, result)

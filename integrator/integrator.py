@@ -57,8 +57,10 @@ if __name__ == "__main__":
     # lines = expand_idx(lines)
     # print(f"{len(lines)} реда")
 
-    sl_sem = LangSemantics("sl", 4, [6, 7, 8, 9])
-    gr_sem = LangSemantics("gr", 10, [11, 12, 13])
+    sl_sem = LangSemantics("sl", 4, [6, 7, 8, 9], LangSemantics("sl_var", 0, [1, 2]))
+    gr_sem = LangSemantics(
+        "gr", 10, [11, 12, 13], LangSemantics("gr_var", 15, [16, 17])
+    )
 
     print("Събиране на многоредови преводи от славянски...")
     lines_sl = merge(lines, sl_sem, gr_sem)

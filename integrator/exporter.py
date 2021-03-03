@@ -7,16 +7,6 @@ from docx.shared import RGBColor, Pt  # type: ignore
 
 from model import Index
 
-html = """
-<html>
-<head>
-</head>
-<body>
-%s
-</body>
-</html>
-"""
-
 fonts = {"gr": "Times New Roman", "sl": "CyrillicaOchrid10U"}
 colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
 

@@ -6,6 +6,8 @@ from openpyxl import Workbook  # type: ignore
 from openpyxl import load_workbook  # type: ignore
 from openpyxl.styles import Font  # type: ignore
 
+from const import IDX_COL, STYLE_COL
+
 
 def style2str(s: Font) -> str:
     if not s:
@@ -23,9 +25,9 @@ def import_mapping(fname: str) -> List[List[str]]:
     ws = wb.active
 
     result = []
-    for row in ws.iter_rows(max_col=16):
+    for row in ws.iter_rows(max_col=STYLE_COL):
         line = [cell.value for cell in row]
-        line.append(style2str(row[3].font))
+        line.append(style2str(row[IDX_COL].font))
         result.append(line)
 
     # return [list(row) for row in ws.iter_rows(max_col=16, values_only=True)]
