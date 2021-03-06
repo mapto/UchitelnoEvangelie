@@ -90,20 +90,25 @@ def merge(
     group: List[List[str]] = []
     result: List[List[str]] = []
 
-    for old_row in corpus:
-        row = [v if v else "" for v in old_row]
+    for raw in corpus:
+        row = [v if v else "" for v in raw]
         if not row[IDX_COL]:
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
-        absence = [row[c] for c in (orig.word, trans.word) if not _present(row[c])]
-        absence.extend([row[c] for c in orig.lemmas[1:] if row[c] == "="])
-        if not absence and group:
-            group = _close(group, orig, trans)
-            result.extend(group)
-            group = []
-        group.append(row)
 
-    group = _close(group, orig, trans)
-    result.extend(group)
+        grouped = f"{orig.lang}group" in row[STYLE_COL] or f"{trans.lang}group" in row[STYLE_COL]
+        if grouped:
+            group.append(row)
+        else:
+            if group:
+                group = _close(group, orig, trans)
+                result.extend(group)
+                group = []
+            result.append(row)
+
+    if grouped:
+        group = _close(group, orig, trans)
+        result.extend(group)
+
     return result
 
 
