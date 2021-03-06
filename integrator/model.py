@@ -1,4 +1,4 @@
-from typing import Optional, List, Set
+from typing import Optional, List, Dict
 from dataclasses import dataclass, field
 
 import re
@@ -161,3 +161,12 @@ class TableSemantics:
     idx: int = IDX_COL
     example: int = EXAMPLE_COL
     style: int = STYLE_COL
+
+    def word_cols(self) -> Dict[str, int]:
+        """extract named columns"""
+        r = {"slgroup": self.sl.word, "grgroup": self.gr.word}
+        if self.sl.var:
+            r["slvargroup"] = self.sl.var.word
+        if self.gr.var:
+            r["grvargroup"] = self.gr.var.word
+        return r

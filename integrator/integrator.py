@@ -13,7 +13,7 @@ from docopt import docopt  # type: ignore
 from docx import Document  # type: ignore
 from docx.opc.exceptions import OpcError  # type: ignore
 
-from model import LangSemantics
+from model import TableSemantics, LangSemantics
 from importer import import_mapping
 from processor import merge, aggregate, extract_letters, expand_idx
 from exporter import export_docx
@@ -49,18 +49,19 @@ if __name__ == "__main__":
     # book_lines = split_rows(transformed, comments)
     # print(book_lines)
 
+    sl_sem = LangSemantics("sl", 4, [6, 7, 8, 9], LangSemantics("sl_var", 0, [1, 2]))
+    gr_sem = LangSemantics(
+        "gr", 10, [11, 12, 13], LangSemantics("gr_var", 15, [16, 17])
+    )
+    sem = TableSemantics(sl_sem, gr_sem)
+
     print("Импорт...")
-    lines = import_mapping(fname)
+    lines = import_mapping(fname, sem)
     print(f"{len(lines)} думи")
 
     # print("Раздуване на индекси...")
     # lines = expand_idx(lines)
     # print(f"{len(lines)} реда")
-
-    sl_sem = LangSemantics("sl", 4, [6, 7, 8, 9], LangSemantics("sl_var", 0, [1, 2]))
-    gr_sem = LangSemantics(
-        "gr", 10, [11, 12, 13], LangSemantics("gr_var", 15, [16, 17])
-    )
 
     print("Събиране на многоредови преводи от славянски...")
     lines_sl = merge(lines, sl_sem, gr_sem)
