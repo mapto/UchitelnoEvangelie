@@ -107,8 +107,8 @@ def merge(
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
 
         grouped = (
-            f"{orig.lang}group" in row[STYLE_COL]
-            or f"{trans.lang}group" in row[STYLE_COL]
+            f"hl{orig.word:02d}" in row[STYLE_COL]
+            or f"hl{trans.word:02d}" in row[STYLE_COL]
         )
         if grouped:
             group.append(row)
