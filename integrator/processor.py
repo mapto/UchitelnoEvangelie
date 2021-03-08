@@ -20,17 +20,15 @@ def expand_idx(corpus: List[List[str]]) -> List[List[str]]:
     return corpus
 
 
-def _present(word: str) -> bool:
-    if not word:
-        return False
-    word = word.strip().lower()
-    if word == "=":
-        return False
-    return True
-
-
 def _collect(group: List[List[str]], col: int) -> List[str]:
-    return [group[i][col] for i in range(len(group)) if _present(group[i][col])]
+    return [group[i][col] for i in range(len(group)) if group[i][col]]
+
+
+def _highlighted(group: List[List[str]], col: int) -> bool:
+    for i in range(len(group)):
+        if f"hl{col}" in group[i][STYLE_COL]:
+            return True
+    return False
 
 
 def _close(
@@ -50,13 +48,22 @@ def _close(
             break
     idx.end = i_end
 
+    # collect content
     word = " ".join(_collect(group, orig.word))
     tr_word = " ".join(_collect(group, trans.word))
     tr_lemma = " & ".join(_collect(group, trans.lemmas[0]))
 
-    tr_subl = [" ".join(_collect(group, c)) for c in trans.lemmas[1:]]
-    subl = [" ".join(_collect(group, c)) for c in orig.lemmas[1:]]
+    tr_subl = [
+        "" if _highlighted(group, c) else " ".join(_collect(group, c))
+        for c in trans.lemmas[1:]
+    ]
 
+    subl = [
+        "" if _highlighted(group, c) else " ".join(_collect(group, c))
+        for c in orig.lemmas[1:]
+    ]
+
+    # update content
     for i in range(len(group)):
         row = group[i]
 
@@ -67,9 +74,12 @@ def _close(
 
         # subl are missing the first lemma
         for c in range(1, len(orig.lemmas)):
-            row[orig.lemmas[c]] = subl[c - 1]
+            if subl[c - 1]:
+                row[orig.lemmas[c]] = subl[c - 1]
+
         for c in range(1, len(trans.lemmas)):
-            row[trans.lemmas[c]] = tr_subl[c - 1]
+            if tr_subl[c - 1]:
+                row[trans.lemmas[c]] = tr_subl[c - 1]
 
     return group
 

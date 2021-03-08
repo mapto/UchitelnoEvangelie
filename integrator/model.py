@@ -165,8 +165,16 @@ class TableSemantics:
     def word_cols(self) -> Dict[str, int]:
         """extract named columns"""
         r = {"slgroup": self.sl.word, "grgroup": self.gr.word}
+        for i in range(1, len(self.sl.lemmas)):
+            r[f"hl{self.sl.lemmas[i]}"] = self.sl.lemmas[i]
+        for i in range(1, len(self.gr.lemmas)):
+            r[f"hl{self.gr.lemmas[i]}"] = self.gr.lemmas[i]
         if self.sl.var:
             r["slvargroup"] = self.sl.var.word
+            for i in range(1, len(self.sl.var.lemmas)):
+                r[f"hl{self.sl.var.lemmas[i]}"] = self.sl.var.lemmas[i]
         if self.gr.var:
             r["grvargroup"] = self.gr.var.word
+            for i in range(1, len(self.gr.var.lemmas)):
+                r[f"hl{self.gr.var.lemmas[i]}"] = self.gr.var.lemmas[i]
         return r
