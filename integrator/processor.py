@@ -92,10 +92,14 @@ def merge(
 
     for raw in corpus:
         row = [v if v else "" for v in raw]
-        if not row[IDX_COL]:
+        not_blank = [v for v in row if v]
+        if not row[IDX_COL] and not_blank:
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
 
-        grouped = f"{orig.lang}group" in row[STYLE_COL] or f"{trans.lang}group" in row[STYLE_COL]
+        grouped = (
+            f"{orig.lang}group" in row[STYLE_COL]
+            or f"{trans.lang}group" in row[STYLE_COL]
+        )
         if grouped:
             group.append(row)
         else:
@@ -130,6 +134,7 @@ def _agg_lemma(
     tlem_col: List[int],
     key: Tuple[str, str],
     d: SortedDict,
+    var: bool = False,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
 
@@ -140,6 +145,7 @@ def _agg_lemma(
         tlem_col (List[int]): translation lemma columns
         key (Tuple[str, str]): word pair
         d (SortedDict): see return value
+        var: variant or not
 
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
@@ -164,8 +170,10 @@ def _agg_lemma(
         val = Index.unpack(row[IDX_COL])
         val.bold = "bold" in row[STYLE_COL]
         val.italic = "italic" in row[STYLE_COL]
+        val.var = var
         if next in d:
             if key not in d[next]:
+                # print(key)
                 d[next][key] = SortedList()
             d[next][key].add(val)
         else:
@@ -179,7 +187,7 @@ def _agg_lemma(
                 d[next] = SortedDict(ord_word)
             next_idx = lem_col.index(col) + 1
             next_col = lem_col[next_idx] if next_idx < len(lem_col) else -1
-            d[next] = _agg_lemma(row, next_col, lem_col, tlem_col, key, d[next])
+            d[next] = _agg_lemma(row, next_col, lem_col, tlem_col, key, d[next], var)
 
     return d
 
@@ -203,6 +211,38 @@ def aggregate(
     for row in corpus:
         if not row[IDX_COL]:
             continue
-        key = (base_word(row[orig.word]), base_word(row[trans.word]))
+
+        orig_key_var = (
+            f" {{{base_word(row[orig.var.word])}}}"
+            if orig.var and row[orig.var.word]
+            else ""
+        )
+        orig_key = base_word(row[orig.word])
+        trans_key_var = (
+            f" {{{base_word(row[trans.var.word])}}}"
+            if trans.var and row[trans.var.word]
+            else ""
+        )
+        trans_key = base_word(row[trans.word])
+        key = (f"{orig_key}{orig_key_var}", f"{trans_key}{trans_key_var}")
+
+        # TODO: Do not skip, but collect lemma
+        if not [v for v in key if v]:
+            continue
+
+        # print(row[IDX_COL])
         result = _agg_lemma(row, orig.lemmas[0], orig.lemmas, trans.lemmas, key, result)
+        """
+        if orig.var and orig.var.lemmas[0]:
+            result = _agg_lemma(
+                row,
+                orig.var.lemmas[0],
+                orig.var.lemmas,
+                trans.lemmas,
+                key,
+                result,
+                True,
+            )
+        """
+
     return result
