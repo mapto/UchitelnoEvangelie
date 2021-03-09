@@ -240,7 +240,7 @@ def aggregate(
         trans_key = base_word(row[trans.word])
         key = (f"{orig_key}{orig_key_var}", f"{trans_key}{trans_key_var}")
 
-        print(row[IDX_COL])
+        # print(row[IDX_COL])
         # TODO: Do not skip, but collect lemma
         if not [v for v in key if v]:
             continue

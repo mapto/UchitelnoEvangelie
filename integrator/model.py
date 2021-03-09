@@ -6,7 +6,7 @@ import re
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 
-@dataclass(init=True, repr=True, order=True)
+@dataclass(order=True)
 class Index:
     ch: int
     alt: bool
@@ -146,12 +146,21 @@ class Index:
         return start
 
 
-@dataclass(init=True, repr=True)
+@dataclass
 class LangSemantics:
     lang: str
     word: int
     lemmas: List[int]
     var: Optional["LangSemantics"] = None
+
+    def __post_init__(self):
+        if self.var:
+            self.var.lemmas.extend(
+                [
+                    STYLE_COL + i
+                    for i in range(1, len(self.lemmas) - len(self.var.lemmas) + 1)
+                ]
+            )
 
     def word_cols(self) -> List[int]:
         c = [self.word]
@@ -167,7 +176,7 @@ class LangSemantics:
         return c
 
 
-@dataclass(init=True, repr=True)
+@dataclass
 class TableSemantics:
     sl: "LangSemantics"
     gr: "LangSemantics"

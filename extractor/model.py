@@ -7,7 +7,7 @@ from lxml.etree import _Element  # type: ignore
 from schema import ns
 
 
-@dataclass(init=True, repr=True)
+@dataclass
 class Comment:
     """The structure of comments, relating to the text they relate to
 
@@ -31,7 +31,7 @@ class Comment:
         return Comment(id, annotation=annotation, addition=addition)
 
 
-@dataclass(init=True, repr=True)
+@dataclass
 class Index:
     """
     >>> Index(0, "", 0) == Index(0, "", 0)
@@ -49,7 +49,7 @@ class Index:
         return not not other and self.__repr__() == other.__repr__()
 
 
-@dataclass(init=True, repr=True)
+@dataclass
 class Word:
     """Annotated words
     >>> Word(_index=Index(ch=1, page='4b', row=10), word='ѿ', line_context='ѿ оана⁘', variant='') == Word(_index=Index(ch=1, page='4b', row=10), word='ѿ', line_context='ѿ оана⁘', variant='')
