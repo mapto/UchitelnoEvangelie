@@ -162,17 +162,30 @@ class LangSemantics:
                 ]
             )
 
+    def cols(self) -> List[int]:
+        c = []
+        c += self.word_cols()
+        c += self.lem1_cols()
+        c += self.lemn_cols()
+        return c
+
     def word_cols(self) -> List[int]:
         c = [self.word]
         if self.var:
             c.append(self.var.word)
         return c
 
-    def cols(self) -> List[int]:
-        c = [self.word]
-        c.extend(self.lemmas)
+    def lem1_cols(self) -> List[int]:
+        c = [self.lemmas[0]]
         if self.var:
-            c.extend(self.var.cols())
+            c.append(self.var.lemmas[0])
+        return c
+
+    def lemn_cols(self) -> List[int]:
+        c = []
+        c += self.lemmas[1:]
+        if self.var:
+            c += self.var.lemmas[1:]
         return c
 
 
@@ -187,13 +200,27 @@ class TableSemantics:
     def cols(self) -> List[int]:
         """extract word and lemma columns"""
         c = []
-        c.extend(self.sl.cols())
-        c.extend(self.gr.cols())
+        c += self.sl.cols()
+        c += self.gr.cols()
         return c
 
     def word_cols(self) -> List[int]:
         """extract word columns"""
         c = []
-        c.extend(self.sl.word_cols())
-        c.extend(self.gr.word_cols())
+        c += self.sl.word_cols()
+        c += self.gr.word_cols()
+        return c
+
+    def lem1_cols(self) -> List[int]:
+        """extract first lemma columns"""
+        c = []
+        c += self.sl.lem1_cols()
+        c += self.gr.lem1_cols()
+        return c
+
+    def lemn_cols(self) -> List[int]:
+        """extract word and lemma columns"""
+        c = []
+        c += self.sl.lemn_cols()
+        c += self.gr.lemn_cols()
         return c

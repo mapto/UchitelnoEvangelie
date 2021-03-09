@@ -51,7 +51,22 @@ def _close(
     # collect content
     word = " ".join(_collect(group, orig.word))
     tr_word = " ".join(_collect(group, trans.word))
+    var_word = " ".join(_collect(group, orig.var.word)) if orig.var else ""
+    tvar_word = " ".join(_collect(group, trans.var.word)) if trans.var else ""
+
     tr_lemma = " & ".join(_collect(group, trans.lemmas[0]))
+    tvar_lemma = " & ".join(_collect(group, trans.var.lemmas[0])) if trans.var else ""
+
+    var_subl = (
+        " ".join(_collect(group, orig.var.lemmas[1]))
+        if orig.var and not _highlighted(group, orig.var.lemmas[1])
+        else ""
+    )
+    tvar_subl = (
+        " ".join(_collect(group, trans.var.lemmas[1]))
+        if trans.var and not _highlighted(group, trans.var.lemmas[1])
+        else ""
+    )
 
     tr_subl = [
         "" if _highlighted(group, c) else " ".join(_collect(group, c))
@@ -70,6 +85,13 @@ def _close(
         row[IDX_COL] = idx.longstr()
         row[orig.word] = word
         row[trans.word] = tr_word
+        if orig.var:
+            row[orig.var.word] = var_word
+            row[orig.var.lemmas[1]] = var_subl
+        if trans.var:
+            row[trans.var.word] = tvar_word
+            row[trans.var.lemmas[0]] = tvar_lemma
+            row[trans.var.lemmas[1]] = tvar_subl
         row[trans.lemmas[0]] = tr_lemma
 
         # subl are missing the first lemma
@@ -259,3 +281,16 @@ def aggregate(
             )
 
     return result
+
+
+def join(a: SortedDict, b: SortedDict) -> SortedDict:
+    """*IN_PLACE* for a"""
+    for k, v in b.items():
+        if k in a:
+            if type(v) == SortedDict:
+                join(a[k], v)
+            elif type(v) == SortedList:
+                a[k].update(v)
+        else:
+            a[k] = v
+    return a

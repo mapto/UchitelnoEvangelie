@@ -15,7 +15,7 @@ from docx.opc.exceptions import OpcError  # type: ignore
 
 from model import TableSemantics, LangSemantics
 from importer import import_mapping
-from processor import merge, aggregate, extract_letters, expand_idx
+from processor import merge, aggregate, extract_letters, expand_idx, join
 from exporter import export_docx
 
 if __name__ == "__main__":
@@ -50,9 +50,11 @@ if __name__ == "__main__":
     # print(book_lines)
 
     sl_sem = LangSemantics("sl", 4, [6, 7, 8, 9], LangSemantics("sl_var", 0, [1, 2]))
+    assert sl_sem.var  # for mypy
     gr_sem = LangSemantics(
         "gr", 10, [11, 12, 13], LangSemantics("gr_var", 15, [16, 17])
     )
+    assert gr_sem.var  # for mypy
     sem = TableSemantics(sl_sem, gr_sem)
 
     print("Импорт...")
@@ -67,11 +69,19 @@ if __name__ == "__main__":
     lines_sl = merge(lines, sl_sem, gr_sem)
     print(f"{len(lines_sl)} думи")
 
+    print("Събиране на многоредови преводи от славянски варианти...")
+    lines_sl_var = merge(lines, sl_sem.var, gr_sem)
+    print(f"{len(lines_sl_var)} думи")
+
     print("Събиране на многоредови преводи от гръцки...")
     lines_gr = merge(lines, gr_sem, sl_sem)
     print(f"{len(lines_gr)} думи")
 
-    for c in [sl_sem.lemmas[0], gr_sem.lemmas[0]]:
+    print("Събиране на многоредови преводи от гръцки варианти...")
+    lines_gr_var = merge(lines, gr_sem.var, sl_sem)
+    print(f"{len(lines_gr_var)} думи")
+
+    for c in sem.lem1_cols():
         print(f"Обзор на буквите в колона {chr(ord('A') + c)}...")
         letters = extract_letters(lines, c)
         print(f"{len(letters)} символа")
@@ -80,44 +90,27 @@ if __name__ == "__main__":
     sla = aggregate(lines_sl, sl_sem, gr_sem)
     print(f"{len(sla)} леми")
 
+    print("Кондензиране славянски варианти...")
+    sla_var = aggregate(lines_sl_var, sl_sem.var, gr_sem)
+    print(f"{len(sla_var)} леми")
+
+    print("Включване на славянски варианти в обща структура...")
+    sla = join(sla, sla_var)
+    print(f"{len(sla)} леми")
+
     print("Кондензиране гръцки...")
     gre = aggregate(lines_gr, gr_sem, sl_sem)
     print(f"{len(gre)} леми")
 
-    # print(lines)
-    # export_sheet(lines, fname + ".1.xlsx")
+    print("Кондензиране гръцки варианти...")
+    gre_var = aggregate(lines_gr_var, gr_sem.var, sl_sem)
+    print(f"{len(gre_var)} леми")
 
-    # if not args["--no-dehyphenate"]:
-    #     print("Премахване на пренос...")
-    #     lines = dehyphenate(lines)
-    #     # export_sheet(lines, fname[:-5] + ".d.xlsx")
-    #     print(f"{len(lines)} думи")
-    # else:
-    #     print("Оставяне на пренос.")
-
-    # if args["--integrate"]:
-    #     print("Възстановяване на думи, разделени от коментари...")
-    #     # print(lines)
-    #     lines = integrate_words(lines)
-    #     # export_sheet(lines, fname[:-5] + ".i.xlsx")
-    #     # print(lines)
-    #     print(f"{len(lines)} думи")
-    # else:
-    #     print("Оставяне на думи, разделени от коментари.")
-
-    # export_sheet(lines, fname + ".2.xlsx")
-
-    # if not args["--no-condense"]:
-    #     print("Премахване на празни думи...")
-    #     lines = condense(lines)
-    #     # export_sheet(lines, fname[:-5] + ".c.xlsx")
-    #     print(f"{len(lines)} думи")
-    # else:
-    #     print("Оставяне на празни думи.")
+    print("Включване на гръцки варианти в обща структура...")
+    gre = join(gre, gre_var)
+    print(f"{len(gre)} леми")
 
     print("Експорт слявянски...")
-    # export_fname = fname[:-5] + "-sla.html"
-    # export_html(sla, "sl", export_fname)
     export_fname = fname[:-5] + "-sla.docx"
     export_docx(sla, "sl", export_fname)
     print(f"Записване: {export_fname}")
