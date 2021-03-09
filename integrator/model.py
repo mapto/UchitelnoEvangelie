@@ -153,6 +153,19 @@ class LangSemantics:
     lemmas: List[int]
     var: Optional["LangSemantics"] = None
 
+    def word_cols(self) -> List[int]:
+        c = [self.word]
+        if self.var:
+            c.append(self.var.word)
+        return c
+
+    def cols(self) -> List[int]:
+        c = [self.word]
+        c.extend(self.lemmas)
+        if self.var:
+            c.extend(self.var.cols())
+        return c
+
 
 @dataclass(init=True, repr=True)
 class TableSemantics:
@@ -162,16 +175,16 @@ class TableSemantics:
     example: int = EXAMPLE_COL
     style: int = STYLE_COL
 
-    def word_cols(self) -> Dict[str, int]:
-        """extract named columns"""
-        cols = [self.sl.word, self.gr.word]
-        cols.extend(self.sl.lemmas)
-        cols.extend(self.gr.lemmas)
-        if self.sl.var:
-            cols.append(self.sl.var.word)
-            cols.extend(self.sl.var.lemmas)
-        if self.gr.var:
-            cols.append(self.gr.var.word)
-            cols.extend(self.gr.var.lemmas)
+    def cols(self) -> List[int]:
+        """extract word and lemma columns"""
+        c = []
+        c.extend(self.sl.cols())
+        c.extend(self.gr.cols())
+        return c
 
-        return {f"hl{i}": i for i in cols}
+    def word_cols(self) -> List[int]:
+        """extract word columns"""
+        c = []
+        c.extend(self.sl.word_cols())
+        c.extend(self.gr.word_cols())
+        return c

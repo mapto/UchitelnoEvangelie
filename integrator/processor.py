@@ -84,6 +84,14 @@ def _close(
     return group
 
 
+def _grouped(row: List[str], sem: LangSemantics) -> bool:
+    if f"hl{sem.word:02d}" in row[STYLE_COL]:
+        return True
+    if sem.var and f"hl{sem.word:02d}" in row[STYLE_COL]:
+        return True
+    return False
+
+
 def merge(
     corpus: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> List[List[str]]:
@@ -106,11 +114,7 @@ def merge(
         if not row[IDX_COL] and not_blank:
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
 
-        grouped = (
-            f"hl{orig.word:02d}" in row[STYLE_COL]
-            or f"hl{trans.word:02d}" in row[STYLE_COL]
-        )
-        if grouped:
+        if _grouped(row, orig) or _grouped(row, trans):
             group.append(row)
         else:
             if group:
@@ -119,7 +123,7 @@ def merge(
                 group = []
             result.append(row)
 
-    if grouped:
+    if group:
         group = _close(group, orig, trans)
         result.extend(group)
 
@@ -236,13 +240,13 @@ def aggregate(
         trans_key = base_word(row[trans.word])
         key = (f"{orig_key}{orig_key_var}", f"{trans_key}{trans_key_var}")
 
+        print(row[IDX_COL])
         # TODO: Do not skip, but collect lemma
         if not [v for v in key if v]:
             continue
 
         # print(row[IDX_COL])
         result = _agg_lemma(row, orig.lemmas[0], orig.lemmas, trans.lemmas, key, result)
-        """
         if orig.var and orig.var.lemmas[0]:
             result = _agg_lemma(
                 row,
@@ -253,6 +257,5 @@ def aggregate(
                 result,
                 True,
             )
-        """
 
     return result
