@@ -6,7 +6,7 @@ import re
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 
-@dataclass(order=True, unsafe_hash=True)
+@dataclass(order=True, frozen=True)
 class Index:
     ch: int
     alt: bool
@@ -19,7 +19,9 @@ class Index:
     italic: bool = False
 
     @staticmethod
-    def unpack(value: str) -> "Index":
+    def unpack(
+        value: str, b: bool = False, i: bool = False, var: bool = False
+    ) -> "Index":
         """
         >>> Index.unpack("1/W167c4").longstr()
         '01/W167c04'
@@ -64,7 +66,7 @@ class Index:
         page = int(m.group(3))
         col = m.group(4)
         row = int(m.group(5))
-        var = not not m.group(6)
+        v = var or not not m.group(6)
 
         end = None
         if m.group(15):
@@ -83,7 +85,7 @@ class Index:
                     e_alt = not not m.group(12) if e_ch % 2 else not m.group(12)
             end = Index(e_ch, e_alt, e_page, e_col, e_row, e_var)
 
-        return Index(ch, alt, page, col, row, var, end)
+        return Index(ch, alt, page, col, row, v, end, b, i)
 
     def __str__(self):
         """

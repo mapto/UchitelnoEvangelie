@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import unicodedata
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
@@ -39,14 +39,14 @@ def _close(
         return []
 
     assert group[0][IDX_COL]
-    idx = Index.unpack(group[0][IDX_COL])
-    i_end = None
+    s_end = None
     for i in range(len(group) - 1, 0, -1):
         s_end = group[i][IDX_COL]
         if s_end:
-            i_end = Index.unpack(s_end)
             break
-    idx.end = i_end
+    if not s_end:
+        s_end = group[0][IDX_COL]
+    idx = Index.unpack(f"{group[0][IDX_COL]}-{s_end}")
 
     # collect content
     line = [""] * (STYLE_COL + 5)
@@ -164,10 +164,9 @@ def _agg_lemma(
         next = " >> ".join(cols)
 
         assert row[IDX_COL]
-        val = Index.unpack(row[IDX_COL])
-        val.bold = "bold" in row[STYLE_COL]
-        val.italic = "italic" in row[STYLE_COL]
-        val.var = var
+        b = "bold" in row[STYLE_COL]
+        i = "italic" in row[STYLE_COL]
+        val = Index.unpack(row[IDX_COL], b, i, var)
         if next in d:
             if key not in d[next]:
                 # print(key)
@@ -187,6 +186,10 @@ def _agg_lemma(
             d[next] = _agg_lemma(row, next_c, lem_col, tlem_col, key, d[next], var)
 
     return d
+
+
+def _variant(row: List[str], var: Optional[LangSemantics]) -> bool:
+    return not not var and not not row[var.lemmas[0]]
 
 
 def aggregate(
@@ -230,7 +233,8 @@ def aggregate(
 
         # print(row[IDX_COL])
         result = _agg_lemma(row, orig.lemmas[0], orig.lemmas, trans.lemmas, key, result)
-        if orig.var:
+        if _variant(row, orig.var):
+            assert orig.var  # for mypy
             result = _agg_lemma(
                 row,
                 orig.var.lemmas[0],
@@ -241,11 +245,13 @@ def aggregate(
                 True,
             )
 
-        if trans.var:
+        if _variant(row, trans.var):
+            assert trans.var  # for mypy
             result = _agg_lemma(
                 row, orig.lemmas[0], orig.lemmas, trans.var.lemmas, key, result, True
             )
-            if orig.var:
+            if _variant(row, orig.var):
+                assert orig.var  # for mypy
                 result = _agg_lemma(
                     row,
                     orig.var.lemmas[0],
@@ -257,4 +263,3 @@ def aggregate(
                 )
 
     return result
-
