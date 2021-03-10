@@ -1,6 +1,6 @@
 from typing import Tuple, List
 
-from sortedcontainers import SortedDict, SortedList  # type: ignore
+from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from docx import Document  # type: ignore
 from docx.shared import RGBColor, Pt  # type: ignore
@@ -68,7 +68,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             run.add_text(f"{prefix} {li}")
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
-        if type(any_of_any) is SortedList:
+        if type(any_of_any) is SortedSet:
             trans_lang = "gr" if lang == "sl" else "sl"
             for t, bottom_d in next_d.items():
                 par = doc.add_paragraph()

@@ -2,7 +2,7 @@
 
 from typing import List, Tuple
 import unicodedata
-from sortedcontainers import SortedDict, SortedList, SortedSet  # type: ignore
+from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
 
 from const import IDX_COL, STYLE_COL
@@ -49,59 +49,21 @@ def _close(
     idx.end = i_end
 
     # collect content
-    word = " ".join(_collect(group, orig.word))
-    tr_word = " ".join(_collect(group, trans.word))
-    var_word = " ".join(_collect(group, orig.var.word)) if orig.var else ""
-    tvar_word = " ".join(_collect(group, trans.var.word)) if trans.var else ""
-
-    tr_lemma = " & ".join(_collect(group, trans.lemmas[0]))
-    tvar_lemma = " & ".join(_collect(group, trans.var.lemmas[0])) if trans.var else ""
-
-    var_subl = (
-        " ".join(_collect(group, orig.var.lemmas[1]))
-        if orig.var and not _highlighted(group, orig.var.lemmas[1])
-        else ""
-    )
-    tvar_subl = (
-        " ".join(_collect(group, trans.var.lemmas[1]))
-        if trans.var and not _highlighted(group, trans.var.lemmas[1])
-        else ""
-    )
-
-    tr_subl = [
-        "" if _highlighted(group, c) else " ".join(_collect(group, c))
-        for c in trans.lemmas[1:]
-    ]
-
-    subl = [
-        "" if _highlighted(group, c) else " ".join(_collect(group, c))
-        for c in orig.lemmas[1:]
-    ]
+    line = [""] * (STYLE_COL + 5)
+    for c in orig.word_cols() + trans.word_cols():
+        line[c] = " ".join(_collect(group, c))
+    for c in trans.lem1_cols():
+        line[c] = " & ".join(_collect(group, c))
+    for c in orig.lemn_cols() + trans.lemn_cols():
+        line[c] = " ".join(_collect(group, c)) if not _highlighted(group, c) else ""
 
     # update content
     for i in range(len(group)):
-        row = group[i]
-
-        row[IDX_COL] = idx.longstr()
-        row[orig.word] = word
-        row[trans.word] = tr_word
-        if orig.var:
-            row[orig.var.word] = var_word
-            row[orig.var.lemmas[1]] = var_subl
-        if trans.var:
-            row[trans.var.word] = tvar_word
-            row[trans.var.lemmas[0]] = tvar_lemma
-            row[trans.var.lemmas[1]] = tvar_subl
-        row[trans.lemmas[0]] = tr_lemma
-
-        # subl are missing the first lemma
-        for c in range(1, len(orig.lemmas)):
-            if subl[c - 1]:
-                row[orig.lemmas[c]] = subl[c - 1]
-
-        for c in range(1, len(trans.lemmas)):
-            if tr_subl[c - 1]:
-                row[trans.lemmas[c]] = tr_subl[c - 1]
+        group[i][IDX_COL] = idx.longstr()
+        for c in (
+            orig.word_cols() + orig.lemn_cols() + trans.cols()
+        ):  # excluding orig.lem1_cols()
+            group[i][c] = line[c]
 
     return group
 
@@ -141,13 +103,13 @@ def merge(
         else:
             if group:
                 group = _close(group, orig, trans)
-                result.extend(group)
+                result += group
                 group = []
             result.append(row)
 
     if group:
         group = _close(group, orig, trans)
-        result.extend(group)
+        result += group
 
     return result
 
@@ -177,7 +139,7 @@ def _agg_lemma(
     Args:
         row (List[str]): spreadsheet row
         col (int): lemma column being currently processed
-        lem_col (List[int]): all lemma columns in original language
+        lem_col (List[int]): lemma columns in original language to iterate through
         tlem_col (List[int]): translation lemma columns
         key (Tuple[str, str]): word pair
         d (SortedDict): see return value
@@ -199,7 +161,6 @@ def _agg_lemma(
                 empty = len(cols) > 0  # empty = False
             else:
                 empty = False
-        # next = "→ ".join(cols)
         next = " >> ".join(cols)
 
         assert row[IDX_COL]
@@ -210,10 +171,10 @@ def _agg_lemma(
         if next in d:
             if key not in d[next]:
                 # print(key)
-                d[next][key] = SortedList()
+                d[next][key] = SortedSet()
             d[next][key].add(val)
         else:
-            d[next] = {key: SortedList([val])}
+            d[next] = {key: SortedSet([val])}
 
     else:
         lemmas = row[col].split("&") if row[col] else [""]
@@ -222,8 +183,8 @@ def _agg_lemma(
             if next not in d:
                 d[next] = SortedDict(ord_word)
             next_idx = lem_col.index(col) + 1
-            next_col = lem_col[next_idx] if next_idx < len(lem_col) else -1
-            d[next] = _agg_lemma(row, next_col, lem_col, tlem_col, key, d[next], var)
+            next_c = lem_col[next_idx] if next_idx < len(lem_col) else -1
+            d[next] = _agg_lemma(row, next_c, lem_col, tlem_col, key, d[next], var)
 
     return d
 
@@ -269,7 +230,7 @@ def aggregate(
 
         # print(row[IDX_COL])
         result = _agg_lemma(row, orig.lemmas[0], orig.lemmas, trans.lemmas, key, result)
-        if orig.var and orig.var.lemmas[0]:
+        if orig.var:
             result = _agg_lemma(
                 row,
                 orig.var.lemmas[0],
@@ -280,17 +241,20 @@ def aggregate(
                 True,
             )
 
+        if trans.var:
+            result = _agg_lemma(
+                row, orig.lemmas[0], orig.lemmas, trans.var.lemmas, key, result, True
+            )
+            if orig.var:
+                result = _agg_lemma(
+                    row,
+                    orig.var.lemmas[0],
+                    orig.var.lemmas,
+                    trans.var.lemmas,
+                    key,
+                    result,
+                    True,
+                )
+
     return result
 
-
-def join(a: SortedDict, b: SortedDict) -> SortedDict:
-    """*IN_PLACE* for a"""
-    for k, v in b.items():
-        if k in a:
-            if type(v) == SortedDict:
-                join(a[k], v)
-            elif type(v) == SortedList:
-                a[k].update(v)
-        else:
-            a[k] = v
-    return a

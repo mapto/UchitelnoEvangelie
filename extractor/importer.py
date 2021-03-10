@@ -69,7 +69,7 @@ def _merge(head: List[Word], tail: List[Word]) -> List[Word]:
     """Returns first parameter"""
     if head:
         head[-1].prependTo(tail[0])
-    head.extend(tail)
+    head += tail
     return head
 
 

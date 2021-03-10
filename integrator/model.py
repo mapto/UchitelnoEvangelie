@@ -6,7 +6,7 @@ import re
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 
-@dataclass(order=True)
+@dataclass(order=True, unsafe_hash=True)
 class Index:
     ch: int
     alt: bool
@@ -154,13 +154,13 @@ class LangSemantics:
     var: Optional["LangSemantics"] = None
 
     def __post_init__(self):
-        if self.var:
-            self.var.lemmas.extend(
-                [
-                    STYLE_COL + i
-                    for i in range(1, len(self.lemmas) - len(self.var.lemmas) + 1)
-                ]
-            )
+        if not self.var or len(self.lemmas) == len(self.var.lemmas):
+            return
+        delta = len(self.lemmas) - len(self.var.lemmas)
+        if delta > 0:
+            self.var.lemmas += [STYLE_COL + i + 1 for i in range(delta)]
+        else:
+            self.lemmas += [STYLE_COL + i + 1 for i in range(-delta)]
 
     def cols(self) -> List[int]:
         c = []
