@@ -34,7 +34,15 @@ def _highlighted(group: List[List[str]], col: int) -> bool:
 def _close(
     group: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> List[List[str]]:
-    """*IN_PLACE*"""
+    """*IN_PLACE*
+
+    >>> sl_sem = LangSemantics(lang='sl', word=4, lemmas=[6, 7, 8, 9], var=LangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20], var=None))
+    >>> gr_sem = LangSemantics(lang='gr', word=10, lemmas=[11, 12, 13], var=LangSemantics(lang='gr_var', word=15, lemmas=[16, 17, 19], var=None))
+    >>> _close([['все WH', 'вьсь', '', '1/7c12', 'въ', 'въ сел\ue205ко', 'въ', 'въ + Acc.', '', '', 'εἰς', 'εἰς', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10'], ['\ue201л\ue205ко WH', '\ue201л\ue205къ', '', '1/7c12', 'сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']], gr_sem, sl_sem)
+    [['все WH \ue201л\ue205ко WH', 'вьсь & \ue201л\ue205къ', '', '01/007c12', 'въ сел\ue205ко', 'въ сел\ue205ко', 'въ & сел\ue205къ', 'въ + Acc.', '', '', 'εἰς τοῦτο', 'εἰς', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10'], ['все WH \ue201л\ue205ко WH', 'вьсь & \ue201л\ue205къ', '', '01/007c12', 'въ сел\ue205ко', 'въ сел\ue205ко', 'въ & сел\ue205къ', 'въ + Acc.', '', '', 'εἰς τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']]
+    >>> _close([['', '', '', '1/5a10', 'беꙁ', 'ꙗвѣ• \ue205 беꙁ вѣдѣн\ue205ꙗ', 'беꙁ ', 'беꙁ вѣдѣн\ue205ꙗ', '', '', 'ἀπείρως', 'ἀπείρως', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl10'], ['', '', '', '1/5a10', 'вѣдѣн\ue205ꙗ', 'ꙗвѣ• \ue205 беꙁ вѣдѣн\ue205ꙗ', 'вѣдѣн\ue205\ue201', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl10']], sl_sem, gr_sem)
+    [['', '', '', '01/005a10', 'беꙁ вѣдѣн\ue205ꙗ', 'ꙗвѣ• \ue205 беꙁ вѣдѣн\ue205ꙗ', 'беꙁ ', 'беꙁ вѣдѣн\ue205ꙗ', '', '', 'ἀπείρως', 'ἀπείρως', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl10'], ['', '', '', '01/005a10', 'беꙁ вѣдѣн\ue205ꙗ', 'ꙗвѣ• \ue205 беꙁ вѣдѣн\ue205ꙗ', 'вѣдѣн\ue205\ue201', 'беꙁ вѣдѣн\ue205ꙗ', '', '', 'ἀπείρως', 'ἀπείρως', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl10']]
+    """
     if not group:
         return []
 
@@ -49,7 +57,7 @@ def _close(
     idx = Index.unpack(f"{group[0][IDX_COL]}-{s_end}")
 
     # collect content
-    line = [""] * (STYLE_COL + 5)
+    line = [""] * STYLE_COL
     for c in orig.word_cols() + trans.word_cols():
         line[c] = " ".join(_collect(group, c))
     for c in trans.lem1_cols():
@@ -69,9 +77,26 @@ def _close(
 
 
 def _grouped(row: List[str], sem: LangSemantics) -> bool:
+    """
+    >>> sem = LangSemantics(lang='gr', word=10, lemmas=[11, 12, 13], var=LangSemantics(lang='gr_var', word=15, lemmas=[16, 17, 19], var=None))
+    >>> row = ['\ue201л\ue205ко WH', '\ue201л\ue205къ', '', '1/7c12', 'сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']
+    >>> _grouped(row, sem)
+    True
+
+    >>> sem = LangSemantics(lang='sl', word=4, lemmas=[6, 7, 8, 9], var=LangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20], var=None))
+    >>> row = ['', '', '', '1/7d1', 'насъ', 'оу насъ', 'мꙑ', '', '', '', 'om.', 'om.', '', '', '', 'ἡμῖν', 'ἡμεῖς', '', '', '', '', '', '', '']
+    >>> _grouped(row, sem)
+    False
+    >>> row = ['вѣроу GH', 'вѣра', 'вѣрѫ ѩт\ue205', '1/7b19', 'вѣроують', 'вьс\ue205 вѣроують', 'вѣроват\ue205', '', '', '', 'πιστεύσωσι', 'πιστεύω', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
+    >>> _grouped(row, sem)
+    True
+    >>> row = ['\ue205моуть GH', 'ѩт\ue205', '', '1/7b19', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
+    >>> _grouped(row, sem)
+    True
+    """
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
-    if sem.var and f"hl{sem.word:02d}" in row[STYLE_COL]:
+    if sem.var and f"hl{sem.var.word:02d}" in row[STYLE_COL]:
         return True
     return False
 
@@ -189,6 +214,23 @@ def _agg_lemma(
 
 
 def _variant(row: List[str], var: Optional[LangSemantics]) -> bool:
+    """
+    >>> sem = LangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20], var=None)
+    >>> row = ['вѣроу GH', 'вѣра', 'вѣрѫ ѩт\ue205', '1/7b19', 'вѣроують', 'вьс\ue205 вѣроують', 'вѣроват\ue205', '', '', '', 'πιστεύσωσι', 'πιστεύω', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
+    >>> _variant(row, sem)
+    True
+    >>> row = ['\ue205моуть GH', 'ѩт\ue205', '', '1/7b19', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
+    >>> _variant(row, sem)
+    True
+
+    >>> sem = LangSemantics(lang='gr_var', word=15, lemmas=[16, 17, 19], var=None)
+    >>> row = ['вѣроу GH', 'вѣра', 'вѣрѫ ѩт\ue205', '1/7b19', 'вѣроують', 'вьс\ue205 вѣроують', 'вѣроват\ue205', '', '', '', 'πιστεύσωσι', 'πιστεύω', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
+    >>> _variant(row, sem)
+    False
+    >>> row = ['\ue205моуть GH', 'ѩт\ue205', '', '1/7b19', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
+    >>> _variant(row, sem)
+    False
+    """
     return not not var and not not row[var.lemmas[0]]
 
 
