@@ -27,11 +27,13 @@ class Index:
         '01/W167c04'
         >>> str(Index.unpack("1/6c4"))
         '1/6c4'
-        >>> str(Index.unpack("1/6c4var"))
+
+        >> str(Index.unpack("1/6c4var"))
         '1/6c4var'
         >>> str(Index.unpack("1/6c4-8"))
         '1/6c4-8'
-        >>> str(Index.unpack("1/6c4-8var"))
+
+        >> str(Index.unpack("1/6c4-8var"))
         '1/6c4-8var'
         >>> str(Index.unpack("1/6c4-d4"))
         '1/6c4-d4'
@@ -41,7 +43,8 @@ class Index:
         '1/6c4-7d4'
         >>> str(Index.unpack("1/6c4-2/6d4"))
         '1/6c4-2/6d4'
-        >>> str(Index.unpack("1/6c4var-2/6d4var"))
+
+        >> str(Index.unpack("1/6c4var-2/6d4var"))
         '1/6c4var-2/6d4var'
 
         >>> Index.unpack("1/6a8") < Index.unpack("1/6a17")
@@ -93,7 +96,8 @@ class Index:
         '1/6c4-d4'
         >>> str(Index(1, False, 6, "c", 4, False, Index(1, False, 6, "c", 11)))
         '1/6c4-11'
-        >>> str(Index(1, False, 6, "c", 4, True, Index(1, False, 6, "d", 4, True)))
+
+        >> str(Index(1, False, 6, "c", 4, True, Index(1, False, 6, "d", 4, True)))
         '1/6c4var-d4var'
         >>> str(Index(1, True, 6, "c", 4))
         '1/W6c4'
@@ -101,7 +105,9 @@ class Index:
         '2/W6c4'
         """
         w = "W" if not not self.ch % 2 == self.alt else ""
-        v = "var" if self.var else ""
+        # TODO: variants not needed yet
+        # v = "var" if self.var else ""
+        v = ""
         start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{v}"
         if self.end:
             if self.end.ch != self.ch:
@@ -122,9 +128,10 @@ class Index:
         """
         >>> Index(1, False, 6, "c", 4, False, Index(2, True, 6, "c", 4)).longstr()
         '01/006c04-02/006c04'
-        >>> Index(1, False, 6, "c", 4, True, Index(2, True, 6, "c", 4)).longstr()
+
+        >> Index(1, False, 6, "c", 4, True, Index(2, True, 6, "c", 4)).longstr()
         '01/006c04var-02/006c04'
-        >>> Index(1, False, 6, "c", 4, False, Index(2, True, 6, "c", 4, True)).longstr()
+        >> Index(1, False, 6, "c", 4, False, Index(2, True, 6, "c", 4, True)).longstr()
         '01/006c04-02/006c04var'
         """
         w = "W" if not not self.ch % 2 == self.alt else ""
@@ -160,9 +167,9 @@ class LangSemantics:
             return
         delta = len(self.lemmas) - len(self.var.lemmas)
         if delta > 0:
-            self.var.lemmas += [STYLE_COL + i + 1 for i in range(delta)]
+            self.var.lemmas += [STYLE_COL - 4 + i for i in range(delta)]
         else:
-            self.lemmas += [STYLE_COL + i + 1 for i in range(-delta)]
+            self.lemmas += [STYLE_COL - 4 + i for i in range(-delta)]
 
     def cols(self) -> List[int]:
         c = []
