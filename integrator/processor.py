@@ -148,7 +148,6 @@ def merge(
 
     return result
 
-
 def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
     letters = SortedSet()
     for row in corpus:
@@ -211,6 +210,8 @@ def _agg_lemma(
             d[next] = {key: SortedSet([val])}
 
     else:
+        if var and row[col]:
+            row[col] = row[col].replace("/", "&")
         lemmas = row[col].split("&") if row[col] else [""]
         for l in lemmas:
             next = base_word(l)
