@@ -5,7 +5,7 @@ import unicodedata
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
 
-from const import IDX_COL, STYLE_COL
+from const import IDX_COL, STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP, PATH_SEP
 from model import Index, LangSemantics
 from util import ord_word, base_word
 
@@ -148,6 +148,7 @@ def merge(
 
     return result
 
+
 def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
     letters = SortedSet()
     for row in corpus:
@@ -157,6 +158,32 @@ def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
             )
             # letters = letters.union([ch for ch in row[col].lower()])
     return {l: ord(l) for l in letters}
+
+
+def _build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
+    """TODO: Could be more than one if any of the steps contains H_LEMMA_SEP"""
+    cols = [base_word(row[c]) for c in tlem_col]
+    cols.reverse()
+    empty = True
+    while empty:
+        if not cols[0]:
+            cols.pop(0)
+            empty = len(cols) > 0
+        else:
+            empty = False
+    return [PATH_SEP.join(cols)]
+
+
+def _compile(val: Index, nxt: str, key: Tuple[str, str], d: SortedDict) -> SortedDict:
+    """*IN PLACE*"""
+    if nxt in d:
+        if key not in d[nxt]:
+            d[nxt][key] = SortedSet()
+        d[nxt][key].add(val)
+    else:
+        d[nxt] = {key: SortedSet([val])}
+
+    return d
 
 
 def _agg_lemma(
@@ -169,7 +196,8 @@ def _agg_lemma(
     var: bool = False,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
-
+    *IN PLACE*
+    
     Args:
         row (List[str]): spreadsheet row
         col (int): lemma column being currently processed
@@ -183,36 +211,17 @@ def _agg_lemma(
         SortedDict: *IN PLACE* hierarchical dictionary
     """
     if col == -1:
-        cols = [base_word(row[c]) for c in tlem_col]
-        cols.reverse()
-        empty = True
-        while empty:
-            if not cols[0]:
-                cols.pop(0)
-                # if not len(cols):
-                # print(row)
-                # TODO: Might need to be removed
-                empty = len(cols) > 0  # empty = False
-            else:
-                empty = False
-        next = " >> ".join(cols)
-
         assert row[IDX_COL]
         b = "bold" in row[STYLE_COL]
         i = "italic" in row[STYLE_COL]
         val = Index.unpack(row[IDX_COL], b, i, var)
-        if next in d:
-            if key not in d[next]:
-                # print(key)
-                d[next][key] = SortedSet()
-            d[next][key].add(val)
-        else:
-            d[next] = {key: SortedSet([val])}
+        for nxt in _build_paths(row, tlem_col):
+            d = _compile(val, nxt, key, d)
 
     else:
         if var and row[col]:
-            row[col] = row[col].replace("/", "&")
-        lemmas = row[col].split("&") if row[col] else [""]
+            row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
+        lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
         for l in lemmas:
             next = base_word(l)
             if next not in d:
