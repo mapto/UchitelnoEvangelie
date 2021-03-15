@@ -207,23 +207,22 @@ def _compile(val: Index, nxt: str, key: Tuple[str, str], d: SortedDict) -> Sorte
 def _agg_lemma(
     row: List[str],
     col: int,
-    lem_col: List[int],
-    tlem_col: List[int],
+    orig: LangSemantics,
+    trans: LangSemantics,
     key: Tuple[str, str],
     d: SortedDict,
     var: bool = False,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
-    *IN PLACE*
     
     Args:
         row (List[str]): spreadsheet row
         col (int): lemma column being currently processed
-        lem_col (List[int]): lemma columns in original language to iterate through
-        tlem_col (List[int]): translation lemma columns
+        orig (LangSemantics): original language to iterate through lemma columns
+        trans (LangSemantics): translation for lemma columns
         key (Tuple[str, str]): word pair
         d (SortedDict): see return value
-        var: variant or not
+        var (bool): variant or not
 
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
@@ -233,20 +232,21 @@ def _agg_lemma(
         b = "bold" in row[STYLE_COL]
         i = "italic" in row[STYLE_COL]
         val = Index.unpack(row[IDX_COL], b, i, var)
-        for nxt in _build_paths(row, tlem_col):
+        for nxt in _build_paths(row, trans.lemmas):
             d = _compile(val, nxt, key, d)
 
     else:
         if var and row[col]:
             row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
         lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
+        lem_col = orig.lemmas
         for l in lemmas:
             next = base_word(l)
             if next not in d:
                 d[next] = SortedDict(ord_word)
             next_idx = lem_col.index(col) + 1
             next_c = lem_col[next_idx] if next_idx < len(lem_col) else -1
-            d[next] = _agg_lemma(row, next_c, lem_col, tlem_col, key, d[next], var)
+            d[next] = _agg_lemma(row, next_c, orig, trans, key, d[next], var)
 
     return d
 
@@ -279,10 +279,8 @@ def aggregate(
 
     Args:
         corpus (List[List[str]]): input spreadsheet
-        word_col (int): word column
-        trans_col (int): translation word column
-        lem_col (List[int]): lemma columns
-        tlem_col (List[int]): translation lemma columns
+        orig (LangSemantics): original language table column mapping
+        trans (LangSemantics): translation language table column mapping
 
     Returns:
         SortedDict: hierarchical dictionary of all lemma levels in original language, that contains rows of the form: translation_lemma: word/tword (index)
@@ -312,34 +310,20 @@ def aggregate(
             continue
 
         # print(row[IDX_COL])
-        result = _agg_lemma(row, orig.lemmas[0], orig.lemmas, trans.lemmas, key, result)
+        result = _agg_lemma(row, orig.lemmas[0], orig, trans, key, result)
         if _variant(row, orig.var):
             assert orig.var  # for mypy
             result = _agg_lemma(
-                row,
-                orig.var.lemmas[0],
-                orig.var.lemmas,
-                trans.lemmas,
-                key,
-                result,
-                True,
+                row, orig.var.lemmas[0], orig.var, trans, key, result, True,
             )
 
         if _variant(row, trans.var):
             assert trans.var  # for mypy
-            result = _agg_lemma(
-                row, orig.lemmas[0], orig.lemmas, trans.var.lemmas, key, result, True
-            )
+            result = _agg_lemma(row, orig.lemmas[0], orig, trans.var, key, result, True)
             if _variant(row, orig.var):
                 assert orig.var  # for mypy
                 result = _agg_lemma(
-                    row,
-                    orig.var.lemmas[0],
-                    orig.var.lemmas,
-                    trans.var.lemmas,
-                    key,
-                    result,
-                    True,
+                    row, orig.var.lemmas[0], orig.var, trans.var, key, result, True,
                 )
 
     return result

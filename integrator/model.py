@@ -157,6 +157,8 @@ class Index:
 
 @dataclass
 class LangSemantics:
+    """Table column mapping for a language"""
+
     lang: str
     word: int
     lemmas: List[int]
@@ -200,6 +202,8 @@ class LangSemantics:
 
 @dataclass
 class TableSemantics:
+    """Overall table column mapping"""
+
     sl: "LangSemantics"
     gr: "LangSemantics"
     idx: int = IDX_COL
