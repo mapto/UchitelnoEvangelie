@@ -161,17 +161,36 @@ def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
 
 
 def _build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
-    """TODO: Could be more than one if any of the steps contains H_LEMMA_SEP"""
-    cols = [base_word(row[c]) for c in tlem_col]
-    cols.reverse()
-    empty = True
-    while empty:
-        if not cols[0]:
-            cols.pop(0)
-            empty = len(cols) > 0
-        else:
-            empty = False
-    return [PATH_SEP.join(cols)]
+    """
+    >>> _build_paths(['one', 'two', 'three', 'four'], [0, 1, 2, 3])
+    ['four >> three >> two >> one']
+    >>> _build_paths(['one/two', 'three/four'], [0, 1])
+    ['three >> one', 'three >> two', 'four >> one', 'four >> two']
+    """
+    paths: List[List[str]] = [[]]
+    for c in tlem_col:
+        bw = base_word(row[c])
+        new_paths = []
+        for w in bw.split(H_LEMMA_SEP):
+            for path in paths:
+                n = path.copy()
+                n.append(w.strip())
+                new_paths.append(n)
+        paths = new_paths
+
+    result: List[str] = []
+    for cols in paths:
+        cols.reverse()
+        empty = True
+        while empty:
+            if not cols[0]:
+                cols.pop(0)
+                empty = len(cols) > 0
+            else:
+                empty = False
+        result.append(PATH_SEP.join(cols))
+
+    return result
 
 
 def _compile(val: Index, nxt: str, key: Tuple[str, str], d: SortedDict) -> SortedDict:
@@ -182,7 +201,6 @@ def _compile(val: Index, nxt: str, key: Tuple[str, str], d: SortedDict) -> Sorte
         d[nxt][key].add(val)
     else:
         d[nxt] = {key: SortedSet([val])}
-
     return d
 
 
