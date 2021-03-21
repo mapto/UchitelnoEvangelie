@@ -302,13 +302,17 @@ def aggregate(
 
         orig_key_var = (
             f" {{{base_word(row[orig.var.word])}}}"
-            if orig.var and row[orig.var.word]
+            if _variant(row, orig.var)
+            and orig.var  # for mypy
+            and orig.var.word  # for mypy
             else ""
         )
         orig_key = base_word(row[orig.word])
         trans_key_var = (
             f" {{{base_word(row[trans.var.word])}}}"
-            if trans.var and row[trans.var.word]
+            if _variant(row, trans.var)
+            and trans.var  # for mypy
+            and trans.var.word  # for mypy
             else ""
         )
         trans_key = base_word(row[trans.word])

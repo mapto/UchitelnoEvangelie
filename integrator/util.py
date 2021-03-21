@@ -7,7 +7,7 @@ from alphabet import reduce, remap
 max_char = ord("ѵ") - ord(" ") + 1
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
 
-max_len = 65
+MAX_LEN = 65
 
 
 def chars(cells: List[List[str]]) -> Set:
@@ -88,7 +88,7 @@ def base_word(w: str) -> str:
     return w
 
 
-def ord_word(w: str, max_len=max_len) -> int:
+def ord_word(w: str, max_len=MAX_LEN) -> int:
     """
     >>> ord_word("свѣтъ") < ord_word("свѧтъ")
     True
@@ -105,6 +105,8 @@ def ord_word(w: str, max_len=max_len) -> int:
     """
     a = base_word(w).lower()
     a.replace("оу", "ѹ")
+    if max_len <= len(a):
+        print(a)
     assert max_len > len(a)
     base = 2 * max_char
     r = 0
