@@ -2,7 +2,7 @@
 
 from typing import List, Set
 import unicodedata
-from alphabet import reduce, remap
+from alphabet import remap
 
 max_char = ord("ѵ") - ord(" ") + 1
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
@@ -24,8 +24,6 @@ def chars(cells: List[List[str]]) -> Set:
 
 def _ord(a: str) -> float:
     assert len(a) == 1
-    # if a in reduce:
-    #     a = reduce[a]
     if a in remap:
         return remap[a]
     return ord(a)
@@ -84,7 +82,6 @@ def base_word(w: str) -> str:
     w = w.strip()
     # w.replace("оу", "ѹ")
     w = unicodedata.normalize("NFKC", w)
-    # return "".join([reduce[c] if c in reduce else c for c in w.strip()])
     return w
 
 

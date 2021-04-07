@@ -12,11 +12,13 @@ from docopt import docopt  # type: ignore
 
 from docx import Document  # type: ignore
 from docx.opc.exceptions import OpcError  # type: ignore
+from sortedcontainers import SortedSet  # type: ignore
 
 from model import TableSemantics, LangSemantics
 from importer import import_mapping
 from processor import merge, aggregate, extract_letters, expand_idx
 from exporter import export_docx
+
 
 if __name__ == "__main__":
     args = docopt(__doc__)
@@ -54,10 +56,17 @@ if __name__ == "__main__":
     lines_gr = merge(lines, gr_sem, sl_sem)
     print(f"{len(lines_gr)} думи")
 
-    for c in sem.lem1_cols():
-        print(f"Обзор на буквите в колона {chr(ord('A') + c)}...")
-        letters = extract_letters(lines, c)
-        print(f"{len(letters)} символа")
+    print(f"Обзор на буквите в славянски...")
+    letters = {}
+    for c in sl_sem.lem1_cols():
+        letters.update(extract_letters(lines, c))
+    print(f"{len(letters)} символа: {letters}")
+
+    print(f"Обзор на буквите в гръцки...")
+    letters = {}
+    for c in gr_sem.lem1_cols():
+        letters.update(extract_letters(lines, c))
+    print(f"{len(letters)} символа: {letters}")
 
     print("Кондензиране славянски...")
     sla = aggregate(lines_sl, sl_sem, gr_sem)

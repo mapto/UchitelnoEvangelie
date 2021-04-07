@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 import unicodedata
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
@@ -156,7 +156,7 @@ def merge(
     return result
 
 
-def extract_letters(corpus: List[List[str]], col: int) -> SortedSet:
+def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
     letters = SortedSet()
     for row in corpus:
         if row[col]:
@@ -221,7 +221,7 @@ def _agg_lemma(
     var: bool = False,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
-    
+
     Args:
         row (List[str]): spreadsheet row
         col (int): lemma column being currently processed
@@ -328,7 +328,13 @@ def aggregate(
         if _variant(row, orig.var):
             assert orig.var  # for mypy
             result = _agg_lemma(
-                row, orig.var.lemmas[0], orig.var, trans, key, result, True,
+                row,
+                orig.var.lemmas[0],
+                orig.var,
+                trans,
+                key,
+                result,
+                True,
             )
 
         if _variant(row, trans.var):
@@ -337,7 +343,13 @@ def aggregate(
             if _variant(row, orig.var):
                 assert orig.var  # for mypy
                 result = _agg_lemma(
-                    row, orig.var.lemmas[0], orig.var, trans.var, key, result, True,
+                    row,
+                    orig.var.lemmas[0],
+                    orig.var,
+                    trans.var,
+                    key,
+                    result,
+                    True,
                 )
 
     return result
