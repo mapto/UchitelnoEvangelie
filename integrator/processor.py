@@ -58,11 +58,24 @@ def _close(
     >>> group = [['все WH', 'вьсь', '', '1/7c12', 'въ', 'въ сел\ue205ко', 'въ', 'въ + Acc.', '', '', 'εἰς', 'εἰς', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl07|hl10'], ['\ue201л\ue205ко WH', '\ue201л\ue205къ', '', '1/7c12', 'сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']]
     >>> _close(group, sl_sem, gr_sem)
     [['все WH \ue201л\ue205ко WH', 'вьсь', '', '01/007c12', 'въ сел\ue205ко', 'въ сел\ue205ко', 'въ', 'въ + Acc.', '', '', 'εἰς τοῦτο', 'εἰς & οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl07|hl10'], ['все WH \ue201л\ue205ко WH', '\ue201л\ue205къ', '', '01/007c12', 'въ сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'εἰς τοῦτο', 'εἰς & οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']]
+    >>> group = [['\ue205л\ue205 WH', '\ue205л\ue205', '', '1/6a11', 'л\ue205 ', '\ue201сть л\ue205 раꙁѹмьно', 'л\ue205 ', '', '', '', 'κἂν', 'καί', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl10'], ['', '', '', '1/6a11', '', '', '', '', '', '', '', 'ἀν', '', '', '', '', '', '', '', '', '', '', '', 'hl10']]
+    >>> _close(group, sl_sem, gr_sem)
+    [['\ue205л\ue205 WH', '\ue205л\ue205', '', '01/006a11', 'л\ue205 ', '\ue201сть л\ue205 раꙁѹмьно', 'л\ue205 ', '', '', '', 'κἂν', 'καί & ἀν', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl10'], ['\ue205л\ue205 WH', '', '', '01/006a11', 'л\ue205 ', '', '', '', '', '', 'κἂν', 'καί & ἀν', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl10']]
+    >>> group = [['\ue205л\ue205 WH', '\ue205л\ue205', '', '1/6a11', 'л\ue205 ', '\ue201сть л\ue205 раꙁѹмьно', 'л\ue205 ', '', '', '', 'κἂν', 'καί', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl10'], ['', '', '', '1/6a11', '', '', '', '', '', '', '', 'ἀν', '', '', '', '', '', '', '', '', '', '', '', 'hl10']]
+    >>> _close(group, gr_sem, sl_sem)
+    [['\ue205л\ue205 WH', '\ue205л\ue205', '', '01/006a11', 'л\ue205 ', '\ue201сть л\ue205 раꙁѹмьно', 'л\ue205 ', '', '', '', 'κἂν', 'καί', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl10'], ['\ue205л\ue205 WH', '\ue205л\ue205', '', '01/006a11', 'л\ue205 ', '', 'л\ue205 ', '', '', '', 'κἂν', 'ἀν', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl10']]
+    >>> group = [['', '', '', '1/6a10', 'тѣмь', 'тѣмь л\ue205 в\ue205д\ue205мо', 'тѣмь', 'тѣмь л\ue205', '', '', 'κἂν', 'καί', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl04'], ['\ue205л\ue205 WH', '\ue205л\ue205', '', '1/6a10', 'л\ue205', 'тѣмь л\ue205 в\ue205д\ue205мо', 'л\ue205', '', '', '', '', 'ἀν', '', '', '', '', '', '', '', '', '', '', '', 'hl04']]
+    >>> _close(group, sl_sem, gr_sem)
+    [['\ue205л\ue205 WH', '', '', '01/006a10', 'тѣмь л\ue205', 'тѣмь л\ue205 в\ue205д\ue205мо', 'тѣмь', 'тѣмь л\ue205', '', '', 'κἂν', 'καί & ἀν', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl04'], ['\ue205л\ue205 WH', '\ue205л\ue205', '', '01/006a10', 'тѣмь л\ue205', 'тѣмь л\ue205 в\ue205д\ue205мо', 'л\ue205', 'тѣмь л\ue205', '', '', 'κἂν', 'καί & ἀν', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl04']]
+    >>> group = [['', '', '', '1/6a10', 'тѣмь', 'тѣмь л\ue205 в\ue205д\ue205мо', 'тѣмь', 'тѣмь л\ue205', '', '', 'κἂν', 'καί', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl04'], ['\ue205л\ue205 WH', '\ue205л\ue205', '', '1/6a10', 'л\ue205', 'тѣмь л\ue205 в\ue205д\ue205мо', 'л\ue205', '', '', '', '', 'ἀν', '', '', '', '', '', '', '', '', '', '', '', 'hl04']]
+    >>> _close(group, gr_sem, sl_sem)
+    [['\ue205л\ue205 WH', '\ue205л\ue205', '', '01/006a10', 'тѣмь л\ue205', 'тѣмь л\ue205 в\ue205д\ue205мо', 'тѣмь & л\ue205', 'тѣмь л\ue205', '', '', 'κἂν', 'καί', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl04'], ['\ue205л\ue205 WH', '\ue205л\ue205', '', '01/006a10', 'тѣмь л\ue205', 'тѣмь л\ue205 в\ue205д\ue205мо', 'тѣмь & л\ue205', 'тѣмь л\ue205', '', '', 'κἂν', 'ἀν', 'κἄν', '', '', '', '', '', '', '', '', '', '', 'hl04']]
     """
     if not group:
         return []
 
     assert group[0][IDX_COL]
+
     s_end = None
     for i in range(len(group) - 1, 0, -1):
         s_end = group[i][IDX_COL]
@@ -213,73 +226,110 @@ def _compile(val: Index, nxt: str, key: Tuple[str, str], d: SortedDict) -> Sorte
 
 def _agg_lemma(
     row: List[str],
-    col: int,
-    orig: LangSemantics,
-    trans: LangSemantics,
+    orig: Optional[LangSemantics],
+    trans: Optional[LangSemantics],
     key: Tuple[str, str],
     d: SortedDict,
     var: bool = False,
+    col: int = -1,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
 
     Args:
         row (List[str]): spreadsheet row
-        col (int): lemma column being currently processed
-        orig (LangSemantics): original language to iterate through lemma columns
-        trans (LangSemantics): translation for lemma columns
+        orig (LangSemantics): original language to iterate through lemma columns, do nothing if absent
+        trans (LangSemantics): translation for lemma columns, do nothing if absent
         key (Tuple[str, str]): word pair
         d (SortedDict): see return value
         var (bool): variant or not
+        col (int): lemma column being currently processed, -1 for autodetect/first, -2 for exhausted/last
 
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
+
+    >>> row = [''] * STYLE_COL
+    >>> sem = LangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20], var=None)
+    >>> d = SortedDict()
+    >>> _agg_lemma(row, None, sem, ("dummy","pair"), d)
+    SortedDict({})
+    >>> _agg_lemma(row, sem, None, ("dummy","pair"), d)
+    SortedDict({})
     """
+
+    if not _present(row, orig) or not _present(row, trans):
+        return d
+    assert orig  # for mypy
+    assert trans  # for mypy
+
     if col == -1:
+        col = orig.lemmas[0]
+    elif col == -2:
         assert row[IDX_COL]
         b = "bold" in row[STYLE_COL]
         i = "italic" in row[STYLE_COL]
         val = Index.unpack(row[IDX_COL], b, i, var)
         for nxt in _build_paths(row, trans.lemmas):
             d = _compile(val, nxt, key, d)
+        return d
 
-    else:
-        if var and row[col]:
-            row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
-        lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
-        lem_col = orig.lemmas
-        for l in lemmas:
-            next = base_word(l)
-            if next not in d:
-                d[next] = SortedDict(ord_word)
-            next_idx = lem_col.index(col) + 1
-            next_c = lem_col[next_idx] if next_idx < len(lem_col) else -1
-            d[next] = _agg_lemma(row, next_c, orig, trans, key, d[next], var)
-
+    if var and row[col]:
+        row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
+    lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
+    lem_col = orig.lemmas
+    for l in lemmas:
+        next = base_word(l)
+        if next not in d:
+            d[next] = SortedDict(ord_word)
+        next_idx = lem_col.index(col) + 1
+        next_c = lem_col[next_idx] if next_idx < len(lem_col) else -2
+        d[next] = _agg_lemma(row, orig, trans, key, d[next], var, next_c)
     return d
 
 
-def _variant(row: List[str], var: Optional[LangSemantics]) -> bool:
+def _present(row: List[str], sem: Optional[LangSemantics]) -> bool:
     """
     >>> sem = LangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20], var=None)
     >>> row = ['вѣроу GH', 'вѣра', 'вѣрѫ ѩт\ue205', '1/7b19', 'вѣроують', 'вьс\ue205 вѣроують', 'вѣроват\ue205', '', '', '', 'πιστεύσωσι', 'πιστεύω', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
-    >>> _variant(row, sem)
+    >>> _present(row, sem)
     True
     >>> row = ['\ue205моуть GH', 'ѩт\ue205', '', '1/7b19', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
-    >>> _variant(row, sem)
+    >>> _present(row, sem)
     True
     >>> row = ['\ue205моуть GH', '', '', '1/7b19', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
-    >>> _variant(row, sem)
+    >>> _present(row, sem)
     False
 
     >>> sem = LangSemantics(lang='gr_var', word=15, lemmas=[16, 17, 19], var=None)
     >>> row = ['вѣроу GH', 'вѣра', 'вѣрѫ ѩт\ue205', '1/7b19', 'вѣроують', 'вьс\ue205 вѣроують', 'вѣроват\ue205', '', '', '', 'πιστεύσωσι', 'πιστεύω', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
-    >>> _variant(row, sem)
+    >>> _present(row, sem)
     False
     >>> row = ['\ue205моуть GH', 'ѩт\ue205', '', '1/7b19', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl00']
-    >>> _variant(row, sem)
+    >>> _present(row, sem)
     False
     """
-    return not not var and not not row[var.lemmas[0]]
+    return not not sem and not not row[sem.lemmas[0]]
+
+
+def _build_key(row, sem, var=False):
+    """
+    >>> sem = LangSemantics(lang='sl', word=4, lemmas=[6, 7, 8, 9], var=LangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20], var=None))
+    >>> row = ['\ue201л\ue205ко WH', '\ue201л\ue205къ', '', '1/7c12', 'сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']
+    >>> _build_key(row, sem)
+    'сел\ue205ко'
+    >>> _build_key(row, sem.var, True)
+    ' {\ue201л\ue205ко WH}'
+    """
+    word = (
+        f"{base_word(row[sem.word])}"
+        if _present(row, sem)
+        and sem  # for mypy
+        and sem.word != None  # for mypy
+        and not not row[sem.word]
+        else ""
+    )
+    if not word:
+        return ""
+    return f" {{{word}}}" if var else f"{word}"
 
 
 def aggregate(
@@ -300,56 +350,19 @@ def aggregate(
         if not row[IDX_COL]:
             continue
 
-        orig_key_var = (
-            f" {{{base_word(row[orig.var.word])}}}"
-            if _variant(row, orig.var)
-            and orig.var  # for mypy
-            and orig.var.word  # for mypy
-            else ""
-        )
-        orig_key = base_word(row[orig.word])
-        trans_key_var = (
-            f" {{{base_word(row[trans.var.word])}}}"
-            if _variant(row, trans.var)
-            and trans.var  # for mypy
-            and trans.var.word  # for mypy
-            else ""
-        )
-        trans_key = base_word(row[trans.word])
+        orig_key = _build_key(row, orig)
+        orig_key_var = _build_key(row, orig.var, True)
+        trans_key = _build_key(row, trans)
+        trans_key_var = _build_key(row, trans.var, True)
         key = (f"{orig_key}{orig_key_var}", f"{trans_key}{trans_key_var}")
 
         # print(row[IDX_COL])
-        # TODO: Do not skip, but collect lemma
         if not [v for v in key if v]:
             continue
 
-        # print(row[IDX_COL])
-        result = _agg_lemma(row, orig.lemmas[0], orig, trans, key, result)
-        if _variant(row, orig.var):
-            assert orig.var  # for mypy
-            result = _agg_lemma(
-                row,
-                orig.var.lemmas[0],
-                orig.var,
-                trans,
-                key,
-                result,
-                True,
-            )
-
-        if _variant(row, trans.var):
-            assert trans.var  # for mypy
-            result = _agg_lemma(row, orig.lemmas[0], orig, trans.var, key, result, True)
-            if _variant(row, orig.var):
-                assert orig.var  # for mypy
-                result = _agg_lemma(
-                    row,
-                    orig.var.lemmas[0],
-                    orig.var,
-                    trans.var,
-                    key,
-                    result,
-                    True,
-                )
+        result = _agg_lemma(row, orig, trans, key, result)
+        result = _agg_lemma(row, orig.var, trans, key, result, True)
+        result = _agg_lemma(row, orig, trans.var, key, result, True)
+        result = _agg_lemma(row, orig.var, trans.var, key, result, True)
 
     return result
