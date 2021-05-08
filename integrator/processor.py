@@ -42,8 +42,10 @@ def _close(
     """*IN_PLACE*"""
     if not group:
         return []
-
-    assert group[0][IDX_COL]
+    if not group[0][IDX_COL]:
+        for row in group:
+            print(row)
+        print("ГРЕШКА: липсва индекс в първия ред от групата. Прескачаме групата")
 
     s_end = None
     for i in range(len(group) - 1, 0, -1):

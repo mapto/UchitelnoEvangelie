@@ -1,0 +1,5 @@
+dataclasses
+docopt
+openpyxl
+python-docx
+sortedcontainers

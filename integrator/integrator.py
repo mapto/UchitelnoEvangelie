@@ -17,7 +17,7 @@ from sortedcontainers import SortedSet  # type: ignore
 from model import TableSemantics, LangSemantics
 from importer import import_mapping
 from processor import merge, aggregate, extract_letters, expand_idx
-from exporter import export_docx
+from exporter import export_docx, generate_docx
 
 
 if __name__ == "__main__":
@@ -84,6 +84,16 @@ if __name__ == "__main__":
     print("Експорт гръцки...")
     export_fname = fname[:-5] + "-gre.docx"
     export_docx(gre, "gr", export_fname)
+    print(f"Записване: {export_fname}")
+
+    print("Генериране слявянски...")
+    export_fname = fname[:-5] + "-result-sla.docx"
+    generate_docx(sla, "sl", export_fname)
+    print(f"Записване: {export_fname}")
+
+    print("Генериране гръцки...")
+    export_fname = fname[:-5] + "-result-gre.docx"
+    generate_docx(gre, "gr", export_fname)
     print(f"Записване: {export_fname}")
 
     # if not args["--no-pause"]:
