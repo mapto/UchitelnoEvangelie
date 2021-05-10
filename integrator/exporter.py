@@ -3,7 +3,7 @@ from typing import Tuple, List, Union
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from docx import Document  # type: ignore
-from docx.shared import RGBColor, Pt  # type: ignore
+from docx.shared import RGBColor, Pt, Cm  # type: ignore
 
 from model import Index
 
@@ -161,22 +161,19 @@ def _get_dict_counts(d: Union[SortedDict, dict]) -> Tuple[int, int]:
     return r
 
 
-def _prettyprint_counts(c: Tuple[int, int]) -> str:
-    """
-    >>> _prettyprint_counts((5,0))
-    '5'
-    >>> _prettyprint_counts((0,3))
-    '3var'
-    >>> _prettyprint_counts((2,4))
-    '2 + 4var'
-    """
-    if not c[0]:
-        assert c[1]
-        return f"{c[1]}var"
-    if not c[1]:
-        assert c[0]
-        return str(c[0])
-    return f"{c[0]} + {c[1]}var"
+def _generate_counts(par, d: Union[SortedDict, dict]) -> str:
+    c = _get_dict_counts(d)
+    assert c[0] or c[1]
+    run = par.add_run()
+    if c[0]:
+        run.add_text(str(c[0]))
+        if c[1]:
+            run.add_text(" + ")
+    if c[1]:
+        run.add_text(str(c[1]))
+        run = par.add_run()
+        run.font.superscript = True
+        run.add_text("var")
 
 
 def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
@@ -193,27 +190,34 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
             continue
         if li:
             par = doc.add_paragraph()
+            par.paragraph_format.space_before = Pt(0)
+            par.paragraph_format.space_after = Pt(0)
             if level > 0:
                 par.paragraph_format.first_line_indent = Pt(10)
             run = par.add_run()
             run.font.name = fonts[lang]
-            run.font.size = Pt(16 if level == 0 else 14)
-            prefix = "| " * level
-            # print(d)
-            count = _prettyprint_counts(_get_dict_counts(next_d))
-            run.add_text(f"{prefix} {li} ({count})")
+            run.font.size = Pt(14 if level == 0 else 12)
+            run.font.bold = level == 0
+            par.paragraph_format.first_line_indent = Cm(.25 * level)
+            run.add_text(f"{li} (")
+            _generate_counts(par, next_d)
+            run = par.add_run()
+            run.add_text(")")
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
         if type(any_of_any) is SortedSet:
             trans_lang = "gr" if lang == "sl" else "sl"
             for t, bottom_d in next_d.items():
                 par = doc.add_paragraph()
-                par.paragraph_format.left_indent = Pt(30)
-                par.paragraph_format.first_line_indent = Pt(-10)
+                par.paragraph_format.space_before = Pt(0)
+                par.paragraph_format.space_after = Pt(0)
+                par.paragraph_format.left_indent = Cm(1)
                 run = par.add_run()
                 run.font.name = fonts[trans_lang]
-                count = _prettyprint_counts(_get_dict_counts(bottom_d))
-                run.add_text(f"{t} ({count}): ")
+                run.add_text(f"{t} (")
+                _generate_counts(par, bottom_d)
+                run = par.add_run()
+                run.add_text("): ")
                 first = True
                 pairs = dict(bottom_d.items())
                 for key in sorted(pairs, key=pairs.__getitem__):
