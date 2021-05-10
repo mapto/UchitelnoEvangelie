@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
@@ -105,30 +105,78 @@ def docx_result(par, key: Tuple[str, str], usage: List[Index], src_style: str) -
     other_style = "gr" if src_style == "sl" else "sl"
 
     run = par.add_run()
-    run.font.name = fonts[src_style]
-    run.font.color.rgb = colors[src_style]
-    run.add_text(key[0])
-
-    run = par.add_run()
-    run.add_text("/")
-
-    run = par.add_run()
-    run.font.name = fonts[other_style]
-    run.font.color.rgb = colors[other_style]
-    run.add_text(f"{key[1]} (")
-
     first = True
     for next in usage:
         if not first:
             run = par.add_run()
-            run.add_text(", ")
+            run.add_text("; ")
+
         run = par.add_run()
         run.font.bold = next.bold
         run.font.italic = next.italic
         run.add_text(str(next))
+        run = par.add_run()
+
+        run.add_text(f" cf. {key[1]}")
+
         first = False
-    run = par.add_run()
-    run.add_text(")")
+
+
+def _get_set_counts(s: SortedSet) -> Tuple[int, int]:
+    """
+    >>> s = SortedSet([Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)])
+    >>> _get_set_counts(s)
+    (2, 0)
+
+    >>> s = SortedSet([Index(ch=1, alt=True, page=168, col='c', row=7, var=True), Index(ch=1, alt=True, page=168, col='c', row=7)])
+    >>> _get_set_counts(s)
+    (1, 1)
+    """
+    r = (0, 0)
+    for next in s:
+        r = (r[0], r[1] + 1) if next.var else (r[0] + 1, r[1])
+    return r
+
+
+def _get_dict_counts(d: Union[SortedDict, dict]) -> Tuple[int, int]:
+    """
+    >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([Index(ch=1, alt=False, page=5, col='a', row=5)])}})
+    >>> _get_dict_counts(d)
+    (1, 0)
+
+    >> d = SortedDict({'': SortedDict({'': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([Index(ch=1, alt=False, page=8, col='a', row=3)]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([Index(ch=1, alt=False, page=6, col='b', row=7)])}})})})
+    >> _get_dict_counts(d)
+    (2, 0)
+    """
+    r = (0, 0)
+    any = next(iter(d.values()))
+    if type(any) is SortedSet:
+        for n in d.values():
+            a = _get_set_counts(n)
+            r = (r[0] + a[0], r[1] + a[1])
+    else:  # type(any) is SortedDict or type(any) is dict:
+        for n in d.values():
+            a = _get_dict_counts(n)
+            r = (r[0] + a[0], r[1] + a[1])
+    return r
+
+
+def _prettyprint_counts(c: Tuple[int, int]) -> str:
+    """
+    >>> _prettyprint_counts((5,0))
+    '5'
+    >>> _prettyprint_counts((0,3))
+    '3var'
+    >>> _prettyprint_counts((2,4))
+    '2 + 4var'
+    """
+    if not c[0]:
+        assert c[1]
+        return f"{c[1]}var"
+    if not c[1]:
+        assert c[0]
+        return str(c[0])
+    return f"{c[0]} + {c[1]}var"
 
 
 def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
@@ -149,9 +197,11 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par.paragraph_format.first_line_indent = Pt(10)
             run = par.add_run()
             run.font.name = fonts[lang]
-            run.font.size = Pt(18 if level == 0 else 14)
+            run.font.size = Pt(16 if level == 0 else 14)
             prefix = "| " * level
-            run.add_text(f"{prefix} {li}")
+            # print(d)
+            count = _prettyprint_counts(_get_dict_counts(next_d))
+            run.add_text(f"{prefix} {li} ({count})")
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
         if type(any_of_any) is SortedSet:
@@ -162,7 +212,8 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par.paragraph_format.first_line_indent = Pt(-10)
                 run = par.add_run()
                 run.font.name = fonts[trans_lang]
-                run.add_text(t + ": ")
+                count = _prettyprint_counts(_get_dict_counts(bottom_d))
+                run.add_text(f"{t} ({count}): ")
                 first = True
                 pairs = dict(bottom_d.items())
                 for key in sorted(pairs, key=pairs.__getitem__):
