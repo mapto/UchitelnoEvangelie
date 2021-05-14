@@ -162,6 +162,10 @@ class LangSemantics:
     var: Optional["LangSemantics"] = None
 
     def __post_init__(self):
+        """
+        If there is variant, make sure add correct number of lemma columns.
+        relevant, because different language/variant combinations have different number of lemma columns.
+        """
         if not self.var or len(self.lemmas) == len(self.var.lemmas):
             return
         delta = len(self.lemmas) - len(self.var.lemmas)
