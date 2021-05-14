@@ -1,5 +1,4 @@
-dataclasses
-docopt
-openpyxl
-python-docx
-sortedcontainers
+docopt==0.6.2
+openpyxl==3.0.7
+python-docx==0.8.10
+sortedcontainers==2.3.0
