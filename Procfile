@@ -1,1 +1,0 @@
-web: pipenv sync && pipenv run bottle.py --bind=0.0.0.0:${PORT} --debug app-bottle:app
