@@ -12,14 +12,6 @@ from util import ord_word, base_word
 ord_tuple = lambda x: ord_word(x[0])
 
 
-def expand_idx(corpus: List[List[str]]) -> List[List[str]]:
-    """*IN_PLACE*"""
-    for row in corpus:
-        if row[IDX_COL]:
-            row[IDX_COL] = Index.unpack(row[IDX_COL]).longstr()
-    return corpus
-
-
 def _collect(group: List[List[str]], col: int) -> List[str]:
     return [group[i][col] for i in range(len(group)) if group[i][col]]
 
@@ -46,11 +38,13 @@ def _close(
         idxline = 0
         for i, row in enumerate(group):
             if row[IDX_COL]:
-                idxline = i + 1
                 group[0][IDX_COL] = row[IDX_COL]
+                idxline = i + 1
                 break
         if idxline:
-            print(f"WARNING: липсва индекс в първия ред от групата. Намерен в {idxline} ред")
+            print(
+                f"WARNING: липсва индекс в първия ред от групата. Намерен в {idxline} ред"
+            )
         else:
             for row in group:
                 print(row)
@@ -193,7 +187,7 @@ def _agg_lemma(
     trans: Optional[LangSemantics],
     key: Tuple[str, str],
     d: SortedDict,
-    var: bool = False,
+    var: str = "",
     col: int = -1,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
@@ -304,8 +298,8 @@ def aggregate(
             continue
 
         result = _agg_lemma(row, orig, trans, key, result)
-        result = _agg_lemma(row, orig.var, trans, key, result, True)
-        result = _agg_lemma(row, orig, trans.var, key, result, True)
-        result = _agg_lemma(row, orig.var, trans.var, key, result, True)
+        result = _agg_lemma(row, orig.var, trans, key, result, "WH")
+        result = _agg_lemma(row, orig, trans.var, key, result, "WH")
+        result = _agg_lemma(row, orig.var, trans.var, key, result, "WH")
 
     return result

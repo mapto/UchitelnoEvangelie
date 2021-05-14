@@ -97,6 +97,15 @@ def export_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc.save(fname)
 
 
+def generate_index(par, idx: Index) -> None:
+    run = par.add_run()
+    run.add_text(str(idx))
+    if idx.var:
+        run = par.add_run()
+        run.font.superscript = True
+        run.add_text(idx.var)
+
+
 def docx_result(par, key: Tuple[str, str], usage: List[Index], src_style: str) -> None:
     """
     key: (word,translation)
@@ -107,19 +116,13 @@ def docx_result(par, key: Tuple[str, str], usage: List[Index], src_style: str) -
     run = par.add_run()
     first = True
     for next in usage:
-        if not first:
-            run = par.add_run()
-            run.add_text("; ")
-
         run = par.add_run()
         run.font.bold = next.bold
         run.font.italic = next.italic
         run.add_text(str(next))
         run = par.add_run()
-
-        run.add_text(f" cf. {key[1]}")
-
-        first = False
+        # run.add_text(f" cf. {key[1]}")
+        run.add_text("; ")
 
 
 def _get_set_counts(s: SortedSet) -> Tuple[int, int]:
@@ -128,7 +131,7 @@ def _get_set_counts(s: SortedSet) -> Tuple[int, int]:
     >>> _get_set_counts(s)
     (2, 0)
 
-    >>> s = SortedSet([Index(ch=1, alt=True, page=168, col='c', row=7, var=True), Index(ch=1, alt=True, page=168, col='c', row=7)])
+    >>> s = SortedSet([Index(ch=1, alt=True, page=168, col='c', row=7, var="WH"), Index(ch=1, alt=True, page=168, col='c', row=7)])
     >>> _get_set_counts(s)
     (1, 1)
     """
@@ -161,7 +164,7 @@ def _get_dict_counts(d: Union[SortedDict, dict]) -> Tuple[int, int]:
     return r
 
 
-def _generate_counts(par, d: Union[SortedDict, dict]) -> str:
+def _generate_counts(par, d: Union[SortedDict, dict]) -> None:
     c = _get_dict_counts(d)
     assert c[0] or c[1]
     run = par.add_run()
@@ -198,7 +201,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
             run.font.name = fonts[lang]
             run.font.size = Pt(14 if level == 0 else 12)
             run.font.bold = level == 0
-            par.paragraph_format.first_line_indent = Cm(.25 * level)
+            par.paragraph_format.first_line_indent = Cm(0.25 * level)
             run.add_text(f"{li} (")
             _generate_counts(par, next_d)
             run = par.add_run()

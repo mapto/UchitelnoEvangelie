@@ -13,15 +13,13 @@ class Index:
     page: int
     col: str
     row: int
-    var: bool = False
+    var: str = ""
     end: Optional["Index"] = None
     bold: bool = False
     italic: bool = False
 
     @staticmethod
-    def unpack(
-        value: str, b: bool = False, i: bool = False, var: bool = False
-    ) -> "Index":
+    def unpack(value: str, b: bool = False, i: bool = False, var: str = "") -> "Index":
         """
         >>> Index.unpack("1/W167c4").longstr()
         '01/W167c04'
@@ -56,6 +54,7 @@ class Index:
 
         Regex using: https://pythex.org/
         """
+        # TODO: var from regex (shift indices)
         m = re.search(
             r"(\d{1,2})/(W)?(\d{1,3})([abcd])(\d{1,2})(var)?"
             + r"(-((((\d{1,2})/)?(W)?(\d{1,3}))?([abcd]))?(\d{1,2})(var)?)?",
@@ -69,7 +68,7 @@ class Index:
         page = int(m.group(3))
         col = m.group(4)
         row = int(m.group(5))
-        v = var or not not m.group(6)
+        # v = m.group(6)
 
         end = None
         if m.group(15):
@@ -78,7 +77,7 @@ class Index:
             e_page = page
             e_col = col
             e_row = int(m.group(15))
-            e_var = not not m.group(16)
+            # e_var = m.group(16)
             if m.group(14):
                 e_col = m.group(14)
                 if m.group(13):
@@ -86,61 +85,59 @@ class Index:
                     if m.group(11):
                         e_ch = int(m.group(11))
                     e_alt = not not m.group(12) if e_ch % 2 else not m.group(12)
-            end = Index(e_ch, e_alt, e_page, e_col, e_row, e_var)
+            end = Index(e_ch, e_alt, e_page, e_col, e_row, var)
 
-        return Index(ch, alt, page, col, row, v, end, b, i)
+        return Index(ch, alt, page, col, row, var, end, b, i)
 
     def __str__(self):
         """
-        >>> str(Index(1, False, 6, "c", 4, False, Index(1, False, 6, "d", 4)))
+        >>> str(Index(1, False, 6, "c", 4, "", Index(1, False, 6, "d", 4)))
         '1/6c4-d4'
-        >>> str(Index(1, False, 6, "c", 4, False, Index(1, False, 6, "c", 11)))
+        >>> str(Index(1, False, 6, "c", 4, "", Index(1, False, 6, "c", 11)))
         '1/6c4-11'
 
-        >> str(Index(1, False, 6, "c", 4, True, Index(1, False, 6, "d", 4, True)))
-        '1/6c4var-d4var'
+        Variants are not shown:
+        >>> str(Index(1, False, 6, "c", 4, "WH", Index(1, False, 6, "d", 4, "WH")))
+        '1/6c4-d4'
+
         >>> str(Index(1, True, 6, "c", 4))
         '1/W6c4'
         >>> str(Index(2, False, 6, "c", 4))
         '2/W6c4'
         """
         w = "W" if not not self.ch % 2 == self.alt else ""
-        # TODO: variants not needed yet
-        # v = "var" if self.var else ""
-        v = ""
-        start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{v}"
+        start = f"{self.ch}/{w}{self.page}{self.col}{self.row}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{str(self.end)}"
-            ev = "var" if self.end.var else ""
             if self.end.alt != self.alt:
                 ew = "W" if self.end.alt and self.end.ch % 2 else ""
-                return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}{ev}"
+                return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}"
             if self.end.page != self.page:
-                return f"{start}-{self.end.page}{self.end.col}{self.end.row}{ev}"
+                return f"{start}-{self.end.page}{self.end.col}{self.end.row}"
             if self.end.col != self.col:
-                return f"{start}-{self.end.col}{self.end.row}{ev}"
+                return f"{start}-{self.end.col}{self.end.row}"
             if self.end.row != self.row:
-                return f"{start}-{self.end.row}{ev}"
+                return f"{start}-{self.end.row}"
         return start
 
     def longstr(self):
         """
-        >>> Index(1, False, 6, "c", 4, False, Index(2, True, 6, "c", 4)).longstr()
+        >>> Index(1, False, 6, "c", 4, "", Index(2, True, 6, "c", 4)).longstr()
         '01/006c04-02/006c04'
 
-        >> Index(1, False, 6, "c", 4, True, Index(2, True, 6, "c", 4)).longstr()
-        '01/006c04var-02/006c04'
-        >> Index(1, False, 6, "c", 4, False, Index(2, True, 6, "c", 4, True)).longstr()
-        '01/006c04-02/006c04var'
+        >> Index(1, False, 6, "c", 4, "WH", Index(2, True, 6, "c", 4)).longstr()
+        '01/006c04WH-02/006c04'
+        >> Index(1, False, 6, "c", 4, "", Index(2, True, 6, "c", 4, "WH")).longstr()
+        '01/006c04-02/006c04WH'
         """
         w = "W" if not not self.ch % 2 == self.alt else ""
-        v = "var" if self.var else ""
+        v = self.var
         start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{v}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{self.end.longstr()}"
-            ev = "var" if self.end.var else ""
+            ev = self.end.var
             if self.end.alt != self.alt:
                 ew = "W" if self.end.alt and self.end.ch % 2 else ""
                 return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ev}"
