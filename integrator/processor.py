@@ -43,9 +43,18 @@ def _close(
     if not group:
         return []
     if not group[0][IDX_COL]:
-        for row in group:
-            print(row)
-        print("ГРЕШКА: липсва индекс в първия ред от групата. Прескачаме групата")
+        idxline = 0
+        for i, row in enumerate(group):
+            if row[IDX_COL]:
+                idxline = i + 1
+                group[0][IDX_COL] = row[IDX_COL]
+                break
+        if idxline:
+            print(f"WARNING: липсва индекс в първия ред от групата. Намерен в {idxline} ред")
+        else:
+            for row in group:
+                print(row)
+            print(f"ГРЕШКА: липсва индекс в групата.")
 
     s_end = None
     for i in range(len(group) - 1, 0, -1):
