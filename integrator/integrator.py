@@ -6,7 +6,7 @@ Usage:
   integrator.py <xlsx>
 
 """
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 from docopt import docopt  # type: ignore
 
@@ -21,7 +21,7 @@ from exporter import export_docx, generate_docx
 
 
 if __name__ == "__main__":
-    args = docopt(__doc__)
+    args = docopt(__doc__, version=__version__)
     # print(args)
     fname = args["<xlsx>"]
     print(f"Прочитане: {fname}")

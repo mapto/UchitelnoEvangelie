@@ -14,7 +14,7 @@ Options:
   -p --no-pause         Disable pause at end of execution
 
 """
-__version__ = "0.0.1"
+__version__ = "1.0.1"
 
 from docopt import docopt  # type: ignore
 
@@ -27,7 +27,7 @@ from processor import dehyphenate, condense, integrate_words
 from exporter import export_sheet
 
 if __name__ == "__main__":
-    args = docopt(__doc__)
+    args = docopt(__doc__, version=__version__)
     # print(args)
     fname = args["<docx>"]
     print(f"Прочитане: {fname}")
