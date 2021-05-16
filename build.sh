@@ -1,4 +1,4 @@
-rm -rf dist/*
+rm -rf dist && mkdir dist
 
 cd extractor
 
@@ -23,3 +23,6 @@ mv dist/linux/integrator ../dist
 
 rm -rf dist
 cd ..
+
+# remove containers with the given image name
+docker ps -a | awk '{ print $1,$2 }' | grep 'cdrx/pyinstaller' | awk '{print $1}' | xargs -I {} docker rm -f {}

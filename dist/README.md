@@ -1,1 +1,0 @@
-The build.sh sript would put release files here.
