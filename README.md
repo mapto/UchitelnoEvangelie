@@ -47,4 +47,3 @@
 
 За създаването на иконата е използван символът <a href="https://fontawesome.com/icons/book-open?style=solid">open-book</a> от FontAwesome, разпространяван под лиценза <a href="https://creativecommons.org/licenses/by/4.0/">Криейтив комънс признание 4.0 международен вариант</a>.
 
-The build.sh sript would put release files here.
