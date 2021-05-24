@@ -5,7 +5,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
 
 from const import IDX_COL, STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP, PATH_SEP
-from model import Index, LangSemantics
+from model import Index, LangSemantics, MainLangSemantics, VarLangSemantics
 from util import ord_word, base_word
 
 ord_tuple = lambda x: ord_word(x[0])
@@ -98,7 +98,7 @@ def _agg_lemma(
         SortedDict: *IN PLACE* hierarchical dictionary
 
     >>> row = [''] * STYLE_COL
-    >>> sem = LangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20], var=None)
+    >>> sem = VarLangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20])
     >>> d = SortedDict()
     >>> _agg_lemma(row, None, sem, ("dummy","pair"), d)
     SortedDict({})
@@ -137,7 +137,7 @@ def _present(row: List[str], sem: Optional[LangSemantics]) -> bool:
 
 def _build_key(row, sem, var=False):
     """
-    >>> sem = LangSemantics(lang='sl', word=4, lemmas=[6, 7, 8, 9], var=LangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20], var=None))
+    >>> sem = MainLangSemantics(lang='sl', word=4, lemmas=[6, 7, 8, 9], var=VarLangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20]))
     >>> row = ['\ue201л\ue205ко WH', '\ue201л\ue205къ', '', '1/7c12', 'сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']
     >>> _build_key(row, sem)
     'сел\ue205ко'
@@ -158,7 +158,7 @@ def _build_key(row, sem, var=False):
 
 
 def aggregate(
-    corpus: List[List[str]], orig: LangSemantics, trans: LangSemantics
+    corpus: List[List[str]], orig: MainLangSemantics, trans: MainLangSemantics
 ) -> SortedDict:
     """Generate an aggregated index of translations. Recursion ensures that this works with variable depth.
 

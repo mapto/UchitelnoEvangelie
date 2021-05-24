@@ -8,7 +8,7 @@ from openpyxl.styles import Font  # type: ignore
 
 from const import IDX_COL, STYLE_COL
 
-from model import TableSemantics, LangSemantics
+from model import TableSemantics, LangSemantics, MainLangSemantics, VarLangSemantics
 
 
 def _style2str(s: Font, bgs: Dict[str, Optional[str]]) -> str:
@@ -36,9 +36,11 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
 
 
 if __name__ == "__main__":
-    sl_sem = LangSemantics("sl", 4, [6, 7, 8, 9], LangSemantics("sl_var", 0, [1, 2]))
-    gr_sem = LangSemantics(
-        "gr", 10, [11, 12, 13], LangSemantics("gr_var", 15, [16, 17])
+    sl_sem = MainLangSemantics(
+        "sl", 4, [6, 7, 8, 9], VarLangSemantics("sl_var", 0, [1, 2])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 10, [11, 12, 13], VarLangSemantics("gr_var", 15, [16, 17])
     )
     sem = TableSemantics(sl_sem, gr_sem)
 

@@ -5,7 +5,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
 
 from const import IDX_COL, STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP, PATH_SEP
-from model import Index, LangSemantics
+from model import Index, LangSemantics, MainLangSemantics, VarLangSemantics
 from util import ord_word, base_word
 
 ord_tuple = lambda x: ord_word(x[0])
@@ -79,16 +79,16 @@ def _close(
     return group
 
 
-def _grouped(row: List[str], sem: LangSemantics) -> bool:
+def _grouped(row: List[str], sem: MainLangSemantics) -> bool:
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
-    if sem.var and f"hl{sem.var.word:02d}" in row[STYLE_COL]:
+    if f"hl{sem.var.word:02d}" in row[STYLE_COL]:
         return True
     return False
 
 
 def merge(
-    corpus: List[List[str]], orig: LangSemantics, trans: LangSemantics
+    corpus: List[List[str]], orig: MainLangSemantics, trans: MainLangSemantics
 ) -> List[List[str]]:
     """Merge lines according to distribution of =. This is an asymmetric operation
 

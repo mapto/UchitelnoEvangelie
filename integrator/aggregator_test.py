@@ -1,9 +1,9 @@
-from model import LangSemantics
+from model import VarLangSemantics
 from aggregator import _present
 
 
 def test_present():
-    sem = LangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20], var=None)
+    sem = VarLangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20])
     row = [
         "вѣроу GH",
         "вѣра",
@@ -86,7 +86,7 @@ def test_present():
     ]
     assert not _present(row, sem)
 
-    sem = LangSemantics(lang="gr_var", word=15, lemmas=[16, 17, 19], var=None)
+    sem = VarLangSemantics(lang="gr_var", word=15, lemmas=[16, 17, 19])
     row = [
         "вѣроу GH",
         "вѣра",

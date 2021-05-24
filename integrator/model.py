@@ -154,13 +154,13 @@ class Index:
 
 @dataclass
 class LangSemantics:
-    """Table column mapping for a language"""
+    """Table column mapping for a language."""
 
     lang: str
     word: int
     lemmas: List[int]
-    var: Optional["LangSemantics"] = None
 
+    '''
     def __post_init__(self):
         """
         If there is variant, make sure add correct number of lemma columns.
@@ -173,6 +173,7 @@ class LangSemantics:
             self.var.lemmas += [STYLE_COL - 4 + i for i in range(delta)]
         else:
             self.lemmas += [STYLE_COL - 4 + i for i in range(-delta)]
+    '''
 
     def cols(self) -> List[int]:
         c = []
@@ -182,31 +183,57 @@ class LangSemantics:
         return c
 
     def word_cols(self) -> List[int]:
-        c = [self.word]
-        if self.var:
-            c.append(self.var.word)
-        return c
+        return [self.word]
 
     def lem1_cols(self) -> List[int]:
-        c = [self.lemmas[0]]
-        if self.var:
-            c.append(self.var.lemmas[0])
-        return c
+        return [self.lemmas[0]]
 
     def lemn_cols(self) -> List[int]:
-        c = []
-        c += self.lemmas[1:]
-        if self.var:
-            c += self.var.lemmas[1:]
-        return c
+        return self.lemmas[1:]
+
+
+@dataclass
+class MainLangSemantics(LangSemantics):
+    var: "VarLangSemantics"
+
+    def __post_init__(self):
+        """
+        If there is variant, make sure add correct number of lemma columns.
+        relevant, because different language/variant combinations have different number of lemma columns.
+        """
+        self.var.main = self
+
+        if len(self.lemmas) == len(self.var.lemmas):
+            return
+        delta = len(self.lemmas) - len(self.var.lemmas)
+        if delta > 0:
+            self.var.lemmas += [STYLE_COL - 4 + i for i in range(delta)]
+        else:
+            self.lemmas += [STYLE_COL - 4 + i for i in range(-delta)]
+
+    def word_cols(self) -> List[int]:
+        return super().word_cols() + [self.var.word]
+
+    def lem1_cols(self) -> List[int]:
+        return super().lem1_cols() + [self.var.lemmas[0]]
+
+    def lemn_cols(self) -> List[int]:
+        return super().lemn_cols() + self.var.lemmas[1:]
+
+
+@dataclass
+class VarLangSemantics(LangSemantics):
+    main: Optional[
+        "MainLangSemantics"
+    ] = None  # nullable just because it's a recursive reference and setting up needs to happen post-init
 
 
 @dataclass
 class TableSemantics:
     """Overall table column mapping"""
 
-    sl: "LangSemantics"
-    gr: "LangSemantics"
+    sl: "MainLangSemantics"
+    gr: "MainLangSemantics"
     idx: int = IDX_COL
     example: int = EXAMPLE_COL
     style: int = STYLE_COL

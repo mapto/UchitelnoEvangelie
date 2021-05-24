@@ -1,6 +1,6 @@
 from typing import List
 
-from model import Index, LangSemantics
+from model import Index, LangSemantics, MainLangSemantics, VarLangSemantics
 from merger import _close, _grouped
 
 
@@ -17,11 +17,11 @@ def _equal(a: List[List[str]], b: List[List[str]]) -> bool:
 
 
 def test_grouped():
-    sem = LangSemantics(
+    sem = MainLangSemantics(
         lang="gr",
         word=10,
         lemmas=[11, 12, 13],
-        var=LangSemantics(lang="gr_var", word=15, lemmas=[16, 17, 19], var=None),
+        var=VarLangSemantics(lang="gr_var", word=15, lemmas=[16, 17, 19]),
     )
     row = [
         "\ue201л\ue205ко WH",
@@ -51,11 +51,11 @@ def test_grouped():
     ]
     assert _grouped(row, sem)
 
-    sem = LangSemantics(
+    sem = MainLangSemantics(
         lang="sl",
         word=4,
         lemmas=[6, 7, 8, 9],
-        var=LangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20], var=None),
+        var=VarLangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20]),
     )
     row = [
         "",
@@ -141,17 +141,17 @@ def test_grouped():
 
 
 def test_close():
-    sl_sem = LangSemantics(
+    sl_sem = MainLangSemantics(
         lang="sl",
         word=4,
         lemmas=[6, 7, 8, 9],
-        var=LangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20], var=None),
+        var=VarLangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20]),
     )
-    gr_sem = LangSemantics(
+    gr_sem = MainLangSemantics(
         lang="gr",
         word=10,
         lemmas=[11, 12, 13],
-        var=LangSemantics(lang="gr_var", word=15, lemmas=[16, 17, 19], var=None),
+        var=VarLangSemantics(lang="gr_var", word=15, lemmas=[16, 17, 19]),
     )
     group = [
         [
