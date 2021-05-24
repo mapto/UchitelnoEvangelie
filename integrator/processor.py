@@ -170,7 +170,9 @@ def _build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
     return result
 
 
-def _compile(val: Index, nxt: str, key: Tuple[str, str], d: SortedDict) -> SortedDict:
+def _compile_usage(
+    val: Index, nxt: str, key: Tuple[str, str], d: SortedDict
+) -> SortedDict:
     """*IN PLACE*"""
     if nxt in d:
         if key not in d[nxt]:
@@ -178,6 +180,23 @@ def _compile(val: Index, nxt: str, key: Tuple[str, str], d: SortedDict) -> Sorte
         d[nxt][key].add(val)
     else:
         d[nxt] = {key: SortedSet([val])}
+    return d
+
+
+def _build_usage(
+    row: List[str],
+    trans: LangSemantics,
+    key: Tuple[str, str],
+    d: SortedDict,
+    var: str = "",
+) -> SortedDict:
+    assert row[IDX_COL]
+
+    b = "bold" in row[STYLE_COL]
+    i = "italic" in row[STYLE_COL]
+    val = Index.unpack(row[IDX_COL], b, i, var)
+    for nxt in _build_paths(row, trans.lemmas):
+        d = _compile_usage(val, nxt, key, d)
     return d
 
 
@@ -216,19 +235,14 @@ def _agg_lemma(
     if not _present(row, orig) or not _present(row, trans):
         return d
     assert orig  # for mypy
-    assert trans  # for mypy
 
-    if col == -1:
+    if col == -1:  # autodetect/first
         col = orig.lemmas[0]
-    elif col == -2:
-        assert row[IDX_COL]
-        b = "bold" in row[STYLE_COL]
-        i = "italic" in row[STYLE_COL]
-        val = Index.unpack(row[IDX_COL], b, i, var)
-        for nxt in _build_paths(row, trans.lemmas):
-            d = _compile(val, nxt, key, d)
-        return d
+    elif col == -2:  # exhausted/last
+        assert trans  # for mypy
+        return _build_usage(row, trans, key, d, var)
 
+    # TODO: implement variants here
     if var and row[col]:
         row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
     lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
