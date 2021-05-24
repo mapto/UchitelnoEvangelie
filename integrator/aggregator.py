@@ -13,6 +13,8 @@ ord_tuple = lambda x: ord_word(x[0])
 
 def _build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
     """
+    >>> _build_paths(['боудеть', 'бꙑт\ue205 ', '', 'gram.'], [0,1,2,3])
+    ['gram. → бꙑт\ue205 → боудеть']
     >>> _build_paths(['one', 'two', 'three', 'four'], [0, 1, 2, 3])
     ['four → three → two → one']
     >>> _build_paths(['one/two', 'three/four'], [0, 1])
@@ -25,7 +27,8 @@ def _build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
         for w in bw.split(H_LEMMA_SEP):
             for path in paths:
                 n = path.copy()
-                n.append(w.strip())
+                if w.strip():
+                    n.append(w.strip())
                 new_paths.append(n)
         paths = new_paths
 
@@ -175,6 +178,7 @@ def aggregate(
         if not row[IDX_COL]:
             continue
 
+        # print(row)
         orig_key = _build_key(row, orig)
         orig_key_var = _build_key(row, orig.var, True)
         trans_key = _build_key(row, trans)
