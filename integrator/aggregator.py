@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from typing import List, Tuple, Optional, Dict
-import unicodedata
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
 
@@ -124,17 +123,6 @@ def merge(
         result += group
 
     return result
-
-
-def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
-    letters = SortedSet()
-    for row in corpus:
-        if row[col]:
-            letters = letters.union(
-                [ch for ch in unicodedata.normalize("NFKC", row[col].lower())]
-            )
-            # letters = letters.union([ch for ch in row[col].lower()])
-    return {l: ord(l) for l in letters}
 
 
 def _build_paths(row: List[str], tlem_col: List[int]) -> List[str]:

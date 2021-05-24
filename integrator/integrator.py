@@ -16,7 +16,9 @@ from sortedcontainers import SortedSet  # type: ignore
 
 from model import TableSemantics, LangSemantics
 from importer import import_mapping
-from processor import merge, aggregate, extract_letters
+from util import extract_letters
+from merger import merge
+from aggregator import aggregate
 from exporter import export_docx, generate_docx
 
 

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
-from typing import List, Set
+from typing import Dict, List, Set
+
 import unicodedata
+from sortedcontainers import SortedSet  # type: ignore
+
 from alphabet import remap
 
 max_char = ord("ѵ") - ord(" ") + 1
@@ -114,6 +117,17 @@ def ord_word(w: str, max_len=MAX_LEN) -> int:
     r *= base ** (max_len - len(a))
     # print(r)
     return r
+
+
+def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
+    letters = SortedSet()
+    for row in corpus:
+        if row[col]:
+            letters = letters.union(
+                [ch for ch in unicodedata.normalize("NFKC", row[col].lower())]
+            )
+            # letters = letters.union([ch for ch in row[col].lower()])
+    return {l: ord(l) for l in letters}
 
 
 if __name__ == "__main__":
