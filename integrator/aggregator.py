@@ -14,9 +14,9 @@ ord_tuple = lambda x: ord_word(x[0])
 def _build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
     """
     >>> _build_paths(['one', 'two', 'three', 'four'], [0, 1, 2, 3])
-    ['four >> three >> two >> one']
+    ['four → three → two → one']
     >>> _build_paths(['one/two', 'three/four'], [0, 1])
-    ['three >> one', 'three >> two', 'four >> one', 'four >> two']
+    ['three → one', 'three → two', 'four → one', 'four → two']
     """
     paths: List[List[str]] = [[]]
     for c in tlem_col:

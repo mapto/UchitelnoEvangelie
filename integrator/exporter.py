@@ -7,7 +7,9 @@ from docx.shared import RGBColor, Pt, Cm  # type: ignore
 
 from model import Index
 
-fonts = {"gr": "Times New Roman", "sl": "CyrillicaOchrid10U"}
+GENERIC_FONT = "Times New Roman"
+
+fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
 colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
 
 
@@ -60,6 +62,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             continue
         if li:
             par = doc.add_paragraph()
+            par.style.font.name = GENERIC_FONT
             if level > 0:
                 par.paragraph_format.first_line_indent = Pt(10)
             run = par.add_run()
@@ -69,10 +72,11 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             run.add_text(f"{prefix} {li}")
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
-        if type(any_of_any) is SortedSet:
+        if type(any_of_any) is SortedSet: # bottom of structure
             trans_lang = "gr" if lang == "sl" else "sl"
             for t, bottom_d in next_d.items():
                 par = doc.add_paragraph()
+                par.style.font.name = GENERIC_FONT
                 par.paragraph_format.left_indent = Pt(30)
                 par.paragraph_format.first_line_indent = Pt(-10)
                 run = par.add_run()
@@ -168,6 +172,7 @@ def _generate_counts(par, d: Union[SortedDict, dict]) -> None:
     c = _get_dict_counts(d)
     assert c[0] or c[1]
     run = par.add_run()
+    run.add_text(" (")
     if c[0]:
         run.add_text(str(c[0]))
         if c[1]:
@@ -202,7 +207,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
             run.font.size = Pt(14 if level == 0 else 12)
             run.font.bold = level == 0
             par.paragraph_format.first_line_indent = Cm(0.25 * level)
-            run.add_text(f"{li} (")
+            run.add_text(li)
             _generate_counts(par, next_d)
             run = par.add_run()
             run.add_text(")")
@@ -217,9 +222,10 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par.paragraph_format.left_indent = Cm(1)
                 run = par.add_run()
                 run.font.name = fonts[trans_lang]
-                run.add_text(f"{t} (")
+                run.add_text(t)
                 _generate_counts(par, bottom_d)
                 run = par.add_run()
+                run.font.name = fonts["gr"]
                 run.add_text("): ")
                 first = True
                 pairs = dict(bottom_d.items())
@@ -236,5 +242,6 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
 
 def generate_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
+    doc.styles["Normal"].font.name = GENERIC_FONT
     _generate_line(0, lang, d, doc)
     doc.save(fname)

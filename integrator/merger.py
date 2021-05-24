@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-from typing import List, Tuple, Optional, Dict
-from sortedcontainers import SortedDict, SortedSet  # type: ignore
-import re
+from typing import List, Dict
 
-from const import IDX_COL, STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP, PATH_SEP
-from model import Index, LangSemantics, MainLangSemantics, VarLangSemantics
-from util import ord_word, base_word
+from const import IDX_COL, STYLE_COL
+from model import Index, LangSemantics, MainLangSemantics
+from util import ord_word
 
 ord_tuple = lambda x: ord_word(x[0])
 
