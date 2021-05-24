@@ -120,13 +120,14 @@ def docx_result(par, key: Tuple[str, str], usage: List[Index], src_style: str) -
     run = par.add_run()
     first = True
     for next in usage:
+        if not first:
+            run = par.add_run()
+            run.add_text("; ")
         run = par.add_run()
         run.font.bold = next.bold
         run.font.italic = next.italic
         run.add_text(str(next))
-        run = par.add_run()
-        # run.add_text(f" cf. {key[1]}")
-        run.add_text("; ")
+        first = False
 
 
 def _get_set_counts(s: SortedSet) -> Tuple[int, int]:
@@ -198,6 +199,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
             continue
         if li:
             par = doc.add_paragraph()
+            par.style.font.name = GENERIC_FONT
             par.paragraph_format.space_before = Pt(0)
             par.paragraph_format.space_after = Pt(0)
             if level > 0:
@@ -213,10 +215,11 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
             run.add_text(")")
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
-        if type(any_of_any) is SortedSet:
+        if type(any_of_any) is SortedSet:  # bottom of structure
             trans_lang = "gr" if lang == "sl" else "sl"
             for t, bottom_d in next_d.items():
                 par = doc.add_paragraph()
+                par.style.font.name = GENERIC_FONT
                 par.paragraph_format.space_before = Pt(0)
                 par.paragraph_format.space_after = Pt(0)
                 par.paragraph_format.left_indent = Cm(1)
