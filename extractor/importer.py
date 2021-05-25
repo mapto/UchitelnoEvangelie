@@ -20,6 +20,7 @@ from schema import (
     tag_br,
 )
 from model import Index, Word, Comment
+from util import merge, Buffer
 
 
 def parse_comments(doc: Document) -> Dict[int, Comment]:
@@ -40,63 +41,12 @@ def parse_comments(doc: Document) -> Dict[int, Comment]:
     return result
 
 
-def _compile_words(idx: Index, buffer: str, comment: str) -> List[Word]:
-    """
-    Convert a text into a list of annotated words
-    
-    >>> idx = Index(ch=43, page='197a', row=7)
-    >>> b = "СДОⷬ҇• ПЛⷭ҇"
-    >>> _compile_words(idx, b, "")
-    [Word(_index=Index(ch=43, page='197a', row=7), word='\ue204С\ue204ДОⷬ҇•', line_context='\ue204С\ue204ДОⷬ҇• П\ue204Л\ue216ⷭ҇', variant=''), Word(_index=Index(ch=43, page='197a', row=7), word='П\ue204Л\ue216ⷭ҇', line_context='\ue204С\ue204ДОⷬ҇• П\ue204Л\ue216ⷭ҇', variant='')]
-    
-    """
-    result: List[Word] = []
-    words = re.split(r"\s", buffer)
-    for w in words:
-        new_word = Word(idx, w, buffer, variant=comment)
-        if result:
-            new_word.appendTo(result[-1])
-        result.append(new_word)
-    return result
-
-
-def _compile_buffer(
-    idx: Index, buffer: str, comments: Dict[int, Comment], current: Set[int]
-):
-    """
-    >>> idx = Index(ch=43, page='197a', row=8)
-    >>> b = "съкаꙁан •ді• е-ваньⷢ҇ле• ѿ лоуⷦ҇⁖"
-    >>> _compile_buffer(idx, b, {}, set())
-    [Word(_index=Index(ch=43, page='197a', row=8), word='съкаꙁан\ue205\ue201', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant=''), Word(_index=Index(ch=43, page='197a', row=8), word='•д\ue010і•', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant=''), Word(_index=Index(ch=43, page='197a', row=8), word='е-ваньⷢ҇л\ue205е•', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant=''), Word(_index=Index(ch=43, page='197a', row=8), word='ѿ', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant=''), Word(_index=Index(ch=43, page='197a', row=8), word='лоуⷦ҇⁖', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant='')]
-    """
-    parts = set()
-    for c in current:
-        if comments[c].annotation:
-            if comments[c].annotation.startswith("om"):
-                parts.add(comments[c].annotation)
-            else:
-                parts.add(LINE_CH)
-    comment = ",".join(parts)
-    return _compile_words(idx, buffer, comment)
-
-
-def _merge(head: List[Word], tail: List[Word]) -> List[Word]:
-    """Returns first parameter"""
-    if head:
-        head[-1].prependTo(tail[0])
-    head += tail
-    return head
-
-
 def parse_page(
     ch: int, page: str, rows: List[int], cell: _Cell, comments: Dict[int, Comment]
 ) -> List[Word]:
     """Parse the actual running text, annotated with comment references"""
+    buffer = Buffer()
     result: List[Word] = []
-    open_comments: Set[int] = set()
-    buff = ""
-    line = ""
-    line_words: List[Word] = []
     row = rows.pop(0)
     for i, par in enumerate(cell._element):
         if par.tag != tag_paragraph:
@@ -105,80 +55,67 @@ def parse_page(
             if sec.tag == tag_run:
                 for content in sec:
                     if content.tag == tag_text:
-                        buff += content.text
+                        buffer.add(content.text)
                     elif content.tag == tag_br:
-                        line += buff
+                        buffer.swap()
                         idx = Index(ch, page, row)
-                        compiled = _compile_buffer(idx, buff, comments, open_comments)
-                        line_words = _merge(line_words, compiled)
-                        for w in line_words:
-                            w.line_context = line
-                        result = _merge(result, line_words)
-                        buff = ""
-                        line = ""
-                        line_words = []
+                        compiled = buffer.compile_buffer(idx, comments)
+                        buffer.build_context(compiled)
+                        result = merge(result, buffer.line_words)
+                        buffer.reset()
                         row = rows.pop(0)
                         if not rows:  # add row numbers that might not be provided
                             rows.append(row + 1)
 
             elif sec.tag == tag_commentStart:
                 idx = Index(ch, page, row)
-                compiled = _compile_buffer(idx, buff, comments, open_comments)
-                line_words = _merge(line_words, compiled)
-                line += buff
-                buff = ""
+                compiled = buffer.compile_buffer(idx, comments)
+
+                buffer.line_words = merge(buffer.line_words, compiled)
+                buffer.swap_clean()
 
                 id = int(sec.xpath("./@w:id", namespaces=ns)[0])
-                open_comments.add(id)
+                buffer.comments.add(id)
 
             elif sec.tag == tag_commentEnd:
                 id = int(sec.xpath("./@w:id", namespaces=ns)[0])
                 idx = Index(ch, page, row)
-                compiled = _compile_buffer(idx, buff, comments, open_comments)
+                compiled = buffer.compile_buffer(idx, comments)
                 compiled[-1].variant = compiled[-1].variant.replace(
                     LINE_CH, comments[id].annotation
                 )
-                line_words = _merge(line_words, compiled)
-                line += buff
-                buff = ""
+
+                buffer.line_words = merge(buffer.line_words, compiled)
+                buffer.swap_clean()
 
                 # additions
-                for c in open_comments:
+                for c in buffer.comments:
                     for comment in comments[c].addition:
                         idx = Index(ch, page, row)
                         new_word = Word(idx, variant=f"+{comment}")
-                        if line_words:
-                            new_word.appendTo(line_words[-1])
-                        line_words.append(new_word)
+                        if buffer.line_words:
+                            new_word.appendTo(buffer.line_words[-1])
+                        buffer.line_words.append(new_word)
 
-                open_comments.remove(id)
+                buffer.comments.remove(id)
 
-        line += buff
+        buffer.swap()
         idx = Index(ch, page, row)
         if i < len(cell._element) - 1:  # if not end of page, behave like line break
-            compiled = _compile_buffer(idx, buff, comments, open_comments)
+            compiled = buffer.compile_buffer(idx, comments)
         else:
-            comment_parts = set([comments[c].annotation for c in open_comments])
-            comment = ",".join(comment_parts)
-            compiled = _compile_words(idx, buff, comment)
-        line_words = _merge(line_words, compiled)
-        for w in line_words:
-            w.line_context = line
-        result = _merge(result, line_words)
-        buff = ""
-        line = ""
-        line_words = []
+            compiled = buffer.compile_words(idx, buffer.extract_comment(comments))
+        buffer.build_context(compiled)
+        result = merge(result, buffer.line_words)
+        buffer.reset()
         row = rows.pop(0)
         if not rows:  # add rows that might not be provided
             rows.append(row + 1)
 
     # TODO: Expand comment selection to cover whole words
-    row = rows.pop(0)
-    if not rows:
-        rows.append(row + 1)
 
-    # at end all comment starts should be matched by comment ends
-    assert not open_comments
+    # at end all comment starts should be matched by comment ends within the page
+    assert not buffer.comments
 
     return result
 
@@ -191,7 +128,7 @@ def parse_document(ch: int, doc: Document, comments: Dict[int, Comment]) -> List
         page_rows_nums = [int(r) for r in page.cell(1, 0).text.split("\n") if r]
         cell = page.cell(1, 1)
         page_words = parse_page(ch, page_name, page_rows_nums, cell, comments)
-        words = _merge(words, page_words)
+        words = merge(words, page_words)
     return words
 
 

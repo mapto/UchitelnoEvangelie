@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List, Optional
 from dataclasses import dataclass, field
 
 import re

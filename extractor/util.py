@@ -1,5 +1,17 @@
-from typing import List
-from model import Word, Index
+from typing import Dict, List, Set
+
+import re
+
+from const import LINE_CH
+from model import Comment, Index, Word
+
+
+def merge(head: List[Word], tail: List[Word]) -> List[Word]:
+    """Returns first parameter"""
+    if head:
+        head[-1].prependTo(tail[0])
+    head += tail
+    return head
 
 
 def link_tokens(tokens: List[Word]) -> List[Word]:
@@ -47,3 +59,77 @@ def link_tokens(tokens: List[Word]) -> List[Word]:
         tokens[i].next = tokens[i + 1]
         tokens[i + 1].prev = tokens[i]
     return tokens
+
+
+class Buffer:
+    buff = ""
+    line = ""
+    line_words: List[Word] = []
+    comments: Set[int] = set()
+
+    def __init__(self, buffer: str = ""):
+        self.reset()
+        self.buff = buffer
+
+    def add(self, text: str) -> None:
+        self.buff += text
+
+    def reset(self) -> None:
+        self.buff = ""
+        self.line = ""
+        self.line_words = []
+
+    def compile_words(self, idx: Index, comment: str) -> List[Word]:
+        result: List[Word] = []
+        words = re.split(r"\s", self.buff)
+        for w in words:
+            new_word = Word(idx, w, self.buff, variant=comment)
+            if result:
+                new_word.appendTo(result[-1])
+            result.append(new_word)
+        return result
+
+    def compile_buffer(self, idx: Index, comments: Dict[int, Comment]) -> List[Word]:
+        parts = set()
+        for c in self.comments:
+            if comments[c].annotation:
+                if comments[c].annotation.startswith("om"):
+                    parts.add(comments[c].annotation)
+                else:
+                    parts.add(LINE_CH)
+        comment = ",".join(parts)
+        return self.compile_words(idx, comment)
+
+    def swap(self) -> None:
+        self.line += self.buff
+
+    def swap_clean(self) -> None:
+        self.swap()
+        self.buff = ""
+
+    def build_context(self, new_words: List[Word]) -> None:
+        words = merge(self.line_words, new_words)
+        self.line_words = words
+        for w in self.line_words:
+            w.line_context = self.line
+
+    def extract_comment(self, comments: Dict[int, Comment]) -> str:
+        comment_parts = set([comments[c].annotation for c in self.comments])
+        return ",".join(comment_parts)
+
+    def __eq__(self, other) -> bool:
+        if not other or type(other) != Buffer:
+            return False
+        if self.buff != other.buff or self.line != other.line:
+            return False
+        if len(self.line_words) != len(other.line_words) or len(
+            self.comments != other.comments
+        ):
+            return False
+        for i, w in enumerate(self.line_words):
+            if w != other.line_words[i]:
+                return False
+        for i, c in enumerate(self.comments):
+            if c != other.comments[i]:
+                return False
+        return True
