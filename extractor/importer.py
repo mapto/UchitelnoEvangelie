@@ -9,6 +9,7 @@ from docx import Document  # type: ignore
 from docx.table import _Cell  # type: ignore
 from lxml import etree, html  # type: ignore
 
+from const import LINE_CH
 from schema import ns
 from schema import (
     tag_paragraph,
@@ -40,7 +41,15 @@ def parse_comments(doc: Document) -> Dict[int, Comment]:
 
 
 def _compile_words(idx: Index, buffer: str, comment: str) -> List[Word]:
-    """Convert a text into a list of annotated words"""
+    """
+    Convert a text into a list of annotated words
+    
+    >>> idx = Index(ch=43, page='197a', row=7)
+    >>> b = "СДОⷬ҇• ПЛⷭ҇"
+    >>> _compile_words(idx, b, "")
+    [Word(_index=Index(ch=43, page='197a', row=7), word='\ue204С\ue204ДОⷬ҇•', line_context='\ue204С\ue204ДОⷬ҇• П\ue204Л\ue216ⷭ҇', variant=''), Word(_index=Index(ch=43, page='197a', row=7), word='П\ue204Л\ue216ⷭ҇', line_context='\ue204С\ue204ДОⷬ҇• П\ue204Л\ue216ⷭ҇', variant='')]
+    
+    """
     result: List[Word] = []
     words = re.split(r"\s", buffer)
     for w in words:
@@ -54,13 +63,19 @@ def _compile_words(idx: Index, buffer: str, comment: str) -> List[Word]:
 def _compile_buffer(
     idx: Index, buffer: str, comments: Dict[int, Comment], current: Set[int]
 ):
+    """
+    >>> idx = Index(ch=43, page='197a', row=8)
+    >>> b = "съкаꙁан •ді• е-ваньⷢ҇ле• ѿ лоуⷦ҇⁖"
+    >>> _compile_buffer(idx, b, {}, set())
+    [Word(_index=Index(ch=43, page='197a', row=8), word='съкаꙁан\ue205\ue201', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant=''), Word(_index=Index(ch=43, page='197a', row=8), word='•д\ue010і•', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant=''), Word(_index=Index(ch=43, page='197a', row=8), word='е-ваньⷢ҇л\ue205е•', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant=''), Word(_index=Index(ch=43, page='197a', row=8), word='ѿ', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant=''), Word(_index=Index(ch=43, page='197a', row=8), word='лоуⷦ҇⁖', line_context='съкаꙁан\ue205\ue201 •д\ue010і• е-ваньⷢ҇л\ue205е• ѿ лоуⷦ҇⁖', variant='')]
+    """
     parts = set()
     for c in current:
         if comments[c].annotation:
             if comments[c].annotation.startswith("om"):
                 parts.add(comments[c].annotation)
             else:
-                parts.add("↓")
+                parts.add(LINE_CH)
     comment = ",".join(parts)
     return _compile_words(idx, buffer, comment)
 
@@ -83,7 +98,7 @@ def parse_page(
     line = ""
     line_words: List[Word] = []
     row = rows.pop(0)
-    for par in cell._element:
+    for i, par in enumerate(cell._element):
         if par.tag != tag_paragraph:
             continue
         for sec in par:
@@ -103,7 +118,7 @@ def parse_page(
                         line = ""
                         line_words = []
                         row = rows.pop(0)
-                        if not rows:
+                        if not rows:  # add row numbers that might not be provided
                             rows.append(row + 1)
 
             elif sec.tag == tag_commentStart:
@@ -121,7 +136,7 @@ def parse_page(
                 idx = Index(ch, page, row)
                 compiled = _compile_buffer(idx, buff, comments, open_comments)
                 compiled[-1].variant = compiled[-1].variant.replace(
-                    "↓", comments[id].annotation
+                    LINE_CH, comments[id].annotation
                 )
                 line_words = _merge(line_words, compiled)
                 line += buff
@@ -138,15 +153,24 @@ def parse_page(
 
                 open_comments.remove(id)
 
-    line += buff
-    comment_parts = set([comments[c].annotation for c in open_comments])
-    comment = ",".join(comment_parts)
-    idx = Index(ch, page, row)
-    compiled = _compile_words(idx, buff, comment)
-    line_words = _merge(line_words, compiled)
-    for w in line_words:
-        w.line_context = line
-    result = _merge(result, line_words)
+        line += buff
+        idx = Index(ch, page, row)
+        if i < len(cell._element) - 1:  # if not end of page, behave like line break
+            compiled = _compile_buffer(idx, buff, comments, open_comments)
+        else:
+            comment_parts = set([comments[c].annotation for c in open_comments])
+            comment = ",".join(comment_parts)
+            compiled = _compile_words(idx, buff, comment)
+        line_words = _merge(line_words, compiled)
+        for w in line_words:
+            w.line_context = line
+        result = _merge(result, line_words)
+        buff = ""
+        line = ""
+        line_words = []
+        row = rows.pop(0)
+        if not rows:  # add rows that might not be provided
+            rows.append(row + 1)
 
     # TODO: Expand comment selection to cover whole words
     row = rows.pop(0)

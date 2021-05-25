@@ -4,6 +4,7 @@ from typing import List, Tuple, Dict, Optional
 
 import re
 
+from const import LINE_CH
 from model import Comment, Word
 
 
@@ -11,14 +12,15 @@ def dehyphenate(words: List[Word]) -> List[Word]:
     result: List[Word] = []
     w: Optional[Word] = words[0]
     while w:
-        # print(w)
         while w.word and w.next and w.word[-1] == "-":
             # print(w)
             w.word = w.word[:-1] + w.next.word
             if w.next.variant:
-                assert not w.variant or "↓" in w.variant or w.variant.startswith("om.")
+                assert (
+                    not w.variant or LINE_CH in w.variant or w.variant.startswith("om.")
+                )
                 if w.variant:
-                    w.variant = w.variant.replace("↓", w.next.variant)
+                    w.variant = w.variant.replace(LINE_CH, w.next.variant)
                 else:
                     w.variant = w.next.variant
             # print(w.next)
@@ -38,25 +40,7 @@ def condense(words: List[Word]) -> List[Word]:
 
 
 def integrate_words(words: List[Word]) -> List[Word]:
-    """Merge words that were split by comments
-    
-    >>> import util
-    >>> from model import Index
-    >>> l = [Word(_index=Index(ch=1, page='4b', row=10), word='ѿ', line_context='ѿ xоана⁘', variant=''),\
-        Word(_index=Index(ch=1, page='4b', row=10), word='x', line_context='ѿ xоана⁘', variant=''),\
-        Word(_index=Index(ch=1, page='4b', row=10), word='оана', line_context='ѿ xоана⁘', variant=''), \
-        Word(_index=Index(ch=1, page='4b', row=10), word='', line_context='ѿ xоана⁘', variant=' на вь\ue010скрсенxy1 ї\ue010с хⷭ҇а H'),\
-        Word(_index=Index(ch=1, page='4b', row=10), word='⁘', line_context='ѿ xоана⁘', variant=''),\
-        Word(_index=Index(ch=1, page='4b', row=11), word='ycьсо', line_context='ycьсо радx xнx', variant='')]
-    >>> l = util.link_tokens(l)
-    >>> l = integrate_words(l)
-    >>> r = [Word(_index=Index(ch=1, page='4b', row=10), word='ѿ', line_context='ѿ xоана⁘', variant=''),\
-        Word(_index=Index(ch=1, page='4b', row=10), word='xоана⁘', line_context='ѿ xоана⁘', variant=''),\
-        Word(_index=Index(ch=1, page='4b', row=10), word='', line_context='ѿ xоана⁘', variant=' на вь\ue010скрсенxy1 ї\ue010с хⷭ҇а H'),\
-        Word(_index=Index(ch=1, page='4b', row=11), word='ycьсо', line_context='ycьсо радx xнx', variant='')]
-    >>> [v for i, v in enumerate(l) if v != r[i]]
-    []
-    """
+    """Merge words that were split by comments"""
     result = []
     token: Optional[Word] = words[0]
     while token:

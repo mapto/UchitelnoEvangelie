@@ -80,15 +80,15 @@ class Word:
         self.prependTo(before)
         self.appendTo(after)
 
-    def index(self):
-        return self._index.__str__()
+    def index(self) -> str:
+        return str(self._index)
 
-    def __str__(self):
+    def __str__(self) -> str:
         prev = self.prev.word if self.prev else None
         next = self.next.word if self.next else None
         return f"{self.index()}: {self.word},\t'{self.variant}'\t[{prev},{next}]"
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not other:
             return False
         if self._index != other._index:
