@@ -8,7 +8,7 @@ from openpyxl.styles import Font, PatternFill, Side, Border  # type: ignore
 from openpyxl.styles.borders import BORDER_HAIR as BORDER_WIDTH  # type: ignore
 from openpyxl.styles.fills import FILL_SOLID as FILL  # type: ignore
 
-from model import Word
+from model import Word, WordList
 
 LIGHT_YELLOW = "FFFFE0"
 DARK_GRAY = "A9A9A9"
@@ -52,7 +52,7 @@ def if_isformula(ref: str) -> str:
     return f'=IF(_xlfn.ISFORMULA({ref}),"",{ref})'
 
 
-def export_sheet(data: List[Word], fname: str) -> None:
+def export_sheet(data: WordList, fname: str) -> None:
     wb = Workbook(write_only=True)
     ws = wb.create_sheet()
 

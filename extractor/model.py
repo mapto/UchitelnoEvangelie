@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from dataclasses import dataclass, field
 
 import re
@@ -100,3 +100,45 @@ class Word:
         ):
             return False
         return True
+
+
+class WordList:
+    """ linked list of Word objects"""
+
+    def __init__(self):
+        self._words = []
+
+    def __iadd__(self, other: Union["WordList", Word, List[Word]]) -> "WordList":
+        if type(other) == WordList:
+            if self._words:
+                self._words[-1].prependTo(other._words[0])  # type: ignore
+            self._words += other._words  # type: ignore
+        elif type(other) == Word:
+            if self._words:
+                other.appendTo(self._words[-1])  # type: ignore
+            self._words.append(other)  # type: ignore
+        elif type(other) == list:
+            for w in other:  # type: ignore
+                self += w
+        return self
+
+    def __getitem__(self, i) -> Word:
+        return self._words[i]
+
+    def __setitem__(self, i, v):
+        self._words[i] = v
+
+    def __iter__(self):
+        return iter(self._words)
+
+    def __len__(self) -> int:
+        return len(self._words)
+
+    def __str__(self) -> str:
+        return ";".join([str(w) for w in self._words])
+
+    def __repr__(self) -> str:
+        return repr(self._words)
+
+    def remove(self, w):
+        return self._words.remove(w)

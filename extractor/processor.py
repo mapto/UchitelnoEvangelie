@@ -5,11 +5,11 @@ from typing import List, Tuple, Dict, Optional
 import re
 
 from const import LINE_CH
-from model import Comment, Word
+from model import Comment, Word, WordList
 
 
-def dehyphenate(words: List[Word]) -> List[Word]:
-    result: List[Word] = []
+def dehyphenate(words: WordList) -> WordList:
+    result = WordList()
     w: Optional[Word] = words[0]
     while w:
         while w.word and w.next and w.word[-1] == "-":
@@ -25,23 +25,24 @@ def dehyphenate(words: List[Word]) -> List[Word]:
                     w.variant = w.next.variant
             # print(w.next)
             w.prependTo(w.next.next)
-        result.append(w)
+        result += w
         w = w.next
     return result
 
 
-def condense(words: List[Word]) -> List[Word]:
+def condense(words: WordList) -> WordList:
     """Remove empty words"""
-    result = list(words)
+    result = WordList()
+    result += words
     for w in words:
         if not w.word.strip() and not w.variant.strip():
             result.remove(w)
     return result
 
 
-def integrate_words(words: List[Word]) -> List[Word]:
+def integrate_words(words: WordList) -> WordList:
     """Merge words that were split by comments"""
-    result = []
+    result = WordList()
     token: Optional[Word] = words[0]
     while token:
         line = re.split(r"\s", token.line_context)
@@ -77,6 +78,6 @@ def integrate_words(words: List[Word]) -> List[Word]:
                     token.variant = token.next.variant
                 token.prependTo(token.next.next)
             # print(token.word)
-        result.append(token)
+        result += token
         token = token.next
     return result

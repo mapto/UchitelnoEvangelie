@@ -1,11 +1,11 @@
-import util
-
 from model import Index, Word
+from util import WordList
 from processor import dehyphenate, integrate_words
 
 
 def test_dehyphenate():
-    words = [
+    words = WordList()
+    words += [
         Word(
             _index=Index(ch=43, page="197a", row=7),
             word="\ue204С\ue204ДОⷬ҇•",
@@ -288,7 +288,8 @@ def test_dehyphenate():
         ),
     ]
 
-    expected = [
+    expected = WordList()
+    expected += [
         Word(
             _index=Index(ch=43, page="197a", row=7),
             word="\ue204С\ue204ДОⷬ҇•",
@@ -542,7 +543,8 @@ def test_dehyphenate():
 
 
 def test_integrate_words():
-    l = [
+    l = WordList()
+    l += [
         Word(_index=Index(ch=1, page="4b", row=10), word="ѿ", line_context="ѿ xоана⁘"),
         Word(_index=Index(ch=1, page="4b", row=10), word="x", line_context="ѿ xоана⁘"),
         Word(
@@ -561,7 +563,6 @@ def test_integrate_words():
             line_context="ycьсо радx xнx",
         ),
     ]
-    l = util.link_tokens(l)
     l = integrate_words(l)
     r = [
         Word(_index=Index(ch=1, page="4b", row=10), word="ѿ", line_context="ѿ xоана⁘"),

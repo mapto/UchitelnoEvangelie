@@ -19,8 +19,8 @@ from schema import (
     tag_text,
     tag_br,
 )
-from model import Index, Word, Comment
-from util import merge, Buffer, WordList
+from model import Index, Word, Comment, WordList
+from util import Buffer
 
 
 def parse_comments(doc: Document) -> Dict[int, Comment]:
@@ -43,7 +43,7 @@ def parse_comments(doc: Document) -> Dict[int, Comment]:
 
 def parse_page(
     ch: int, page: str, rows: List[int], cell: _Cell, comments: Dict[int, Comment]
-) -> List[Word]:
+) -> WordList:
     """Parse the actual running text, annotated with comment references"""
     buffer = Buffer()
     result = WordList()
@@ -112,22 +112,22 @@ def parse_page(
     # at end all comment starts should be matched by comment ends within the page
     assert not buffer.comments
 
-    return result._words
+    return result
 
 
-def parse_document(ch: int, doc: Document, comments: Dict[int, Comment]) -> List[Word]:
+def parse_document(ch: int, doc: Document, comments: Dict[int, Comment]) -> WordList:
     """Parses a particular type of documents with content in a 2x2 table"""
-    words: List[Word] = []
+    words = WordList()
     for page in doc.tables:
         page_name = page.cell(0, 0).text
         page_rows_nums = [int(r) for r in page.cell(1, 0).text.split("\n") if r]
         cell = page.cell(1, 1)
         page_words = parse_page(ch, page_name, page_rows_nums, cell, comments)
-        words = merge(words, page_words)
+        words += page_words
     return words
 
 
-def import_chapter(fname: str) -> List[Word]:
+def import_chapter(fname: str) -> WordList:
     """Import a preformatted chapter of a manuscript"""
     doc = Document(fname)
     book_prefix = int(Path(fname).name.split("-")[0])

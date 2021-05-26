@@ -1,66 +1,9 @@
-from typing import Dict, List, Set, Union
+from typing import Dict, List, Set
 
 import re
 
 from const import LINE_CH
-from model import Comment, Index, Word
-
-
-def link_tokens(tokens: List[Word]) -> List[Word]:
-    if not tokens:
-        return tokens
-    for i in range(len(tokens)):
-        if i == len(tokens) - 1:
-            break
-        tokens[i].next = tokens[i + 1]
-        tokens[i + 1].prev = tokens[i]
-    return tokens
-
-
-def merge(head: List[Word], tail: List[Word]) -> List[Word]:
-    """Returns first parameter"""
-    if head:
-        head[-1].prependTo(tail[0])
-    head += tail
-    return head
-
-
-class WordList:
-    """ linked list of Word objects"""
-
-    def __init__(self):
-        self._words = []
-
-    def __iadd__(self, other: Union["WordList", Word]) -> "WordList":
-        if type(other) == WordList:
-            old_len = len(self._words)
-            self._words = merge(self._words, other._words)  # type: ignore
-            assert len(self._words) == old_len + len(other._words)  # type: ignore
-        elif type(other) == Word:
-            old_len = len(self._words)
-            if self._words:
-                other.appendTo(self._words[-1])  # type: ignore
-            self._words.append(other)  # type: ignore
-            assert old_len + 1 == len(self._words)
-        return self
-
-    def __getitem__(self, i) -> Word:
-        return self._words[i]
-
-    def __setitem__(self, i, v):
-        self._words[i] = v
-
-    def __iter__(self):
-        return iter(self._words)
-
-    def __len__(self) -> int:
-        return len(self._words)
-
-    def __str__(self) -> str:
-        return ";".join([str(w) for w in self._words])
-
-    def __repr__(self) -> str:
-        return repr(self._words)
+from model import Comment, Index, Word, WordList
 
 
 class Buffer:
