@@ -10,17 +10,20 @@ class Buffer:
     """ Handles processing of current text, lines and comments"""
 
     def __init__(self, buffer: str = ""):
-        self.reset()
+        self.line = ""
+        self.line_words = WordList()
         self.comments: Set[int] = set()  # Currently open comments
         self.buff = buffer
 
-    def add(self, text: str) -> None:
-        self.buff += text
-
-    def reset(self) -> None:
+    def flush(self) -> WordList:
+        result = self.line_words
         self.buff = ""
         self.line = ""
         self.line_words = WordList()
+        return result
+
+    def add(self, text: str) -> None:
+        self.buff += text
 
     def compile_words(self, idx: Index, comment: str) -> WordList:
         result = WordList()

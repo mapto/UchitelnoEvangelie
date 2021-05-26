@@ -61,8 +61,7 @@ def parse_page(
                         idx = Index(ch, page, row)
                         compiled = buffer.compile_buffer(idx, comments)
                         buffer.build_context(compiled)
-                        result += buffer.line_words
-                        buffer.reset()
+                        result += buffer.flush()
                         row = rows.pop(0)
                         if not rows:  # add row numbers that might not be provided
                             rows.append(row + 1)
@@ -101,8 +100,7 @@ def parse_page(
         else:
             compiled = buffer.compile_words(idx, buffer.extract_comment(comments))
         buffer.build_context(compiled)
-        result += buffer.line_words
-        buffer.reset()
+        result += buffer.flush()
         row = rows.pop(0)
         if not rows:  # add rows that might not be provided
             rows.append(row + 1)
