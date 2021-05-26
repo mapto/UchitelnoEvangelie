@@ -3,7 +3,13 @@
 Licensed under MIT License, detailed here: https://mit-license.org/
 
 Usage:
-  integrator.py <xlsx>
+  integrator.py [-p] <xlsx>
+  integrator.py [--no-pause] <xlsx>
+
+Options:
+  -h --help                This information
+  -v --version             Print version
+  -p --no-pause         Disable pause at end of execution
 
 """
 __version__ = "0.0.3"
@@ -102,5 +108,5 @@ if __name__ == "__main__":
     generate_docx(gre, "gr", export_fname)
     print(f"Записване: {export_fname}")
 
-    # if not args["--no-pause"]:
-    input("Натиснете Enter, за да приключите изпълнението.")
+    if not args["--no-pause"]:
+        input("Натиснете Enter, за да приключите изпълнението.")

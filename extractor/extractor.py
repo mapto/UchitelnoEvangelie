@@ -7,7 +7,8 @@ Usage:
   extractor.py [--no-dehyphenate] [--integrate] [--no-condense] [--no-pause] <docx>
 
 Options:
-  --help                This information
+  -h --help                This information
+  -v --version             Print version
   -d --no-dehyphenate   Disable removal of hyphens and word merging
   -I --integrate        Put together words that have been separated by comment selection
   -c --no-condense      Disable removal of words that are blank and have no annotation
