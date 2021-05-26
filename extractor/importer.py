@@ -20,7 +20,7 @@ from schema import (
     tag_br,
 )
 from model import Index, Word, Comment
-from util import merge, Buffer
+from util import merge, Buffer, WordList
 
 
 def parse_comments(doc: Document) -> Dict[int, Comment]:
@@ -46,7 +46,7 @@ def parse_page(
 ) -> List[Word]:
     """Parse the actual running text, annotated with comment references"""
     buffer = Buffer()
-    result: List[Word] = []
+    result = WordList()
     row = rows.pop(0)
     for i, par in enumerate(cell._element):
         if par.tag != tag_paragraph:
@@ -61,7 +61,7 @@ def parse_page(
                         idx = Index(ch, page, row)
                         compiled = buffer.compile_buffer(idx, comments)
                         buffer.build_context(compiled)
-                        result = merge(result, buffer.line_words)
+                        result += buffer.line_words
                         buffer.reset()
                         row = rows.pop(0)
                         if not rows:  # add row numbers that might not be provided
@@ -69,9 +69,7 @@ def parse_page(
 
             elif sec.tag == tag_commentStart:
                 idx = Index(ch, page, row)
-                compiled = buffer.compile_buffer(idx, comments)
-
-                buffer.line_words = merge(buffer.line_words, compiled)
+                buffer.line_words += buffer.compile_buffer(idx, comments)
                 buffer.swap_clean()
 
                 id = int(sec.xpath("./@w:id", namespaces=ns)[0])
@@ -85,17 +83,14 @@ def parse_page(
                     LINE_CH, comments[id].annotation
                 )
 
-                buffer.line_words = merge(buffer.line_words, compiled)
+                buffer.line_words += compiled
                 buffer.swap_clean()
 
                 # additions
                 for c in buffer.comments:
                     for comment in comments[c].addition:
                         idx = Index(ch, page, row)
-                        new_word = Word(idx, variant=f"+{comment}")
-                        if buffer.line_words:
-                            new_word.appendTo(buffer.line_words[-1])
-                        buffer.line_words.append(new_word)
+                        buffer.line_words += Word(idx, variant=f"+{comment}")
 
                 buffer.comments.remove(id)
 
@@ -106,7 +101,7 @@ def parse_page(
         else:
             compiled = buffer.compile_words(idx, buffer.extract_comment(comments))
         buffer.build_context(compiled)
-        result = merge(result, buffer.line_words)
+        result += buffer.line_words
         buffer.reset()
         row = rows.pop(0)
         if not rows:  # add rows that might not be provided
@@ -117,7 +112,7 @@ def parse_page(
     # at end all comment starts should be matched by comment ends within the page
     assert not buffer.comments
 
-    return result
+    return result._words
 
 
 def parse_document(ch: int, doc: Document, comments: Dict[int, Comment]) -> List[Word]:
