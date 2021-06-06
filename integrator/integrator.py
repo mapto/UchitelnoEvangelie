@@ -9,7 +9,7 @@ Usage:
 Options:
   -h --help                This information
   -v --version             Print version
-  -p --no-pause         Disable pause at end of execution
+  -p --no-pause            Disable pause at end of execution
 
 """
 __version__ = "0.0.3"
@@ -30,6 +30,7 @@ from exporter import export_docx, generate_docx
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
+    print(f"Integrator v{__version__}")
     # print(args)
     fname = args["<xlsx>"]
     print(f"Прочитане: {fname}")

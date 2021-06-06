@@ -29,6 +29,7 @@ from exporter import export_sheet
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
+    print(f"Extractor v{__version__}")
     # print(args)
     fname = args["<docx>"]
     print(f"Прочитане: {fname}")
