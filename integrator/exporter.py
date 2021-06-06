@@ -5,7 +5,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import RGBColor, Pt, Cm  # type: ignore
 
-from model import Index
+from model import Index, Usage
 
 GENERIC_FONT = "Times New Roman"
 
@@ -13,7 +13,7 @@ fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
 colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
 
 
-def docx_usage(par, key: Tuple[str, str], usage: List[Index], src_style: str) -> None:
+def docx_usage(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -> None:
     """
     key: (word,translation)
     usage: list of indices of usages also containing their styles
@@ -39,9 +39,9 @@ def docx_usage(par, key: Tuple[str, str], usage: List[Index], src_style: str) ->
             run = par.add_run()
             run.add_text(", ")
         run = par.add_run()
-        run.font.bold = next.bold
-        run.font.italic = next.italic
-        run.add_text(str(next))
+        run.font.bold = next.idx.bold
+        run.font.italic = next.idx.italic
+        run.add_text(str(next.idx))
         first = False
     run = par.add_run()
     run.add_text(")")
@@ -110,7 +110,7 @@ def generate_index(par, idx: Index) -> None:
         run.add_text(idx.var)
 
 
-def docx_result(par, key: Tuple[str, str], usage: List[Index], src_style: str) -> None:
+def docx_result(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -> None:
     """
     key: (word,translation)
     usage: list of indices of usages also containing their styles
@@ -124,36 +124,47 @@ def docx_result(par, key: Tuple[str, str], usage: List[Index], src_style: str) -
             run = par.add_run()
             run.add_text("; ")
         run = par.add_run()
-        run.font.bold = next.bold
-        run.font.italic = next.italic
-        run.add_text(str(next))
+        run.font.bold = next.idx.bold
+        run.font.italic = next.idx.italic
+        run.add_text(str(next.idx))
+        if next.idx.var:
+            run = par.add_run()
+            run.font.superscript = True
+            run.add_text(next.idx.var)
+            run = par.add_run()
+        run.add_text(next.suffix())
         first = False
 
 
 def _get_set_counts(s: SortedSet) -> Tuple[int, int]:
     """
-    >>> s = SortedSet([Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)])
+    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)]
+    >>> s = SortedSet([Usage(n, "sl") for n in i])
     >>> _get_set_counts(s)
     (2, 0)
 
-    >>> s = SortedSet([Index(ch=1, alt=True, page=168, col='c', row=7, var="WH"), Index(ch=1, alt=True, page=168, col='c', row=7)])
+    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7, var="WH"), Index(ch=1, alt=True, page=168, col='c', row=7)]
+    >>> s = SortedSet([Usage(n, "sl") for n in i])
     >>> _get_set_counts(s)
     (1, 1)
     """
     r = (0, 0)
     for next in s:
-        r = (r[0], r[1] + 1) if next.var else (r[0] + 1, r[1])
+        r = (r[0], r[1] + 1) if next.idx.var else (r[0] + 1, r[1])
     return r
 
 
 def _get_dict_counts(d: Union[SortedDict, dict]) -> Tuple[int, int]:
     """
-    >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([Index(ch=1, alt=False, page=5, col='a', row=5)])}})
+    >>> u = Usage(Index(ch=1, alt=False, page=5, col='a', row=5), "sl")
+    >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([u])}})
     >>> _get_dict_counts(d)
     (1, 0)
 
-    >> d = SortedDict({'': SortedDict({'': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([Index(ch=1, alt=False, page=8, col='a', row=3)]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([Index(ch=1, alt=False, page=6, col='b', row=7)])}})})})
-    >> _get_dict_counts(d)
+    >>> u1 = Usage(Index(ch=1, alt=False, page=8, col='a', row=3), "sl")
+    >>> u2 = Usage(Index(ch=1, alt=False, page=6, col='b', row=7), "sl")
+    >>> d = SortedDict({'': SortedDict({'': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
+    >>> _get_dict_counts(d)
     (2, 0)
     """
     r = (0, 0)

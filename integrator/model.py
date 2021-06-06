@@ -9,7 +9,7 @@ from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 @dataclass(order=True, frozen=True)
 class Index:
     ch: int
-    alt: bool
+    alt: bool  # means alternative indexing
     page: int
     col: str
     row: int
@@ -152,31 +152,35 @@ class Index:
         return start
 
 
-@dataclass(frozen=True)
+@dataclass(order=True, frozen=True)
 class Usage:
+    """Here alt means other other transcriptions (main or var)"""
+
     idx: Index
     lang: str
-    var: str = ""  # own variant
     orig_alt: str = ""
     orig_alt_var: List[str] = field(default_factory=lambda: [])
     trans_alt: str = ""
     trans_alt_var: List[str] = field(default_factory=lambda: [])
+
+    def __hash__(self):
+        return hash((self.idx, self.lang, self.orig_alt, self.trans_alt))
 
     def suffix(self):
         """
         >>> idx = Index.unpack("1/1a1")
         >>> Usage(idx, "sl").suffix()
         ''
-        >>> Usage(idx, "sl", "", "дноѧдъ", ["ноѧдъ"]).suffix()
-        'cf. \ue201д\ue205но\ue20dѧдъ, [\ue205но\ue20dѧдъ]'
-        >>> Usage(idx, "sl", "", "", [], "ὑπερκλύζω").suffix()
-        'cf. ὑπερκλύζω'
-        >>> Usage(idx, "sl", "", "", [], "", ["ὑπερβλύω"]).suffix()
-        'cf. {ὑπερβλύω}'
-        >>> Usage(idx, "gr", "", "ὑπερκλύζω").suffix()
-        'cf. ὑπερκλύζω'
-        >>> Usage(idx, "gr", "", "", ["ὑπερβλύω"]).suffix()
-        'cf. {ὑπερβλύω}'
+        >>> Usage(idx, "sl",  "дноѧдъ", ["ноѧдъ"]).suffix()
+        ' cf. \ue201д\ue205но\ue20dѧдъ, [\ue205но\ue20dѧдъ]'
+        >>> Usage(idx, "sl",  "", [], "ὑπερκλύζω").suffix()
+        ' cf. ὑπερκλύζω'
+        >>> Usage(idx, "sl",  "", [], "", ["ὑπερβλύω"]).suffix()
+        ' cf. {ὑπερβλύω}'
+        >>> Usage(idx, "gr",  "ὑπερκλύζω").suffix()
+        ' cf. ὑπερκλύζω'
+        >>> Usage(idx, "gr",  "", ["ὑπερβλύω"]).suffix()
+        ' cf. {ὑπερβλύω}'
         """
         if (
             not self.orig_alt
@@ -200,7 +204,7 @@ class Usage:
                 result.append(f"{{{', '.join(self.trans_alt_var)}}}")
             else:
                 result.append(f"[{', '.join(self.trans_alt_var)}]")
-        return f"cf. {', '.join(result)}"
+        return f" cf. {', '.join(result)}"
 
 
 @dataclass

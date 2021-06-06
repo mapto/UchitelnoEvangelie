@@ -4,8 +4,8 @@ from typing import List, Tuple, Optional, Dict
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
 
-from const import IDX_COL, STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP, PATH_SEP
-from model import Index, LangSemantics, MainLangSemantics, VarLangSemantics
+from const import IDX_COL, STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP, PATH_SEP, MISSING_CH
+from model import Index, Usage, LangSemantics, MainLangSemantics, VarLangSemantics
 from util import ord_word, base_word
 
 ord_tuple = lambda x: ord_word(x[0])
@@ -48,7 +48,7 @@ def _build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
 
 
 def _compile_usage(
-    val: Index, nxt: str, key: Tuple[str, str], d: SortedDict
+    val: Usage, nxt: str, key: Tuple[str, str], d: SortedDict
 ) -> SortedDict:
     """*IN PLACE*"""
     if nxt in d:
@@ -62,6 +62,7 @@ def _compile_usage(
 
 def _build_usage(
     row: List[str],
+    orig: LangSemantics,
     trans: LangSemantics,
     key: Tuple[str, str],
     d: SortedDict,
@@ -71,7 +72,8 @@ def _build_usage(
 
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    val = Index.unpack(row[IDX_COL], b, i, var)
+    idx = Index.unpack(row[IDX_COL], b, i, var)
+    val = Usage(idx, orig.lang, var)  # TODO: add alternatives
     for nxt in _build_paths(row, trans.lemmas):
         d = _compile_usage(val, nxt, key, d)
     return d
@@ -117,7 +119,7 @@ def _agg_lemma(
         col = orig.lemmas[0]
     elif col == -2:  # exhausted/last
         assert trans  # for mypy
-        return _build_usage(row, trans, key, d, var)
+        return _build_usage(row, orig, trans, key, d, var)
 
     # TODO: implement variants here
     if var and row[col]:
@@ -125,6 +127,8 @@ def _agg_lemma(
     lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
     lem_col = orig.lemmas
     for l in lemmas:
+        if l.strip() == MISSING_CH:
+            continue
         next = base_word(l)
         if next not in d:
             d[next] = SortedDict(ord_word)
