@@ -73,7 +73,9 @@ def _build_usage(
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
     idx = Index.unpack(row[IDX_COL], b, i, var)
-    val = Usage(idx, orig.lang, var)  # TODO: add alternatives
+    oalt = orig.alternatives(row)
+    talt = trans.alternatives(row)
+    val = Usage(idx, orig.lang, oalt[0], oalt[1], talt[0], talt[1])
     for nxt in _build_paths(row, trans.lemmas):
         d = _compile_usage(val, nxt, key, d)
     return d
@@ -143,14 +145,6 @@ def _present(row: List[str], sem: Optional[LangSemantics]) -> bool:
 
 
 def _build_key(row, sem, var=False):
-    """
-    >>> sem = MainLangSemantics(lang='sl', word=4, lemmas=[6, 7, 8, 9], var=VarLangSemantics(lang='sl_var', word=0, lemmas=[1, 2, 19, 20]))
-    >>> row = ['\ue201л\ue205ко WH', '\ue201л\ue205къ', '', '1/7c12', 'сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']
-    >>> _build_key(row, sem)
-    'сел\ue205ко'
-    >>> _build_key(row, sem.var, True)
-    ' {\ue201л\ue205ко WH}'
-    """
     word = (
         f"{base_word(row[sem.word])}"
         if _present(row, sem)

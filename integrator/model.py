@@ -1,5 +1,6 @@
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
 
 import re
 
@@ -246,6 +247,9 @@ class LangSemantics:
     def lemn_cols(self) -> List[int]:
         return self.lemmas[1:]
 
+    def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
+        raise NotImplementedError("abstract method")
+
 
 @dataclass
 class MainLangSemantics(LangSemantics):
@@ -275,12 +279,22 @@ class MainLangSemantics(LangSemantics):
     def lemn_cols(self) -> List[int]:
         return super().lemn_cols() + self.var.lemmas[1:]
 
+    def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
+        if not self.var or not row[self.var.lemmas[0]]:
+            return ("", [])
+        return ("", [row[self.var.lemmas[0]]])
+
 
 @dataclass
 class VarLangSemantics(LangSemantics):
-    main: Optional[
-        "MainLangSemantics"
-    ] = None  # nullable just because it's a recursive reference and setting up needs to happen post-init
+    """ main is nullable just because it's a recursive reference and setting up needs to happen post-init"""
+
+    main: Optional["MainLangSemantics"] = None
+
+    def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
+        if not self.main or not row[self.main.lemmas[0]]:
+            return ("", [])
+        return (row[self.main.lemmas[0]], [])
 
 
 @dataclass
