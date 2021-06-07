@@ -117,7 +117,7 @@ def test__build_usage():
     d1 = _build_usage(row, sem.sl, sem.gr, key, d1)
     assert (
         repr(d1)
-        == "SortedDict({'πιστεύω': {('вѣроують {вѣроу GH}', 'πιστεύσωσι'): SortedSet([Usage(idx=Index(ch=1, alt=False, page=7, col='b', row=19, var='', end=None, bold=False, italic=False), lang='sl', orig_alt='', orig_alt_var=['вѣра'], trans_alt='', trans_alt_var=[])])}})"
+        == "SortedDict({'πιστεύω': {('вѣроують {вѣроу GH}', 'πιστεύσωσι'): SortedSet([Usage(idx=Index(ch=1, alt=False, page=7, col='b', row=19, var=False, end=None, bold=False, italic=False), lang='sl', var='', orig_alt='', orig_alt_var=['вѣра'], trans_alt='', trans_alt_var=[])])}})"
     )
 
     d2 = SortedDict()
@@ -125,5 +125,5 @@ def test__build_usage():
     d2 = _build_usage(row, sem.gr, sem.sl, key, d2)
     assert (
         repr(d2)
-        == "SortedDict({'вѣроват_': {('πιστεύσωσι', 'вѣроують {вѣроу GH}'): SortedSet([Usage(idx=Index(ch=1, alt=False, page=7, col='b', row=19, var='', end=None, bold=False, italic=False), lang='gr', orig_alt='', orig_alt_var=[], trans_alt='', trans_alt_var=['вѣра'])])}})"
+        == "SortedDict({'вѣроват_': {('πιστεύσωσι', 'вѣроують {вѣроу GH}'): SortedSet([Usage(idx=Index(ch=1, alt=False, page=7, col='b', row=19, var=False, end=None, bold=False, italic=False), lang='gr', var='', orig_alt='', orig_alt_var=[], trans_alt='', trans_alt_var=['вѣра'])])}})"
     )

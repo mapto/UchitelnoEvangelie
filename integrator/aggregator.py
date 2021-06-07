@@ -60,22 +60,31 @@ def _compile_usage(
     return d
 
 
+def _parse_var(row: List[str], sem: LangSemantics) -> str:
+    print(row)
+    print(sem)
+    word = row[sem.word]
+    lem = row[sem.lemmas[0]]
+    return ""
+
+
 def _build_usage(
     row: List[str],
     orig: LangSemantics,
     trans: LangSemantics,
     key: Tuple[str, str],
     d: SortedDict,
-    var: str = "",
+    is_var: bool = False,
 ) -> SortedDict:
     assert row[IDX_COL]
 
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i, var)
+    idx = Index.unpack(row[IDX_COL], b, i, is_var)
+    var_id = orig.parse_var(row)
     oalt = orig.alternatives(row)
     talt = trans.alternatives(row)
-    val = Usage(idx, orig.lang, oalt[0], oalt[1], talt[0], talt[1])
+    val = Usage(idx, orig.lang, var_id, oalt[0], oalt[1], talt[0], talt[1])
     for nxt in _build_paths(row, trans.lemmas):
         d = _compile_usage(val, nxt, key, d)
     return d
@@ -87,7 +96,7 @@ def _agg_lemma(
     trans: Optional[LangSemantics],
     key: Tuple[str, str],
     d: SortedDict,
-    var: str = "",
+    var: bool = False,
     col: int = -1,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
@@ -188,8 +197,8 @@ def aggregate(
             continue
 
         result = _agg_lemma(row, orig, trans, key, result)
-        result = _agg_lemma(row, orig.var, trans, key, result, "WH")
-        result = _agg_lemma(row, orig, trans.var, key, result, "WH")
-        result = _agg_lemma(row, orig.var, trans.var, key, result, "WH")
+        result = _agg_lemma(row, orig.var, trans, key, result, True)
+        result = _agg_lemma(row, orig, trans.var, key, result, True)
+        result = _agg_lemma(row, orig.var, trans.var, key, result, True)
 
     return result

@@ -153,10 +153,10 @@ def docx_result(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -
         run.font.bold = next.idx.bold
         run.font.italic = next.idx.italic
         run.add_text(str(next.idx))
-        if next.idx.var:
+        if next.var:
             run = par.add_run()
             run.font.superscript = True
-            run.add_text(next.idx.var)
+            run.add_text(next.var)
             run = par.add_run()
         run.add_text(next.suffix())
         first = False
@@ -169,7 +169,7 @@ def _get_set_counts(s: SortedSet) -> Tuple[int, int]:
     >>> _get_set_counts(s)
     (2, 0)
 
-    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7, var="WH"), Index(ch=1, alt=True, page=168, col='c', row=7)]
+    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7, var=True), Index(ch=1, alt=True, page=168, col='c', row=7)]
     >>> s = SortedSet([Usage(n, "sl") for n in i])
     >>> _get_set_counts(s)
     (1, 1)

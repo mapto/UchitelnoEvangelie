@@ -9,18 +9,24 @@ from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 @dataclass(order=True, frozen=True)
 class Index:
+    """Index only indicates if it is from a variant.
+    Alternative variable (alt) means alternative indexing.
+     Contrast these to Usage."""
+
     ch: int
-    alt: bool  # means alternative indexing
+    alt: bool
     page: int
     col: str
     row: int
-    var: str = ""
+    var: bool = False
     end: Optional["Index"] = None
     bold: bool = False
     italic: bool = False
 
     @staticmethod
-    def unpack(value: str, b: bool = False, i: bool = False, var: str = "") -> "Index":
+    def unpack(
+        value: str, b: bool = False, i: bool = False, var: bool = False
+    ) -> "Index":
         """
         >>> Index.unpack("1/W167c4").longstr()
         '01/W167c04'
@@ -92,13 +98,13 @@ class Index:
 
     def __str__(self):
         """
-        >>> str(Index(1, False, 6, "c", 4, "", Index(1, False, 6, "d", 4)))
+        >>> str(Index(1, False, 6, "c", 4, end=Index(1, False, 6, "d", 4)))
         '1/6c4-d4'
-        >>> str(Index(1, False, 6, "c", 4, "", Index(1, False, 6, "c", 11)))
+        >>> str(Index(1, False, 6, "c", 4, end=Index(1, False, 6, "c", 11)))
         '1/6c4-11'
 
         Variants are not shown:
-        >>> str(Index(1, False, 6, "c", 4, "WH", Index(1, False, 6, "d", 4, "WH")))
+        >>> str(Index(1, False, 6, "c", 4, True, Index(1, False, 6, "d", 4, True)))
         '1/6c4-d4'
 
         >>> str(Index(1, True, 6, "c", 4))
@@ -124,21 +130,21 @@ class Index:
 
     def longstr(self):
         """
-        >>> Index(1, False, 6, "c", 4, "", Index(2, True, 6, "c", 4)).longstr()
+        >>> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4)).longstr()
         '01/006c04-02/006c04'
 
-        >> Index(1, False, 6, "c", 4, "WH", Index(2, True, 6, "c", 4)).longstr()
+        >> Index(1, False, 6, "c", 4, True, Index(2, True, 6, "c", 4)).longstr()
         '01/006c04WH-02/006c04'
-        >> Index(1, False, 6, "c", 4, "", Index(2, True, 6, "c", 4, "WH")).longstr()
+        >> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4, True)).longstr()
         '01/006c04-02/006c04WH'
         """
         w = "W" if not not self.ch % 2 == self.alt else ""
-        v = self.var
+        v = "var" if self.var else ""
         start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{v}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{self.end.longstr()}"
-            ev = self.end.var
+            ev = "var" if self.end.var else ""
             if self.end.alt != self.alt:
                 ew = "W" if self.end.alt and self.end.ch % 2 else ""
                 return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ev}"
@@ -155,10 +161,13 @@ class Index:
 
 @dataclass(order=True, frozen=True)
 class Usage:
-    """Here alt means other other transcriptions (main or var)"""
+    """Variant is not only indicative, but also nominative - which variant.
+    Here alt means other other transcriptions (main or var).
+    Contrast these to Index"""
 
     idx: Index
     lang: str
+    var: str = ""
     orig_alt: str = ""
     orig_alt_var: List[str] = field(default_factory=lambda: [])
     trans_alt: str = ""
@@ -172,15 +181,15 @@ class Usage:
         >>> idx = Index.unpack("1/1a1")
         >>> Usage(idx, "sl").suffix()
         ''
-        >>> Usage(idx, "sl",  "дноѧдъ", ["ноѧдъ"]).suffix()
+        >>> Usage(idx, "sl", "", "дноѧдъ", ["ноѧдъ"]).suffix()
         ' cf. \ue201д\ue205но\ue20dѧдъ, [\ue205но\ue20dѧдъ]'
-        >>> Usage(idx, "sl",  "", [], "ὑπερκλύζω").suffix()
+        >>> Usage(idx, "sl", "", "", [], "ὑπερκλύζω").suffix()
         ' cf. ὑπερκλύζω'
-        >>> Usage(idx, "sl",  "", [], "", ["ὑπερβλύω"]).suffix()
+        >>> Usage(idx, "sl", "", "", [], "", ["ὑπερβλύω"]).suffix()
         ' cf. {ὑπερβλύω}'
-        >>> Usage(idx, "gr",  "ὑπερκλύζω").suffix()
+        >>> Usage(idx, "gr", "", "ὑπερκλύζω").suffix()
         ' cf. ὑπερκλύζω'
-        >>> Usage(idx, "gr",  "", ["ὑπερβλύω"]).suffix()
+        >>> Usage(idx, "gr", "", "", ["ὑπερβλύω"]).suffix()
         ' cf. {ὑπερβλύω}'
         """
         if (
