@@ -1,4 +1,4 @@
-from typing import Tuple, List, Union
+from typing import Tuple, List, Optional, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
@@ -13,6 +13,32 @@ fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
 colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
 
 
+def _generate_text(
+    par,
+    text: str,
+    font: str = "",
+    color: str = "",
+    size: Optional[Pt] = None,
+    bold: bool = False,
+    italic: bool = False,
+    indent: Optional[Cm] = None,
+):
+    run = par.add_run()
+    if font:
+        run.font.name = font
+    if color:
+        run.font.color.rgb = color
+    if size:
+        run.font.size = size
+    if bold:
+        run.font.bold = bold
+    if italic:
+        run.font.italic = italic
+    if indent:
+        par.paragraph_format.first_line_indent = indent
+    run.add_text(text)
+
+
 def docx_usage(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -> None:
     """
     key: (word,translation)
@@ -20,18 +46,15 @@ def docx_usage(par, key: Tuple[str, str], usage: List[Usage], src_style: str) ->
     """
     other_style = "gr" if src_style == "sl" else "sl"
 
-    run = par.add_run()
-    run.font.name = fonts[src_style]
-    run.font.color.rgb = colors[src_style]
-    run.add_text(key[0])
+    _generate_text(par, key[0], fonts[src_style], colors[src_style])
 
     run = par.add_run()
     run.add_text("/")
 
+    _generate_text(par, key[1], fonts[other_style], colors[other_style])
+
     run = par.add_run()
-    run.font.name = fonts[other_style]
-    run.font.color.rgb = colors[other_style]
-    run.add_text(f"{key[1]} (")
+    run.add_text(" (")
 
     first = True
     for next in usage:
@@ -65,11 +88,12 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             par.style.font.name = GENERIC_FONT
             if level > 0:
                 par.paragraph_format.first_line_indent = Pt(10)
-            run = par.add_run()
-            run.font.name = fonts[lang]
-            run.font.size = Pt(18 if level == 0 else 14)
+
             prefix = "| " * level
-            run.add_text(f"{prefix} {li}")
+            _generate_text(
+                par, f"{prefix} {li}", fonts[lang], size=Pt(18 if level == 0 else 14)
+            )
+
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
         if type(any_of_any) is SortedSet:  # bottom of structure
@@ -79,9 +103,11 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par.style.font.name = GENERIC_FONT
                 par.paragraph_format.left_indent = Pt(30)
                 par.paragraph_format.first_line_indent = Pt(-10)
+
+                _generate_text(par, t, fonts[trans_lang])
+
                 run = par.add_run()
-                run.font.name = fonts[trans_lang]
-                run.add_text(t + ": ")
+                run.add_text(": ")
                 first = True
                 pairs = dict(bottom_d.items())
                 for key in sorted(pairs, key=pairs.__getitem__):
@@ -215,12 +241,16 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
             par.paragraph_format.space_after = Pt(0)
             if level > 0:
                 par.paragraph_format.first_line_indent = Pt(10)
-            run = par.add_run()
-            run.font.name = fonts[lang]
-            run.font.size = Pt(14 if level == 0 else 12)
-            run.font.bold = level == 0
-            par.paragraph_format.first_line_indent = Cm(0.25 * level)
-            run.add_text(li)
+
+            _generate_text(
+                par,
+                li,
+                fonts[lang],
+                size=Pt(14 if level == 0 else 12),
+                bold=level == 0,
+                indent=Cm(0.25 * level),
+            )
+
             _generate_counts(par, next_d)
             run = par.add_run()
             run.add_text(")")
@@ -234,12 +264,12 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par.paragraph_format.space_before = Pt(0)
                 par.paragraph_format.space_after = Pt(0)
                 par.paragraph_format.left_indent = Cm(1)
-                run = par.add_run()
-                run.font.name = fonts[trans_lang]
-                run.add_text(t)
+
+                _generate_text(par, t, fonts[trans_lang])
                 _generate_counts(par, bottom_d)
+
                 run = par.add_run()
-                run.font.name = fonts["gr"]
+                run.font.name = GENERIC_FONT
                 run.add_text("): ")
                 first = True
                 pairs = dict(bottom_d.items())

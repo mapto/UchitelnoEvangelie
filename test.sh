@@ -14,7 +14,7 @@ for FILENAME in *.docx; do
             # echo "No differences in $NEXT"
         # else
             echo "DIFFERENCES FOUND in $NEXT!"
-            diff expected/$NEXT out/$NEXT
+            # diff expected/$NEXT out/$NEXT
             exit 0
         fi
     done
@@ -26,7 +26,7 @@ cd ../..
 
 echo "Testing integrator..."
 cd integrator/test
-VARIANTS="gre sla" # result-gre result-sla"
+VARIANTS="gre sla result-gre result-sla"
 PARTS="[Content_Types].xml _rels/.rels docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/stylesWithEffects.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml customXml/item1.xml customXml/_rels/item1.xml.rels customXml/itemProps1.xml word/numbering.xml docProps/thumbnail.jpeg"
 # SKIPPED: docProps/core.xml, as it contains no relevant information, but timestamps
 for FILENAME in *.xlsx; do
@@ -42,7 +42,7 @@ for FILENAME in *.xlsx; do
                 # echo "No differences in $NEXT"
             # else
                 echo "DIFFERENCES FOUND in $NEXT!"
-                diff expected/$NEXT out/$NEXT
+                # diff expected/$NEXT out/$NEXT
                 exit 0
             fi
         done
