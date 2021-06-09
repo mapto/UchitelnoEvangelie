@@ -60,34 +60,68 @@ def _compile_usage(
     return d
 
 
-def _parse_var(row: List[str], sem: LangSemantics) -> str:
-    print(row)
-    print(sem)
-    word = row[sem.word]
-    lem = row[sem.lemmas[0]]
-    return ""
-
-
 def _build_usage(
     row: List[str],
     orig: LangSemantics,
     trans: LangSemantics,
     key: Tuple[str, str],
     d: SortedDict,
-    is_var: bool = False,
+    var: str = "",
 ) -> SortedDict:
     assert row[IDX_COL]
 
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i, is_var)
-    var_id = orig.parse_var(row)
+    idx = Index.unpack(row[IDX_COL], b, i, not not var)
     oalt = orig.alternatives(row)
     talt = trans.alternatives(row)
-    val = Usage(idx, orig.lang, var_id, oalt[0], oalt[1], talt[0], talt[1])
+    val = Usage(idx, orig.lang, var, oalt[0], oalt[1], talt[0], talt[1])
     for nxt in _build_paths(row, trans.lemmas):
         d = _compile_usage(val, nxt, key, d)
     return d
+
+
+def _multilemma(row: List[str], sem: Optional[VarLangSemantics]) -> Dict[str, str]:
+    """
+    >>> sem = VarLangSemantics("sl", 0, [1])
+    >>> _multilemma(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"], sem)
+    {'H': '\ue201д\ue205нородъ', 'G': '\ue205но\ue20dѧдъ'}
+    >>> _multilemma(["", ""], sem)
+    {}
+    >>> _multilemma(["дноеды WH Ø G", "дноѧдъ"], sem)
+    {}
+    """
+    if not _present(row, sem):
+        return {}
+    assert sem
+    result = {}
+    m = re.search(r"^([^A-Z]+)([A-Z]+)(\s*\/\s*)?(.*)$", row[sem.lemmas[0]].strip())
+    while m:
+        result[m.group(2)] = m.group(1).strip()
+        rest = m.group(4).strip() if len(m.groups()) == 4 else ""
+        m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
+    return result
+
+
+def _multiword(row: List[str], sem: VarLangSemantics) -> Dict[str, str]:
+    """
+    >>> sem = VarLangSemantics("sl", 0, [1])
+    >>> _multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"], sem)
+    {'G': '\ue205но\ue20dедаго', 'H': '\ue201д\ue205нородоу'}
+    >>> _multiword(["", ""], sem)
+    {}
+    >>> _multiword(["дноеды WH Ø G", "дноѧдъ"], sem)
+    {'WH': 'дноеды', 'G': 'Ø'}
+    """
+    if not _present(row, sem):
+        return {}
+    result = {}
+    m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", row[sem.word].strip())
+    while m:
+        result[m.group(2)] = m.group(1).strip()
+        rest = m.group(3).strip()
+        m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
+    return result
 
 
 def _agg_lemma(
@@ -96,7 +130,7 @@ def _agg_lemma(
     trans: Optional[LangSemantics],
     key: Tuple[str, str],
     d: SortedDict,
-    var: bool = False,
+    var: str = "",
     col: int = -1,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
@@ -153,18 +187,10 @@ def _present(row: List[str], sem: Optional[LangSemantics]) -> bool:
     return not not sem and not not row[sem.lemmas[0]]
 
 
-def _build_key(row, sem, var=False):
-    word = (
-        f"{base_word(row[sem.word])}"
-        if _present(row, sem)
-        and sem  # for mypy
-        and sem.word != None  # for mypy
-        and not not row[sem.word]
-        else ""
-    )
-    if not word:
-        return ""
-    return f" {{{word}}}" if var else f"{word}"
+def _build_key(row, sem):
+    if _present(row, sem) and sem and sem.word != None and not not row[sem.word]:
+        return sem.key(f"{base_word(row[sem.word])}")
+    return ""
 
 
 def aggregate(
@@ -187,9 +213,9 @@ def aggregate(
 
         # print(row)
         orig_key = _build_key(row, orig)
-        orig_key_var = _build_key(row, orig.var, True)
+        orig_key_var = _build_key(row, orig.var)
         trans_key = _build_key(row, trans)
-        trans_key_var = _build_key(row, trans.var, True)
+        trans_key_var = _build_key(row, trans.var)
         key = (f"{orig_key}{orig_key_var}", f"{trans_key}{trans_key_var}")
 
         # print(row[IDX_COL])
@@ -197,8 +223,17 @@ def aggregate(
             continue
 
         result = _agg_lemma(row, orig, trans, key, result)
-        result = _agg_lemma(row, orig.var, trans, key, result, True)
-        result = _agg_lemma(row, orig, trans.var, key, result, True)
-        result = _agg_lemma(row, orig.var, trans.var, key, result, True)
+        orig_vars = _multilemma(row, orig.var)
+        orig_words = _multiword(row, orig.var)
+        for k in orig_words.keys():
+            subrow = list(row)
+            subrow[orig.var.word] = orig_words[k]
+            if k in orig_vars:
+                subrow[orig.var.lemmas[0]] = orig_vars[k]
+            orig_subkey_var = _build_key(subrow, orig.var)
+            subkey = (f"{orig_key}{orig_subkey_var}", f"{trans_key}{trans_key_var}")
+            result = _agg_lemma(row, orig.var, trans, subkey, result, k)
+            result = _agg_lemma(row, orig.var, trans.var, subkey, result, k)
+        result = _agg_lemma(row, orig, trans.var, key, result)
 
     return result

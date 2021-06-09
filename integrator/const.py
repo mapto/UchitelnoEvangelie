@@ -7,5 +7,8 @@ H_LEMMA_SEP = "/"  # indicates multiple variants provided together
 V_LEMMA_SEP = "&"  # indicates lemmas merged from several rows
 MISSING_CH = "ₓ"
 
+# first letter is main variant
+MAIN_SL = "S"
 VAR_SL = "GHW"
-VAR_GR = "ST"  # TODO
+MAIN_GR = "C"
+VAR_GR = "TPQ"  # TODO

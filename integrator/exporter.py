@@ -1,3 +1,4 @@
+from const import VAR_GR, VAR_SL
 from typing import Tuple, List, Optional, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
@@ -5,7 +6,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import RGBColor, Pt, Cm  # type: ignore
 
-from model import Index, Usage
+from model import Index, Usage, Counter
 
 GENERIC_FONT = "Times New Roman"
 
@@ -162,53 +163,72 @@ def docx_result(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -
         first = False
 
 
-def _get_set_counts(s: SortedSet) -> Tuple[int, int]:
+def _get_set_counts(s: SortedSet) -> Counter:
     """
     >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)]
     >>> s = SortedSet([Usage(n, "sl") for n in i])
     >>> _get_set_counts(s)
-    (2, 0)
+    Counter(orig_main=2, orig_var=0, trans_main=2, trans_var=0)
 
     >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7, var=True), Index(ch=1, alt=True, page=168, col='c', row=7)]
-    >>> s = SortedSet([Usage(n, "sl") for n in i])
+    >>> s = SortedSet([Usage(n, "sl", "W" if n.var else "") for n in i])
     >>> _get_set_counts(s)
-    (1, 1)
+    Counter(orig_main=1, orig_var=1, trans_main=2, trans_var=0)
     """
-    r = (0, 0)
-    for next in s:
-        r = (r[0], r[1] + 1) if next.idx.var else (r[0] + 1, r[1])
+    lang = next(iter(s)).lang
+    orig_var = VAR_SL if lang == "sl" else VAR_GR
+    trans_var = VAR_GR if lang == "sl" else VAR_SL
+    r = Counter()
+    for nxt in s:
+        assert nxt.lang == lang
+
+        found = False
+        for v in orig_var:
+            if v in nxt.var:
+                r.orig_var += 1
+                found = True
+                break
+        if not found:
+            r.orig_main += 1
+
+        found = False
+        for v in trans_var:
+            if v in nxt.var:
+                r.trans_var += 1
+                found = True
+                break
+        if not found:
+            r.trans_main += 1
+
     return r
 
 
-def _get_dict_counts(d: Union[SortedDict, dict]) -> Tuple[int, int]:
+def _get_dict_counts(d: Union[SortedDict, dict]) -> Counter:
     """
     >>> u = Usage(Index(ch=1, alt=False, page=5, col='a', row=5), "sl")
     >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([u])}})
     >>> _get_dict_counts(d)
-    (1, 0)
+    Counter(orig_main=1, orig_var=0, trans_main=1, trans_var=0)
 
     >>> u1 = Usage(Index(ch=1, alt=False, page=8, col='a', row=3), "sl")
     >>> u2 = Usage(Index(ch=1, alt=False, page=6, col='b', row=7), "sl")
-    >>> d = SortedDict({'': SortedDict({'': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
+    >>> d = SortedDict({'lem2': SortedDict({'lem1': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
     >>> _get_dict_counts(d)
-    (2, 0)
+    Counter(orig_main=2, orig_var=0, trans_main=2, trans_var=0)
     """
-    r = (0, 0)
+    r = Counter()
     any = next(iter(d.values()))
     if type(any) is SortedSet:
         for n in d.values():
-            a = _get_set_counts(n)
-            r = (r[0] + a[0], r[1] + a[1])
+            r += _get_set_counts(n)
     else:  # type(any) is SortedDict or type(any) is dict:
         for n in d.values():
-            a = _get_dict_counts(n)
-            r = (r[0] + a[0], r[1] + a[1])
+            r += _get_dict_counts(n)
     return r
 
 
-def _generate_counts(par, d: Union[SortedDict, dict]) -> None:
-    c = _get_dict_counts(d)
-    assert c[0] or c[1]
+def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> None:
+    c = _get_dict_counts(d).get_counts(trans)
     run = par.add_run()
     run.add_text(" (")
     if c[0]:
@@ -251,7 +271,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 indent=Cm(0.25 * level),
             )
 
-            _generate_counts(par, next_d)
+            _generate_counts(par, next_d, True)
             run = par.add_run()
             run.add_text(")")
         any_child = next(iter(next_d.values()))
@@ -266,7 +286,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par.paragraph_format.left_indent = Cm(1)
 
                 _generate_text(par, t, fonts[trans_lang])
-                _generate_counts(par, bottom_d)
+                _generate_counts(par, bottom_d, False)
 
                 run = par.add_run()
                 run.font.name = GENERIC_FONT

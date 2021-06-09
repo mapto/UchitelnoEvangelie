@@ -259,6 +259,9 @@ class LangSemantics:
     def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
         raise NotImplementedError("abstract method")
 
+    def key(self, text: str) -> str:
+        raise NotImplementedError("abstract method")
+
 
 @dataclass
 class MainLangSemantics(LangSemantics):
@@ -293,6 +296,9 @@ class MainLangSemantics(LangSemantics):
             return ("", [])
         return ("", [row[self.var.lemmas[0]]])
 
+    def key(self, text: str) -> str:
+        return text
+
 
 @dataclass
 class VarLangSemantics(LangSemantics):
@@ -304,6 +310,12 @@ class VarLangSemantics(LangSemantics):
         if not self.main or not row[self.main.lemmas[0]]:
             return ("", [])
         return (row[self.main.lemmas[0]], [])
+
+    def key(self, text: str) -> str:
+        m = re.search(r"^([^A-Z]+)([A-Z]+)$", text.strip())
+        if m:
+            text = m.group(1).strip()
+        return f" {{{text}}}"
 
 
 @dataclass
@@ -343,3 +355,23 @@ class TableSemantics:
         c += self.sl.lemn_cols()
         c += self.gr.lemn_cols()
         return c
+
+
+@dataclass
+class Counter:
+    orig_main: int = 0
+    orig_var: int = 0
+    trans_main: int = 0
+    trans_var: int = 0
+
+    def __iadd__(self, other: "Counter") -> "Counter":
+        self.orig_main += other.orig_main
+        self.orig_var += other.orig_var
+        self.trans_main += other.trans_main
+        self.trans_var += other.trans_var
+        return self
+
+    def get_counts(self, trans: bool = False) -> Tuple[int, int]:
+        if trans:
+            return (self.trans_main, self.trans_var)
+        return (self.orig_main, self.orig_var)
