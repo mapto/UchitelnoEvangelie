@@ -4,7 +4,9 @@ from abc import ABC, abstractmethod
 
 import re
 
+from const import CF_SEP
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
+from const import DEFAULT_SL, DEFAULT_GR
 
 
 @dataclass(order=True, frozen=True)
@@ -176,46 +178,6 @@ class Usage:
     def __hash__(self):
         return hash((self.idx, self.lang, self.orig_alt, self.trans_alt))
 
-    def suffix(self):
-        """
-        >>> idx = Index.unpack("1/1a1")
-        >>> Usage(idx, "sl").suffix()
-        ''
-        >>> Usage(idx, "sl", "", "дноѧдъ", ["ноѧдъ"]).suffix()
-        ' cf. \ue201д\ue205но\ue20dѧдъ, [\ue205но\ue20dѧдъ]'
-        >>> Usage(idx, "sl", "", "", [], "ὑπερκλύζω").suffix()
-        ' cf. ὑπερκλύζω'
-        >>> Usage(idx, "sl", "", "", [], "", ["ὑπερβλύω"]).suffix()
-        ' cf. {ὑπερβλύω}'
-        >>> Usage(idx, "gr", "", "ὑπερκλύζω").suffix()
-        ' cf. ὑπερκλύζω'
-        >>> Usage(idx, "gr", "", "", ["ὑπερβλύω"]).suffix()
-        ' cf. {ὑπερβλύω}'
-        """
-        if (
-            not self.orig_alt
-            and not self.orig_alt_var
-            and not self.trans_alt
-            and not self.trans_alt_var
-        ):
-            return ""
-        result = []
-        if self.orig_alt:
-            result.append(self.orig_alt)
-        if self.orig_alt_var:
-            if self.lang == "sl":
-                result.append(f"[{', '.join(self.orig_alt_var)}]")
-            else:
-                result.append(f"{{{', '.join(self.orig_alt_var)}}}")
-        if self.trans_alt:
-            result.append(self.trans_alt)
-        if self.trans_alt_var:
-            if self.lang == "sl":
-                result.append(f"{{{', '.join(self.trans_alt_var)}}}")
-            else:
-                result.append(f"[{', '.join(self.trans_alt_var)}]")
-        return f" cf. {', '.join(result)}"
-
 
 @dataclass
 class LangSemantics:
@@ -262,6 +224,12 @@ class LangSemantics:
     def key(self, text: str) -> str:
         raise NotImplementedError("abstract method")
 
+    def multiword(self, row: List[str]) -> Dict[str, str]:
+        raise NotImplementedError("abstract method")
+
+    def multilemma(self, row: List[str]) -> Dict[str, str]:
+        raise NotImplementedError("abstract method")
+
 
 @dataclass
 class MainLangSemantics(LangSemantics):
@@ -272,6 +240,7 @@ class MainLangSemantics(LangSemantics):
         If there is variant, make sure add correct number of lemma columns.
         relevant, because different language/variant combinations have different number of lemma columns.
         """
+        assert self.lang == self.var.lang
         self.var.main = self
 
         if len(self.lemmas) == len(self.var.lemmas):
@@ -292,12 +261,19 @@ class MainLangSemantics(LangSemantics):
         return super().lemn_cols() + self.var.lemmas[1:]
 
     def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
-        if not self.var or not row[self.var.lemmas[0]]:
-            return ("", [])
-        return ("", [row[self.var.lemmas[0]]])
+        alt = list(self.var.multilemma(row).values())
+        return ("", alt)
 
     def key(self, text: str) -> str:
         return text
+
+    def multiword(self, row: List[str]) -> Dict[str, str]:
+        """Main variant does not have multiple words in a cell"""
+        return {}
+
+    def multilemma(self, row: List[str]) -> Dict[str, str]:
+        """Main variant does not have multiple words in a cell"""
+        return {}
 
 
 @dataclass
@@ -307,15 +283,40 @@ class VarLangSemantics(LangSemantics):
     main: Optional["MainLangSemantics"] = None
 
     def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
-        if not self.main or not row[self.main.lemmas[0]]:
-            return ("", [])
-        return (row[self.main.lemmas[0]], [])
+        main = ""
+        if self.main and row[self.main.lemmas[0]]:
+            main = row[self.main.lemmas[0]]
+        alt = list(self.multilemma(row).values())
+        return (main, alt)
 
     def key(self, text: str) -> str:
         m = re.search(r"^([^A-Z]+)([A-Z]+)$", text.strip())
         if m:
             text = m.group(1).strip()
         return f" {{{text}}}"
+
+    def multiword(self, row: List[str]) -> Dict[str, str]:
+        result = {}
+        m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", row[self.word].strip())
+        while m:
+            result[m.group(2)] = m.group(1).strip()
+            rest = m.group(3).strip()
+            m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
+        if not result:
+            default = DEFAULT_SL if self.lang == "sl" else DEFAULT_GR
+            return {default: row[self.word].strip()}
+        return result
+
+    def multilemma(self, row: List[str]) -> Dict[str, str]:
+        result = {}
+        m = re.search(
+            r"^([^A-Z]+)([A-Z]+)(\s*\/\s*)?(.*)$", row[self.lemmas[0]].strip()
+        )
+        while m:
+            result[m.group(2)] = m.group(1).strip()
+            rest = m.group(4).strip() if len(m.groups()) == 4 else ""
+            m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
+        return result
 
 
 @dataclass

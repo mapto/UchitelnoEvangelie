@@ -21,7 +21,7 @@ def test_grouped():
         lang="gr",
         word=10,
         lemmas=[11, 12, 13],
-        var=VarLangSemantics(lang="gr_var", word=15, lemmas=[16, 17, 19]),
+        var=VarLangSemantics(lang="gr", word=15, lemmas=[16, 17, 19]),
     )
     row = (
         [
@@ -44,7 +44,7 @@ def test_grouped():
         lang="sl",
         word=4,
         lemmas=[6, 7, 8, 9],
-        var=VarLangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20]),
+        var=VarLangSemantics(lang="sl", word=0, lemmas=[1, 2, 19, 20]),
     )
     row = (
         [""] * 3
@@ -81,13 +81,13 @@ def test_close():
         lang="sl",
         word=4,
         lemmas=[6, 7, 8, 9],
-        var=VarLangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20]),
+        var=VarLangSemantics(lang="sl", word=0, lemmas=[1, 2, 19, 20]),
     )
     gr_sem = MainLangSemantics(
         lang="gr",
         word=10,
         lemmas=[11, 12, 13],
-        var=VarLangSemantics(lang="gr_var", word=15, lemmas=[16, 17, 19]),
+        var=VarLangSemantics(lang="gr", word=15, lemmas=[16, 17, 19]),
     )
     group = [
         ["все WH", "вьсь", "", "1/7c12", "въ", "въ сел\ue205ко", "въ", "въ + Acc."]

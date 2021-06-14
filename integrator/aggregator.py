@@ -5,6 +5,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
 
 from const import IDX_COL, STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP, PATH_SEP, MISSING_CH
+from const import DEFAULT_SL, DEFAULT_GR
 from model import Index, Usage, LangSemantics, MainLangSemantics, VarLangSemantics
 from util import ord_word, base_word
 
@@ -60,19 +61,23 @@ def _compile_usage(
     return d
 
 
+def _get_variant(row, orig: LangSemantics) -> str:
+    return "".join([k for k in _multiword(row, orig).keys()])
+
+
 def _build_usage(
     row: List[str],
     orig: LangSemantics,
     trans: LangSemantics,
     key: Tuple[str, str],
     d: SortedDict,
-    var: str = "",
 ) -> SortedDict:
     assert row[IDX_COL]
 
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i, not not var)
+    idx = Index.unpack(row[IDX_COL], b, i)
+    var = _get_variant(row, orig) + _get_variant(row, trans)
     oalt = orig.alternatives(row)
     talt = trans.alternatives(row)
     val = Usage(idx, orig.lang, var, oalt[0], oalt[1], talt[0], talt[1])
@@ -94,34 +99,26 @@ def _multilemma(row: List[str], sem: Optional[VarLangSemantics]) -> Dict[str, st
     if not _present(row, sem):
         return {}
     assert sem
-    result = {}
-    m = re.search(r"^([^A-Z]+)([A-Z]+)(\s*\/\s*)?(.*)$", row[sem.lemmas[0]].strip())
-    while m:
-        result[m.group(2)] = m.group(1).strip()
-        rest = m.group(4).strip() if len(m.groups()) == 4 else ""
-        m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
-    return result
+    return sem.multilemma(row)
 
 
-def _multiword(row: List[str], sem: VarLangSemantics) -> Dict[str, str]:
+def _multiword(row: List[str], sem: LangSemantics) -> Dict[str, str]:
     """
     >>> sem = VarLangSemantics("sl", 0, [1])
     >>> _multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"], sem)
     {'G': '\ue205но\ue20dедаго', 'H': '\ue201д\ue205нородоу'}
+    >>> _multiword(["ноедаго G", "днородъ H / ноѧдъ G"], sem)
+    {'G': '\ue205но\ue20dедаго'}
     >>> _multiword(["", ""], sem)
     {}
     >>> _multiword(["дноеды WH Ø G", "дноѧдъ"], sem)
     {'WH': 'дноеды', 'G': 'Ø'}
+    >>> _multiword(["дноеды", "дноѧдъ"], sem)
+    {'WGH': 'дноеды'}
     """
     if not _present(row, sem):
         return {}
-    result = {}
-    m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", row[sem.word].strip())
-    while m:
-        result[m.group(2)] = m.group(1).strip()
-        rest = m.group(3).strip()
-        m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
-    return result
+    return sem.multiword(row)
 
 
 def _agg_lemma(
@@ -130,7 +127,6 @@ def _agg_lemma(
     trans: Optional[LangSemantics],
     key: Tuple[str, str],
     d: SortedDict,
-    var: str = "",
     col: int = -1,
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
@@ -141,7 +137,6 @@ def _agg_lemma(
         trans (LangSemantics): translation for lemma columns, do nothing if absent
         key (Tuple[str, str]): word pair
         d (SortedDict): see return value
-        var (bool): variant or not
         col (int): lemma column being currently processed, -1 for autodetect/first, -2 for exhausted/last
 
     Returns:
@@ -155,19 +150,18 @@ def _agg_lemma(
     >>> _agg_lemma(row, sem, None, ("dummy","pair"), d)
     SortedDict({})
     """
-
     if not _present(row, orig) or not _present(row, trans):
         return d
     assert orig  # for mypy
+    assert trans  # for mypy
 
     if col == -1:  # autodetect/first
         col = orig.lemmas[0]
     elif col == -2:  # exhausted/last
-        assert trans  # for mypy
-        return _build_usage(row, orig, trans, key, d, var)
+        return _build_usage(row, orig, trans, key, d)
 
     # TODO: implement variants here
-    if var and row[col]:
+    if type(orig) == VarLangSemantics and row[col]:
         row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
     lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
     lem_col = orig.lemmas
@@ -179,7 +173,7 @@ def _agg_lemma(
             d[next] = SortedDict(ord_word)
         next_idx = lem_col.index(col) + 1
         next_c = lem_col[next_idx] if next_idx < len(lem_col) else -2
-        d[next] = _agg_lemma(row, orig, trans, key, d[next], var, next_c)
+        d[next] = _agg_lemma(row, orig, trans, key, d[next], next_c)
     return d
 
 
@@ -222,9 +216,15 @@ def aggregate(
         if not [v for v in key if v]:
             continue
 
+        if row[IDX_COL] == "1/W168a25":
+            print("plain")
+            print(row)
         result = _agg_lemma(row, orig, trans, key, result)
         orig_vars = _multilemma(row, orig.var)
         orig_words = _multiword(row, orig.var)
+        trans_vars = _multilemma(row, trans.var)
+        trans_words = _multiword(row, trans.var)
+
         for k in orig_words.keys():
             subrow = list(row)
             subrow[orig.var.word] = orig_words[k]
@@ -232,8 +232,34 @@ def aggregate(
                 subrow[orig.var.lemmas[0]] = orig_vars[k]
             orig_subkey_var = _build_key(subrow, orig.var)
             subkey = (f"{orig_key}{orig_subkey_var}", f"{trans_key}{trans_key_var}")
-            result = _agg_lemma(row, orig.var, trans, subkey, result, k)
-            result = _agg_lemma(row, orig.var, trans.var, subkey, result, k)
-        result = _agg_lemma(row, orig, trans.var, key, result)
+            if row[IDX_COL] == "1/W168a25":
+                print("orig var")
+                print(subrow)
+            result = _agg_lemma(subrow, orig.var, trans, subkey, result)
+            for j in trans_words.keys():
+                ssubrow = list(subrow)
+                ssubrow[trans.var.word] = trans_words[j]
+                if j in trans_vars:
+                    ssubrow[trans.var.lemmas[0]] = trans_vars[j]
+                trans_subkey_var = _build_key(ssubrow, trans.var)
+                subkey = (
+                    f"{orig_key}{orig_subkey_var}",
+                    f"{trans_key}{trans_subkey_var}",
+                )
+                if row[IDX_COL] == "1/W168a25":
+                    print("both var")
+                    print(ssubrow)
+                result = _agg_lemma(ssubrow, orig.var, trans.var, subkey, result)
+        for j in trans_words.keys():
+            subrow = list(row)
+            subrow[trans.var.word] = trans_words[j]
+            if j in trans_vars:
+                subrow[trans.var.lemmas[0]] = trans_vars[j]
+            trans_subkey_var = _build_key(subrow, trans.var)
+            subkey = (f"{orig_key}{orig_key_var}", f"{trans_key}{trans_subkey_var}")
+            if row[IDX_COL] == "1/W168a25":
+                print("trans var")
+                print(subrow)
+            result = _agg_lemma(subrow, orig, trans.var, subkey, result)
 
     return result

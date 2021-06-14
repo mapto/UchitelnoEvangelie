@@ -36,11 +36,9 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
 
 
 if __name__ == "__main__":
-    sl_sem = MainLangSemantics(
-        "sl", 4, [6, 7, 8, 9], VarLangSemantics("sl_var", 0, [1, 2])
-    )
+    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr_var", 15, [16, 17])
+        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
     )
     sem = TableSemantics(sl_sem, gr_sem)
 
