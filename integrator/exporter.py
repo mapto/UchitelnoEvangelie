@@ -316,7 +316,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 indent=Cm(0.25 * level),
             )
 
-            _generate_counts(par, next_d, True)
+            _generate_counts(par, next_d, False)
             run = par.add_run()
             run.add_text(")")
         any_child = next(iter(next_d.values()))
@@ -331,7 +331,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par.paragraph_format.left_indent = Cm(1)
 
                 _generate_text(par, t, fonts[trans_lang])
-                _generate_counts(par, bottom_d, False)
+                _generate_counts(par, bottom_d, True)
 
                 run = par.add_run()
                 run.font.name = GENERIC_FONT
