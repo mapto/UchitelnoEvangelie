@@ -13,5 +13,5 @@ MAIN_SL = "S"
 VAR_SL = "WGH"
 DEFAULT_SL = VAR_SL
 MAIN_GR = "C"
-VAR_GR = "TPQ"  # TODO
+VAR_GR = "C"
 DEFAULT_GR = "C"

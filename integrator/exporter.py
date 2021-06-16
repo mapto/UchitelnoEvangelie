@@ -6,14 +6,15 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import RGBColor, Pt, Cm  # type: ignore
 
-from const import CF_SEP
+from const import CF_SEP, MAIN_GR, MAIN_SL
 from model import Index, Usage, Counter
 
 GENERIC_FONT = "Times New Roman"
 
+other_lang = {"gr": "sl", "sl": "gr"}
 fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
 colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
-other_lang = {"gr": "sl", "sl": "gr"}
+main_source = {"gr": MAIN_GR, "sl": MAIN_SL}
 
 
 def _generate_text(
@@ -151,6 +152,7 @@ def _generate_usage(par, u: Usage) -> None:
     if u.orig_alt:
         _generate_text(par, " ")
         _generate_text(par, u.orig_alt, fonts[u.lang])
+        _generate_text(par, f" {main_source[u.lang]}")
 
     run = par.add_run()
     if u.orig_alt_var:
@@ -168,6 +170,7 @@ def _generate_usage(par, u: Usage) -> None:
     if u.trans_alt:
         run.add_text(" ")
         _generate_text(par, u.trans_alt, fonts[other_lang[u.lang]])
+        _generate_text(par, f" {main_source[other_lang[u.lang]]}")
 
     run = par.add_run()
     if u.trans_alt_var:
@@ -212,13 +215,19 @@ def _get_set_counts(s: SortedSet) -> Counter:
     """
     >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)]
     >>> s = SortedSet([Usage(n, "sl") for n in i])
-    >>> _get_set_counts(s)
-    Counter(orig_main=2, orig_var=0, trans_main=2, trans_var=0)
+    >>> c = _get_set_counts(s)
+    >>> c.get_counts(True)
+    (2, 0)
+    >>> c.get_counts(False)
+    (2, 0)
 
     >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7, var=True), Index(ch=1, alt=True, page=168, col='c', row=7)]
     >>> s = SortedSet([Usage(n, "sl", "W" if n.var else "") for n in i])
-    >>> _get_set_counts(s)
-    Counter(orig_main=1, orig_var=1, trans_main=2, trans_var=0)
+    >>> c = _get_set_counts(s)
+    >>> c.get_counts(False)
+    (1, 1)
+    >>> c.get_counts(True)
+    (2, 0)
     """
     lang = next(iter(s)).lang
     orig_var = VAR_SL if lang == "sl" else VAR_GR
@@ -230,20 +239,20 @@ def _get_set_counts(s: SortedSet) -> Counter:
         found = False
         for v in orig_var:
             if v in nxt.var:
-                r.orig_var += 1
+                r.orig_var.add(nxt.idx)
                 found = True
                 break
         if not found:
-            r.orig_main += 1
+            r.orig_main.add(nxt.idx)
 
         found = False
         for v in trans_var:
             if v in nxt.var:
-                r.trans_var += 1
+                r.trans_var.add(nxt.idx)
                 found = True
                 break
         if not found:
-            r.trans_main += 1
+            r.trans_main.add(nxt.idx)
 
     return r
 
@@ -252,14 +261,20 @@ def _get_dict_counts(d: Union[SortedDict, dict]) -> Counter:
     """
     >>> u = Usage(Index(ch=1, alt=False, page=5, col='a', row=5), "sl")
     >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([u])}})
-    >>> _get_dict_counts(d)
-    Counter(orig_main=1, orig_var=0, trans_main=1, trans_var=0)
+    >>> c = _get_dict_counts(d)
+    >>> c.get_counts(True)
+    (1, 0)
+    >>> c.get_counts(False)
+    (1, 0)
 
     >>> u1 = Usage(Index(ch=1, alt=False, page=8, col='a', row=3), "sl")
     >>> u2 = Usage(Index(ch=1, alt=False, page=6, col='b', row=7), "sl")
     >>> d = SortedDict({'lem2': SortedDict({'lem1': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
-    >>> _get_dict_counts(d)
-    Counter(orig_main=2, orig_var=0, trans_main=2, trans_var=0)
+    >>> c = _get_dict_counts(d)
+    >>> c.get_counts(True)
+    (2, 0)
+    >>> c.get_counts(False)
+    (2, 0)
     """
     r = Counter()
     any = next(iter(d.values()))
