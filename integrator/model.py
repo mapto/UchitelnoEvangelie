@@ -1,12 +1,36 @@
 from typing import Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
 from const import CF_SEP
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 from const import DEFAULT_SL, DEFAULT_GR
+
+from util import base_word, build_paths
+
+
+def _present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
+    return not not sem and not not row[sem.lemmas[0]]
+
+
+def _compile_usage(
+    val: "Usage", nxt: str, key: Tuple[str, str], d: SortedDict
+) -> SortedDict:
+    """*IN PLACE*"""
+    if nxt in d:
+        if key not in d[nxt]:
+            d[nxt][key] = SortedSet()
+        d[nxt][key].add(val)
+    else:
+        d[nxt] = {key: SortedSet([val])}
+    return d
+
+
+def _get_variant(row, orig: "LangSemantics") -> str:
+    return "".join([k for k in orig.multiword(row).keys()])
 
 
 @dataclass(order=True, frozen=True)
@@ -224,10 +248,18 @@ class LangSemantics:
     def key(self, text: str) -> str:
         raise NotImplementedError("abstract method")
 
+    def build_key(self, row: List[str]) -> str:
+        raise NotImplementedError("abstract method")
+
     def multiword(self, row: List[str]) -> Dict[str, str]:
         raise NotImplementedError("abstract method")
 
     def multilemma(self, row: List[str]) -> Dict[str, str]:
+        raise NotImplementedError("abstract method")
+
+    def build_usages(
+        self, trans: "LangSemantics", row: List[str], d: SortedDict
+    ) -> SortedDict:
         raise NotImplementedError("abstract method")
 
 
@@ -267,6 +299,18 @@ class MainLangSemantics(LangSemantics):
     def key(self, text: str) -> str:
         return text
 
+    def build_key(self, row: List[str]) -> str:
+        result = ""
+        if _present(row, self) and self.word != None and not not row[self.word]:
+            result += self.key(f"{base_word(row[self.word])}")
+        if (
+            _present(row, self.var)
+            and self.var.word != None
+            and not not row[self.var.word]
+        ):
+            result += self.var.key(f"{base_word(row[self.var.word])}")
+        return result
+
     def multiword(self, row: List[str]) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
         return {}
@@ -274,6 +318,24 @@ class MainLangSemantics(LangSemantics):
     def multilemma(self, row: List[str]) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
         return {}
+
+    def build_usages(
+        self, trans: "LangSemantics", row: List[str], d: SortedDict
+    ) -> SortedDict:
+        orig_key = self.build_key(row)
+        trans_key = trans.build_key(row)
+        key = (orig_key, trans_key)
+
+        b = "bold" in row[STYLE_COL]
+        i = "italic" in row[STYLE_COL]
+        idx = Index.unpack(row[IDX_COL], b, i)
+        var = _get_variant(row, self) + _get_variant(row, trans)
+        oalt = self.alternatives(row)
+        talt = trans.alternatives(row)
+        val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
+        for nxt in build_paths(row, trans.lemmas):
+            d = _compile_usage(val, nxt, key, d)
+        return d
 
 
 @dataclass
@@ -295,6 +357,19 @@ class VarLangSemantics(LangSemantics):
             text = m.group(1).strip()
         return f" {{{text}}}"
 
+    def build_key(self, row: List[str]) -> str:
+        result = ""
+        assert self.main
+        if (
+            _present(row, self.main)
+            and self.main.word != None
+            and not not row[self.main.word]
+        ):
+            result += self.main.key(f"{base_word(row[self.main.word])}")
+        if _present(row, self) and self.word != None and not not row[self.word]:
+            result += self.key(f"{base_word(row[self.word])}")
+        return result
+
     def multiword(self, row: List[str]) -> Dict[str, str]:
         result = {}
         m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", row[self.word].strip())
@@ -310,13 +385,31 @@ class VarLangSemantics(LangSemantics):
     def multilemma(self, row: List[str]) -> Dict[str, str]:
         result = {}
         m = re.search(
-            r"^([^A-Z]+)([A-Z]+)(\s*\/\s*)?(.*)$", row[self.lemmas[0]].strip()
+            r"^([^A-Z]+)([A-Z]+)(\s*\&\s*)?(.*)$", row[self.lemmas[0]].strip()
         )
         while m:
-            result[m.group(2)] = m.group(1).strip()
+            result[m.group(2)] = m.group(1).strip() if m.group(1) else ""
             rest = m.group(4).strip() if len(m.groups()) == 4 else ""
             m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
         return result
+
+    def build_usages(
+        self, trans: "LangSemantics", row: List[str], d: SortedDict
+    ) -> SortedDict:
+        orig_key = self.build_key(row)
+        trans_key = trans.build_key(row)
+        key = (orig_key, trans_key)
+
+        b = "bold" in row[STYLE_COL]
+        i = "italic" in row[STYLE_COL]
+        idx = Index.unpack(row[IDX_COL], b, i)
+        var = _get_variant(row, self) + _get_variant(row, trans)
+        oalt = self.alternatives(row)
+        talt = trans.alternatives(row)
+        val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
+        for nxt in build_paths(row, trans.lemmas):
+            d = _compile_usage(val, nxt, key, d)
+        return d
 
 
 @dataclass

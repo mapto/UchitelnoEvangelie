@@ -1,6 +1,8 @@
 #!/bin/sh -e
 
 echo '>>> Cleaning cache'
+rm -rf .mypy_cache
+rm -rf .pytest_cache
 rm -rf extractor/__pycache__
 rm -rf integrator/__pycache__
 

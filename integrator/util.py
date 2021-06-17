@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""These utilities are also used by the object-oriented model,
+so to avoid circular references they cannot use it"""
+
 
 from typing import Dict, List, Set
 
@@ -6,6 +9,8 @@ import unicodedata
 from sortedcontainers import SortedSet  # type: ignore
 
 from alphabet import remap
+from const import PATH_SEP, H_LEMMA_SEP
+
 
 max_char = ord("ѵ") - ord(" ") + 1
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
@@ -128,6 +133,42 @@ def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
             )
             # letters = letters.union([ch for ch in row[col].lower()])
     return {l: ord(l) for l in letters}
+
+
+def build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
+    """
+    >>> build_paths(['боудеть', 'бꙑт\ue205 ', '', 'gram.'], [0,1,2,3])
+    ['gram. → бꙑт\ue205 → боудеть']
+    >>> build_paths(['one', 'two', 'three', 'four'], [0, 1, 2, 3])
+    ['four → three → two → one']
+    >>> build_paths(['one/two', 'three/four'], [0, 1])
+    ['three → one', 'three → two', 'four → one', 'four → two']
+    """
+    paths: List[List[str]] = [[]]
+    for c in tlem_col:
+        bw = base_word(row[c])
+        new_paths = []
+        for w in bw.split(H_LEMMA_SEP):
+            for path in paths:
+                n = path.copy()
+                if w.strip():
+                    n.append(w.strip())
+                new_paths.append(n)
+        paths = new_paths
+
+    result: List[str] = []
+    for cols in paths:
+        cols.reverse()
+        empty = True
+        while empty:
+            if not cols[0]:
+                cols.pop(0)
+                empty = len(cols) > 0
+            else:
+                empty = False
+        result.append(PATH_SEP.join(cols))
+
+    return result
 
 
 if __name__ == "__main__":
