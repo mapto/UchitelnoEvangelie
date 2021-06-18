@@ -4,7 +4,7 @@ so to avoid circular references they cannot use it"""
 
 
 from typing import Dict, List, Set
-
+import re
 import unicodedata
 from sortedcontainers import SortedSet  # type: ignore
 
@@ -138,11 +138,15 @@ def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
 def build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
     """
     >>> build_paths(['боудеть', 'бꙑт\ue205 ', '', 'gram.'], [0,1,2,3])
-    ['gram. → бꙑт\ue205 → боудеть']
-    >>> build_paths(['one', 'two', 'three', 'four'], [0, 1, 2, 3])
-    ['four → three → two → one']
-    >>> build_paths(['one/two', 'three/four'], [0, 1])
-    ['three → one', 'three → two', 'four → one', 'four → two']
+    ['бꙑт\ue205 → боудеть gram.']
+    >>> build_paths(['едно', 'две', 'три', 'четири'], [0, 1, 2, 3])
+    ['четири → три → две → едно']
+    >>> build_paths(['едно', 'две', 'три', 'gram.'], [0, 1, 2, 3])
+    ['три → две → едно gram.']
+    >>> build_paths(['едно/две', 'три/четири'], [0, 1])
+    ['три → едно', 'три → две', 'четири → едно', 'четири → две']
+    >>> build_paths(['едно/две', 'три/inf.'], [0, 1])
+    ['три → едно', 'три → две', 'едно inf.', 'две inf.']
     """
     paths: List[List[str]] = [[]]
     for c in tlem_col:
@@ -158,15 +162,21 @@ def build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
 
     result: List[str] = []
     for cols in paths:
+        extract = None
         cols.reverse()
         empty = True
         while empty:
             if not cols[0]:
                 cols.pop(0)
                 empty = len(cols) > 0
+            elif re.match(r"^[a-zA-z\.]+$", cols[0]):
+                extract = cols.pop(0)
             else:
                 empty = False
-        result.append(PATH_SEP.join(cols))
+        construct = PATH_SEP.join(cols)
+        if extract:
+            construct += f" {extract}"
+        result.append(construct)
 
     return result
 
