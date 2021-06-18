@@ -131,7 +131,6 @@ def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
             letters = letters.union(
                 [ch for ch in unicodedata.normalize("NFKC", row[col].lower())]
             )
-            # letters = letters.union([ch for ch in row[col].lower()])
     return {l: ord(l) for l in letters}
 
 
@@ -147,6 +146,8 @@ def build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
     ['три → едно', 'три → две', 'четири → едно', 'четири → две']
     >>> build_paths(['едно/две', 'три/inf.'], [0, 1])
     ['три → едно', 'три → две', 'едно inf.', 'две inf.']
+    >>> build_paths(['', '', '', '1/4b17', 'ₓ', '', 'ₓ', '', '', '', 'ὁ', 'ὁ', '', '', '', '', '', '', '', '', '', '', '', 'bold|italic'], [6,7,8,9])
+    [' x']
     """
     paths: List[List[str]] = [[]]
     for c in tlem_col:
@@ -166,7 +167,9 @@ def build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
         cols.reverse()
         empty = True
         while empty:
-            if not cols[0]:
+            if not cols:
+                empty = False
+            elif not cols[0]:
                 cols.pop(0)
                 empty = len(cols) > 0
             elif re.match(r"^[a-zA-z\.]+$", cols[0]):

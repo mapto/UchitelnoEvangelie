@@ -15,7 +15,7 @@ def _present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
     return not not sem and not not row[sem.lemmas[0]]
 
 
-def _compile_usage(
+def _add_usage(
     val: "Usage", nxt: str, key: Tuple[str, str], d: SortedDict
 ) -> SortedDict:
     """*IN PLACE*"""
@@ -240,7 +240,7 @@ class LangSemantics:
     def get_variant(self, row: List[str]) -> str:
         return "".join([k for k in self.multiword(row).keys()])
 
-    def alternatives(self, row: List[str], word: str) -> Tuple[str, Dict[str, str]]:
+    def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
         raise NotImplementedError("abstract method")
 
     def key(self, text: str) -> str:
@@ -256,25 +256,23 @@ class LangSemantics:
         raise NotImplementedError("abstract method")
 
     def build_usages(
-        self, trans: "LangSemantics", row: List[str], d: SortedDict
+        self, trans: "LangSemantics", row: List[str], d: SortedDict, lemma: str
     ) -> SortedDict:
-        for orig_key in self.build_keys(row):
-            for trans_key in trans.build_keys(row):
-                key = (orig_key, trans_key)
-
+        for ovar, oword in self.multiword(row).items():
+            for tvar, tword in trans.multiword(row).items():
+                key = (oword, tword)
                 b = "bold" in row[STYLE_COL]
                 i = "italic" in row[STYLE_COL]
                 idx = Index.unpack(row[IDX_COL], b, i)
-                var = self.get_variant(row) + trans.get_variant(row)
-                oalt = self.alternatives(row, orig_key)
-                talt = trans.alternatives(row, trans_key)
+                oalt = self.alternatives(row, ovar)
+                talt = trans.alternatives(row, tvar)
+                var = ovar + tvar
                 val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
                 for nxt in build_paths(row, trans.lemmas):
-                    d = _compile_usage(val, nxt, key, d)
+                    ml = self.multilemma(row)
+                    if ovar not in ml or lemma == ml[ovar]:
+                        d = _add_usage(val, nxt, key, d)
         return d
-
-    def visit_usages(self, orig: "LangSemantics", row: List[str]):
-        raise NotImplementedError("abstract method")
 
 
 @dataclass
@@ -306,7 +304,7 @@ class MainLangSemantics(LangSemantics):
     def lemn_cols(self) -> List[int]:
         return super().lemn_cols() + self.var.lemmas[1:]
 
-    def alternatives(self, row: List[str], word: str) -> Tuple[str, Dict[str, str]]:
+    def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
         alt = self.var.multilemma(row)
         return ("", alt)
 
@@ -320,14 +318,11 @@ class MainLangSemantics(LangSemantics):
 
     def multiword(self, row: List[str]) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {main_source[self.lang]: row[self.word]}
+        return {"": row[self.word]}
 
     def multilemma(self, row: List[str]) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {main_source[self.lang]: row[self.lemmas[0]]}
-
-    def visit_usages(self, orig: "LangSemantics", row: List[str]):
-        raise NotImplementedError("abstract method")
+        return {"": row[self.lemmas[0]]}
 
 
 @dataclass
@@ -336,11 +331,11 @@ class VarLangSemantics(LangSemantics):
 
     main: Optional["MainLangSemantics"] = None
 
-    def alternatives(self, row: List[str], word: str) -> Tuple[str, Dict[str, str]]:
+    def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
         main = ""
         if self.main and row[self.main.lemmas[0]]:
             main = row[self.main.lemmas[0]]
-        alt = {k: v for k, v in self.multilemma(row).items() if v != word}
+        alt = {k: v for k, v in self.multilemma(row).items() if k != var}
         return (main, alt)
 
     def key(self, text: str) -> str:
@@ -379,9 +374,6 @@ class VarLangSemantics(LangSemantics):
             rest = m.group(4).strip() if len(m.groups()) == 4 else ""
             m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
         return result
-
-    def visit_usages(self, orig: "LangSemantics", row: List[str]):
-        raise NotImplementedError("abstract method")
 
     def __repr__(self):
         """main ignored to avoid recursion"""

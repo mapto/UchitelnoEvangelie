@@ -16,11 +16,11 @@ ord_tuple = lambda x: ord_word(x[0])
 
 
 def _build_usages(
-    row: List[str], orig: LangSemantics, trans: LangSemantics, d: SortedDict,
+    row: List[str], orig: LangSemantics, trans: LangSemantics, d: SortedDict, lemma: str
 ) -> SortedDict:
     assert row[IDX_COL]
 
-    return orig.build_usages(trans, row, d)
+    return orig.build_usages(trans, row, d, lemma)
 
 
 def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[str, str]:
@@ -42,6 +42,7 @@ def _agg_lemma(
     trans: Optional[LangSemantics],
     d: SortedDict,
     col: int = -1,
+    lemma: str = "",
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
 
@@ -66,7 +67,7 @@ def _agg_lemma(
         col = orig.lemmas[0]
         multilemmas = _multilemma(row, orig)
     elif col == -2:  # exhausted/last
-        return _build_usages(row, orig, trans, d)
+        return _build_usages(row, orig, trans, d, lemma)
 
     # TODO: implement variants here
     if type(orig) == VarLangSemantics and row[col]:
@@ -84,7 +85,7 @@ def _agg_lemma(
             d[next] = SortedDict(ord_word)
         next_idx = lem_col.index(col) + 1
         next_c = lem_col[next_idx] if next_idx < len(lem_col) else -2
-        d[next] = _agg_lemma(row, orig, trans, d[next], next_c)
+        d[next] = _agg_lemma(row, orig, trans, d[next], next_c, lemma if lemma else l)
     return d
 
 

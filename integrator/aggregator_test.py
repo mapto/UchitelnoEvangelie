@@ -3,8 +3,16 @@ import re
 from const import STYLE_COL
 
 from model import TableSemantics, MainLangSemantics, VarLangSemantics
-from aggregator import _present, _build_usages, _multiword, _multilemma, _agg_lemma
-from sortedcontainers import SortedDict  # type: ignore
+from model import Index, Usage
+from aggregator import (
+    _present,
+    _build_usages,
+    _multiword,
+    _multilemma,
+    _agg_lemma,
+    aggregate,
+)
+from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 
 def test_present():
@@ -79,23 +87,39 @@ def test__build_usages():
     )
 
     d1 = SortedDict()
-    d1 = _build_usages(row, sem.sl, sem.gr, d1)
-    # TODO: Need to find way to exclude current variant from alternative variants
-    """
-    assert (
-        repr(d1)
-        == "SortedDict({'πιστεύω': {('вѣроують {вѣроу GH}', 'πιστεύσωσι'): SortedSet([Usage(idx=Index(ch=1, alt=False, page=7, col='b', row=19, var=False, end=None, bold=False, italic=False), lang='sl', var='', orig_alt='', orig_alt_var=['вѣра'], trans_alt='', trans_alt_var=[])])}})"
+    d1 = _build_usages(row, sem.sl, sem.gr, d1, "вѣроват_")
+    assert d1 == SortedDict(
+        {
+            "πιστεύω": {
+                ("вѣроують", "πιστεύσωσι"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(ch=1, alt=False, page=7, col="b", row=19),
+                            lang="sl",
+                            orig_alt_var={"": "вѣра"},
+                        )
+                    ]
+                )
+            }
+        }
     )
-    """
     d2 = SortedDict()
-    key = ("πιστεύσωσι", "вѣроують {вѣроу GH}")
-    d2 = _build_usages(row, sem.gr, sem.sl, d2)
-    """
-    assert (
-        repr(d2)
-        == "SortedDict({'вѣроват_': {('πιστεύσωσι', 'вѣроують {вѣроу GH}'): SortedSet([Usage(idx=Index(ch=1, alt=False, page=7, col='b', row=19, var=False, end=None, bold=False, italic=False), lang='gr', var='', orig_alt='', orig_alt_var=[], trans_alt='', trans_alt_var=['вѣра'])])}})"
+    d2 = _build_usages(row, sem.gr, sem.sl, d2, "πιστεύω")
+    assert d2 == SortedDict(
+        {
+            "вѣроват_": {
+                ("πιστεύσωσι", "вѣроують"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(ch=1, alt=False, page=7, col="b", row=19),
+                            lang="gr",
+                            trans_alt_var={"": "вѣра"},
+                        )
+                    ]
+                )
+            }
+        }
     )
-    """
 
 
 def test__multiword():
@@ -143,3 +167,88 @@ def test__agg_lemma():
 
     result = _agg_lemma(row, sem, None, d)
     assert len(result) == 0
+
+
+def test_aggregate():
+    row = (
+        [
+            "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
+            "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
+            "",
+            "1/W168a25",
+            "\ue201д\ue205но\ue20dедоу",
+            "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
+            "\ue201д\ue205но\ue20dѧдъ",
+        ]
+        + [""] * 3
+        + ["μονογενοῦς", "μονογενής"]
+        + [""] * 12
+    )
+    sl_sem = MainLangSemantics("sl", 4, [6], VarLangSemantics("sl", 0, [1]))
+    gr_sem = MainLangSemantics("gr", 10, [11], VarLangSemantics("gr", 15, [16, 17]))
+    result = aggregate([row], sl_sem, gr_sem)
+
+    assert result == SortedDict(
+        {
+            "\ue205но\ue20dѧдъ": SortedDict(
+                {
+                    "μονογενής": {
+                        ("\ue205но\ue20dедаго", "μονογενοῦς"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1, alt=True, page=168, col="a", row=25
+                                    ),
+                                    lang="sl",
+                                    var="G",
+                                    orig_alt="\ue201д\ue205но\ue20dѧдъ",
+                                    orig_alt_var={"H": "\ue201д\ue205нородъ"},
+                                )
+                            ]
+                        ),
+                    }
+                }
+            ),
+            "\ue201д\ue205нородъ": SortedDict(
+                {
+                    "μονογενής": {
+                        ("\ue201д\ue205нородоу", "μονογενοῦς"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1, alt=True, page=168, col="a", row=25
+                                    ),
+                                    lang="sl",
+                                    var="H",
+                                    orig_alt="\ue201д\ue205но\ue20dѧдъ",
+                                    orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                                )
+                            ]
+                        ),
+                    }
+                }
+            ),
+            "\ue201д\ue205но\ue20dѧдъ": SortedDict(
+                {
+                    "μονογενής": {
+                        ("\ue201д\ue205но\ue20dедоу", "μονογενοῦς"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1, alt=True, page=168, col="a", row=25
+                                    ),
+                                    lang="sl",
+                                    var="",
+                                    orig_alt="",
+                                    orig_alt_var={
+                                        "H": "\ue201д\ue205нородъ",
+                                        "G": "\ue205но\ue20dѧдъ",
+                                    },
+                                )
+                            ]
+                        )
+                    }
+                }
+            ),
+        }
+    )

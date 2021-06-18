@@ -55,27 +55,18 @@ def docx_usage(par, key: Tuple[str, str], usage: List[Usage], src_style: str) ->
     other_style = other_lang[src_style]
 
     _generate_text(par, key[0], fonts[src_style], colors[src_style])
-
-    run = par.add_run()
-    run.add_text("/")
-
+    _generate_text(par, "/")
     _generate_text(par, key[1], fonts[other_style], colors[other_style])
-
-    run = par.add_run()
-    run.add_text(" (")
+    _generate_text(par, " (")
 
     first = True
     for next in usage:
-        if not first:
-            run = par.add_run()
-            run.add_text(", ")
-        run = par.add_run()
-        run.font.bold = next.idx.bold
-        run.font.italic = next.idx.italic
-        run.add_text(str(next.idx))
-        first = False
-    run = par.add_run()
-    run.add_text(")")
+        if first:
+            first = False
+        else:
+            _generate_text(par, ", ")
+        _generate_text(par, str(next.idx), bold=next.idx.bold, italic=next.idx.italic)
+    _generate_text(par, ")")
 
 
 def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
@@ -136,24 +127,21 @@ def export_docx(d: SortedDict, lang: str, fname: str) -> None:
 
 
 def generate_index(par, idx: Index) -> None:
-    run = par.add_run()
-    run.add_text(str(idx))
+    _generate_text(par, str(idx))
     if idx.var:
-        run = par.add_run()
-        run.font.superscript = True
-        run.add_text(idx.var)
+        _generate_text(par, "var", superscript=True)
 
 
 def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
-    for k, v in alt_var.items():
+    for var, word in alt_var.items():
         if first:
             first = False
         else:
             _generate_text(par, ", ")
-        _generate_text(par, v, fonts[lang])
-        _generate_text(par, k, superscript=True)
+        _generate_text(par, word, fonts[lang])
+        _generate_text(par, var, superscript=True)
     _generate_text(par, brace_close[lang])
 
 
@@ -171,9 +159,7 @@ def _generate_usage(par, u: Usage) -> None:
         _generate_text(par, u.orig_alt, fonts[u.lang])
         _generate_text(par, f" {main_source[u.lang]}")
 
-    run = par.add_run()
     if u.orig_alt_var:
-        run.add_text(" ")
         _generate_usage_alt_vars(par, u.lang, u.orig_alt_var)
 
     # previous addition certainly finished with GENERIC_FONT
@@ -181,7 +167,6 @@ def _generate_usage(par, u: Usage) -> None:
         _generate_text(par, u.trans_alt, fonts[other_lang[u.lang]])
         _generate_text(par, f" {main_source[other_lang[u.lang]]}")
 
-    run = par.add_run()
     if u.trans_alt_var:
         _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt_var)
 
@@ -193,21 +178,13 @@ def docx_result(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -
     """
     other_style = other_lang[src_style]
 
-    run = par.add_run()
     first = True
     for next in usage:
         if not first:
-            run = par.add_run()
-            run.add_text("; ")
-        run = par.add_run()
-        run.font.bold = next.idx.bold
-        run.font.italic = next.idx.italic
-        run.add_text(str(next.idx))
+            _generate_text(par, "; ")
+        _generate_text(par, str(next.idx), bold=next.idx.bold, italic=next.idx.italic)
         if next.var:
-            run = par.add_run()
-            run.font.superscript = True
-            run.add_text(next.var)
-            run = par.add_run()
+            _generate_text(par, next.var, superscript=True)
         _generate_usage(par, next)
         first = False
 
@@ -298,12 +275,10 @@ def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> No
             run.add_text(" + ")
     if c[1]:
         run.add_text(str(c[1]))
-        run = par.add_run()
-        run.font.superscript = True
-        run.add_text("var")
+        _generate_text(par, "var", superscript=True)
 
 
-def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
+def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
     """Builds the hierarchical entries of the dictionary. Recursion ensures that this works with variable depth.
 
     Args:
@@ -333,8 +308,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
             )
 
             _generate_counts(par, next_d, False)
-            run = par.add_run()
-            run.add_text(")")
+            _generate_text(par, ")")
         any_child = next(iter(next_d.values()))
         any_of_any = next(iter(any_child.values()))
         if type(any_of_any) is SortedSet:  # bottom of structure
@@ -350,7 +324,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document):
                 _generate_counts(par, bottom_d, True)
 
                 run = par.add_run()
-                run.font.name = GENERIC_FONT
+                # run.font.name = GENERIC_FONT
                 run.add_text("): ")
                 first = True
                 pairs = dict(bottom_d.items())
