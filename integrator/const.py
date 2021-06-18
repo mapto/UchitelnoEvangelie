@@ -15,3 +15,7 @@ DEFAULT_SL = VAR_SL
 MAIN_GR = "C"
 VAR_GR = "C"
 DEFAULT_GR = "C"
+
+main_source = {"gr": MAIN_GR, "sl": MAIN_SL}
+var_sources = {"gr": VAR_GR, "sl": VAR_SL}
+default_sources = {"gr": DEFAULT_GR, "sl": DEFAULT_SL}

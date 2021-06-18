@@ -51,36 +51,6 @@ def test_present():
     assert not _present(row, sem)
 
 
-"""
-def test__build_key():
-    sem = MainLangSemantics(
-        lang="sl",
-        word=4,
-        lemmas=[6, 7, 8, 9],
-        var=VarLangSemantics(lang="sl", word=0, lemmas=[1, 2, 19, 20]),
-    )
-    row = (
-        [
-            "\ue201л\ue205ко WH",
-            "\ue201л\ue205къ",
-            "",
-            "1/7c12",
-            "сел\ue205ко",
-            "въ сел\ue205ко",
-            "сел\ue205къ",
-        ]
-        + ([""] * 3)
-        + ["τοῦτο", "οὗτος",]
-        + ([""] * 11)
-        + ["hl04|hl00|hl10"]
-    )
-
-    assert "сел\ue205ко" == _build_key(row, sem)
-    assert " {\ue201л\ue205ко}" == _build_key(row, sem.var)
-    # assert " {\ue201л\ue205ко WH}" == _build_key(row, sem.var)
-"""
-
-
 def test__build_usages():
     sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
     sl_sem.var.main = sl_sem
@@ -136,20 +106,16 @@ def test__multiword():
     assert result["H"] == "\ue201д\ue205нородоу"
 
     result = _multiword(["ноедаго G", "днородъ H / ноѧдъ G"], sem)
-    assert len(result) == 1
-    assert result["G"] == "\ue205но\ue20dедаго"
+    assert result == {"G": "\ue205но\ue20dедаго"}
 
     result = _multiword(["", ""], sem)
-    assert len(result) == 0
+    assert result == {}
 
     result = _multiword(["дноеды WH Ø G", "дноѧдъ"], sem)
-    assert len(result) == 2
-    assert result["WH"] == "дноеды"
-    assert result["G"] == "Ø"
+    assert result == {"WH": "дноеды", "G": "Ø"}
 
     result = _multiword(["дноеды", "дноѧдъ"], sem)
-    assert len(result) == 1
-    assert result["WGH"] == "дноеды"
+    assert result == {"WGH": "дноеды"}
 
 
 def test__multilemma():
@@ -164,7 +130,7 @@ def test__multilemma():
     assert len(result) == 0
 
     result = _multilemma(["дноеды WH Ø G", "дноѧдъ"], sem)
-    assert len(result) == 0
+    assert result == {"": "дноѧдъ"}
 
 
 def test__agg_lemma():

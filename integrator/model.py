@@ -5,9 +5,8 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import CF_SEP
+from const import main_source, default_sources
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
-from const import DEFAULT_SL, DEFAULT_GR
 
 from util import base_word, build_paths
 
@@ -27,10 +26,6 @@ def _compile_usage(
     else:
         d[nxt] = {key: SortedSet([val])}
     return d
-
-
-def _get_variant(row, orig: "LangSemantics") -> str:
-    return "".join([k for k in orig.multiword(row).keys()])
 
 
 @dataclass(order=True, frozen=True)
@@ -195,9 +190,9 @@ class Usage:
     lang: str
     var: str = ""
     orig_alt: str = ""
-    orig_alt_var: List[str] = field(default_factory=lambda: [])
+    orig_alt_var: Dict[str, str] = field(default_factory=lambda: {})
     trans_alt: str = ""
-    trans_alt_var: List[str] = field(default_factory=lambda: [])
+    trans_alt_var: Dict[str, str] = field(default_factory=lambda: {})
 
     def __hash__(self):
         return hash((self.idx, self.lang, self.orig_alt, self.trans_alt))
@@ -242,13 +237,16 @@ class LangSemantics:
     def lemn_cols(self) -> List[int]:
         return self.lemmas[1:]
 
-    def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
+    def get_variant(self, row: List[str]) -> str:
+        return "".join([k for k in self.multiword(row).keys()])
+
+    def alternatives(self, row: List[str], word: str) -> Tuple[str, Dict[str, str]]:
         raise NotImplementedError("abstract method")
 
     def key(self, text: str) -> str:
         raise NotImplementedError("abstract method")
 
-    def build_key(self, row: List[str]) -> str:
+    def build_keys(self, row: List[str]) -> List[str]:
         raise NotImplementedError("abstract method")
 
     def multiword(self, row: List[str]) -> Dict[str, str]:
@@ -260,6 +258,22 @@ class LangSemantics:
     def build_usages(
         self, trans: "LangSemantics", row: List[str], d: SortedDict
     ) -> SortedDict:
+        for orig_key in self.build_keys(row):
+            for trans_key in trans.build_keys(row):
+                key = (orig_key, trans_key)
+
+                b = "bold" in row[STYLE_COL]
+                i = "italic" in row[STYLE_COL]
+                idx = Index.unpack(row[IDX_COL], b, i)
+                var = self.get_variant(row) + trans.get_variant(row)
+                oalt = self.alternatives(row, orig_key)
+                talt = trans.alternatives(row, trans_key)
+                val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
+                for nxt in build_paths(row, trans.lemmas):
+                    d = _compile_usage(val, nxt, key, d)
+        return d
+
+    def visit_usages(self, orig: "LangSemantics", row: List[str]):
         raise NotImplementedError("abstract method")
 
 
@@ -292,50 +306,28 @@ class MainLangSemantics(LangSemantics):
     def lemn_cols(self) -> List[int]:
         return super().lemn_cols() + self.var.lemmas[1:]
 
-    def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
-        alt = list(self.var.multilemma(row).values())
+    def alternatives(self, row: List[str], word: str) -> Tuple[str, Dict[str, str]]:
+        alt = self.var.multilemma(row)
         return ("", alt)
 
     def key(self, text: str) -> str:
         return text
 
-    def build_key(self, row: List[str]) -> str:
-        result = ""
+    def build_keys(self, row: List[str]) -> List[str]:
         if _present(row, self) and self.word != None and not not row[self.word]:
-            result += self.key(f"{base_word(row[self.word])}")
-        if (
-            _present(row, self.var)
-            and self.var.word != None
-            and not not row[self.var.word]
-        ):
-            result += self.var.key(f"{base_word(row[self.var.word])}")
-        return result
+            return [base_word(row[self.word])]
+        return [""]
 
     def multiword(self, row: List[str]) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {}
+        return {main_source[self.lang]: row[self.word]}
 
     def multilemma(self, row: List[str]) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {}
+        return {main_source[self.lang]: row[self.lemmas[0]]}
 
-    def build_usages(
-        self, trans: "LangSemantics", row: List[str], d: SortedDict
-    ) -> SortedDict:
-        orig_key = self.build_key(row)
-        trans_key = trans.build_key(row)
-        key = (orig_key, trans_key)
-
-        b = "bold" in row[STYLE_COL]
-        i = "italic" in row[STYLE_COL]
-        idx = Index.unpack(row[IDX_COL], b, i)
-        var = _get_variant(row, self) + _get_variant(row, trans)
-        oalt = self.alternatives(row)
-        talt = trans.alternatives(row)
-        val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
-        for nxt in build_paths(row, trans.lemmas):
-            d = _compile_usage(val, nxt, key, d)
-        return d
+    def visit_usages(self, orig: "LangSemantics", row: List[str]):
+        raise NotImplementedError("abstract method")
 
 
 @dataclass
@@ -344,11 +336,11 @@ class VarLangSemantics(LangSemantics):
 
     main: Optional["MainLangSemantics"] = None
 
-    def alternatives(self, row: List[str]) -> Tuple[str, List[str]]:
+    def alternatives(self, row: List[str], word: str) -> Tuple[str, Dict[str, str]]:
         main = ""
         if self.main and row[self.main.lemmas[0]]:
             main = row[self.main.lemmas[0]]
-        alt = list(self.multilemma(row).values())
+        alt = {k: v for k, v in self.multilemma(row).items() if v != word}
         return (main, alt)
 
     def key(self, text: str) -> str:
@@ -357,18 +349,10 @@ class VarLangSemantics(LangSemantics):
             text = m.group(1).strip()
         return f" {{{text}}}"
 
-    def build_key(self, row: List[str]) -> str:
-        result = ""
-        assert self.main
-        if (
-            _present(row, self.main)
-            and self.main.word != None
-            and not not row[self.main.word]
-        ):
-            result += self.main.key(f"{base_word(row[self.main.word])}")
+    def build_keys(self, row: List[str]) -> List[str]:
         if _present(row, self) and self.word != None and not not row[self.word]:
-            result += self.key(f"{base_word(row[self.word])}")
-        return result
+            return [base_word(w) for w in self.multiword(row).values()]
+        return [""]
 
     def multiword(self, row: List[str]) -> Dict[str, str]:
         result = {}
@@ -378,38 +362,32 @@ class VarLangSemantics(LangSemantics):
             rest = m.group(3).strip()
             m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
         if not result:
-            default = DEFAULT_SL if self.lang == "sl" else DEFAULT_GR
-            return {default: row[self.word].strip()}
+            return {default_sources[self.lang]: row[self.word].strip()}
+            # return {'': row[self.word].strip()}
         return result
 
     def multilemma(self, row: List[str]) -> Dict[str, str]:
         result = {}
+        # TODO: accepting both & and / as separators is not neccessary
         m = re.search(
-            r"^([^A-Z]+)([A-Z]+)(\s*\&\s*)?(.*)$", row[self.lemmas[0]].strip()
+            r"^([^A-Z]+)([A-Z]+)?(\s*[\&\/]\s*)?(.*)$", row[self.lemmas[0]].strip()
         )
         while m:
-            result[m.group(2)] = m.group(1).strip() if m.group(1) else ""
+            v = m.group(1).strip() if m.group(1) else ""
+            k = m.group(2) if m.group(2) else ""
+            result[k] = v
             rest = m.group(4).strip() if len(m.groups()) == 4 else ""
             m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
         return result
 
-    def build_usages(
-        self, trans: "LangSemantics", row: List[str], d: SortedDict
-    ) -> SortedDict:
-        orig_key = self.build_key(row)
-        trans_key = trans.build_key(row)
-        key = (orig_key, trans_key)
+    def visit_usages(self, orig: "LangSemantics", row: List[str]):
+        raise NotImplementedError("abstract method")
 
-        b = "bold" in row[STYLE_COL]
-        i = "italic" in row[STYLE_COL]
-        idx = Index.unpack(row[IDX_COL], b, i)
-        var = _get_variant(row, self) + _get_variant(row, trans)
-        oalt = self.alternatives(row)
-        talt = trans.alternatives(row)
-        val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
-        for nxt in build_paths(row, trans.lemmas):
-            d = _compile_usage(val, nxt, key, d)
-        return d
+    def __repr__(self):
+        """main ignored to avoid recursion"""
+        return (
+            f"VarLangSemantics(lang={self.lang},word={self.word},lemmas={self.lemmas})"
+        )
 
 
 @dataclass

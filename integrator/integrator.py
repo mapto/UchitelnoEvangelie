@@ -42,12 +42,10 @@ if __name__ == "__main__":
         exit()
 
     sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
-    sl_sem.var.main = sl_sem
     assert sl_sem.var  # for mypy
     gr_sem = MainLangSemantics(
         "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
     )
-    gr_sem.var.main = gr_sem
     assert gr_sem.var  # for mypy
     sem = TableSemantics(sl_sem, gr_sem)
 

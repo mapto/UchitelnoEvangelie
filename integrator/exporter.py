@@ -1,12 +1,12 @@
 from const import VAR_GR, VAR_SL
-from typing import Tuple, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from docx import Document  # type: ignore
 from docx.shared import RGBColor, Pt, Cm  # type: ignore
 
-from const import CF_SEP, MAIN_GR, MAIN_SL
+from const import CF_SEP, main_source, var_sources
 from model import Index, Usage, Counter
 
 GENERIC_FONT = "Times New Roman"
@@ -14,7 +14,8 @@ GENERIC_FONT = "Times New Roman"
 other_lang = {"gr": "sl", "sl": "gr"}
 fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
 colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
-main_source = {"gr": MAIN_GR, "sl": MAIN_SL}
+brace_open = {"sl": "[", "gr": "{"}
+brace_close = {"sl": "]", "gr": "}"}
 
 
 def _generate_text(
@@ -26,6 +27,7 @@ def _generate_text(
     bold: bool = False,
     italic: bool = False,
     indent: Optional[Cm] = None,
+    superscript: bool = False,
 ):
     run = par.add_run()
     if font:
@@ -40,6 +42,8 @@ def _generate_text(
         run.font.italic = italic
     if indent:
         par.paragraph_format.first_line_indent = indent
+    if superscript:
+        run.font.superscript = True
     run.add_text(text)
 
 
@@ -140,6 +144,19 @@ def generate_index(par, idx: Index) -> None:
         run.add_text(idx.var)
 
 
+def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
+    first = True
+    _generate_text(par, f" {brace_open[lang]}")
+    for k, v in alt_var.items():
+        if first:
+            first = False
+        else:
+            _generate_text(par, ", ")
+        _generate_text(par, v, fonts[lang])
+        _generate_text(par, k, superscript=True)
+    _generate_text(par, brace_close[lang])
+
+
 def _generate_usage(par, u: Usage) -> None:
     if (
         not u.orig_alt
@@ -157,32 +174,16 @@ def _generate_usage(par, u: Usage) -> None:
     run = par.add_run()
     if u.orig_alt_var:
         run.add_text(" ")
-        if u.lang == "sl":
-            run.add_text("[")
-            _generate_text(par, ", ".join(u.orig_alt_var), fonts["sl"])
-            run = par.add_run()
-            run.add_text("]")
-        else:
-            # Greek uses the generic font
-            run.add_text(f"{{{', '.join(u.orig_alt_var)}}}")
+        _generate_usage_alt_vars(par, u.lang, u.orig_alt_var)
 
     # previous addition certainly finished with GENERIC_FONT
     if u.trans_alt:
-        run.add_text(" ")
         _generate_text(par, u.trans_alt, fonts[other_lang[u.lang]])
         _generate_text(par, f" {main_source[other_lang[u.lang]]}")
 
     run = par.add_run()
     if u.trans_alt_var:
-        run.add_text(" ")
-        if u.lang == "sl":
-            # Greek uses the generic font
-            run.add_text(f"{{{', '.join(u.trans_alt_var)}}}")
-        else:
-            run.add_text("[")
-            _generate_text(par, ", ".join(u.trans_alt_var), fonts["sl"])
-            run = par.add_run()
-            run.add_text("]")
+        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt_var)
 
 
 def docx_result(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -> None:
