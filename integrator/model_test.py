@@ -11,7 +11,7 @@ def test_MainLangSemantics_alternatives():
     )
     sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
     result = sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {"": "\ue205 pron."})
+    assert result == ("", {"G": "\ue205 pron."})
 
 
 def test_VarLangSemantics_multilemma():
@@ -21,9 +21,25 @@ def test_VarLangSemantics_multilemma():
         + ["ταύτην", "οὗτος"]
         + [""] * 12
     )
-    sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
-    result = sem.var.multilemma(row)
-    assert result == {"": "\ue205 pron."}
+    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    gr_sem = MainLangSemantics(
+        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+    )
+    result = sl_sem.var.multilemma(row)
+    assert result == {"G": "\ue205 pron."}
+
+    row = (
+        ["вь WGH", "въ", "въ + Loc.", "1/7d1", "оу", "оу насъ", "ѹ"]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + ["παρ’ C", "παρά ", "παρά + Acc."]
+        + [""] * 6
+    )
+    result = sl_sem.var.multilemma(row)
+    assert result == {"WGH": "въ"}
+    result = gr_sem.var.multilemma(row)
+    assert result == {"C": "παρά"}
 
 
 def test_LangSemantics_build_keys():
@@ -101,7 +117,7 @@ def test_LangSemantics_build_usages():
     assert len(d["μονογενής"][("\ue205но\ue20dадꙑ\ue205", "μονογενὴς")]) == 1
     first = next(iter(d["μονογενής"][("\ue205но\ue20dадꙑ\ue205", "μονογενὴς")]))
     assert str(first.idx) == "1/5a4"
-    assert first.orig_alt_var == {"": "\ue201д\ue205но\ue20dѧдъ"}
+    assert first.orig_alt_var == {"WH": "\ue201д\ue205но\ue20dѧдъ"}
 
     row = (
         [

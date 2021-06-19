@@ -96,7 +96,7 @@ def test__build_usages():
                         Usage(
                             idx=Index(ch=1, alt=False, page=7, col="b", row=19),
                             lang="sl",
-                            orig_alt_var={"": "вѣра"},
+                            orig_alt_var={"GH": "вѣра"},
                         )
                     ]
                 )
@@ -113,7 +113,7 @@ def test__build_usages():
                         Usage(
                             idx=Index(ch=1, alt=False, page=7, col="b", row=19),
                             lang="gr",
-                            trans_alt_var={"": "вѣра"},
+                            trans_alt_var={"GH": "вѣра"},
                         )
                     ]
                 )
@@ -154,7 +154,7 @@ def test__multilemma():
     assert len(result) == 0
 
     result = _multilemma(["дноеды WH Ø G", "дноѧдъ"], sem)
-    assert result == {"": "дноѧдъ"}
+    assert result == {"WH": "дноѧдъ"}
 
 
 def test__agg_lemma():

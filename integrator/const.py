@@ -7,6 +7,7 @@ CF_SEP = "»"
 H_LEMMA_SEP = "/"  # indicates multiple variants provided together
 V_LEMMA_SEP = "&"  # indicates lemmas merged from several rows
 MISSING_CH = "ₓ"
+EMPTY_CH = "Ø"
 
 # first letter is main variant
 MAIN_SL = "S"

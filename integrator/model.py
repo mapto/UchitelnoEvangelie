@@ -5,7 +5,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import main_source, default_sources
+from const import EMPTY_CH, main_source, default_sources
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 from util import base_word, build_paths
@@ -373,6 +373,14 @@ class VarLangSemantics(LangSemantics):
             result[k] = v
             rest = m.group(4).strip() if len(m.groups()) == 4 else ""
             m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
+
+        # When lemma in variant does not have source, read it from word
+        if len(result) == 1 and next(iter(result.keys())) == "":
+            words = {k: v for k, v in self.multiword(row).items() if v != EMPTY_CH}
+            print(words)
+            assert len(words) == 1
+            return {next(iter(words.keys())): result[""]}
+
         return result
 
     def __repr__(self):

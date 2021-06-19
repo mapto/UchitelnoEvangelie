@@ -164,6 +164,7 @@ def _generate_usage(par, u: Usage) -> None:
 
     # previous addition certainly finished with GENERIC_FONT
     if u.trans_alt:
+        _generate_text(par, " ")
         _generate_text(par, u.trans_alt, fonts[other_lang[u.lang]])
         _generate_text(par, f" {main_source[other_lang[u.lang]]}")
 
