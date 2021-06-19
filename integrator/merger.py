@@ -2,7 +2,7 @@
 
 from typing import List, Dict
 
-from const import IDX_COL, STYLE_COL
+from const import IDX_COL, MISSING_CH, STYLE_COL, V_LEMMA_SEP
 from model import Index, LangSemantics, MainLangSemantics
 from util import ord_word
 
@@ -61,7 +61,8 @@ def _close(
     for c in orig.word_cols() + trans.word_cols():
         line[c] = " ".join(_collect(group, c))
     for c in trans.lem1_cols():
-        line[c] = " & ".join(_collect(group, c))
+        g = [e for e in _collect(group, c) if e.strip() != MISSING_CH]
+        line[c] = f" {V_LEMMA_SEP} ".join(g)
     for c in orig.lemn_cols() + trans.lemn_cols():
         line[c] = " ".join(_collect(group, c))
 

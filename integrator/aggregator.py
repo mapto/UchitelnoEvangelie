@@ -80,12 +80,12 @@ def _agg_lemma(
     for l in multilemmas.values():
         if l.strip() == MISSING_CH:
             continue
-        next = base_word(l)
-        if next not in d:
-            d[next] = SortedDict(ord_word)
+        nxt = base_word(l)
+        if nxt not in d:
+            d[nxt] = SortedDict(ord_word)
         next_idx = lem_col.index(col) + 1
         next_c = lem_col[next_idx] if next_idx < len(lem_col) else -2
-        d[next] = _agg_lemma(row, orig, trans, d[next], next_c, lemma if lemma else l)
+        d[nxt] = _agg_lemma(row, orig, trans, d[nxt], next_c, lemma if lemma else l)
     return d
 
 
