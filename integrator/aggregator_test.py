@@ -90,7 +90,7 @@ def test__build_usages():
     d1 = _build_usages(row, sem.sl, sem.gr, d1, "вѣроват_")
     assert d1 == SortedDict(
         {
-            "πιστεύω": {
+            "πιστεύω": {
                 ("вѣроують", "πιστεύσωσι"): SortedSet(
                     [
                         Usage(

@@ -1,4 +1,4 @@
-from sortedcontainers.sorteddict import SortedDict  # type: ignore
+from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 from model import MainLangSemantics, VarLangSemantics, Usage, Index
 
 
@@ -112,12 +112,35 @@ def test_LangSemantics_build_usages():
     d = SortedDict()
     d = sl_sem.build_usages(gr_sem, row, d, "\ue205но\ue20dѧдъ")
 
-    assert len(d) == 1
-    assert len(d["μονογενής"]) == 1
-    assert len(d["μονογενής"][("\ue205но\ue20dадꙑ\ue205", "μονογενὴς")]) == 1
-    first = next(iter(d["μονογενής"][("\ue205но\ue20dадꙑ\ue205", "μονογενὴς")]))
-    assert str(first.idx) == "1/5a4"
-    assert first.orig_alt_var == {"WH": "\ue201д\ue205но\ue20dѧдъ"}
+    assert d == SortedDict(
+        {
+            "μονογενής": {
+                ("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=5,
+                                col="a",
+                                row=4,
+                                var=False,
+                                end=None,
+                                bold=False,
+                                italic=False,
+                            ),
+                            lang="sl",
+                            var="",
+                            orig_alt="",
+                            orig_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                            trans_alt="",
+                            trans_alt_var={},
+                        )
+                    ]
+                )
+            }
+        }
+    )
 
     row = (
         [
@@ -158,3 +181,59 @@ def test_LangSemantics_build_usages():
         orig_alt="\ue201д\ue205но\ue20dѧдъ",
         orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
     )
+
+
+def test_build_paths():
+    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    res = sl_sem.build_paths([""] * 6 + ["боудеть", "бꙑт\ue205 ", "", "gram."])
+    assert res == ["бꙑт\ue205 → боудеть gram."]
+    res = sl_sem.build_paths([""] * 6 + ["едно", "две", "три", "четири"])
+    assert res == ["четири → три → две → едно"]
+    res = sl_sem.build_paths([""] * 6 + ["едно", "две", "три", "gram."])
+    assert res == ["три → две → едно gram."]
+    res = sl_sem.build_paths(
+        [
+            "",
+            "",
+            "",
+            "1/4b17",
+            "ₓ",
+            "",
+            "ₓ",
+            "",
+            "",
+            "",
+            "ὁ",
+            "ὁ",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "bold|italic",
+        ]
+    )
+    assert res == ["ₓ"]
+    row = (
+        [
+            "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
+            "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
+            "",
+            "1/W168a25",
+            "\ue201д\ue205но\ue20dедоу",
+            "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
+            "\ue201д\ue205но\ue20dѧдъ",
+        ]
+        + [""] * 3
+        + ["μονογενοῦς", "μονογενής"]
+        + [""] * 11
+        + ["bold|italic"]
+    )
+    res = sl_sem.var.build_paths(row)
+    assert res == ["\ue201д\ue205нородъ", "\ue205но\ue20dѧдъ"]

@@ -5,10 +5,10 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import EMPTY_CH, main_source, default_sources
+from const import EMPTY_CH, H_LEMMA_SEP, PATH_SEP, default_sources
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
-from util import base_word, build_paths
+from util import base_word
 
 
 def _present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
@@ -255,6 +255,51 @@ class LangSemantics:
     def multilemma(self, row: List[str]) -> Dict[str, str]:
         raise NotImplementedError("abstract method")
 
+    def build_paths(self, row: List[str]) -> List[str]:
+        paths: List[List[str]] = [[]]
+        new_paths = []
+        # first lemma could be multilemma
+        for w in self.multilemma(row).values():
+            for path in paths:
+                n = path.copy()
+                if w.strip():
+                    n.append(w.strip())
+                new_paths.append(n)
+        paths = new_paths
+
+        # other lemmas are single value
+        for c in self.lemmas[1:]:
+            bw = base_word(row[c])
+            new_paths = []
+            for path in paths:
+                n = path.copy()
+                if bw:
+                    n.append(bw)
+                new_paths.append(n)
+            paths = new_paths
+
+        result: List[str] = []
+        for cols in paths:
+            extract = None
+            cols.reverse()
+            empty = True
+            while empty:
+                if not cols:
+                    empty = False
+                elif not cols[0]:
+                    cols.pop(0)
+                    empty = len(cols) > 0
+                elif re.match(r"^[a-zA-z\.]+$", cols[0]):
+                    extract = cols.pop(0)
+                else:
+                    empty = False
+            construct = PATH_SEP.join(cols)
+            if extract:
+                construct += f" {extract}"
+            result.append(construct)
+
+        return result
+
     def build_usages(
         self, trans: "LangSemantics", row: List[str], d: SortedDict, lemma: str
     ) -> SortedDict:
@@ -268,7 +313,7 @@ class LangSemantics:
                 talt = trans.alternatives(row, tvar)
                 var = ovar + tvar
                 val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
-                for nxt in build_paths(row, trans.lemmas):
+                for nxt in trans.build_paths(row):
                     ml = self.multilemma(row)
                     if ovar not in ml or lemma == ml[ovar]:
                         d = _add_usage(val, nxt, key, d)
@@ -377,7 +422,6 @@ class VarLangSemantics(LangSemantics):
         # When lemma in variant does not have source, read it from word
         if len(result) == 1 and next(iter(result.keys())) == "":
             words = {k: v for k, v in self.multiword(row).items() if v != EMPTY_CH}
-            print(words)
             assert len(words) == 1
             return {next(iter(words.keys())): result[""]}
 

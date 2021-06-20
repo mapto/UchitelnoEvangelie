@@ -134,56 +134,6 @@ def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
     return {l: ord(l) for l in letters}
 
 
-def build_paths(row: List[str], tlem_col: List[int]) -> List[str]:
-    """
-    >>> build_paths(['боудеть', 'бꙑт\ue205 ', '', 'gram.'], [0,1,2,3])
-    ['бꙑт\ue205 → боудеть gram.']
-    >>> build_paths(['едно', 'две', 'три', 'четири'], [0, 1, 2, 3])
-    ['четири → три → две → едно']
-    >>> build_paths(['едно', 'две', 'три', 'gram.'], [0, 1, 2, 3])
-    ['три → две → едно gram.']
-    >>> build_paths(['едно/две', 'три/четири'], [0, 1])
-    ['три → едно', 'три → две', 'четири → едно', 'четири → две']
-    >>> build_paths(['едно/две', 'три/inf.'], [0, 1])
-    ['три → едно', 'три → две', 'едно inf.', 'две inf.']
-    >>> build_paths(['', '', '', '1/4b17', 'ₓ', '', 'ₓ', '', '', '', 'ὁ', 'ὁ', '', '', '', '', '', '', '', '', '', '', '', 'bold|italic'], [6,7,8,9])
-    [' x']
-    """
-    paths: List[List[str]] = [[]]
-    for c in tlem_col:
-        bw = base_word(row[c])
-        new_paths = []
-        for w in bw.split(H_LEMMA_SEP):
-            for path in paths:
-                n = path.copy()
-                if w.strip():
-                    n.append(w.strip())
-                new_paths.append(n)
-        paths = new_paths
-
-    result: List[str] = []
-    for cols in paths:
-        extract = None
-        cols.reverse()
-        empty = True
-        while empty:
-            if not cols:
-                empty = False
-            elif not cols[0]:
-                cols.pop(0)
-                empty = len(cols) > 0
-            elif re.match(r"^[a-zA-z\.]+$", cols[0]):
-                extract = cols.pop(0)
-            else:
-                empty = False
-        construct = PATH_SEP.join(cols)
-        if extract:
-            construct += f" {extract}"
-        result.append(construct)
-
-    return result
-
-
 if __name__ == "__main__":
     print(ord_word(" conj.: н*"))
     print(ord_word(" conj."))
