@@ -7,7 +7,7 @@ from model import Comment, Index, Word, WordList
 
 
 class Buffer:
-    """ Handles processing of current text, lines and comments"""
+    """Handles processing of current text, lines and comments"""
 
     def __init__(self, buffer: str = ""):
         self.line = ""
@@ -65,14 +65,11 @@ class Buffer:
             return False
         if self.buff != other.buff or self.line != other.line:
             return False
-        if len(self.line_words) != len(other.line_words) or len(
-            self.comments != other.comments
-        ):
+        if self.comments != other.comments:
+            return False
+        if len(self.line_words) != len(other.line_words):
             return False
         for i, w in enumerate(self.line_words):
             if w != other.line_words[i]:
-                return False
-        for i, c in enumerate(self.comments):
-            if c != other.comments[i]:
                 return False
         return True

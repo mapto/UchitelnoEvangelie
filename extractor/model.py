@@ -103,7 +103,7 @@ class Word:
 
 
 class WordList:
-    """ linked list of Word objects"""
+    """linked list of Word objects"""
 
     def __init__(self):
         self._words = []

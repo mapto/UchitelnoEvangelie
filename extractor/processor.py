@@ -16,10 +16,12 @@ def dehyphenate(words: WordList) -> WordList:
             # print(w)
             w.word = w.word[:-1] + w.next.word
             if w.next.variant:
-                if not (
-                    not w.variant or LINE_CH in w.variant or w.variant.startswith("om.")
+                if (
+                    w.variant
+                    and LINE_CH not in w.variant
+                    and not w.variant.startswith("om.")
                 ):
-                    print(f"ГРЕШКА: Неочакван вариант: {w.variant}")
+                    print(f"ГРЕШКА: Неочакван вариант на {w.index()}: {w.variant}")
                     # raise SyntaxError(f"Unexpected variant: {w.variant}")
                 if w.variant:
                     w.variant = w.variant.replace(LINE_CH, w.next.variant)

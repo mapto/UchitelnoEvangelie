@@ -95,12 +95,15 @@ def parse_page(
 
         buffer.swap()
         idx = Index(ch, page, row)
+        # print(idx)
         if i < len(cell._element) - 1:  # if not end of page, behave like line break
             compiled = buffer.compile_buffer(idx, comments)
         else:
             compiled = buffer.compile_words(idx, buffer.extract_comment(comments))
         buffer.build_context(compiled)
         result += buffer.flush()
+        if not rows:
+            break
         row = rows.pop(0)
         if not rows:  # add rows that might not be provided
             rows.append(row + 1)
