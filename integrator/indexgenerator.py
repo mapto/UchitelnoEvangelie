@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Index integrator for Uchitelno Evangelie.
+"""Index generator for Uchitelno Evangelie.
 Licensed under MIT License, detailed here: https://mit-license.org/
 
 Usage:
-  integrator.py [-p] <xlsx>
-  integrator.py [--no-pause] <xlsx>
+  indexgenerator.py [-p] <xlsx>
+  indexgenerator.py [--no-pause] <xlsx>
 
 Options:
   -h --help                This information
@@ -12,7 +12,7 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "1.0.0"
+__version__ = "0.0.1"
 
 from docopt import docopt  # type: ignore
 
@@ -30,7 +30,7 @@ from exporter import export_docx, generate_docx
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
-    print(f"Integrator v{__version__}")
+    print(f"IndexGenerator v{__version__}")
     # print(args)
     fname = args["<xlsx>"]
     print(f"Прочитане: {fname}")
@@ -85,14 +85,14 @@ if __name__ == "__main__":
     gre = aggregate(lines_gr, gr_sem, sl_sem)
     print(f"{len(gre)} леми")
 
-    print("Експорт слявянски...")
-    export_fname = fname[:-5] + "-sla.docx"
-    export_docx(sla, "sl", export_fname)
+    print("Генериране слявянски...")
+    export_fname = fname[:-5] + "-result-sla.docx"
+    generate_docx(sla, "sl", export_fname)
     print(f"Записване: {export_fname}")
 
-    print("Експорт гръцки...")
-    export_fname = fname[:-5] + "-gre.docx"
-    export_docx(gre, "gr", export_fname)
+    print("Генериране гръцки...")
+    export_fname = fname[:-5] + "-result-gre.docx"
+    generate_docx(gre, "gr", export_fname)
     print(f"Записване: {export_fname}")
 
     if not args["--no-pause"]:

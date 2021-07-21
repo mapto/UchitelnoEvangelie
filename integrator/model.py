@@ -252,30 +252,20 @@ class LangSemantics:
     def multiword(self, row: List[str]) -> Dict[str, str]:
         raise NotImplementedError("abstract method")
 
-    def multilemma(self, row: List[str]) -> Dict[str, str]:
+    def multilemma(self, row: List[str], lemma: int = 0) -> Dict[str, str]:
         raise NotImplementedError("abstract method")
 
     def build_paths(self, row: List[str]) -> List[str]:
         paths: List[List[str]] = [[]]
-        new_paths = []
-        # first lemma could be multilemma
-        for w in self.multilemma(row).values():
-            for path in paths:
-                n = path.copy()
-                if w.strip():
-                    n.append(w.strip())
-                new_paths.append(n)
-        paths = new_paths
-
-        # other lemmas are single value
-        for c in self.lemmas[1:]:
-            bw = base_word(row[c])
+        for c in range(len(self.lemmas)):
             new_paths = []
-            for path in paths:
-                n = path.copy()
-                if bw:
-                    n.append(bw)
-                new_paths.append(n)
+            print(f"{c} {self.lemmas[c]} {row[self.lemmas[c]]}")
+            for w in self.multilemma(row, c).values():
+                print(f"{w} {w.strip()}")
+                for path in paths:
+                    n = path.copy()
+                    n.append(w)
+                    new_paths.append(n)
             paths = new_paths
 
         result: List[str] = []
@@ -365,14 +355,14 @@ class MainLangSemantics(LangSemantics):
         """Main variant does not have multiple words in a cell"""
         return {"": row[self.word]}
 
-    def multilemma(self, row: List[str]) -> Dict[str, str]:
+    def multilemma(self, row: List[str], lemma: int = 0) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {"": row[self.lemmas[0]]}
+        return {"": row[self.lemmas[lemma]]}
 
 
 @dataclass
 class VarLangSemantics(LangSemantics):
-    """ main is nullable just because it's a recursive reference and setting up needs to happen post-init"""
+    """main is nullable just because it's a recursive reference and setting up needs to happen post-init"""
 
     main: Optional["MainLangSemantics"] = None
 
@@ -406,18 +396,18 @@ class VarLangSemantics(LangSemantics):
             # return {'': row[self.word].strip()}
         return result
 
-    def multilemma(self, row: List[str]) -> Dict[str, str]:
+    def multilemma(self, row: List[str], lemma: int = 0) -> Dict[str, str]:
         result = {}
         # TODO: accepting both & and / as separators is not neccessary
         m = re.search(
-            r"^([^A-Z]+)([A-Z]+)?(\s*[\&\/]\s*)?(.*)$", row[self.lemmas[0]].strip()
+            r"^([^A-Z]+)([A-Z]+)?(\s*[\&\/])?(.*)$", row[self.lemmas[lemma]].strip()
         )
         while m:
             v = m.group(1).strip() if m.group(1) else ""
             k = m.group(2) if m.group(2) else ""
             result[k] = v
-            rest = m.group(4).strip() if len(m.groups()) == 4 else ""
-            m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
+            rest = m.group(4) if len(m.groups()) == 4 else ""
+            m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest.strip())
 
         # When lemma in variant does not have source, read it from word
         if len(result) == 1 and next(iter(result.keys())) == "":

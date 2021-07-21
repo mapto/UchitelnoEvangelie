@@ -21,7 +21,18 @@ printf "\n\n>> Building integrator for linux\n\n"
 docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux
 mv dist/linux/integrator ../dist
 
-rm -rf dist
+# rm -rf dist
+# cd ../integrator
+
+# printf "\n\n>> Building indexgenerator for windows\n\n"
+# docker run -v "$(pwd):/src/" cdrx/pyinstaller-windows
+# mv dist/windows/indexgenerator.exe ../dist
+
+# printf "\n\n>> Building indexgenerator for linux\n\n"
+# docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux
+# mv dist/linux/indexgenerator ../dist
+
+# rm -rf dist
 cd ..
 
 # remove containers with the given image name
