@@ -2,8 +2,8 @@ import re
 
 from const import STYLE_COL
 
-from model import TableSemantics, MainLangSemantics, VarLangSemantics
 from model import Index, Usage
+from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
 from aggregator import (
     _present,
     _build_usages,

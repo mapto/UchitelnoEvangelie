@@ -1,5 +1,6 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
-from model import MainLangSemantics, VarLangSemantics, Usage, Index
+from model import Index, Usage
+from semantics import MainLangSemantics, VarLangSemantics
 
 
 def test_MainLangSemantics_alternatives():

@@ -8,7 +8,7 @@ from openpyxl.styles import Font  # type: ignore
 
 from const import IDX_COL, STYLE_COL
 
-from model import TableSemantics, LangSemantics, MainLangSemantics, VarLangSemantics
+from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
 
 
 def _style2str(s: Font, bgs: Dict[str, Optional[str]]) -> str:

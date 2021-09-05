@@ -3,7 +3,8 @@
 from typing import List, Dict
 
 from const import IDX_COL, MISSING_CH, STYLE_COL, V_LEMMA_SEP
-from model import Index, LangSemantics, MainLangSemantics
+from model import Index
+from semantics import LangSemantics, MainLangSemantics
 from util import ord_word
 
 ord_tuple = lambda x: ord_word(x[0])

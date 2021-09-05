@@ -1,6 +1,6 @@
 from typing import List
 
-from model import Index, LangSemantics, MainLangSemantics, VarLangSemantics
+from semantics import MainLangSemantics, VarLangSemantics
 from merger import _close, _grouped
 
 

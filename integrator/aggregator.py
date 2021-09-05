@@ -9,8 +9,8 @@ from const import DEFAULT_SL, DEFAULT_GR
 
 from util import ord_word, base_word
 
-from model import _present  # TODO: cleanup
-from model import Index, Usage, LangSemantics, MainLangSemantics, VarLangSemantics
+from semantics import _present  # TODO: cleanup
+from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
 
 ord_tuple = lambda x: ord_word(x[0])
 

@@ -20,7 +20,7 @@ from docx import Document  # type: ignore
 from docx.opc.exceptions import OpcError  # type: ignore
 from sortedcontainers import SortedSet  # type: ignore
 
-from model import TableSemantics, LangSemantics, MainLangSemantics, VarLangSemantics
+from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
 from importer import import_mapping
 from util import extract_letters
 from merger import merge
