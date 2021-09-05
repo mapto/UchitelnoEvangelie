@@ -6,6 +6,7 @@ PATH_SEP = " → "  # used to show path in hierarchy
 CF_SEP = "»"
 H_LEMMA_SEP = "/"  # indicates multiple variants provided together
 V_LEMMA_SEP = "&"  # indicates lemmas merged from several rows
+VAR_SEP = "//"  # or "-"
 MISSING_CH = "ₓ"
 EMPTY_CH = "Ø"
 

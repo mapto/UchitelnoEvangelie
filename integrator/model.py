@@ -5,7 +5,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import EMPTY_CH, H_LEMMA_SEP, PATH_SEP, default_sources
+from const import EMPTY_CH, H_LEMMA_SEP, PATH_SEP, VAR_SEP, default_sources
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 from util import base_word
@@ -259,9 +259,9 @@ class LangSemantics:
         paths: List[List[str]] = [[]]
         for c in range(len(self.lemmas)):
             new_paths = []
-            print(f"{c} {self.lemmas[c]} {row[self.lemmas[c]]}")
+            # print(f"{c} {self.lemmas[c]} {row[self.lemmas[c]]}")
             for w in self.multilemma(row, c).values():
-                print(f"{w} {w.strip()}")
+                # print(f"{w} {w.strip()}")
                 for path in paths:
                     n = path.copy()
                     n.append(w)
@@ -293,6 +293,9 @@ class LangSemantics:
     def build_usages(
         self, trans: "LangSemantics", row: List[str], d: SortedDict, lemma: str
     ) -> SortedDict:
+        """
+        TODO: test, esp. combined variants
+        """
         for ovar, oword in self.multiword(row).items():
             for tvar, tword in trans.multiword(row).items():
                 key = (oword, tword)
@@ -301,7 +304,7 @@ class LangSemantics:
                 idx = Index.unpack(row[IDX_COL], b, i)
                 oalt = self.alternatives(row, ovar)
                 talt = trans.alternatives(row, tvar)
-                var = ovar + tvar
+                var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
                 val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
                 for nxt in trans.build_paths(row):
                     ml = self.multilemma(row)
