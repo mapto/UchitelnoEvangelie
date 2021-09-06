@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""A processor aggregating different usages into a dictionary hierarchy"""
+
 from typing import List, Tuple, Optional, Dict
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 import re
