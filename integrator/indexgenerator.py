@@ -25,7 +25,7 @@ from importer import import_mapping
 from util import extract_letters
 from merger import merge
 from aggregator import aggregate
-from exporter import export_docx, generate_docx
+from generator import generate_docx
 
 
 if __name__ == "__main__":
