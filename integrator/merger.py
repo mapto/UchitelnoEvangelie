@@ -2,7 +2,7 @@
 
 """A processor merging multiple lines when they are related"""
 
-from typing import List, Dict
+from typing import List
 
 from const import IDX_COL, MISSING_CH, STYLE_COL, V_LEMMA_SEP
 from model import Index

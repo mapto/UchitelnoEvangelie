@@ -6,20 +6,13 @@ from typing import Dict, List, Tuple
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from docx import Document  # type: ignore
-from docx.shared import RGBColor, Pt  # type: ignore
+from docx.shared import Pt  # type: ignore
 
-from const import CF_SEP, main_source, var_sources
+from const import CF_SEP, main_source
 from model import Index, Usage
 
-from wordproc import _generate_text
-
-GENERIC_FONT = "Times New Roman"
-
-other_lang = {"gr": "sl", "sl": "gr"}
-fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
-colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
-brace_open = {"sl": "[", "gr": "{"}
-brace_close = {"sl": "]", "gr": "}"}
+from wordproc import _generate_text, any_grandchild
+from wordproc import GENERIC_FONT, other_lang, fonts, colors, brace_open, brace_close
 
 
 def docx_usage(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -> None:
@@ -68,8 +61,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par, f"{prefix} {li}", fonts[lang], size=Pt(18 if level == 0 else 14)
             )
 
-        any_child = next(iter(next_d.values()))
-        any_of_any = next(iter(any_child.values()))
+        any_of_any = any_grandchild(next_d)
         if type(any_of_any) is SortedSet:  # bottom of structure
             trans_lang = "gr" if lang == "sl" else "sl"
             for t, bottom_d in next_d.items():

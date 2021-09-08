@@ -6,20 +6,15 @@ from typing import Dict, List, Tuple, Union
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from docx import Document  # type: ignore
-from docx.shared import RGBColor, Pt, Cm  # type: ignore
+from docx.shared import Pt, Cm  # type: ignore
 
-from const import CF_SEP, main_source, var_sources
+from const import CF_SEP, main_source
 from model import Index, Usage, Counter
 
-from wordproc import _generate_text
+from wordproc import _generate_text, any_grandchild
+from wordproc import GENERIC_FONT, other_lang, fonts, brace_open, brace_close
 
-GENERIC_FONT = "Times New Roman"
-
-other_lang = {"gr": "sl", "sl": "gr"}
-fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
-colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
-brace_open = {"sl": "[", "gr": "{"}
-brace_close = {"sl": "]", "gr": "}"}
+BULLET_STYLE = "List Bullet"
 
 
 def generate_index(par, idx: Index) -> None:
@@ -198,6 +193,9 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
     for li, next_d in d.items():
         if level == 0 and not li:
             continue
+        #c = _get_dict_counts(d).get_counts(False)
+        #if not c[0] and not c[1]:
+        #    return
         if li:
             par = doc.add_paragraph()
             par.style.font.name = GENERIC_FONT
@@ -217,14 +215,17 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
 
             _generate_counts(par, next_d, False)
             _generate_text(par, ")")
-        any_child = next(iter(next_d.values()))
-        # if not any_child:
-        #    return
-        any_of_any = next(iter(any_child.values()))
+
+        any_of_any = any_grandchild(next_d)
         if type(any_of_any) is SortedSet:  # bottom of structure
             trans_lang = "gr" if lang == "sl" else "sl"
             for t, bottom_d in next_d.items():
+                #c = _get_dict_counts(d).get_counts(True)
+                #if not c[0] and not c[1]:
+                #    return
+
                 par = doc.add_paragraph()
+                par.style = doc.styles[BULLET_STYLE]
                 par.style.font.name = GENERIC_FONT
                 par.paragraph_format.space_before = Pt(0)
                 par.paragraph_format.space_after = Pt(0)

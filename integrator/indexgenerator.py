@@ -16,10 +16,6 @@ __version__ = "0.0.1"
 
 from docopt import docopt  # type: ignore
 
-from docx import Document  # type: ignore
-from docx.opc.exceptions import OpcError  # type: ignore
-from sortedcontainers import SortedSet  # type: ignore
-
 from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
 from importer import import_mapping
 from util import extract_letters

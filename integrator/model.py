@@ -1,7 +1,6 @@
 from typing import Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
-from sortedcontainers import SortedDict, SortedSet  # type: ignore
+from abc import abstractmethod
 
 import re
 

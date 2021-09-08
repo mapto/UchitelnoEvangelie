@@ -4,7 +4,6 @@ so to avoid circular references they cannot use it"""
 
 
 from typing import Dict, List, Set
-import re
 import unicodedata
 from sortedcontainers import SortedSet  # type: ignore
 

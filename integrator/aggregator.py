@@ -2,12 +2,10 @@
 
 """A processor aggregating different usages into a dictionary hierarchy"""
 
-from typing import List, Tuple, Optional, Dict
-from sortedcontainers import SortedDict, SortedSet  # type: ignore
-import re
+from typing import List, Optional, Dict
+from sortedcontainers import SortedDict  # type: ignore
 
-from const import IDX_COL, STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP, PATH_SEP, MISSING_CH
-from const import DEFAULT_SL, DEFAULT_GR
+from const import IDX_COL, H_LEMMA_SEP, V_LEMMA_SEP, MISSING_CH
 
 from util import ord_word, base_word
 
