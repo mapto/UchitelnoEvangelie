@@ -14,6 +14,7 @@ from model import Index, Usage
 
 
 def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
+    """Not present if not semantics specified or if row misses first lemma according to semantics"""
     return not not sem and not not row[sem.lemmas[0]]
 
 
@@ -73,6 +74,7 @@ class LangSemantics:
         return "".join([k for k in self.multiword(row).keys()])
 
     def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
+        """Returns (main_alt, dict(var_name,var_alt))"""
         raise NotImplementedError("abstract method")
 
     def key(self, text: str) -> str:
@@ -134,10 +136,10 @@ class LangSemantics:
                 b = "bold" in row[STYLE_COL]
                 i = "italic" in row[STYLE_COL]
                 idx = Index.unpack(row[IDX_COL], b, i)
-                oalt = self.alternatives(row, ovar)
-                talt = trans.alternatives(row, tvar)
+                (oaltm, oaltv) = self.alternatives(row, ovar)
+                (taltm, taltv) = trans.alternatives(row, tvar)
                 var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
-                val = Usage(idx, self.lang, var, oalt[0], oalt[1], talt[0], talt[1])
+                val = Usage(idx, self.lang, var, oaltm, oaltv, taltm, taltv)
                 for nxt in trans.build_paths(row):
                     ml = self.multilemma(row)
                     if ovar not in ml or lemma == ml[ovar]:
@@ -175,6 +177,8 @@ class MainLangSemantics(LangSemantics):
         return super().lemn_cols() + self.var.lemmas[1:]
 
     def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
+        """Returns (main_alt, dict(var_name,var_alt))
+        Main alternative to main is always empty/nonexistent"""
         alt = self.var.multilemma(row)
         return ("", alt)
 
@@ -202,8 +206,10 @@ class VarLangSemantics(LangSemantics):
     main: Optional["MainLangSemantics"] = None
 
     def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
+        """Returns (main_alt, dict(var_name,var_alt))"""
         main = ""
-        if self.main and row[self.main.lemmas[0]]:
+        if present(row, self.main):
+            assert self.main  # for mypy
             main = row[self.main.lemmas[0]]
         alt = {k: v for k, v in self.multilemma(row).items() if k != var}
         return (main, alt)

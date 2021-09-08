@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""A processor merging multiple lines when they are related"""
+
 from typing import List, Dict
 
 from const import IDX_COL, MISSING_CH, STYLE_COL, V_LEMMA_SEP
