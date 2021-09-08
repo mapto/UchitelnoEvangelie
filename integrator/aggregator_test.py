@@ -5,7 +5,7 @@ from const import STYLE_COL
 from model import Index, Usage
 from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
 from aggregator import (
-    _present,
+    present,
     _build_usages,
     _multiword,
     _multilemma,
@@ -32,11 +32,11 @@ def test_present():
         + ([""] * 11)
         + ["hl00"]
     )
-    assert _present(row, sem)
+    assert present(row, sem)
     row = ["\ue205моуть GH", "ѩт\ue205", "", "1/7b19"] + ([""] * 18) + ["hl00"]
-    assert _present(row, sem)
+    assert present(row, sem)
     row = ["\ue205моуть GH", "", "", "1/7b19"] + ([""] * 18) + ["hl00"]
-    assert not _present(row, sem)
+    assert not present(row, sem)
 
     sem = VarLangSemantics(lang="gr", word=15, lemmas=[16, 17, 19])
     row = (
@@ -57,9 +57,9 @@ def test_present():
         + ([""] * 11)
         + ["hl00"]
     )
-    assert not _present(row, sem)
+    assert not present(row, sem)
     row = ["\ue205моуть GH", "ѩт\ue205", "", "1/7b19"] + ([""] * 18) + ["hl00"]
-    assert not _present(row, sem)
+    assert not present(row, sem)
 
 
 def test__build_usages():

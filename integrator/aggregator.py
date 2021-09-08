@@ -9,7 +9,7 @@ from const import IDX_COL, H_LEMMA_SEP, V_LEMMA_SEP, MISSING_CH
 
 from util import ord_word, base_word
 
-from semantics import _present  # TODO: cleanup
+from semantics import present
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
 
 ord_tuple = lambda x: ord_word(x[0])
@@ -24,14 +24,14 @@ def _build_usages(
 
 
 def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[str, str]:
-    if not _present(row, sem):
+    if not present(row, sem):
         return {}
     assert sem
     return sem.multilemma(row)
 
 
 def _multiword(row: List[str], sem: LangSemantics) -> Dict[str, str]:
-    if not _present(row, sem):
+    if not present(row, sem):
         return {}
     return sem.multiword(row)
 
@@ -57,7 +57,7 @@ def _agg_lemma(
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
     """
-    if not _present(row, orig) or not _present(row, trans):
+    if not present(row, orig) or not present(row, trans):
         return d
     assert orig  # for mypy
     assert trans  # for mypy

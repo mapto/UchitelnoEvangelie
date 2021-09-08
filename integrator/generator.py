@@ -193,8 +193,8 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
     for li, next_d in d.items():
         if level == 0 and not li:
             continue
-        #c = _get_dict_counts(d).get_counts(False)
-        #if not c[0] and not c[1]:
+        # c = _get_dict_counts(d).get_counts(False)
+        # if not c[0] and not c[1]:
         #    return
         if li:
             par = doc.add_paragraph()
@@ -220,8 +220,8 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
         if type(any_of_any) is SortedSet:  # bottom of structure
             trans_lang = "gr" if lang == "sl" else "sl"
             for t, bottom_d in next_d.items():
-                #c = _get_dict_counts(d).get_counts(True)
-                #if not c[0] and not c[1]:
+                # c = _get_dict_counts(d).get_counts(True)
+                # if not c[0] and not c[1]:
                 #    return
 
                 par = doc.add_paragraph()

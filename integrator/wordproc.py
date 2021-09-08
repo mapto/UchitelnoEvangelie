@@ -1,4 +1,5 @@
-"""Utilities for the word processor export"""
+"""Shared utilities for the word processor export"""
+
 from typing import Optional, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
