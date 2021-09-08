@@ -7,7 +7,6 @@ from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
 from aggregator import (
     present,
     _build_usages,
-    _multiword,
     _multilemma,
     _agg_lemma,
     aggregate,
@@ -60,6 +59,24 @@ def test_present():
     assert not present(row, sem)
     row = ["\ue205моуть GH", "ѩт\ue205", "", "1/7b19"] + ([""] * 18) + ["hl00"]
     assert not present(row, sem)
+
+    row = (
+        ([""] * 3)
+        + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
+        + ([""] * 3)
+        + ["μὲν"]
+        + ([""] * 4)
+        + ["με C", "ἐγώ"]
+        + ([""] * 7)
+    )
+    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    gr_sem = MainLangSemantics(
+        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+    )
+    assert not present(row, sl_sem.var)
+    assert present(row, sl_sem)
+    assert not present(row, gr_sem)
+    assert present(row, gr_sem.var)
 
 
 def test__build_usages():
@@ -127,25 +144,48 @@ def test__build_usages():
         }
     )
 
-
-def test__multiword():
-    sem = VarLangSemantics("sl", 0, [1])
-    result = _multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"], sem)
-    assert len(result) == 2
-    assert result["G"] == "\ue205но\ue20dедаго"
-    assert result["H"] == "\ue201д\ue205нородоу"
-
-    result = _multiword(["ноедаго G", "днородъ H / ноѧдъ G"], sem)
-    assert result == {"G": "\ue205но\ue20dедаго"}
-
-    result = _multiword(["", ""], sem)
-    assert result == {}
-
-    result = _multiword(["дноеды WH Ø G", "дноѧдъ"], sem)
-    assert result == {"WH": "дноеды", "G": "Ø"}
-
-    result = _multiword(["дноеды", "дноѧдъ"], sem)
-    assert result == {"WGH": "дноеды"}
+    """
+    row = (
+        ([""] * 3)
+        + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
+        + ([""] * 3)
+        + ["μὲν"]
+        + ([""] * 4)
+        + ["με C", "ἐγώ"]
+        + ([""] * 7)
+    )
+    
+    d3 = SortedDict()
+    d3 = _build_usages(row, sem.sl, sem.gr, d3, "аꙁъ")
+    assert d3 == SortedDict(
+        {
+            "ἐγώ": {
+                ("мене",  "με"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index.unpack("1/W168c7"),
+                            lang="sl",
+                            trans_alt="μὲν"
+                        )
+                    ]
+                )
+            }
+        }
+    )
+    d4 = SortedDict()
+    d4 = _build_usages(row, sem.gr, sem.sl, d4, "ἐγώ")
+    assert d4 == SortedDict(
+        {
+            "аꙁъ": {
+                ("με", "мене"): SortedSet(
+                    [
+                        Usage(idx=Index.unpack("1/W168c7"), lang="gr", orig_alt="μὲν")
+                    ]
+                )
+            }
+        }
+    )
+    """
 
 
 def test__multilemma():
@@ -161,6 +201,10 @@ def test__multilemma():
 
     result = _multilemma(["дноеды WH Ø G", "дноѧдъ"], sem)
     assert result == {"WH": "дноѧдъ"}
+
+    gr_sem = VarLangSemantics("gr", 0, [1])
+    result = _multilemma(["με C", "ἐγώ"], gr_sem)
+    assert result == {"C": "ἐγώ"}
 
 
 def test__agg_lemma():

@@ -11,15 +11,33 @@ def test_post_init():
 
 
 def test_MainLangSemantics_alternatives():
+    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    gr_sem = MainLangSemantics(
+        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+    )
+
     row = (
         ["ю G", "\ue205 pron.", "", "1/W168b6", "om.", "", "om."]
         + [""] * 3
         + ["ταύτην", "οὗτος"]
         + [""] * 12
     )
-    sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
-    result = sem.alternatives(row, "*IGNORED*")
+    result = sl_sem.alternatives(row, "*IGNORED*")
     assert result == ("", {"G": "\ue205 pron."})
+
+    row = (
+        ([""] * 3)
+        + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
+        + ([""] * 3)
+        + ["μὲν"]
+        + ([""] * 4)
+        + ["με C", "ἐγώ"]
+        + ([""] * 7)
+    )
+    result = sl_sem.alternatives(row, "*IGNORED*")
+    assert result == ("", {})
+    result == gr_sem.var.alternatives(row, "C")
+    # assert result == ("μὲν", {})
 
 
 def test_VarLangSemantics_multiword():
@@ -46,7 +64,7 @@ def test_VarLangSemantics_multiword():
     assert result == {"C": "με"}
 
 
-def test_VarLangSemantics_multilemma():
+def test_LangSemantics_multilemma():
     row = (
         ["ю G", "\ue205 pron.", "", "1/W168b6", "om.", "", "om."]
         + [""] * 3
@@ -72,6 +90,20 @@ def test_VarLangSemantics_multilemma():
     assert result == {"WGH": "въ"}
     result = gr_sem.var.multilemma(row)
     assert result == {"C": "παρά"}
+
+    row = (
+        ([""] * 3)
+        + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
+        + ([""] * 3)
+        + ["μὲν"]
+        + ([""] * 4)
+        + ["με C", "ἐγώ"]
+        + ([""] * 7)
+    )
+    result = sl_sem.multilemma(row)
+    assert result == {"": "аꙁъ"}
+    result = gr_sem.var.multilemma(row)
+    assert result == {"C": "ἐγώ"}
 
 
 def test_LangSemantics_build_keys():
@@ -144,10 +176,10 @@ def test_LangSemantics_build_usages():
         + [""] * 12
     )
 
-    d = SortedDict()
-    d = sl_sem.build_usages(gr_sem, row, d, "\ue205но\ue20dѧдъ")
+    d0 = SortedDict()
+    d0 = sl_sem.build_usages(gr_sem, row, d0, "\ue205но\ue20dѧдъ")
 
-    assert d == SortedDict(
+    assert d0 == SortedDict(
         {
             "μονογενής": {
                 ("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"): SortedSet(
@@ -193,11 +225,11 @@ def test_LangSemantics_build_usages():
         + ["bold|italic"]
     )
 
-    d = SortedDict()
-    d = sl_sem.var.build_usages(gr_sem, row, d, "\ue205но\ue20dѧдъ")
-    assert len(d["μονογενής"]) == 1
-    assert len(d["μονογενής"][("\ue205но\ue20dедаго", "μονογενοῦς")]) == 1
-    assert next(iter(d["μονογενής"][("\ue205но\ue20dедаго", "μονογενοῦς")])) == Usage(
+    d1 = SortedDict()
+    d1 = sl_sem.var.build_usages(gr_sem, row, d1, "\ue205но\ue20dѧдъ")
+    assert len(d1["μονογενής"]) == 1
+    assert len(d1["μονογενής"][("\ue205но\ue20dедаго", "μονογενοῦς")]) == 1
+    assert next(iter(d1["μονογενής"][("\ue205но\ue20dедаго", "μονογενοῦς")])) == Usage(
         idx=Index(ch=1, alt=True, page=168, col="a", row=25, bold=True, italic=True),
         lang="sl",
         var="G",
@@ -205,17 +237,60 @@ def test_LangSemantics_build_usages():
         orig_alt_var={"H": "\ue201д\ue205нородъ"},
     )
 
-    d = SortedDict()
-    d = sl_sem.var.build_usages(gr_sem, row, d, "\ue201д\ue205нородъ")
-    assert len(d["μονογενής"]) == 1
-    assert len(d["μονογενής"][("\ue201д\ue205нородоу", "μονογενοῦς")]) == 1
-    assert next(iter(d["μονογενής"][("\ue201д\ue205нородоу", "μονογενοῦς")])) == Usage(
+    d2 = SortedDict()
+    d2 = sl_sem.var.build_usages(gr_sem, row, d2, "\ue201д\ue205нородъ")
+    assert len(d2["μονογενής"]) == 1
+    assert len(d2["μονογενής"][("\ue201д\ue205нородоу", "μονογενοῦς")]) == 1
+    assert next(iter(d2["μονογενής"][("\ue201д\ue205нородоу", "μονογενοῦς")])) == Usage(
         idx=Index(ch=1, alt=True, page=168, col="a", row=25, bold=True, italic=True),
         lang="sl",
         var="H",
         orig_alt="\ue201д\ue205но\ue20dѧдъ",
         orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
     )
+
+    """
+    row = (
+        ([""] * 3)
+        + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
+        + ([""] * 3)
+        + ["μὲν"]
+        + ([""] * 4)
+        + ["με C", "ἐγώ"]
+        + ([""] * 7)
+    )
+
+    d3 = SortedDict()
+    d3 = sl_sem.build_usages(gr_sem.var, row, d3, "аꙁъ")
+    assert d3 == SortedDict(
+        {
+            "ἐγώ": {
+                ("мене",  "με"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index.unpack("1/W168c7"),
+                            lang="sl", var='C',
+                            trans_alt="μὲν"
+                        )
+                    ]
+                )
+            }
+        }
+    )
+    d4 = SortedDict()
+    d4 = gr_sem.var.build_usages(sl_sem, row, d4, "ἐγώ")
+    assert d4 == SortedDict(
+        {
+            "аꙁъ": {
+                ("με", "мене"): SortedSet(
+                    [
+                        Usage(idx=Index.unpack("1/W168c7"), lang="gr", var='C', orig_alt="μὲν")
+                    ]
+                )
+            }
+        }
+    )
+    """
 
 
 def test_build_paths():

@@ -30,12 +30,6 @@ def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[str, str]:
     return sem.multilemma(row)
 
 
-def _multiword(row: List[str], sem: LangSemantics) -> Dict[str, str]:
-    if not present(row, sem):
-        return {}
-    return sem.multiword(row)
-
-
 def _agg_lemma(
     row: List[str],
     orig: Optional[LangSemantics],
@@ -106,6 +100,9 @@ def aggregate(
     for row in corpus:
         if not row[IDX_COL]:
             continue
+
+        #if row[IDX_COL] == "1/W168c7":
+        #    print(row)
 
         result = _agg_lemma(row, orig, trans, result)
         result = _agg_lemma(row, orig.var, trans, result)

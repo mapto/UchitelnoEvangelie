@@ -73,7 +73,7 @@ class LangSemantics:
     def get_variant(self, row: List[str]) -> str:
         return "".join([k for k in self.multiword(row).keys()])
 
-    def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
+    def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Returns (main_alt, dict(var_name,var_alt))"""
         raise NotImplementedError("abstract method")
 
@@ -177,7 +177,7 @@ class MainLangSemantics(LangSemantics):
     def lemn_cols(self) -> List[int]:
         return super().lemn_cols() + self.var.lemmas[1:]
 
-    def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
+    def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Returns (main_alt, dict(var_name,var_alt))
         Main alternative to main is always empty/nonexistent"""
         alt = self.var.multilemma(row)
@@ -206,13 +206,13 @@ class VarLangSemantics(LangSemantics):
 
     main: Optional["MainLangSemantics"] = None
 
-    def alternatives(self, row: List[str], var: str) -> Tuple[str, Dict[str, str]]:
+    def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Returns (main_alt, dict(var_name,var_alt))"""
         main = ""
         if present(row, self.main):
             assert self.main  # for mypy
             main = row[self.main.lemmas[0]]
-        alt = {k: v for k, v in self.multilemma(row).items() if k != var}
+        alt = {k: v for k, v in self.multilemma(row).items() if k != my_var}
         return (main, alt)
 
     def key(self, text: str) -> str:
