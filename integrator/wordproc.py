@@ -1,4 +1,5 @@
-"""Utilities for the word processor export"""
+"""Shared utilities for the word processor export"""
+
 from typing import Optional
 
 from docx.shared import Pt, Cm  # type: ignore

@@ -1,7 +1,7 @@
 """A collection of model classes, specific to the interpretation of the input spreadsheet"""
 
 from typing import Dict, List, Optional, Tuple
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
@@ -13,7 +13,7 @@ from util import base_word
 from model import Index, Usage
 
 
-def _present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
+def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
     return not not sem and not not row[sem.lemmas[0]]
 
 
@@ -182,7 +182,7 @@ class MainLangSemantics(LangSemantics):
         return text
 
     def build_keys(self, row: List[str]) -> List[str]:
-        if _present(row, self) and self.word != None and not not row[self.word]:
+        if present(row, self) and self.word != None and not not row[self.word]:
             return [base_word(row[self.word])]
         return [""]
 
@@ -215,7 +215,7 @@ class VarLangSemantics(LangSemantics):
         return f" {{{text}}}"
 
     def build_keys(self, row: List[str]) -> List[str]:
-        if _present(row, self) and self.word != None and not not row[self.word]:
+        if present(row, self) and self.word != None and not not row[self.word]:
             return [base_word(w) for w in self.multiword(row).values()]
         return [""]
 
