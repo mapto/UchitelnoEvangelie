@@ -3,6 +3,13 @@ from model import Index, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 
 
+def test_post_init():
+    sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    assert len(sem.lemmas) == len(sem.var.lemmas) == 4
+    sem = MainLangSemantics("sl", 4, [6, 7], VarLangSemantics("sl", 0, [1, 2, 8, 9]))
+    assert len(sem.lemmas) == len(sem.var.lemmas) == 4
+
+
 def test_MainLangSemantics_alternatives():
     row = (
         ["ю G", "\ue205 pron.", "", "1/W168b6", "om.", "", "om."]
@@ -13,6 +20,30 @@ def test_MainLangSemantics_alternatives():
     sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
     result = sem.alternatives(row, "*IGNORED*")
     assert result == ("", {"G": "\ue205 pron."})
+
+
+def test_VarLangSemantics_multiword():
+    sem = VarLangSemantics("sl", 0, [1])
+    result = sem.multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"])
+    assert len(result) == 2
+    assert result["G"] == "\ue205но\ue20dедаго"
+    assert result["H"] == "\ue201д\ue205нородоу"
+
+    result = sem.multiword(["ноедаго G", "днородъ H / ноѧдъ G"])
+    assert result == {"G": "\ue205но\ue20dедаго"}
+
+    result = sem.multiword(["", ""])
+    assert result == {"WGH": ""}
+
+    result = sem.multiword(["дноеды WH Ø G", "дноѧдъ"])
+    assert result == {"WH": "дноеды", "G": "Ø"}
+
+    result = sem.multiword(["дноеды", "дноѧдъ"])
+    assert result == {"WGH": "дноеды"}
+
+    gr_sem = VarLangSemantics("gr", 0, [1])
+    result = gr_sem.multiword(["με C", "ἐγώ"])
+    assert result == {"C": "με"}
 
 
 def test_VarLangSemantics_multilemma():
@@ -187,44 +218,28 @@ def test_LangSemantics_build_usages():
     )
 
 
-"""
 def test_build_paths():
     sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
     res = sl_sem.build_paths([""] * 6 + ["боудеть", "бꙑт\ue205 ", "", "gram."])
     assert res == ["бꙑт\ue205 → боудеть gram."]
+
     res = sl_sem.build_paths([""] * 6 + ["едно", "две", "три", "четири"])
     assert res == ["четири → три → две → едно"]
+
     res = sl_sem.build_paths([""] * 6 + ["едно", "две", "три", "gram."])
     assert res == ["три → две → едно gram."]
+
     res = sl_sem.build_paths(
-        [
-            "",
-            "",
-            "",
-            "1/4b17",
-            "ₓ",
-            "",
-            "ₓ",
-            "",
-            "",
-            "",
-            "ὁ",
-            "ὁ",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "bold|italic",
-        ]
+        [""] * 3
+        + ["1/4b17"]
+        + ["ₓ", ""] * 2
+        + [""] * 2
+        + ["ὁ", "ὁ"]
+        + [""] * 11
+        + ["bold|italic"]
     )
     assert res == ["ₓ"]
+
     row = (
         [
             "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
@@ -242,4 +257,3 @@ def test_build_paths():
     )
     res = sl_sem.var.build_paths(row)
     assert res == ["\ue201д\ue205нородъ", "\ue205но\ue20dѧдъ"]
-"""

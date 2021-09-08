@@ -93,12 +93,13 @@ class LangSemantics:
         paths: List[List[str]] = [[]]
         for c in range(len(self.lemmas)):
             new_paths = []
-            # print(f"{c} {self.lemmas[c]} {row[self.lemmas[c]]}")
-            for w in self.multilemma(row, c).values():
-                # print(f"{w} {w.strip()}")
+            multilemmas = self.multilemma(row, c).values()
+            if not multilemmas:
+                continue
+            for w in multilemmas:
                 for path in paths:
                     n = path.copy()
-                    n.append(w)
+                    n.append(w.strip())
                     new_paths.append(n)
             paths = new_paths
 
