@@ -39,6 +39,18 @@ def _highlighted(group: List[List[str]], col: int) -> bool:
     return False
 
 
+def _merge_indices(group: List[List[str]]) -> Index:
+    """Merge the individual indices of a group into a group/multiline index"""
+    s_end = None
+    for i in range(len(group) - 1, 0, -1):
+        s_end = group[i][IDX_COL]
+        if s_end:
+            break
+    if not s_end:
+        s_end = group[0][IDX_COL]
+    return Index.unpack(f"{group[0][IDX_COL]}-{s_end}")
+
+
 def _close(
     group: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> List[List[str]]:
@@ -61,14 +73,7 @@ def _close(
                 print(row)
             print(f"ГРЕШКА: липсва индекс в групата.")
 
-    s_end = None
-    for i in range(len(group) - 1, 0, -1):
-        s_end = group[i][IDX_COL]
-        if s_end:
-            break
-    if not s_end:
-        s_end = group[0][IDX_COL]
-    idx = Index.unpack(f"{group[0][IDX_COL]}-{s_end}")
+    idx = _merge_indices(group)
 
     # collect content
     line = [""] * STYLE_COL
