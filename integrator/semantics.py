@@ -74,7 +74,8 @@ class LangSemantics:
         return "".join([k for k in self.multiword(row).keys()])
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
-        """Returns (main_alt, dict(var_name,var_alt))"""
+        """Get alternative lemmas
+        Returns (main_alt, dict(var_name,var_alt))"""
         raise NotImplementedError("abstract method")
 
     def key(self, text: str) -> str:
@@ -90,6 +91,7 @@ class LangSemantics:
         raise NotImplementedError("abstract method")
 
     def build_paths(self, row: List[str]) -> List[str]:
+        """Build the multipaths (due to multilemma) relevant to the current row"""
         paths: List[List[str]] = [[]]
         for c in range(len(self.lemmas)):
             new_paths = []
@@ -126,7 +128,12 @@ class LangSemantics:
         return result
 
     def build_usages(
-        self, trans: "LangSemantics", row: List[str], d: SortedDict, lemma: str
+        self,
+        trans: "LangSemantics",
+        row: List[str],
+        d: SortedDict,
+        olemma: str,
+        tlemma: str,
     ) -> SortedDict:
         """
         TODO: test, esp. combined variants
@@ -142,8 +149,11 @@ class LangSemantics:
                 var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
                 val = Usage(idx, self.lang, var, oaltm, oaltv, taltm, taltv)
                 for nxt in trans.build_paths(row):
-                    ml = self.multilemma(row)
-                    if ovar not in ml or lemma == ml[ovar]:
+                    oml = self.multilemma(row)
+                    orig_var_in_lemma = ovar not in oml or olemma == oml[ovar]
+                    tml = trans.multilemma(row)
+                    trans_var_in_lemma = tvar not in tml or tlemma == tml[tvar]
+                    if orig_var_in_lemma and trans_var_in_lemma and tlemma in nxt:
                         d = _add_usage(val, nxt, key, d)
         return d
 
@@ -178,7 +188,8 @@ class MainLangSemantics(LangSemantics):
         return super().lemn_cols() + self.var.lemmas[1:]
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
-        """Returns (main_alt, dict(var_name,var_alt))
+        """Get alternative lemmas
+        Returns (main_alt, dict(var_name,var_alt))
         Main alternative to main is always empty/nonexistent"""
         alt = self.var.multilemma(row)
         return ("", alt)
@@ -207,7 +218,8 @@ class VarLangSemantics(LangSemantics):
     main: Optional["MainLangSemantics"] = None
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
-        """Returns (main_alt, dict(var_name,var_alt))"""
+        """Get alternative lemmas
+        Returns (main_alt, dict(var_name,var_alt))"""
         main = ""
         if present(row, self.main):
             assert self.main  # for mypy

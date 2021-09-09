@@ -16,11 +16,16 @@ ord_tuple = lambda x: ord_word(x[0])
 
 
 def _build_usages(
-    row: List[str], orig: LangSemantics, trans: LangSemantics, d: SortedDict, lemma: str
+    row: List[str],
+    orig: LangSemantics,
+    trans: LangSemantics,
+    d: SortedDict,
+    olemma: str,
+    tlemma: str,
 ) -> SortedDict:
     assert row[IDX_COL]
 
-    return orig.build_usages(trans, row, d, lemma)
+    return orig.build_usages(trans, row, d, olemma, tlemma)
 
 
 def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[str, str]:
@@ -36,7 +41,8 @@ def _agg_lemma(
     trans: Optional[LangSemantics],
     d: SortedDict,
     col: int = -1,
-    lemma: str = "",
+    olemma: str = "",
+    tlemma: str = "",
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
 
@@ -46,7 +52,9 @@ def _agg_lemma(
         trans (LangSemantics): translation for lemma columns, do nothing if absent
         key (Tuple[str, str]): word pair
         d (SortedDict): see return value
-        col (int): lemma column being currently processed, -1 for autodetect/first, -2 for exhausted/last
+        col (int): lemma column being currently processed, -1 for autodetect/first, -2 for exhausted/last,
+        olemma: the processed original first lemma, potentially from variant multilemma
+        tlemma: the translation first lemma being considered, potentially from variant multilemma
 
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
@@ -56,30 +64,45 @@ def _agg_lemma(
     assert orig  # for mypy
     assert trans  # for mypy
 
-    multilemmas = {}
+    omultilemmas = {}
+    tmultilemmas = {}
     if col == -1:  # autodetect/first
         col = orig.lemmas[0]
-        multilemmas = _multilemma(row, orig)
+        omultilemmas = _multilemma(row, orig)
+        tmultilemmas = _multilemma(row, trans)
     elif col == -2:  # exhausted/last
-        return _build_usages(row, orig, trans, d, lemma)
+        return _build_usages(row, orig, trans, d, olemma, tlemma)
 
     # TODO: implement variants here
     if type(orig) == VarLangSemantics and row[col]:
         row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
     # lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
-    if not multilemmas:
-        multilemmas[""] = row[col]
+    if not omultilemmas:
+        omultilemmas[""] = row[col]
+    if not tmultilemmas:
+        tmultilemmas[""] = tlemma
 
     lem_col = orig.lemmas
-    for l in multilemmas.values():
-        if l.strip() == MISSING_CH:
-            continue
-        nxt = base_word(l)
-        if nxt not in d:
-            d[nxt] = SortedDict(ord_word)
-        next_idx = lem_col.index(col) + 1
-        next_c = lem_col[next_idx] if next_idx < len(lem_col) else -2
-        d[nxt] = _agg_lemma(row, orig, trans, d[nxt], next_c, lemma if lemma else l)
+    for oli in omultilemmas.values():
+        for tli in tmultilemmas.values():
+            if oli.strip() == MISSING_CH:
+                continue
+            nxt = base_word(oli)
+            if nxt not in d:
+                d[nxt] = SortedDict(ord_word)
+            next_idx = lem_col.index(col) + 1
+            next_c = lem_col[next_idx] if next_idx < len(lem_col) else -2
+            ol = olemma if olemma else oli
+            tl = tlemma if tlemma else tli
+            d[nxt] = _agg_lemma(
+                row,
+                orig,
+                trans,
+                d[nxt],
+                next_c,
+                ol,
+                tl,
+            )
     return d
 
 
@@ -101,8 +124,8 @@ def aggregate(
         if not row[IDX_COL]:
             continue
 
-        #if row[IDX_COL] == "1/W168c7":
-        #    print(row)
+        # if "1/W168a25" in row[IDX_COL]:
+        #     print(row)
 
         result = _agg_lemma(row, orig, trans, result)
         result = _agg_lemma(row, orig.var, trans, result)

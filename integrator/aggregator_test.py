@@ -110,7 +110,7 @@ def test__build_usages():
     )
 
     d1 = SortedDict()
-    d1 = _build_usages(row, sem.sl, sem.gr, d1, "вѣроват_")
+    d1 = _build_usages(row, sem.sl, sem.gr, d1, "вѣроват_", "πιστεύω")
     assert d1 == SortedDict(
         {
             "πιστεύω": {
@@ -127,7 +127,7 @@ def test__build_usages():
         }
     )
     d2 = SortedDict()
-    d2 = _build_usages(row, sem.gr, sem.sl, d2, "πιστεύω")
+    d2 = _build_usages(row, sem.gr, sem.sl, d2, "πιστεύω", "вѣроват_")
     assert d2 == SortedDict(
         {
             "вѣроват_": {
@@ -144,7 +144,6 @@ def test__build_usages():
         }
     )
 
-    """
     row = (
         ([""] * 3)
         + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
@@ -154,9 +153,9 @@ def test__build_usages():
         + ["με C", "ἐγώ"]
         + ([""] * 7)
     )
-    
+    """
     d3 = SortedDict()
-    d3 = _build_usages(row, sem.sl, sem.gr, d3, "аꙁъ")
+    d3 = _build_usages(row, sem.sl, sem.gr, d3, "аꙁъ", "ἐγώ")
     assert d3 == SortedDict(
         {
             "ἐγώ": {
@@ -165,7 +164,7 @@ def test__build_usages():
                         Usage(
                             idx=Index.unpack("1/W168c7"),
                             lang="sl",
-                            trans_alt="μὲν"
+                            trans_alt=""
                         )
                     ]
                 )
@@ -173,13 +172,13 @@ def test__build_usages():
         }
     )
     d4 = SortedDict()
-    d4 = _build_usages(row, sem.gr, sem.sl, d4, "ἐγώ")
+    d4 = _build_usages(row, sem.gr, sem.sl, d4, "ἐγώ", "аꙁъ")
     assert d4 == SortedDict(
         {
             "аꙁъ": {
                 ("με", "мене"): SortedSet(
                     [
-                        Usage(idx=Index.unpack("1/W168c7"), lang="gr", orig_alt="μὲν")
+                        Usage(idx=Index.unpack("1/W168c7"), lang="gr", orig_alt="")
                     ]
                 )
             }
