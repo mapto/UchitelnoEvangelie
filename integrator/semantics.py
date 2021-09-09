@@ -39,21 +39,6 @@ class LangSemantics:
     word: int
     lemmas: List[int]
 
-    '''
-    def __post_init__(self):
-        """
-        If there is variant, make sure add correct number of lemma columns.
-        relevant, because different language/variant combinations have different number of lemma columns.
-        """
-        if not self.var or len(self.lemmas) == len(self.var.lemmas):
-            return
-        delta = len(self.lemmas) - len(self.var.lemmas)
-        if delta > 0:
-            self.var.lemmas += [STYLE_COL - 4 + i for i in range(delta)]
-        else:
-            self.lemmas += [STYLE_COL - 4 + i for i in range(-delta)]
-    '''
-
     def cols(self) -> List[int]:
         c = []
         c += self.word_cols()
@@ -135,9 +120,6 @@ class LangSemantics:
         olemma: str,
         tlemma: str,
     ) -> SortedDict:
-        """
-        TODO: test, esp. combined variants
-        """
         for ovar, oword in self.multiword(row).items():
             for tvar, tword in trans.multiword(row).items():
                 key = (oword, tword)
