@@ -4,16 +4,12 @@ from semantics import MainLangSemantics, VarLangSemantics
 from merger import _close, _grouped
 
 
-def _equal(a: List[List[str]], b: List[List[str]]) -> bool:
-    if len(a) != len(b):
-        return False
+def assert_equal(a: List[List[str]], b: List[List[str]]):
+    assert len(a) == len(b)
     for r in range(len(a)):
-        if len(a[r]) != len(b[r]):
-            return False
+        assert len(a[r]) == len(b[r])
         for c in range(len(a[r])):
-            if a[r][c] != b[r][c]:
-                return False
-    return True
+            assert a[r][c] == b[r][c]
 
 
 def test_grouped():
@@ -213,7 +209,7 @@ def test_close():
         + [""] * 11
         + ["hl04|hl10"],
     ]
-    assert _equal(res, expected)
+    assert_equal(res, expected)
 
     group = [
         ["все WH", "вьсь", "", "1/7c12", "въ", "въ сел\ue205ко", "въ", "въ + Acc."]
@@ -278,7 +274,7 @@ def test_close():
         + [""] * 11
         + ["hl04|hl00|hl10"],
     ]
-    assert _equal(res, expected)
+    assert_equal(res, expected)
 
     group = [
         [""] * 3
@@ -334,7 +330,7 @@ def test_close():
         + [""] * 9
         + ["hl04|hl10"],
     ]
-    assert _equal(res, expected)
+    assert_equal(res, expected)
 
     group = [
         ["все WH", "вьсь", "", "1/7c12", "въ", "въ сел\ue205ко", "въ", "въ + Acc."]
@@ -398,7 +394,7 @@ def test_close():
         + [""] * 11
         + ["hl04|hl00|hl10"],
     ]
-    assert _equal(res, expected)
+    assert_equal(res, expected)
 
     group = [
         [
@@ -455,7 +451,7 @@ def test_close():
         + [""] * 10
         + ["hl10"],
     ]
-    assert _equal(res, expected)
+    assert_equal(res, expected)
 
     group = [
         [
@@ -521,7 +517,7 @@ def test_close():
         + [""] * 10
         + ["hl10"],
     ]
-    assert _equal(res, expected)
+    assert_equal(res, expected)
 
     group = [
         [""] * 3
@@ -586,7 +582,7 @@ def test_close():
         + [""] * 10
         + ["hl04"],
     ]
-    assert _equal(res, expected)
+    assert_equal(res, expected)
 
     group = [
         [""] * 3
@@ -652,16 +648,18 @@ def test_close():
         + [""] * 10
         + ["hl04"],
     ]
-    assert _equal(res, expected)
+    assert_equal(res, expected)
 
-    group = [
+    g1 = (
         [""] * 3
         + ["1/W168a13"]
         + ["ₓ", ""] * 2
         + [""] * 2
         + ["ταῖς", "ὁ"]
         + [""] * 11
-        + ["hl10"],
+        + ["hl10"]
+    )
+    g2 = (
         [""] * 3
         + [
             "1/W168a13",
@@ -672,16 +670,20 @@ def test_close():
         + [""] * 3
         + ["ἄνω", "ἄνω", "ὁ ἄνω"]
         + [""] * 10
-        + ["hl10"],
-    ]
+        + ["hl10"]
+    )
+    group = [g1, g2]
+
     res = _close(group, gr_sem, sl_sem)
-    expected = [
+    e1 = (
         [""] * 3
         + ["01/W168a13", "ₓ вышьн\ue205\ue205мь", "", "вꙑшьнь"]
         + [""] * 3
         + ["ταῖς ἄνω", "ὁ", "ὁ ἄνω"]
         + [""] * 10
-        + ["hl10"],
+        + ["hl10"]
+    )
+    e2 = (
         [""] * 3
         + [
             "01/W168a13",
@@ -692,6 +694,92 @@ def test_close():
         + [""] * 3
         + ["ταῖς ἄνω", "ἄνω", "ὁ ἄνω"]
         + [""] * 10
-        + ["hl10"],
-    ]
-    assert _equal(res, expected)
+        + ["hl10"]
+    )
+    expected = [e1, e2]
+    assert_equal(res, expected)
+
+
+def test_close_gram():
+    sl_sem = MainLangSemantics(
+        lang="sl",
+        word=4,
+        lemmas=[6, 7, 8, 9],
+        var=VarLangSemantics(lang="sl", word=0, lemmas=[1, 2, 19, 20]),
+    )
+    gr_sem = MainLangSemantics(
+        lang="gr",
+        word=10,
+        lemmas=[11, 12, 13],
+        var=VarLangSemantics(lang="gr", word=15, lemmas=[16, 17, 19]),
+    )
+
+    g1 = (
+        [""] * 3
+        + [
+            "1/W168a14",
+            "вьꙁмогл\ue205",
+            "мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205",
+            "въꙁмощ\ue205",
+        ]
+        + [""] * 3
+        + [
+            "ἠδυνήθημεν",
+            "δύναμαι",
+            "pass.",
+        ]
+        + [""] * 10
+        + [
+            "hl04",
+        ]
+    )
+    g2 = (
+        [""] * 3
+        + [
+            "1/W168a15",
+            "б\ue205хомь",
+            "б\ue205хомь стрьпѣтї• ",
+            "бꙑт\ue205 ",
+            "",
+            "gramm.",
+        ]
+        + [""] * 14
+        + ["hl04|hl08"]
+    )
+    group = [g1, g2]
+
+    res = _close(group, sl_sem, gr_sem)
+    e1 = (
+        [""] * 3
+        + [
+            "01/W168a14-15",
+            "вьꙁмогл\ue205 б\ue205хомь",
+            "мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205",
+            "въꙁмощ\ue205",
+        ]
+        + [""] * 3
+        + ["ἠδυνήθημεν", "δύναμαι", "pass."]
+        + [""] * 10
+        + ["hl04"]
+    )
+    e2 = (
+        [""] * 3
+        + [
+            "01/W168a14-15",
+            "вьꙁмогл\ue205 б\ue205хомь",
+            "б\ue205хомь стрьпѣтї• ",
+            "бꙑт\ue205 ",
+            "",
+            "gramm.",
+            "",
+            "ἠδυνήθημεν",
+            "δύναμαι",
+            "pass.",
+        ]
+        + [""] * 10
+        + [
+            "hl04|hl08",
+        ]
+    )
+    expected = [e1, e2]
+    assert_equal(res, expected)

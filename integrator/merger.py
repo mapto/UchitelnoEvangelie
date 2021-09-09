@@ -18,8 +18,19 @@ def _collect(group: List[List[str]], col: int) -> List[str]:
 
 def _highlighted(group: List[List[str]], col: int) -> bool:
     """
+    Gets whether at lease one cell in the column of the group is highlighted.
+    Clearly assumes that grouping is already done correctly.
+
     >>> group = [['все WH', 'вьсь', '', '1/7c12', 'въ', 'въ сел\ue205ко', 'въ', 'въ + Acc.', '', '', 'εἰς', 'εἰς', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl07|hl10'], ['\ue201л\ue205ко WH', '\ue201л\ue205къ', '', '1/7c12', 'сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl00|hl10']]
     >>> _highlighted(group, 7)
+    True
+
+    >>> group = [['', '', '', '1/W168a14', 'вьꙁмогл\ue205', 'мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205', 'въꙁмощ\ue205', '', '', '', 'ἠδυνήθημεν', 'δύναμαι', 'pass.', '', '', '', '', '', '', '', '', '', '', 'hl04'],['', '', '', '1/W168a15', 'б\ue205хомь', 'б\ue205хомь стрьпѣтї• ', 'бꙑт\ue205 ', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl08']]
+    >>> _highlighted(group, 4)
+    True
+
+    >>> group = [['', '', '', '1/W168a14', 'вьꙁмогл\ue205', 'мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205', 'въꙁмощ\ue205', '', '', '', 'ἠδυνήθημεν', 'δύναμαι', 'pass.', '', '', '', '', '', '', '', '', '', '', 'hl04'],['', '', '', '1/W168a15', 'б\ue205хомь', 'б\ue205хомь стрьпѣтї• ', 'бꙑт\ue205 ', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl04|hl08']]
+    >>> _highlighted(group, 8)
     True
     """
     for i in range(len(group)):
@@ -82,6 +93,7 @@ def _close(
 
 
 def _grouped(row: List[str], sem: MainLangSemantics) -> bool:
+    """Returns if the row takes part of a group with respect to this language (and its variants)"""
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
     if f"hl{sem.var.word:02d}" in row[STYLE_COL]:
@@ -107,6 +119,10 @@ def merge(
 
     for raw in corpus:
         row = [v if v else "" for v in raw]
+
+        # if row[IDX_COL] == "1/5a5":
+        # print(row)
+
         not_blank = [v for v in row if v]
         if not row[IDX_COL] and not_blank:
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
