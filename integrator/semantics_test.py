@@ -295,6 +295,10 @@ def test_LangSemantics_build_usages():
 
 def test_build_paths():
     sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    gr_sem = MainLangSemantics(
+        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+    )
+
     res = sl_sem.build_paths([""] * 6 + ["боудеть", "бꙑт\ue205 ", "", "gram."])
     assert res == ["бꙑт\ue205 → боудеть gram."]
 
@@ -332,3 +336,6 @@ def test_build_paths():
     )
     res = sl_sem.var.build_paths(row)
     assert res == ["\ue201д\ue205нородъ", "\ue205но\ue20dѧдъ"]
+
+    # res = gr_sem.build_paths([])
+    # assert res == ["не бꙑт ꙗвлнъ → не & бꙑт & ꙗвт gramm."]

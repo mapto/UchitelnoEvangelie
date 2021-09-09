@@ -181,6 +181,7 @@ class MainLangSemantics(LangSemantics):
         """Returns (main_alt, dict(var_name,var_alt))
         Main alternative to main is always empty/nonexistent"""
         alt = self.var.multilemma(row)
+        alt = {k: v for k, v in alt.items() if v != row[self.word]}
         return ("", alt)
 
     def key(self, text: str) -> str:
@@ -212,7 +213,10 @@ class VarLangSemantics(LangSemantics):
         if present(row, self.main):
             assert self.main  # for mypy
             main = row[self.main.lemmas[0]]
-        alt = {k: v for k, v in self.multilemma(row).items() if k != my_var}
+        alt = {k: v for k, v in self.multilemma(row).items()}
+        if my_var in alt and main == alt[my_var]:
+            main = ""
+        alt.pop(my_var, None)
         return (main, alt)
 
     def key(self, text: str) -> str:
