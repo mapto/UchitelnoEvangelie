@@ -22,6 +22,7 @@ BORDER = Border(left=_SIDE, right=_SIDE, top=_SIDE, bottom=_SIDE)
 COLUMN_BOUND = 30
 LETTERS = 26
 
+
 def row(row: Dict[int, str]) -> List[str]:
     result = [""] * 35
     for k, v in row.items():
@@ -44,8 +45,9 @@ def sheet_column(i: int) -> str:
     'BA'
     """
     if i >= LETTERS:
-        return chr(ord('A') - 1 + i // LETTERS) + chr(ord('A') + i % LETTERS)
-    return chr(ord('A') + i)
+        return chr(ord("A") - 1 + i // LETTERS) + chr(ord("A") + i % LETTERS)
+    return chr(ord("A") + i)
+
 
 # def ifna_vlookup_old(ref: str, ret: str, rows: int) -> str:
 #     """
@@ -87,16 +89,19 @@ def if_isformula(ref: str) -> str:
     """
     return f'=IF(_xlfn.ISFORMULA({ref}),"",{ref})'
 
-def semantics(count: int, word: int, lem_start: int, aux_start: int, ref: int, rows: int)-> Dict[int, str]:
+
+def semantics(
+    count: int, word: int, lem_start: int, aux_start: int, ref: int, rows: int
+) -> Dict[int, str]:
     """
     Slavic variants
     >>> semantics(3, 0, 1, 20, 1, 10)
     {1: '=_xlfn.IFNA(VLOOKUP(A1,A1:U10,21,FALSE),"")', 20: '=IF(_xlfn.ISFORMULA(B1),"",B1)', 2: '=_xlfn.IFNA(VLOOKUP(A1,A1:V10,22,FALSE),"")', 21: '=IF(_xlfn.ISFORMULA(C1),"",C1)', 3: '=_xlfn.IFNA(VLOOKUP(A1,A1:W10,23,FALSE),"")', 22: '=IF(_xlfn.ISFORMULA(D1),"",D1)'}
 
-    Main slavic    
+    Main slavic
     >>> semantics(4, 5, 7, 23, 1, 10)
     {7: '=_xlfn.IFNA(VLOOKUP(F1,F1:X10,19,FALSE),"")', 23: '=IF(_xlfn.ISFORMULA(H1),"",H1)', 8: '=_xlfn.IFNA(VLOOKUP(F1,F1:Y10,20,FALSE),"")', 24: '=IF(_xlfn.ISFORMULA(I1),"",I1)', 9: '=_xlfn.IFNA(VLOOKUP(F1,F1:Z10,21,FALSE),"")', 25: '=IF(_xlfn.ISFORMULA(J1),"",J1)', 10: '=_xlfn.IFNA(VLOOKUP(F1,F1:AA10,22,FALSE),"")', 26: '=IF(_xlfn.ISFORMULA(K1),"",K1)'}
-    
+
     Variant greek
     >>> semantics(4, 15, 16, 29, 1, 10)
     {16: '=_xlfn.IFNA(VLOOKUP(P1,P1:AD10,15,FALSE),"")', 29: '=IF(_xlfn.ISFORMULA(Q1),"",Q1)', 17: '=_xlfn.IFNA(VLOOKUP(P1,P1:AE10,16,FALSE),"")', 30: '=IF(_xlfn.ISFORMULA(R1),"",R1)', 18: '=_xlfn.IFNA(VLOOKUP(P1,P1:AF10,17,FALSE),"")', 31: '=IF(_xlfn.ISFORMULA(S1),"",S1)', 19: '=_xlfn.IFNA(VLOOKUP(P1,P1:AG10,18,FALSE),"")', 32: '=IF(_xlfn.ISFORMULA(T1),"",T1)'}
@@ -142,7 +147,7 @@ def export_sheet(data: WordList, fname: str) -> None:
                 if cell.value.startswith("=IF"):
                     cell.fill = BG_RESERVED
                 # elif cell.value.startswith("=_xlfn.IFNA"):
-                    # cell.fill = BG_EDIT
+                # cell.fill = BG_EDIT
             line.append(cell)
         ws.append(line)
 
