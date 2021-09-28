@@ -28,7 +28,7 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
 
     result = []
     for row in ws.iter_rows(max_col=STYLE_COL):
-        line = [cell.value for cell in row]
+        line = [cell.value.strip() if cell.value else cell.value for cell in row]
         bgs = {f"hl{v:02d}": row[v].fill.patternType for v in sem.cols() if row[v].fill}
         line.append(_style2str(row[IDX_COL].font, bgs))
         result.append(line)

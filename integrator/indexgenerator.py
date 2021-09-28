@@ -51,6 +51,8 @@ if __name__ == "__main__":
     lines = import_mapping(fname, sem)
     print(f"{len(lines)} думи")
 
+    # print(lines)
+
     # print("Раздуване на индекси...")
     # lines = expand_idx(lines)
     # print(f"{len(lines)} реда")

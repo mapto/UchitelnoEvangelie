@@ -190,11 +190,11 @@ class MainLangSemantics(LangSemantics):
 
     def multiword(self, row: List[str]) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {"": row[self.word]}
+        return {"": row[self.word].strip()}
 
     def multilemma(self, row: List[str], lemma: int = 0) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {"": row[self.lemmas[lemma]]}
+        return {"": row[self.lemmas[lemma]].strip()}
 
 
 @dataclass

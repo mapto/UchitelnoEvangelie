@@ -15,19 +15,6 @@ from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
 ord_tuple = lambda x: ord_word(x[0])
 
 
-def _build_usages(
-    row: List[str],
-    orig: LangSemantics,
-    trans: LangSemantics,
-    d: SortedDict,
-    olemma: str,
-    tlemma: str,
-) -> SortedDict:
-    assert row[IDX_COL]
-
-    return orig.build_usages(trans, row, d, olemma, tlemma)
-
-
 def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[str, str]:
     if not present(row, sem):
         return {}
@@ -71,7 +58,8 @@ def _agg_lemma(
         omultilemmas = _multilemma(row, orig)
         tmultilemmas = _multilemma(row, trans)
     elif col == -2:  # exhausted/last
-        return _build_usages(row, orig, trans, d, olemma, tlemma)
+        assert row[IDX_COL]
+        return orig.build_usages(trans, row, d, olemma, tlemma)
 
     # TODO: implement variants here
     if type(orig) == VarLangSemantics and row[col]:
@@ -125,7 +113,8 @@ def aggregate(
             continue
 
         # if "1/W168a25" in row[IDX_COL]:
-        #     print(row)
+        # if "μονογεν" in row[orig.lemmas[0]]:
+        # print(row)
 
         result = _agg_lemma(row, orig, trans, result)
         result = _agg_lemma(row, orig.var, trans, result)
