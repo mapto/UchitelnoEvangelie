@@ -13,8 +13,9 @@ from util import base_word
 @dataclass(order=True, frozen=True)
 class Index:
     """Index only indicates if it is from a variant.
-    Alternative variable (alt) means alternative indexing.
-     Contrast these to Usage."""
+    Alternative variable (alt) means alternative indexing (as in Vienna scroll).
+    Not related to alternative variants
+    Contrast these to Usage."""
 
     ch: int
     alt: bool

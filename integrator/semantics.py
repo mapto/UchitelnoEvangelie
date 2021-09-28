@@ -170,10 +170,14 @@ class MainLangSemantics(LangSemantics):
         return super().lemn_cols() + self.var.lemmas[1:]
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
-        """Get alternative lemmas
+        """Get alternative lemmas, ignoring variants that coincide with main
         Returns (main_alt, dict(var_name,var_alt))
         Main alternative to main is always empty/nonexistent"""
-        alt = self.var.multilemma(row)
+        alt = {
+            k: v
+            for k, v in self.var.multilemma(row).items()
+            if v != row[self.lemmas[0]]
+        }
         return ("", alt)
 
     def key(self, text: str) -> str:
@@ -200,13 +204,15 @@ class VarLangSemantics(LangSemantics):
     main: Optional["MainLangSemantics"] = None
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
-        """Get alternative lemmas
+        """Get alternative lemmas, skipping main if coincides with my variant
         Returns (main_alt, dict(var_name,var_alt))"""
         main = ""
+        multilemma = self.multilemma(row)
         if present(row, self.main):
             assert self.main  # for mypy
-            main = row[self.main.lemmas[0]]
-        alt = {k: v for k, v in self.multilemma(row).items() if k != my_var}
+            if row[self.main.lemmas[0]] != multilemma[my_var]:
+                main = row[self.main.lemmas[0]]
+        alt = {k: v for k, v in multilemma.items() if k != my_var}
         return (main, alt)
 
     def key(self, text: str) -> str:
@@ -245,11 +251,21 @@ class VarLangSemantics(LangSemantics):
             rest = m.group(4) if len(m.groups()) == 4 else ""
             m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest.strip())
 
-        # When lemma in variant does not have source, read it from word
+        # When lemma in variant does not have source, read source from word
+        # When in some variants word is missing, get lemma for this variant from main
         if len(result) == 1 and next(iter(result.keys())) == "":
-            words = {k: v for k, v in self.multiword(row).items() if v != EMPTY_CH}
-            assert len(words) == 1
-            return {next(iter(words.keys())): result[""]}
+            updated = {}
+            for k, v in self.multiword(row).items():
+                if v == EMPTY_CH:
+                    assert self.main
+                    updated[k] = row[self.main.lemmas[0]]
+                else:
+                    updated[k] = result[""]
+
+            # words = {k: v for k, v in self.multiword(row).items() if v != EMPTY_CH}
+            # assert len(words) == 1
+            # return {next(iter(words.keys())): result[""]}
+            return updated
 
         return result
 
