@@ -1,6 +1,6 @@
-IDX_COL = 3
-EXAMPLE_COL = 5
-STYLE_COL = 23
+IDX_COL = 4
+EXAMPLE_COL = 6
+STYLE_COL = 26
 
 PATH_SEP = " → "  # used to show path in hierarchy
 CF_SEP = "»"  # used to indicate details about alternatives to a usage

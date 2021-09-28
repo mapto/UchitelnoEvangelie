@@ -15,12 +15,13 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 
 def test_present():
-    sem = VarLangSemantics(lang="sl", word=0, lemmas=[1, 2, 19, 20])
+    sem = VarLangSemantics(lang="sl", word=0, lemmas=[1, 2, 20, 21])
     row = (
         [
             "вѣроу GH",
             "вѣра",
             "вѣрѫ ѩт\ue205",
+            "",
             "1/7b19",
             "вѣроують",
             "вьс\ue205 вѣроують",
@@ -28,21 +29,28 @@ def test_present():
         ]
         + ([""] * 3)
         + ["πιστεύσωσι", "πιστεύω"]
-        + ([""] * 11)
+        + ([""] * 13)
         + ["hl00"]
     )
     assert present(row, sem)
-    row = ["\ue205моуть GH", "ѩт\ue205", "", "1/7b19"] + ([""] * 18) + ["hl00"]
+    row = (
+        ["\ue205моуть GH", "ѩт\ue205"]
+        + ([""] * 2)
+        + ["1/7b19"]
+        + ([""] * 20)
+        + ["hl00"]
+    )
     assert present(row, sem)
-    row = ["\ue205моуть GH", "", "", "1/7b19"] + ([""] * 18) + ["hl00"]
+    row = ["\ue205моуть GH"] + ([""] * 3) + ["1/7b19"] + ([""] * 20) + ["hl00"]
     assert not present(row, sem)
 
-    sem = VarLangSemantics(lang="gr", word=15, lemmas=[16, 17, 19])
+    sem = VarLangSemantics(lang="gr", word=16, lemmas=[17, 18, 19])
     row = (
         [
             "вѣроу GH",
             "вѣра",
             "вѣрѫ ѩт\ue205",
+            "",
             "1/7b19",
             "вѣроують",
             "вьс\ue205 вѣроують",
@@ -53,25 +61,33 @@ def test_present():
             "πιστεύσωσι",
             "πιστεύω",
         ]
-        + ([""] * 11)
+        + ([""] * 13)
         + ["hl00"]
     )
     assert not present(row, sem)
-    row = ["\ue205моуть GH", "ѩт\ue205", "", "1/7b19"] + ([""] * 18) + ["hl00"]
+    row = (
+        ["\ue205моуть GH", "ѩт\ue205"]
+        + ([""] * 2)
+        + ["1/7b19"]
+        + ([""] * 20)
+        + ["hl00"]
+    )
     assert not present(row, sem)
 
     row = (
-        ([""] * 3)
+        ([""] * 4)
         + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
         + ([""] * 3)
         + ["μὲν"]
         + ([""] * 4)
         + ["με C", "ἐγώ"]
-        + ([""] * 7)
+        + ([""] * 9)
     )
-    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
     )
     assert not present(row, sl_sem.var)
     assert present(row, sl_sem)
@@ -80,11 +96,13 @@ def test_present():
 
 
 def test__build_usages():
-    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
     sl_sem.var.main = sl_sem
     assert sl_sem.var  # for mypy
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
     )
     gr_sem.var.main = gr_sem
     assert gr_sem.var  # for mypy
@@ -95,6 +113,7 @@ def test__build_usages():
             "вѣроу GH",
             "вѣра",
             "вѣрѫ ѩт_",
+            "",
             "1/7b19",
             "вѣроують",
             "вьс_ вѣроують",
@@ -105,7 +124,7 @@ def test__build_usages():
             "πιστεύσωσι",
             "πιστεύω",
         ]
-        + ([""] * 11)
+        + ([""] * 13)
         + ["hl00"]
     )
 
@@ -145,13 +164,13 @@ def test__build_usages():
     )
 
     row = (
-        ([""] * 3)
+        ([""] * 4)
         + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
         + ([""] * 3)
         + ["μὲν"]
         + ([""] * 4)
         + ["με C", "ἐγώ"]
-        + ([""] * 7)
+        + ([""] * 9)
     )
     """
     d3 = SortedDict()
@@ -223,7 +242,9 @@ def test_aggregate():
         [
             "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
             "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
-            "",
+        ]
+        + [""] * 2
+        + [
             "1/W168a25",
             "\ue201д\ue205но\ue20dедоу",
             "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
@@ -231,10 +252,10 @@ def test_aggregate():
         ]
         + [""] * 3
         + ["μονογενοῦς", "μονογενής"]
-        + [""] * 12
+        + [""] * 14
     )
-    sl_sem = MainLangSemantics("sl", 4, [6], VarLangSemantics("sl", 0, [1]))
-    gr_sem = MainLangSemantics("gr", 10, [11], VarLangSemantics("gr", 15, [16, 17]))
+    sl_sem = MainLangSemantics("sl", 5, [7], VarLangSemantics("sl", 0, [1]))
+    gr_sem = MainLangSemantics("gr", 11, [12], VarLangSemantics("gr", 16, [17, 18]))
     result = aggregate([row], sl_sem, gr_sem)
 
     assert result == SortedDict(
@@ -301,3 +322,10 @@ def test_aggregate():
             ),
         }
     )
+
+
+#     rows = [['\ue201д\ue205нородоу H', '\ue201д\ue205нородъ', '', '', '1/W168a34', '\ue201д\ue205но\ue20dедоу', 'бѣ \ue205мѣт\ue205 \ue201д\ue205но\ue20dедоу', '\ue201д\ue205но\ue20dѧдъ ', '', '', '', 'μονογενῆ', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+# ['', '', '', '', '1/W168a28', '\ue201д\ue205но\ue20dедаго', 'цⷭ҇ре \ue201д\ue205но\ue20dедаго ѡтрока ѡ\ue010\ue20dа•', '\ue201д\ue205но\ue20dѧдъ', '', '', '', 'μονογενοῦς', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+# ['\ue205но\ue20dедаго G  \ue201д\ue205нородоу H', '\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G', '', '', '1/W168a25', '\ue201д\ue205но\ue20dедоу', 'вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу', '\ue201д\ue205но\ue20dѧдъ', '', '', '', 'μονογενοῦς', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', 'bold|italic'],
+# ['\ue201д\ue205но\ue20dеды WH Ø G', '\ue201д\ue205но\ue20dѧдъ', '', '', '1/5a4', '\ue205но\ue20dадꙑ\ue205', 'нъ ꙗко б\ue010ъ• а \ue205но\ue20dадꙑ\ue205', '\ue205но\ue20dѧдъ ', '', '', '', 'μονογενὴς', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+# ['\ue201д\ue205но\ue20dедѣмь WH Ø G', '\ue201д\ue205но\ue20dѧдъ', '', '', '1/4c15', '\ue205но\ue20dадѣмь', 'о \ue205но\ue20dадѣмь', '\ue205но\ue20dѧдъ', '', '', '', 'μονογενοῦς', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', '']]

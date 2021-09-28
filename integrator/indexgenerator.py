@@ -37,10 +37,12 @@ if __name__ == "__main__":
         print("Файлът трябва да е във формат .xlsx. Моля конвертирайте го")
         exit()
 
-    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
     assert sl_sem.var  # for mypy
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
     )
     assert gr_sem.var  # for mypy
     sem = TableSemantics(sl_sem, gr_sem)
