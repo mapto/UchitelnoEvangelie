@@ -59,7 +59,7 @@ def _agg_lemma(
         tmultilemmas = _multilemma(row, trans)
     elif col == -2:  # exhausted/last
         assert row[IDX_COL]
-        return orig.build_usages(trans, row, d, olemma, tlemma)
+        return orig.compile_usages(trans, row, d, olemma, tlemma)
 
     # TODO: implement variants here
     if type(orig) == VarLangSemantics and row[col]:

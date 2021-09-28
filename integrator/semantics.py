@@ -18,6 +18,18 @@ def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
     return not not sem and not not row[sem.lemmas[0]]
 
 
+def _build_usage(
+    row: List[str], osem: "LangSemantics", tsem: "LangSemantics", ovar: str, tvar: str
+):
+    b = "bold" in row[STYLE_COL]
+    i = "italic" in row[STYLE_COL]
+    idx = Index.unpack(row[IDX_COL], b, i)
+    (oaltm, oaltv) = osem.alternatives(row, ovar)
+    (taltm, taltv) = tsem.alternatives(row, tvar)
+    var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
+    return Usage(idx, osem.lang, var, oaltm, oaltv, taltm, taltv)
+
+
 def _add_usage(
     val: "Usage", nxt: str, key: Tuple[str, str], d: SortedDict
 ) -> SortedDict:
@@ -112,7 +124,7 @@ class LangSemantics:
 
         return result
 
-    def build_usages(
+    def compile_usages(
         self,
         trans: "LangSemantics",
         row: List[str],
@@ -122,20 +134,14 @@ class LangSemantics:
     ) -> SortedDict:
         for ovar, oword in self.multiword(row).items():
             for tvar, tword in trans.multiword(row).items():
-                key = (oword, tword)
-                b = "bold" in row[STYLE_COL]
-                i = "italic" in row[STYLE_COL]
-                idx = Index.unpack(row[IDX_COL], b, i)
-                (oaltm, oaltv) = self.alternatives(row, ovar)
-                (taltm, taltv) = trans.alternatives(row, tvar)
-                var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
-                val = Usage(idx, self.lang, var, oaltm, oaltv, taltm, taltv)
+                val = _build_usage(row, self, trans, ovar, tvar)
                 for nxt in trans.build_paths(row):
                     oml = self.multilemma(row)
                     orig_var_in_lemma = ovar not in oml or olemma == oml[ovar]
                     tml = trans.multilemma(row)
                     trans_var_in_lemma = tvar not in tml or tlemma == tml[tvar]
                     if orig_var_in_lemma and trans_var_in_lemma and tlemma in nxt:
+                        key = (oword, tword)
                         d = _add_usage(val, nxt, key, d)
         return d
 

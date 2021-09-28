@@ -272,7 +272,7 @@ def test_LangSemantics_build_keys():
     assert ["\ue201л\ue205ко"] == sl_sem.var.build_keys(row)
 
 
-def test_LangSemantics_build_usages_verovat():
+def test_LangSemantics_compile_usages_verovat():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -301,7 +301,7 @@ def test_LangSemantics_build_usages_verovat():
     )
 
     d1 = SortedDict()
-    d1 = sl_sem.build_usages(gr_sem, row, d1, "вѣроват_", "πιστεύω")
+    d1 = sl_sem.compile_usages(gr_sem, row, d1, "вѣроват_", "πιστεύω")
     assert d1 == SortedDict(
         {
             "πιστεύω": {
@@ -318,7 +318,7 @@ def test_LangSemantics_build_usages_verovat():
         }
     )
     d2 = SortedDict()
-    d2 = gr_sem.build_usages(sl_sem, row, d2, "πιστεύω", "вѣроват_")
+    d2 = gr_sem.compile_usages(sl_sem, row, d2, "πιστεύω", "вѣроват_")
     assert d2 == SortedDict(
         {
             "вѣроват_": {
@@ -336,7 +336,7 @@ def test_LangSemantics_build_usages_verovat():
     )
 
 
-def test_LangSemantics_build_usages_mene():
+def test_LangSemantics_compile_usages_mene():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -355,7 +355,7 @@ def test_LangSemantics_build_usages_mene():
     )
 
     d3 = SortedDict()
-    d3 = sl_sem.build_usages(gr_sem.var, row, d3, "аꙁъ", "ἐγώ")
+    d3 = sl_sem.compile_usages(gr_sem.var, row, d3, "аꙁъ", "ἐγώ")
     assert d3 == SortedDict(
         {
             "ἐγώ": {
@@ -373,7 +373,7 @@ def test_LangSemantics_build_usages_mene():
         }
     )
     d4 = SortedDict()
-    d4 = gr_sem.var.build_usages(sl_sem, row, d4, "ἐγώ", "аꙁъ")
+    d4 = gr_sem.var.compile_usages(sl_sem, row, d4, "ἐγώ", "аꙁъ")
     assert d4 == SortedDict(
         {
             "аꙁъ": {
@@ -392,7 +392,7 @@ def test_LangSemantics_build_usages_mene():
     )
 
 
-def test_LangSemantics_build_usages_monogenis():
+def test_LangSemantics_compile_usages_monogenis():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -415,7 +415,7 @@ def test_LangSemantics_build_usages_monogenis():
     )
 
     d0 = SortedDict()
-    d0 = sl_sem.build_usages(gr_sem, row, d0, "\ue205но\ue20dѧдъ", "μονογενής")
+    d0 = sl_sem.compile_usages(gr_sem, row, d0, "\ue205но\ue20dѧдъ", "μονογενής")
     assert d0 == SortedDict(
         {
             "μονογενής": {
@@ -439,8 +439,8 @@ def test_LangSemantics_build_usages_monogenis():
     )
 
     d01 = SortedDict()
-    d01 = gr_sem.build_usages(sl_sem, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
-    d01 = gr_sem.build_usages(sl_sem.var, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
+    d01 = gr_sem.compile_usages(sl_sem, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
+    d01 = gr_sem.compile_usages(sl_sem.var, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
     # The additional slavic lemma is due to _add_usage() that backtracks to add missing usages if needed
     assert d01 == SortedDict(
         {
@@ -481,7 +481,7 @@ def test_LangSemantics_build_usages_monogenis():
     )
 
     d02 = SortedDict()
-    d02 = gr_sem.build_usages(
+    d02 = gr_sem.compile_usages(
         sl_sem.var, row, d02, "μονογενής", "\ue201д\ue205но\ue20dѧдъ"
     )
     assert d02 == SortedDict(
@@ -521,7 +521,7 @@ def test_LangSemantics_build_usages_monogenis():
     )
 
     d1 = SortedDict()
-    d1 = sl_sem.var.build_usages(gr_sem, row, d1, "\ue205но\ue20dѧдъ", "μονογενής")
+    d1 = sl_sem.var.compile_usages(gr_sem, row, d1, "\ue205но\ue20dѧдъ", "μονογενής")
     # print(d1)
     assert len(d1["μονογενής"]) == 1
     assert len(d1["μονογενής"][("\ue205но\ue20dедаго", "μονογενοῦς")]) == 1
@@ -534,7 +534,7 @@ def test_LangSemantics_build_usages_monogenis():
     )
 
     d2 = SortedDict()
-    d2 = sl_sem.var.build_usages(gr_sem, row, d2, "\ue201д\ue205нородъ", "μονογενής")
+    d2 = sl_sem.var.compile_usages(gr_sem, row, d2, "\ue201д\ue205нородъ", "μονογενής")
     assert len(d2["μονογενής"]) == 1
     assert len(d2["μονογενής"][("\ue201д\ue205нородоу", "μονογενοῦς")]) == 1
     assert next(iter(d2["μονογενής"][("\ue201д\ue205нородоу", "μονογενοῦς")])) == Usage(
@@ -563,7 +563,7 @@ def test_LangSemantics_build_usages_monogenis():
     )
 
     d = SortedDict()
-    d = sl_sem.var.build_usages(gr_sem, row, d, "\ue205но\ue20dѧдъ", "μονογενής")
+    d = sl_sem.var.compile_usages(gr_sem, row, d, "\ue205но\ue20dѧдъ", "μονογενής")
     # print(d)
     expected = SortedDict(
         {
@@ -593,7 +593,7 @@ def test_LangSemantics_build_usages_monogenis():
     assert d == expected
 
     d = SortedDict()
-    d = sl_sem.var.build_usages(gr_sem, row, d, "\ue201д\ue205нородъ", "μονογενής")
+    d = sl_sem.var.compile_usages(gr_sem, row, d, "\ue201д\ue205нородъ", "μονογενής")
     expected = SortedDict(
         {
             "μονογενής": {
@@ -622,7 +622,7 @@ def test_LangSemantics_build_usages_monogenis():
     assert d == expected
 
     d = SortedDict()
-    d = gr_sem.build_usages(sl_sem, row, d, "μονογενής", "\ue201д\ue205но\ue20dѧдъ")
+    d = gr_sem.compile_usages(sl_sem, row, d, "μονογενής", "\ue201д\ue205но\ue20dѧдъ")
     expected = SortedDict(
         {
             "\ue201д\ue205но\ue20dѧдъ": {
@@ -654,7 +654,7 @@ def test_LangSemantics_build_usages_monogenis():
     assert d == expected
 
     d = SortedDict()
-    d = gr_sem.build_usages(sl_sem.var, row, d, "μονογενής", "\ue201д\ue205нородъ")
+    d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue201д\ue205нородъ")
     expected = SortedDict(
         {
             "\ue201д\ue205нородъ": {
@@ -687,7 +687,7 @@ def test_LangSemantics_build_usages_monogenis():
     assert d == expected
 
     d = SortedDict()
-    d = gr_sem.build_usages(sl_sem.var, row, d, "μονογενής", "\ue205но\ue20dѧдъ")
+    d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue205но\ue20dѧдъ")
     expected = SortedDict(
         {
             "\ue205но\ue20dѧдъ": {
