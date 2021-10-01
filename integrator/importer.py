@@ -22,16 +22,23 @@ def _style2str(s: Font, bgs: Dict[str, Optional[str]]) -> str:
 
 
 def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
-    """Blank lines are perserved, as they serve as separators between groups (see merger)"""
+    """Blank lines are perserved, as they serve as separators between groups (see merger).
+    However, two subsequent blank lines are interpreted as end of file.
+    """
     wb = load_workbook(fname, read_only=True, data_only=True)
     ws = wb.active
 
     result = []
+    blank = False
     for row in ws.iter_rows(max_col=STYLE_COL):
         line = [cell.value.strip() if cell.value else cell.value for cell in row]
+        # Two consequent blank lines
+        if blank and not [l for l in line if l]:
+            break
         bgs = {f"hl{v:02d}": row[v].fill.patternType for v in sem.cols() if row[v].fill}
         line.append(_style2str(row[IDX_COL].font, bgs))
         result.append(line)
+        blank = not [l for l in line if l]
 
     return result
 

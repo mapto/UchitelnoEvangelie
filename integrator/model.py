@@ -26,10 +26,20 @@ class Index:
     end: Optional["Index"] = None
     bold: bool = False
     italic: bool = False
+    """There's this border case when one lemma occurs two times in a line.
+    This is when we distinguish between the two uses by the word pair (key).
+    Used as distinctor only by hash function, so no explicit logic using it.
+    Whenever not set, means we don't care to distinguish.
+    """
+    key: Tuple[str, str] = field(default_factory=lambda: ("", ""))
 
     @staticmethod
     def unpack(
-        value: str, b: bool = False, i: bool = False, var: bool = False
+        value: str,
+        b: bool = False,
+        i: bool = False,
+        var: bool = False,
+        key: Tuple[str, str] = ("", ""),
     ) -> "Index":
         """
         >>> Index.unpack("1/W167c4").longstr()
@@ -96,9 +106,9 @@ class Index:
                     if m.group(11):
                         e_ch = int(m.group(11))
                     e_alt = not not m.group(12) if e_ch % 2 else not m.group(12)
-            end = Index(e_ch, e_alt, e_page, e_col, e_row, var)
+            end = Index(e_ch, e_alt, e_page, e_col, e_row, var, key=key)
 
-        return Index(ch, alt, page, col, row, var, end, b, i)
+        return Index(ch, alt, page, col, row, var, end, b, i, key=key)
 
     def __str__(self):
         """
@@ -179,6 +189,61 @@ class Usage:
 
     def __hash__(self):
         return hash((self.idx, self.lang, self.orig_alt, self.trans_alt))
+
+
+@dataclass
+class Path:
+    """The full collection of lemmas is considered a backtracking path in the final usage hierarchy.
+    Gramatical annotation is handled exceptionally.
+    """
+
+    parts: List[str] = field(default_factory=lambda: [])
+    annotation: str = ""
+
+    # def __init__(self, lemma: str = ""):
+    #     if lemma:
+    #         self.parts = [lemma]
+
+    def __iadd__(self, s: str):
+        self.parts += [s]
+        return self
+
+    # def __bool__(self):
+    #     return bool(self.parts)  # or bool(self.annotation)
+
+    # def __getitem__(self, i: int):
+    #     # if not self.parts:
+    #     # return self.annotation
+    #     return self.parts[i]
+
+    def __len__(self):
+        return len(self.parts)
+
+    def __contains__(self, item: str):
+        return item in self.parts or item == self.annotation
+
+    def __str__(self):
+        """We want to see results in reverse order"""
+        if self.parts:
+            content = PATH_SEP.join(self.parts[::-1])
+            return f"{content} {self.annotation}" if self.annotation else content
+        return self.annotation if self.annotation else ""
+
+    # def pop(self, i: int):
+    #     # if not self.parts:
+    #     # return self.annotation
+    #     return self.parts.pop(i)
+
+    # def reverse(self):
+    #     self.parts.reverse()
+
+    def compile(self):
+        """Remove empty steps, extract annotations"""
+        for cur in range(len(self.parts) - 1, -1, -1):
+            if not self.parts[cur]:
+                self.parts.pop(cur)
+            elif re.match(r"^[a-zA-z\.]+$", self.parts[cur]):
+                self.annotation = self.parts.pop(cur)
 
 
 @dataclass

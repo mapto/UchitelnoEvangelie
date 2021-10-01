@@ -12,7 +12,7 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 from docopt import docopt  # type: ignore
 

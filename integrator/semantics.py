@@ -10,36 +10,89 @@ from const import EMPTY_CH, PATH_SEP, VAR_SEP, default_sources
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 from util import base_word
-from model import Index, Usage
+from model import Index, Usage, Path
 
 
 def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
     """Not present if not semantics specified or if row misses first lemma according to semantics"""
-    return not not sem and not not row[sem.lemmas[0]]
+    return not not sem and bool(row[sem.lemmas[0]])
 
 
 def _build_usage(
-    row: List[str], osem: "LangSemantics", tsem: "LangSemantics", ovar: str, tvar: str
+    row: List[str],
+    osem: "LangSemantics",
+    tsem: "LangSemantics",
+    ovar: str,
+    tvar: str,
+    key: Tuple[str, str],
 ):
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i)
+    idx = Index.unpack(row[IDX_COL], b, i, key=key)
     (oaltm, oaltv) = osem.alternatives(row, ovar)
     (taltm, taltv) = tsem.alternatives(row, tvar)
     var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
     return Usage(idx, osem.lang, var, oaltm, oaltv, taltm, taltv)
 
 
+def _is_variant_lemma(
+    row: List[str], sem: "LangSemantics", current_var: str, current_lemma: str
+) -> bool:
+    """
+    >>> sl_sem = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
+    >>> gr_sem = MainLangSemantics("gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19]))
+
+    >>> row = [""] * 4 + ["1/W168c17", "прѣ\ue205сто\ue20dе", "всѣмь прѣ\ue205сто\ue20dе\ue201• \ue205 по \ue205сто\ue20dен\ue205\ue205", "прѣ\ue205сто\ue20d\ue205т\ue205"] + [""] * 3 + ["ὑπερκλύζων", "ὑπερκλύζω"] + [""] * 3 + ["ὑπερβλύζων C", "ὑπερβλύω"] + [""] * 9
+    >>> _is_variant_lemma(row, gr_sem, "C", "ὑπερκλύζω")
+    Traceback (most recent call last):
+    AssertionError
+    >>> _is_variant_lemma(row, gr_sem, "", "ὑπερκλύζω")
+    True
+    >>> _is_variant_lemma(row, gr_sem.var, "C", "ὑπερβλύω")
+    True
+    >>> _is_variant_lemma(row, gr_sem.var, "D", "ὑπερβλύω")
+    Traceback (most recent call last):
+    KeyError: 'D'
+
+    >>> row = ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"] + [""] * 2 + ["1/5a4", "\ue205но\ue20dадꙑ\ue205", "нъ ꙗко б\ue010ъ• а \ue205но\ue20dадꙑ\ue205", "\ue205но\ue20dѧдъ"] + [""] * 3 + ["μονογενὴς", "μονογενής"] + [""] * 14
+    >>> _is_variant_lemma(row, sl_sem.var, "WH", "\ue201д\ue205но\ue20dѧдъ")
+    True
+    >>> _is_variant_lemma(row, sl_sem.var, "G", "\ue201д\ue205но\ue20dѧдъ")
+    False
+    >>> _is_variant_lemma(row, sl_sem.var, "G", "\ue205но\ue20dѧдъ")
+    True
+    >>> _is_variant_lemma(row, sl_sem, "", "\ue205но\ue20dѧдъ")
+    True
+    >>> _is_variant_lemma(row, gr_sem, "", "μονογενής")
+    True
+    >>> _is_variant_lemma(row, gr_sem.var, "", "μονογενής")
+    False
+    """
+    mlem = sem.multilemma(row)
+    if not mlem:
+        return False
+    # print(mlem)
+    if type(sem) == MainLangSemantics:
+        assert not current_var
+        assert len(mlem) == 1
+        return current_lemma == mlem[""]
+    # result = current_var not in mlem or current_lemma == mlem[current_var]
+    result = current_lemma == mlem[current_var]
+    # print(f"{current_var} in {current_lemma}: {result}")
+    return result
+
+
 def _add_usage(
-    val: "Usage", nxt: str, key: Tuple[str, str], d: SortedDict
+    val: "Usage", nxt: Path, key: Tuple[str, str], d: SortedDict
 ) -> SortedDict:
     """*IN PLACE*"""
-    if nxt in d:
-        if key not in d[nxt]:
-            d[nxt][key] = SortedSet()
-        d[nxt][key].add(val)
+    path = str(nxt)
+    if path in d:
+        if key not in d[path]:
+            d[path][key] = SortedSet()
+        d[path][key].add(val)
     else:
-        d[nxt] = {key: SortedSet([val])}
+        d[path] = {key: SortedSet([val])}
     return d
 
 
@@ -84,45 +137,29 @@ class LangSemantics:
     def multiword(self, row: List[str]) -> Dict[str, str]:
         raise NotImplementedError("abstract method")
 
-    def multilemma(self, row: List[str], lemma: int = 0) -> Dict[str, str]:
+    def multilemma(self, row: List[str]) -> Dict[str, str]:
         raise NotImplementedError("abstract method")
 
-    def build_paths(self, row: List[str]) -> List[str]:
+    def build_paths(self, row: List[str]) -> List[Path]:
         """Build the multipaths (due to multilemma) relevant to the current row"""
-        paths: List[List[str]] = [[]]
-        for c in range(len(self.lemmas)):
-            new_paths = []
-            multilemmas = self.multilemma(row, c).values()
-            if not multilemmas:
+        # first lemma in variant could contain multilemma
+        multilemmas = self.multilemma(row).values()
+        if not multilemmas:
+            return [Path()]
+        paths = [Path([w.strip()]) for w in multilemmas]
+
+        # other lemmas could contain annotations that share symbols with variant annotations
+        for c in range(1, len(self.lemmas)):
+            w = row[self.lemmas[c]].strip()
+            if not w:
                 continue
-            for w in multilemmas:
-                for path in paths:
-                    n = path.copy()
-                    n.append(w.strip())
-                    new_paths.append(n)
-            paths = new_paths
+            for path in paths:
+                path += w.strip()
 
-        result: List[str] = []
-        for cols in paths:
-            extract = None
-            cols.reverse()
-            empty = True
-            while empty:
-                if not cols:
-                    empty = False
-                elif not cols[0]:
-                    cols.pop(0)
-                    empty = len(cols) > 0
-                elif re.match(r"^[a-zA-z\.]+$", cols[0]):
-                    extract = cols.pop(0)
-                else:
-                    empty = False
-            construct = PATH_SEP.join(cols)
-            if extract:
-                construct += f" {extract}"
-            result.append(construct)
+        for path in paths:
+            path.compile()
 
-        return result
+        return paths
 
     def compile_usages(
         self,
@@ -132,16 +169,20 @@ class LangSemantics:
         olemma: str,
         tlemma: str,
     ) -> SortedDict:
+        # print(self.multiword(row))
+        # print(trans.multiword(row))
         for ovar, oword in self.multiword(row).items():
             for tvar, tword in trans.multiword(row).items():
-                val = _build_usage(row, self, trans, ovar, tvar)
+                key = (oword, tword)
+                val = _build_usage(row, self, trans, ovar, tvar, key)
                 for nxt in trans.build_paths(row):
-                    oml = self.multilemma(row)
-                    orig_var_in_lemma = ovar not in oml or olemma == oml[ovar]
-                    tml = trans.multilemma(row)
-                    trans_var_in_lemma = tvar not in tml or tlemma == tml[tvar]
+                    orig_var_in_lemma = _is_variant_lemma(row, self, ovar, olemma)
+                    # print(f"{ovar} in {olemma}: {orig_var_in_lemma}")
+                    trans_var_in_lemma = _is_variant_lemma(row, trans, tvar, tlemma)
+                    # print(f"{tvar} in {tlemma}: {trans_var_in_lemma}")
+                    # TODO: what if nxt is gram. or other annotation?
+                    # print(f"{tlemma} in {nxt}: {tlemma in nxt}")
                     if orig_var_in_lemma and trans_var_in_lemma and tlemma in nxt:
-                        key = (oword, tword)
                         d = _add_usage(val, nxt, key, d)
         return d
 
@@ -198,9 +239,9 @@ class MainLangSemantics(LangSemantics):
         """Main variant does not have multiple words in a cell"""
         return {"": row[self.word].strip()}
 
-    def multilemma(self, row: List[str], lemma: int = 0) -> Dict[str, str]:
+    def multilemma(self, row: List[str]) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {"": row[self.lemmas[lemma]].strip()}
+        return {"": row[self.lemmas[0]].strip()}
 
 
 @dataclass
@@ -244,11 +285,11 @@ class VarLangSemantics(LangSemantics):
             # return {'': row[self.word].strip()}
         return result
 
-    def multilemma(self, row: List[str], lemma: int = 0) -> Dict[str, str]:
+    def multilemma(self, row: List[str]) -> Dict[str, str]:
         result = {}
         # TODO: accepting both & and / as separators is not neccessary
         m = re.search(
-            r"^([^A-Z]+)([A-Z]+)?(\s*[\&\/])?(.*)$", row[self.lemmas[lemma]].strip()
+            r"^([^A-Z]+)([A-Z]+)?(\s*[\&\/])?(.*)$", row[self.lemmas[0]].strip()
         )
         while m:
             v = m.group(1).strip() if m.group(1) else ""

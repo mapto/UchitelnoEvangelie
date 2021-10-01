@@ -1,5 +1,5 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
-from model import Index, Usage
+from model import Index, Usage, Path
 from semantics import MainLangSemantics, VarLangSemantics
 
 
@@ -223,53 +223,167 @@ def test_LangSemantics_multilemma():
     assert result == {"H": "\ue201д\ue205нородъ"}
 
 
-def test_LangSemantics_build_keys():
-    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+def test_LangSemantics_compile_usages_para():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
     )
 
     row = (
-        [
-            "\ue201д\ue205но\ue20dеды WH Ø G",
-            "\ue201д\ue205но\ue20dѧдъ",
-            "",
-            "1/5a4",
-            "\ue205но\ue20dадꙑ\ue205",
-            "нъ ꙗко б\ue010ъ• а \ue205но\ue20dадꙑ\ue205",
-            "\ue205но\ue20dѧдъ ",
+        [""] * 4
+        + ["1/W168a19"]
+        + ["Instr.", ""] * 2
+        + [""] * 2
+        + ["παρὰ", "παρά", "παρά + Dat."]
+        + [""] * 13
+    )
+
+    d2 = SortedDict()
+    d2 = gr_sem.compile_usages(sl_sem, row, d2, "παρά", "Instr.")
+    # print(d2)
+    assert d2 == SortedDict(
+        {
+            "Instr.": {
+                ("παρὰ", "Instr."): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="a",
+                                row=19,
+                                key=("παρὰ", "Instr."),
+                            ),
+                            lang="gr",
+                        )
+                    ]
+                )
+            }
+        }
+    )
+
+    row = (
+        ["вь WGH", "въ", "въ + Loc.", "", "1/7d1", "оу", "оу насъ", "ѹ"]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + ["παρ’ C", "παρά", "παρά + Acc."]
+        + [""] * 8
+    )
+    d3 = SortedDict()
+    d3 = gr_sem.var.compile_usages(sl_sem, row, d3, "παρά", "ѹ")
+    assert d3 == SortedDict(
+        {
+            "ѹ": {
+                ("παρ’", "оу"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=7,
+                                col="d",
+                                row=1,
+                                key=("παρ’", "оу"),
+                            ),
+                            lang="gr",
+                            var="C",
+                            trans_alt_var={"WGH": "въ"},
+                        )
+                    ]
+                )
+            }
+        }
+    )
+
+
+def test_LangSemantics_compile_usages_ipercliso():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    rows = [
+        [""] * 4
+        + [
+            "1/W168c17",
+            "\ue205сто\ue20dен\ue205\ue205",
+            "всѣмь прѣ\ue205сто\ue20dе\ue201• \ue205 по \ue205сто\ue20dен\ue205\ue205",
+            "\ue205сто\ue20dен\ue205\ue201",
         ]
         + [""] * 3
-        + ["μονογενὴς", "μονογενής"]
-        + [""] * 12
-    )
-
-    assert sl_sem.build_keys(row) == ["\ue205но\ue20dадꙑ\ue205"]
-    assert gr_sem.build_keys(row) == ["μονογενὴς"]
-    assert sl_sem.var.build_keys(row) == ["\ue201д\ue205но\ue20dеды", "Ø"]
-    assert gr_sem.var.build_keys(row) == [""]
-
-    row = (
-        [
-            "\ue201л\ue205ко WH",
-            "\ue201л\ue205къ",
-            "",
-            "1/7c12",
-            "сел\ue205ко",
-            "въ сел\ue205ко",
-            "сел\ue205къ",
-        ]
-        + ([""] * 3)
+        + ["ὑπερκλύσαι", "ὑπερκλύζω", "inf."]
+        + [""] * 2
+        + ["ὑπερβλύσαι C", "ὑπερβλύω", "inf."]
+        + [""] * 8,
+        [""] * 4
         + [
-            "τοῦτο",
-            "οὗτος",
+            "1/W168c17",
+            "прѣ\ue205сто\ue20dе",
+            "всѣмь прѣ\ue205сто\ue20dе\ue201• \ue205 по \ue205сто\ue20dен\ue205\ue205",
+            "прѣ\ue205сто\ue20d\ue205т\ue205",
         ]
-        + ([""] * 11)
-        + ["hl04|hl00|hl10"]
-    )
+        + [""] * 3
+        + ["ὑπερκλύζων", "ὑπερκλύζω"]
+        + [""] * 3
+        + ["ὑπερβλύζων C", "ὑπερβλύω"]
+        + [""] * 9,
+    ]
 
-    assert ["сел\ue205ко"] == sl_sem.build_keys(row)
-    assert ["\ue201л\ue205ко"] == sl_sem.var.build_keys(row)
+    d2 = SortedDict()
+    d2 = gr_sem.var.compile_usages(
+        sl_sem, rows[0], d2, "ὑπερβλύω", "\ue205сто\ue20dен\ue205\ue201"
+    )
+    d2 = gr_sem.var.compile_usages(
+        sl_sem, rows[1], d2, "ὑπερβλύω", "прѣ\ue205сто\ue20d\ue205т\ue205"
+    )
+    assert d2 == SortedDict(
+        {
+            "прѣ\ue205сто\ue20d\ue205т\ue205": {
+                ("ὑπερβλύζων", "прѣ\ue205сто\ue20dе"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="c",
+                                row=17,
+                                key=("ὑπερβλύζων", "прѣ\ue205сто\ue20dе"),
+                            ),
+                            lang="gr",
+                            var="C",
+                            orig_alt="ὑπερκλύζω",
+                        )
+                    ]
+                )
+            },
+            "\ue205сто\ue20dен\ue205\ue201": {
+                ("ὑπερβλύσαι", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="c",
+                                row=17,
+                                key=("ὑπερβλύσαι", "\ue205сто\ue20dен\ue205\ue205"),
+                            ),
+                            lang="gr",
+                            var="C",
+                            orig_alt="ὑπερκλύζω",
+                        )
+                    ]
+                )
+            },
+        }
+    )
 
 
 def test_LangSemantics_compile_usages_verovat():
@@ -302,38 +416,64 @@ def test_LangSemantics_compile_usages_verovat():
 
     d1 = SortedDict()
     d1 = sl_sem.compile_usages(gr_sem, row, d1, "вѣроват_", "πιστεύω")
-    assert d1 == SortedDict(
-        {
-            "πιστεύω": {
-                ("вѣроують", "πιστεύσωσι"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(ch=1, alt=False, page=7, col="b", row=19),
-                            lang="sl",
-                            orig_alt_var={"GH": "вѣра"},
-                        )
-                    ]
-                )
-            }
+    assert d1 == {
+        "πιστεύω": {
+            ("вѣроують", "πιστεύσωσι"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=False,
+                            page=7,
+                            col="b",
+                            row=19,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("вѣроують", "πιστεύσωσι"),
+                        ),
+                        lang="sl",
+                        var="",
+                        orig_alt="",
+                        orig_alt_var={"GH": "вѣра"},
+                        trans_alt="",
+                        trans_alt_var={},
+                    )
+                ]
+            )
         }
-    )
+    }
     d2 = SortedDict()
     d2 = gr_sem.compile_usages(sl_sem, row, d2, "πιστεύω", "вѣроват_")
-    assert d2 == SortedDict(
-        {
-            "вѣроват_": {
-                ("πιστεύσωσι", "вѣроують"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(ch=1, alt=False, page=7, col="b", row=19),
-                            lang="gr",
-                            trans_alt_var={"GH": "вѣра"},
-                        )
-                    ]
-                )
-            }
+    assert d2 == {
+        "вѣроват_": {
+            ("πιστεύσωσι", "вѣроують"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=False,
+                            page=7,
+                            col="b",
+                            row=19,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("πιστεύσωσι", "вѣроують"),
+                        ),
+                        lang="gr",
+                        var="",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="",
+                        trans_alt_var={"GH": "вѣра"},
+                    )
+                ]
+            )
         }
-    )
+    }
 
 
 def test_LangSemantics_compile_usages_mene():
@@ -356,40 +496,64 @@ def test_LangSemantics_compile_usages_mene():
 
     d3 = SortedDict()
     d3 = sl_sem.compile_usages(gr_sem.var, row, d3, "аꙁъ", "ἐγώ")
-    assert d3 == SortedDict(
-        {
-            "ἐγώ": {
-                ("мене", "με"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index.unpack("1/W168c7"),
-                            lang="sl",
-                            var="C",
-                            trans_alt="",
-                        )
-                    ]
-                )
-            }
+    assert d3 == {
+        "ἐγώ": {
+            ("мене", "με"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=True,
+                            page=168,
+                            col="c",
+                            row=7,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("мене", "με"),
+                        ),
+                        lang="sl",
+                        var="C",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="",
+                        trans_alt_var={},
+                    )
+                ]
+            )
         }
-    )
+    }
     d4 = SortedDict()
     d4 = gr_sem.var.compile_usages(sl_sem, row, d4, "ἐγώ", "аꙁъ")
-    assert d4 == SortedDict(
-        {
-            "аꙁъ": {
-                ("με", "мене"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index.unpack("1/W168c7"),
-                            lang="gr",
-                            var="C",
-                            orig_alt="",
-                        )
-                    ]
-                )
-            }
+    assert d4 == {
+        "аꙁъ": {
+            ("με", "мене"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=True,
+                            page=168,
+                            col="c",
+                            row=7,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("με", "мене"),
+                        ),
+                        lang="gr",
+                        var="C",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="",
+                        trans_alt_var={},
+                    )
+                ]
+            )
         }
-    )
+    }
 
 
 def test_LangSemantics_compile_usages_monogenis():
@@ -416,10 +580,41 @@ def test_LangSemantics_compile_usages_monogenis():
 
     d0 = SortedDict()
     d0 = sl_sem.compile_usages(gr_sem, row, d0, "\ue205но\ue20dѧдъ", "μονογενής")
-    assert d0 == SortedDict(
+    assert d0 == {
+        "μονογενής": {
+            ("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=False,
+                            page=5,
+                            col="a",
+                            row=4,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"),
+                        ),
+                        lang="sl",
+                        var="",
+                        orig_alt="",
+                        orig_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                        trans_alt="",
+                        trans_alt_var={},
+                    )
+                ]
+            )
+        }
+    }
+
+    d01 = SortedDict()
+    d01 = gr_sem.compile_usages(sl_sem.var, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
+    assert d01 == SortedDict(
         {
-            "μονογενής": {
-                ("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"): SortedSet(
+            "\ue205но\ue20dѧдъ": {
+                ("μονογενὴς", "Ø"): SortedSet(
                     [
                         Usage(
                             idx=Index(
@@ -428,79 +623,110 @@ def test_LangSemantics_compile_usages_monogenis():
                                 page=5,
                                 col="a",
                                 row=4,
+                                var=False,
+                                end=None,
+                                bold=False,
+                                italic=False,
+                                key=("μονογενὴς", "Ø"),
                             ),
-                            lang="sl",
-                            orig_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                            lang="gr",
+                            var="G",
+                            orig_alt="",
+                            orig_alt_var={},
+                            trans_alt="",
+                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
                         )
                     ]
                 )
-            }
+            },
         }
     )
-
-    d01 = SortedDict()
     d01 = gr_sem.compile_usages(sl_sem, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
-    d01 = gr_sem.compile_usages(sl_sem.var, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
-    # The additional slavic lemma is due to _add_usage() that backtracks to add missing usages if needed
-    assert d01 == SortedDict(
-        {
-            "\ue201д\ue205но\ue20dѧдъ": {
-                ("μονογενὴς", "Ø"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(1, False, 5, "a", 4),
-                            lang="gr",
-                            var="G",
-                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
-                        )
-                    ]
-                )
-            },
-            "\ue205но\ue20dѧдъ": {
-                ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(1, False, 5, "a", 4),
-                            lang="gr",
-                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
-                        )
-                    ]
-                ),
-                ("μονογενὴς", "Ø"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(1, False, 5, "a", 4),
-                            lang="gr",
-                            var="G",
-                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
-                        )
-                    ]
-                ),
-            },
-        }
-    )
+    assert d01 == {
+        "\ue205но\ue20dѧдъ": {
+            ("μονογενὴς", "Ø"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=False,
+                            page=5,
+                            col="a",
+                            row=4,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("μονογενὴς", "Ø"),
+                        ),
+                        lang="gr",
+                        var="G",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="",
+                        trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                    )
+                ]
+            ),
+            ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=False,
+                            page=5,
+                            col="a",
+                            row=4,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"),
+                        ),
+                        lang="gr",
+                        var="",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="",
+                        trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                    )
+                ]
+            ),
+        },
+    }
 
     d02 = SortedDict()
     d02 = gr_sem.compile_usages(
         sl_sem.var, row, d02, "μονογενής", "\ue201д\ue205но\ue20dѧдъ"
     )
-    assert d02 == SortedDict(
-        {
-            "\ue201д\ue205но\ue20dѧдъ": {
-                ("μονογενὴς", "\ue201д\ue205но\ue20dеды"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(1, False, 5, "a", 4),
-                            lang="gr",
-                            var="WH",
-                            trans_alt="\ue205но\ue20dѧдъ",
-                            trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
-                        )
-                    ]
-                )
-            }
+    assert d02 == {
+        "\ue201д\ue205но\ue20dѧдъ": {
+            ("μονογενὴς", "\ue201д\ue205но\ue20dеды"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=False,
+                            page=5,
+                            col="a",
+                            row=4,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("μονογενὴς", "\ue201д\ue205но\ue20dеды"),
+                        ),
+                        lang="gr",
+                        var="WH",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="\ue205но\ue20dѧдъ",
+                        trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                    )
+                ]
+            )
         }
-    )
+    }
 
     row = (
         [
@@ -526,11 +752,24 @@ def test_LangSemantics_compile_usages_monogenis():
     assert len(d1["μονογενής"]) == 1
     assert len(d1["μονογενής"][("\ue205но\ue20dедаго", "μονογενοῦς")]) == 1
     assert next(iter(d1["μονογενής"][("\ue205но\ue20dедаго", "μονογενοῦς")])) == Usage(
-        idx=Index(ch=1, alt=True, page=168, col="a", row=25, bold=True, italic=True),
+        idx=Index(
+            ch=1,
+            alt=True,
+            page=168,
+            col="a",
+            row=25,
+            var=False,
+            end=None,
+            bold=True,
+            italic=True,
+            key=("\ue205но\ue20dедаго", "μονογενοῦς"),
+        ),
         lang="sl",
         var="G",
         orig_alt="\ue201д\ue205но\ue20dѧдъ",
         orig_alt_var={"H": "\ue201д\ue205нородъ"},
+        trans_alt="",
+        trans_alt_var={},
     )
 
     d2 = SortedDict()
@@ -538,11 +777,24 @@ def test_LangSemantics_compile_usages_monogenis():
     assert len(d2["μονογενής"]) == 1
     assert len(d2["μονογενής"][("\ue201д\ue205нородоу", "μονογενοῦς")]) == 1
     assert next(iter(d2["μονογενής"][("\ue201д\ue205нородоу", "μονογενοῦς")])) == Usage(
-        idx=Index(ch=1, alt=True, page=168, col="a", row=25, bold=True, italic=True),
+        idx=Index(
+            ch=1,
+            alt=True,
+            page=168,
+            col="a",
+            row=25,
+            var=False,
+            end=None,
+            bold=True,
+            italic=True,
+            key=("\ue201д\ue205нородоу", "μονογενοῦς"),
+        ),
         lang="sl",
         var="H",
         orig_alt="\ue201д\ue205но\ue20dѧдъ",
         orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
+        trans_alt="",
+        trans_alt_var={},
     )
 
     row = (
@@ -565,158 +817,165 @@ def test_LangSemantics_compile_usages_monogenis():
     d = SortedDict()
     d = sl_sem.var.compile_usages(gr_sem, row, d, "\ue205но\ue20dѧдъ", "μονογενής")
     # print(d)
-    expected = SortedDict(
-        {
-            "μονογενής": {
-                ("\ue205но\ue20dедаго", "μονογενοῦς"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                            ),
-                            lang="sl",
-                            var="G",
-                            orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                            orig_alt_var={"H": "\ue201д\ue205нородъ"},
-                            trans_alt="",
-                            trans_alt_var={},
-                        )
-                    ]
-                )
-            }
+    expected = {
+        "μονογενής": {
+            ("\ue205но\ue20dедаго", "μονογενοῦς"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=True,
+                            page=168,
+                            col="a",
+                            row=25,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("\ue205но\ue20dедаго", "μονογενοῦς"),
+                        ),
+                        lang="sl",
+                        var="G",
+                        orig_alt="\ue201д\ue205но\ue20dѧдъ",
+                        orig_alt_var={"H": "\ue201д\ue205нородъ"},
+                        trans_alt="",
+                        trans_alt_var={},
+                    )
+                ]
+            )
         }
-    )
+    }
     assert d == expected
 
     d = SortedDict()
     d = sl_sem.var.compile_usages(gr_sem, row, d, "\ue201д\ue205нородъ", "μονογενής")
-    expected = SortedDict(
-        {
-            "μονογενής": {
-                ("\ue201д\ue205нородоу", "μονογενοῦς"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                            ),
-                            lang="sl",
-                            var="H",
-                            orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                            orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
-                            trans_alt="",
-                            trans_alt_var={},
-                        )
-                    ]
-                )
-            }
+    expected = {
+        "μονογενής": {
+            ("\ue201д\ue205нородоу", "μονογενοῦς"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=True,
+                            page=168,
+                            col="a",
+                            row=25,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("\ue201д\ue205нородоу", "μονογενοῦς"),
+                        ),
+                        lang="sl",
+                        var="H",
+                        orig_alt="\ue201д\ue205но\ue20dѧдъ",
+                        orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                        trans_alt="",
+                        trans_alt_var={},
+                    )
+                ]
+            )
         }
-    )
+    }
     assert d == expected
 
     d = SortedDict()
     d = gr_sem.compile_usages(sl_sem, row, d, "μονογενής", "\ue201д\ue205но\ue20dѧдъ")
-    expected = SortedDict(
-        {
-            "\ue201д\ue205но\ue20dѧдъ": {
-                ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                            ),
-                            lang="gr",
-                            var="",
-                            orig_alt="",
-                            orig_alt_var={},
-                            trans_alt="",
-                            trans_alt_var={
-                                "H": "\ue201д\ue205нородъ",
-                                "G": "\ue205но\ue20dѧдъ",
-                            },
-                        )
-                    ]
-                )
-            }
+    expected = {
+        "\ue201д\ue205но\ue20dѧдъ": {
+            ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=True,
+                            page=168,
+                            col="a",
+                            row=25,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"),
+                        ),
+                        lang="gr",
+                        var="",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="",
+                        trans_alt_var={
+                            "H": "\ue201д\ue205нородъ",
+                            "G": "\ue205но\ue20dѧдъ",
+                        },
+                    )
+                ]
+            )
         }
-    )
+    }
     assert d == expected
 
     d = SortedDict()
     d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue201д\ue205нородъ")
-    expected = SortedDict(
-        {
-            "\ue201д\ue205нородъ": {
-                ("μονογενοῦς", "\ue201д\ue205нородоу"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                                var=False,
-                                end=None,
-                                bold=False,
-                                italic=False,
-                            ),
-                            lang="gr",
-                            var="H",
-                            orig_alt="",
-                            orig_alt_var={},
-                            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                            trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
-                        )
-                    ]
-                ),
-            },
+    expected = {
+        "\ue201д\ue205нородъ": {
+            ("μονογενοῦς", "\ue201д\ue205нородоу"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=True,
+                            page=168,
+                            col="a",
+                            row=25,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("μονογενοῦς", "\ue201д\ue205нородоу"),
+                        ),
+                        lang="gr",
+                        var="H",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="\ue201д\ue205но\ue20dѧдъ",
+                        trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                    )
+                ]
+            )
         }
-    )
+    }
     assert d == expected
 
     d = SortedDict()
     d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue205но\ue20dѧдъ")
-    expected = SortedDict(
-        {
-            "\ue205но\ue20dѧдъ": {
-                ("μονογενοῦς", "\ue205но\ue20dедаго"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                                var=False,
-                                end=None,
-                                bold=False,
-                                italic=False,
-                            ),
-                            lang="gr",
-                            var="G",
-                            orig_alt="",
-                            orig_alt_var={},
-                            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                            trans_alt_var={"H": "\ue201д\ue205нородъ"},
-                        )
-                    ]
-                ),
-            },
+    expected = {
+        "\ue205но\ue20dѧдъ": {
+            ("μονογενοῦς", "\ue205но\ue20dедаго"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=True,
+                            page=168,
+                            col="a",
+                            row=25,
+                            var=False,
+                            end=None,
+                            bold=False,
+                            italic=False,
+                            key=("μονογενοῦς", "\ue205но\ue20dедаго"),
+                        ),
+                        lang="gr",
+                        var="G",
+                        orig_alt="",
+                        orig_alt_var={},
+                        trans_alt="\ue201д\ue205но\ue20dѧдъ",
+                        trans_alt_var={"H": "\ue201д\ue205нородъ"},
+                    )
+                ]
+            )
         }
-    )
+    }
     assert d == expected
 
 
@@ -724,13 +983,20 @@ def test_build_paths():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
     res = sl_sem.build_paths([""] * 7 + ["боудеть", "бꙑт\ue205 ", "", "gram."])
+    res = [str(r) for r in res]
     assert res == ["бꙑт\ue205 → боудеть gram."]
 
     res = sl_sem.build_paths([""] * 7 + ["едно", "две", "три", "четири"])
+    res = [str(r) for r in res]
     assert res == ["четири → три → две → едно"]
 
     res = sl_sem.build_paths([""] * 7 + ["едно", "две", "три", "gram."])
+    res = [str(r) for r in res]
     assert res == ["три → две → едно gram."]
 
     res = sl_sem.build_paths(
@@ -742,6 +1008,7 @@ def test_build_paths():
         + [""] * 13
         + ["bold|italic"]
     )
+    res = [str(r) for r in res]
     assert res == ["ₓ"]
 
     row = (
@@ -762,4 +1029,48 @@ def test_build_paths():
         + ["bold|italic"]
     )
     res = sl_sem.var.build_paths(row)
+    res = [str(r) for r in res]
     assert res == ["\ue201д\ue205нородъ", "\ue205но\ue20dѧдъ"]
+
+    row = (
+        [""] * 4
+        + ["1/8a13"]
+        + ["Instr.", ""] * 2
+        + [""] * 2
+        + ["παρὰ", "παρά", "παρά + Acc."]
+        + [""] * 13
+    )
+    res = sl_sem.build_paths(row)
+    res = [str(r) for r in res]
+    assert res == ["Instr."]
+
+    res = gr_sem.build_paths(row)
+    res = [str(r) for r in res]
+    assert res == ["παρά + Acc. → παρά"]
+
+    assert not gr_sem.var.build_paths(row)[0]
+    assert not sl_sem.var.build_paths(row)[0]
+
+    row = (
+        ["вь WGH", "въ", "въ + Loc.", "", "1/7d1", "оу", "оу насъ", "ѹ"]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + ["παρ’ C", "παρά", "παρά + Acc."]
+        + [""] * 8
+    )
+    res = sl_sem.build_paths(row)
+    res = [str(r) for r in res]
+    assert res == ["ѹ"]
+
+    res = sl_sem.var.build_paths(row)
+    res = [str(r) for r in res]
+    assert res == ["въ + Loc. → въ"]
+
+    res = gr_sem.build_paths(row)
+    res = [str(r) for r in res]
+    assert res == [""]
+
+    res = gr_sem.var.build_paths(row)
+    res = [str(r) for r in res]
+    assert res == ["παρά + Acc. → παρά"]

@@ -108,7 +108,11 @@ def test__agg_lemma():
     )
 
 
-def test_aggregate():
+def test_aggregate_monogenis():
+    # simplified semantics
+    sl_sem = MainLangSemantics("sl", 5, [7], VarLangSemantics("sl", 0, [1]))
+    gr_sem = MainLangSemantics("gr", 11, [12], VarLangSemantics("gr", 16, [17, 18]))
+
     row = (
         [
             "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
@@ -125,75 +129,98 @@ def test_aggregate():
         + ["μονογενοῦς", "μονογενής"]
         + [""] * 14
     )
-    sl_sem = MainLangSemantics("sl", 5, [7], VarLangSemantics("sl", 0, [1]))
-    gr_sem = MainLangSemantics("gr", 11, [12], VarLangSemantics("gr", 16, [17, 18]))
     result = aggregate([row], sl_sem, gr_sem)
-
-    assert result == SortedDict(
-        {
-            "\ue205но\ue20dѧдъ": SortedDict(
-                {
-                    "μονογενής": {
-                        ("\ue205но\ue20dедаго", "μονογενοῦς"): SortedSet(
-                            [
-                                Usage(
-                                    idx=Index(
-                                        ch=1, alt=True, page=168, col="a", row=25
-                                    ),
-                                    lang="sl",
-                                    var="G",
-                                    orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                                    orig_alt_var={"H": "\ue201д\ue205нородъ"},
-                                )
-                            ]
-                        ),
-                    }
-                }
-            ),
-            "\ue201д\ue205нородъ": SortedDict(
-                {
-                    "μονογενής": {
-                        ("\ue201д\ue205нородоу", "μονογενοῦς"): SortedSet(
-                            [
-                                Usage(
-                                    idx=Index(
-                                        ch=1, alt=True, page=168, col="a", row=25
-                                    ),
-                                    lang="sl",
-                                    var="H",
-                                    orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                                    orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
-                                )
-                            ]
-                        ),
-                    }
-                }
-            ),
-            "\ue201д\ue205но\ue20dѧдъ": SortedDict(
-                {
-                    "μονογενής": {
-                        ("\ue201д\ue205но\ue20dедоу", "μονογενοῦς"): SortedSet(
-                            [
-                                Usage(
-                                    idx=Index(
-                                        ch=1, alt=True, page=168, col="a", row=25
-                                    ),
-                                    lang="sl",
-                                    var="",
-                                    orig_alt="",
-                                    orig_alt_var={
-                                        "H": "\ue201д\ue205нородъ",
-                                        "G": "\ue205но\ue20dѧдъ",
-                                    },
-                                )
-                            ]
+    assert result == {
+        "\ue201д\ue205нородъ": {
+            "μονογενής": {
+                ("\ue201д\ue205нородоу", "μονογενοῦς"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="a",
+                                row=25,
+                                var=False,
+                                end=None,
+                                bold=False,
+                                italic=False,
+                                key=("\ue201д\ue205нородоу", "μονογενοῦς"),
+                            ),
+                            lang="sl",
+                            var="H",
+                            orig_alt="\ue201д\ue205но\ue20dѧдъ",
+                            orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                            trans_alt="",
+                            trans_alt_var={},
                         )
-                    }
-                }
-            ),
-        }
-    )
+                    ]
+                )
+            }
+        },
+        "\ue201д\ue205но\ue20dѧдъ": {
+            "μονογενής": {
+                ("\ue201д\ue205но\ue20dедоу", "μονογενοῦς"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="a",
+                                row=25,
+                                var=False,
+                                end=None,
+                                bold=False,
+                                italic=False,
+                                key=("\ue201д\ue205но\ue20dедоу", "μονογενοῦς"),
+                            ),
+                            lang="sl",
+                            var="",
+                            orig_alt="",
+                            orig_alt_var={
+                                "H": "\ue201д\ue205нородъ",
+                                "G": "\ue205но\ue20dѧдъ",
+                            },
+                            trans_alt="",
+                            trans_alt_var={},
+                        )
+                    ]
+                )
+            }
+        },
+        "\ue205но\ue20dѧдъ": {
+            "μονογενής": {
+                ("\ue205но\ue20dедаго", "μονογενοῦς"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="a",
+                                row=25,
+                                var=False,
+                                end=None,
+                                bold=False,
+                                italic=False,
+                                key=("\ue205но\ue20dедаго", "μονογενοῦς"),
+                            ),
+                            lang="sl",
+                            var="G",
+                            orig_alt="\ue201д\ue205но\ue20dѧдъ",
+                            orig_alt_var={"H": "\ue201д\ue205нородъ"},
+                            trans_alt="",
+                            trans_alt_var={},
+                        )
+                    ]
+                )
+            }
+        },
+    }
 
+    # semantics change from September 2021
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -270,197 +297,447 @@ def test_aggregate():
     # print(result)
 
     result = aggregate(rows, gr_sem, sl_sem)
-    assert result == SortedDict(
-        {
-            "μονογενής": SortedDict(
-                {
-                    "": SortedDict(
-                        {
-                            "": SortedDict(
-                                {
-                                    "\ue205но\ue20dѧдъ": {
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue205но\ue20dедаго",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=True,
-                                                        page=168,
-                                                        col="a",
-                                                        row=25,
-                                                        bold=True,
-                                                        italic=True,
-                                                    ),
-                                                    lang="gr",
-                                                    var="G",
-                                                    trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                                                    trans_alt_var={
-                                                        "H": "\ue201д\ue205нородъ"
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                        (
-                                            "μονογενὴς",
-                                            "\ue205но\ue20dадꙑ\ue205",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(1, False, 5, "a", 4),
-                                                    lang="gr",
-                                                    trans_alt_var={
-                                                        "WH": "\ue201д\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue205но\ue20dадѣмь",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        1,
-                                                        False,
-                                                        4,
-                                                        "c",
-                                                        15,
-                                                    ),
-                                                    lang="gr",
-                                                    trans_alt_var={
-                                                        "WH": "\ue201д\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                        ("μονογενοῦς", "Ø"): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(1, False, 4, "c", 15),
-                                                    lang="gr",
-                                                    var="G",
-                                                    trans_alt_var={
-                                                        "WH": "\ue201д\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                    },
-                                    "\ue201д\ue205нородъ": {
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue201д\ue205нородоу",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=True,
-                                                        page=168,
-                                                        col="a",
-                                                        row=25,
-                                                        bold=True,
-                                                        italic=True,
-                                                    ),
-                                                    lang="gr",
-                                                    var="H",
-                                                    trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                                                    trans_alt_var={
-                                                        "G": "\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
-                                        )
-                                    },
-                                    "\ue201д\ue205но\ue20dѧдъ": {
-                                        (
+    assert result == {
+        "μονογενής": {
+            "": {
+                "": {
+                    "\ue201д\ue205нородъ": {
+                        ("μονογενοῦς", "\ue201д\ue205нородоу"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="a",
+                                        row=25,
+                                        var=False,
+                                        end=None,
+                                        bold=True,
+                                        italic=True,
+                                        key=("μονογενοῦς", "\ue201д\ue205нородоу"),
+                                    ),
+                                    lang="gr",
+                                    var="H",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="\ue201д\ue205но\ue20dѧдъ",
+                                    trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                                )
+                            ]
+                        )
+                    },
+                    "\ue201д\ue205но\ue20dѧдъ": {
+                        ("μονογενοῦς", "\ue201д\ue205но\ue20dедаго"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="a",
+                                        row=28,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=(
                                             "μονογενοῦς",
                                             "\ue201д\ue205но\ue20dедаго",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(1, True, 168, "a", 28),
-                                                    lang="gr",
-                                                )
-                                            ]
                                         ),
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue201д\ue205но\ue20dедоу",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=True,
-                                                        page=168,
-                                                        col="a",
-                                                        row=25,
-                                                        bold=True,
-                                                        italic=True,
-                                                    ),
-                                                    lang="gr",
-                                                    trans_alt_var={
-                                                        "H": "\ue201д\ue205нородъ",
-                                                        "G": "\ue205но\ue20dѧдъ",
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                        (
-                                            "μονογενὴς",
-                                            "\ue201д\ue205но\ue20dеды",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(1, False, 5, "a", 4),
-                                                    lang="gr",
-                                                    var="WH",
-                                                    trans_alt="\ue205но\ue20dѧдъ ",
-                                                    trans_alt_var={
-                                                        "G": "\ue205но\ue20dѧдъ "
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                        (
+                                    ),
+                                    lang="gr",
+                                    var="",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="",
+                                    trans_alt_var={},
+                                )
+                            ]
+                        ),
+                        ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="a",
+                                        row=25,
+                                        var=False,
+                                        end=None,
+                                        bold=True,
+                                        italic=True,
+                                        key=("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"),
+                                    ),
+                                    lang="gr",
+                                    var="",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="",
+                                    trans_alt_var={
+                                        "H": "\ue201д\ue205нородъ",
+                                        "G": "\ue205но\ue20dѧдъ",
+                                    },
+                                )
+                            ]
+                        ),
+                        ("μονογενοῦς", "\ue201д\ue205но\ue20dедѣмь"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=4,
+                                        col="c",
+                                        row=15,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=(
                                             "μονογενοῦς",
                                             "\ue201д\ue205но\ue20dедѣмь",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(1, False, 4, "c", 15),
-                                                    lang="gr",
-                                                    var="WH",
-                                                    trans_alt="\ue205но\ue20dѧдъ",
-                                                    trans_alt_var={
-                                                        "G": "\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
                                         ),
-                                        ("μονογενοῦς", "Ø"): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(1, False, 4, "c", 15),
-                                                    lang="gr",
-                                                    var="G",
-                                                    trans_alt_var={
-                                                        "WH": "\ue201д\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                    },
-                                }
-                            )
-                        }
-                    )
+                                    ),
+                                    lang="gr",
+                                    var="WH",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="\ue205но\ue20dѧдъ",
+                                    trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                                )
+                            ]
+                        ),
+                        ("μονογενὴς", "\ue201д\ue205но\ue20dеды"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=5,
+                                        col="a",
+                                        row=4,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=("μονογενὴς", "\ue201д\ue205но\ue20dеды"),
+                                    ),
+                                    lang="gr",
+                                    var="WH",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="\ue205но\ue20dѧдъ ",
+                                    trans_alt_var={"G": "\ue205но\ue20dѧдъ "},
+                                )
+                            ]
+                        ),
+                    },
+                    "\ue205но\ue20dѧдъ": {
+                        ("μονογενοῦς", "Ø"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=4,
+                                        col="c",
+                                        row=15,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=("μονογενοῦς", "Ø"),
+                                    ),
+                                    lang="gr",
+                                    var="G",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="",
+                                    trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                                )
+                            ]
+                        ),
+                        ("μονογενοῦς", "\ue205но\ue20dадѣмь"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=4,
+                                        col="c",
+                                        row=15,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=("μονογενοῦς", "\ue205но\ue20dадѣмь"),
+                                    ),
+                                    lang="gr",
+                                    var="",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="",
+                                    trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                                )
+                            ]
+                        ),
+                        ("μονογενοῦς", "\ue205но\ue20dедаго"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="a",
+                                        row=25,
+                                        var=False,
+                                        end=None,
+                                        bold=True,
+                                        italic=True,
+                                        key=("μονογενοῦς", "\ue205но\ue20dедаго"),
+                                    ),
+                                    lang="gr",
+                                    var="G",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="\ue201д\ue205но\ue20dѧдъ",
+                                    trans_alt_var={"H": "\ue201д\ue205нородъ"},
+                                )
+                            ]
+                        ),
+                        ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=5,
+                                        col="a",
+                                        row=4,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"),
+                                    ),
+                                    lang="gr",
+                                    var="",
+                                    orig_alt="",
+                                    orig_alt_var={},
+                                    trans_alt="",
+                                    trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                                )
+                            ]
+                        ),
+                    },
                 }
-            )
+            }
         }
+    }
+
+
+def test_aggregate_ipercliso():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    rows = [
+        [
+            "",
+            "",
+            "",
+            "",
+            "1/W168c17",
+            "\ue205сто\ue20dен\ue205\ue205",
+            "всѣмь прѣ\ue205сто\ue20dе\ue201• \ue205 по \ue205сто\ue20dен\ue205\ue205",
+            "\ue205сто\ue20dен\ue205\ue201",
+            "",
+            "",
+            "",
+            "ὑπερκλύσαι",
+            "ὑπερκλύζω",
+            "inf.",
+            "",
+            "",
+            "ὑπερβλύσαι C",
+            "ὑπερβλύω",
+            "inf.",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+        ],
+        [
+            "",
+            "",
+            "",
+            "",
+            "1/W168c17",
+            "прѣ\ue205сто\ue20dе",
+            "всѣмь прѣ\ue205сто\ue20dе\ue201• \ue205 по \ue205сто\ue20dен\ue205\ue205",
+            "прѣ\ue205сто\ue20d\ue205т\ue205",
+            "",
+            "",
+            "",
+            "ὑπερκλύζων",
+            "ὑπερκλύζω",
+            "",
+            "",
+            "",
+            "ὑπερβλύζων C",
+            "ὑπερβλύω",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+        ],
+    ]
+
+    result = aggregate(rows, gr_sem, sl_sem)
+    # print(result)
+    assert result == {
+        "ὑπερβλύω": {
+            "": {
+                "": {
+                    "прѣ\ue205сто\ue20d\ue205т\ue205": {
+                        ("ὑπερβλύζων", "прѣ\ue205сто\ue20dе"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="c",
+                                        row=17,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=("ὑπερβλύζων", "прѣ\ue205сто\ue20dе"),
+                                    ),
+                                    lang="gr",
+                                    var="C",
+                                    orig_alt="ὑπερκλύζω",
+                                    orig_alt_var={},
+                                    trans_alt="",
+                                    trans_alt_var={},
+                                )
+                            ]
+                        )
+                    }
+                }
+            },
+            "inf.": {
+                "": {
+                    "\ue205сто\ue20dен\ue205\ue201": {
+                        ("ὑπερβλύσαι", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="c",
+                                        row=17,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=(
+                                            "ὑπερβλύσαι",
+                                            "\ue205сто\ue20dен\ue205\ue205",
+                                        ),
+                                    ),
+                                    lang="gr",
+                                    var="C",
+                                    orig_alt="ὑπερκλύζω",
+                                    orig_alt_var={},
+                                    trans_alt="",
+                                    trans_alt_var={},
+                                )
+                            ]
+                        )
+                    }
+                }
+            },
+        },
+        "ὑπερκλύζω": {
+            "": {
+                "": {
+                    "прѣ\ue205сто\ue20d\ue205т\ue205": {
+                        ("ὑπερκλύζων", "прѣ\ue205сто\ue20dе"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="c",
+                                        row=17,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=("ὑπερκλύζων", "прѣ\ue205сто\ue20dе"),
+                                    ),
+                                    lang="gr",
+                                    var="",
+                                    orig_alt="",
+                                    orig_alt_var={"C": "ὑπερβλύω"},
+                                    trans_alt="",
+                                    trans_alt_var={},
+                                )
+                            ]
+                        )
+                    }
+                }
+            },
+            "inf.": {
+                "": {
+                    "\ue205сто\ue20dен\ue205\ue201": {
+                        ("ὑπερκλύσαι", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="c",
+                                        row=17,
+                                        var=False,
+                                        end=None,
+                                        bold=False,
+                                        italic=False,
+                                        key=(
+                                            "ὑπερκλύσαι",
+                                            "\ue205сто\ue20dен\ue205\ue205",
+                                        ),
+                                    ),
+                                    lang="gr",
+                                    var="",
+                                    orig_alt="",
+                                    orig_alt_var={"C": "ὑπερβλύω"},
+                                    trans_alt="",
+                                    trans_alt_var={},
+                                )
+                            ]
+                        )
+                    }
+                }
+            },
+        },
+    }
