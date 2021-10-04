@@ -77,7 +77,6 @@ def test_close():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
-    assert sl_sem.var  # for mypy
     gr_sem = MainLangSemantics(
         "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
     )
@@ -265,7 +264,8 @@ def test_close():
         + [""] * 13
         + ["hl05|hl00|hl11"],
     ]
-    assert_equal(res, expected)
+    # assert_equal(res, expected)
+    assert res == expected
 
     group = [
         [""] * 4
@@ -434,85 +434,6 @@ def test_close():
         + ["ταῖς ἄνω", "ἄνω", "ὁ ἄνω"]
         + [""] * 12
         + ["hl10"]
-    )
-    expected = [e1, e2]
-    assert_equal(res, expected)
-
-
-def test_close_gram2():
-    sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
-    )
-
-    g1 = (
-        [""] * 4
-        + [
-            "1/W168a14",
-            "вьꙁмогл\ue205",
-            "мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205",
-            "въꙁмощ\ue205",
-        ]
-        + [""] * 3
-        + [
-            "ἠδυνήθημεν",
-            "δύναμαι",
-            "pass.",
-        ]
-        + [""] * 12
-        + [
-            "hl04",
-        ]
-    )
-    g2 = (
-        [""] * 4
-        + [
-            "1/W168a15",
-            "б\ue205хомь",
-            "б\ue205хомь стрьпѣтї• ",
-            "бꙑт\ue205 ",
-            "",
-            "gramm.",
-        ]
-        + [""] * 16
-        + ["hl04|hl08"]
-    )
-    group = [g1, g2]
-
-    res = _close(group, sl_sem, gr_sem)
-    e1 = (
-        [""] * 4
-        + [
-            "01/W168a14-15",
-            "вьꙁмогл\ue205 б\ue205хомь",
-            "мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205",
-            "въꙁмощ\ue205",
-        ]
-        + [""] * 3
-        + ["ἠδυνήθημεν", "δύναμαι", "pass."]
-        + [""] * 12
-        + ["hl04"]
-    )
-    e2 = (
-        [""] * 4
-        + [
-            "01/W168a14-15",
-            "вьꙁмогл\ue205 б\ue205хомь",
-            "б\ue205хомь стрьпѣтї• ",
-            "бꙑт\ue205 ",
-            "",
-            "gramm.",
-            "",
-            "ἠδυνήθημεν",
-            "δύναμαι",
-            "pass.",
-        ]
-        + [""] * 12
-        + [
-            "hl04|hl08",
-        ]
     )
     expected = [e1, e2]
     assert_equal(res, expected)
@@ -916,7 +837,8 @@ def test_group_variants():
         + [""] * 12
         + ["hl05"],
     ]
-    assert_equal(res, expected)
+    # assert_equal(res, expected)
+    assert res == expected
 
     group = [
         [""] * 4
