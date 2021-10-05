@@ -24,11 +24,11 @@ def _build_usage(
     tsem: "LangSemantics",
     ovar: str,
     tvar: str,
-    key: Tuple[str, str],
+    word: str,
 ):
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i, key=key)
+    idx = Index.unpack(row[IDX_COL], b, i, word=word)
     (oaltm, oaltv) = osem.alternatives(row, ovar)
     (taltm, taltv) = tsem.alternatives(row, tvar)
     var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
@@ -38,36 +38,6 @@ def _build_usage(
 def _is_variant_lemma(
     row: List[str], sem: "LangSemantics", current_var: str, current_lemma: str
 ) -> bool:
-    """
-    >>> sl_sem = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
-    >>> gr_sem = MainLangSemantics("gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19]))
-
-    >>> row = [""] * 4 + ["1/W168c17", "прѣ\ue205сто\ue20dе", "всѣмь прѣ\ue205сто\ue20dе\ue201• \ue205 по \ue205сто\ue20dен\ue205\ue205", "прѣ\ue205сто\ue20d\ue205т\ue205"] + [""] * 3 + ["ὑπερκλύζων", "ὑπερκλύζω"] + [""] * 3 + ["ὑπερβλύζων C", "ὑπερβλύω"] + [""] * 9
-    >>> _is_variant_lemma(row, gr_sem, "C", "ὑπερκλύζω")
-    Traceback (most recent call last):
-    AssertionError
-    >>> _is_variant_lemma(row, gr_sem, "", "ὑπερκλύζω")
-    True
-    >>> _is_variant_lemma(row, gr_sem.var, "C", "ὑπερβλύω")
-    True
-    >>> _is_variant_lemma(row, gr_sem.var, "D", "ὑπερβλύω")
-    Traceback (most recent call last):
-    KeyError: 'D'
-
-    >>> row = ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"] + [""] * 2 + ["1/5a4", "\ue205но\ue20dадꙑ\ue205", "нъ ꙗко б\ue010ъ• а \ue205но\ue20dадꙑ\ue205", "\ue205но\ue20dѧдъ"] + [""] * 3 + ["μονογενὴς", "μονογενής"] + [""] * 14
-    >>> _is_variant_lemma(row, sl_sem.var, "WH", "\ue201д\ue205но\ue20dѧдъ")
-    True
-    >>> _is_variant_lemma(row, sl_sem.var, "G", "\ue201д\ue205но\ue20dѧдъ")
-    False
-    >>> _is_variant_lemma(row, sl_sem.var, "G", "\ue205но\ue20dѧдъ")
-    True
-    >>> _is_variant_lemma(row, sl_sem, "", "\ue205но\ue20dѧдъ")
-    True
-    >>> _is_variant_lemma(row, gr_sem, "", "μονογενής")
-    True
-    >>> _is_variant_lemma(row, gr_sem.var, "", "μονογενής")
-    False
-    """
     mlem = sem.multilemma(row)
     if not mlem:
         return False
@@ -173,8 +143,7 @@ class LangSemantics:
         # print(trans.multiword(row))
         for ovar, oword in self.multiword(row).items():
             for tvar, tword in trans.multiword(row).items():
-                key = (oword, tword)
-                val = _build_usage(row, self, trans, ovar, tvar, key)
+                val = _build_usage(row, self, trans, ovar, tvar, oword)
                 for nxt in trans.build_paths(row):
                     orig_var_in_lemma = _is_variant_lemma(row, self, ovar, olemma)
                     # print(f"{ovar} in {olemma}: {orig_var_in_lemma}")
@@ -183,6 +152,7 @@ class LangSemantics:
                     # TODO: what if nxt is gram. or other annotation?
                     # print(f"{tlemma} in {nxt}: {tlemma in nxt}")
                     if orig_var_in_lemma and trans_var_in_lemma and tlemma in nxt:
+                        key = (oword, tword)
                         d = _add_usage(val, nxt, key, d)
         return d
 

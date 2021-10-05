@@ -27,11 +27,12 @@ class Index:
     bold: bool = False
     italic: bool = False
     """There's this border case when one lemma occurs two times in a line.
-    This is when we distinguish between the two uses by the word pair (key).
+    This is when we distinguish between the two uses by the own language word from the key pair.
     Used as distinctor only by hash function, so no explicit logic using it.
     Whenever not set, means we don't care to distinguish.
+    TODO: Remains the case if the same word occurs twice in row.
     """
-    key: Tuple[str, str] = field(default_factory=lambda: ("", ""))
+    word: str = ""
 
     @staticmethod
     def unpack(
@@ -39,7 +40,7 @@ class Index:
         b: bool = False,
         i: bool = False,
         var: bool = False,
-        key: Tuple[str, str] = ("", ""),
+        word: str = "",
     ) -> "Index":
         """
         >>> Index.unpack("1/W167c4").longstr()
@@ -106,9 +107,9 @@ class Index:
                     if m.group(11):
                         e_ch = int(m.group(11))
                     e_alt = not not m.group(12) if e_ch % 2 else not m.group(12)
-            end = Index(e_ch, e_alt, e_page, e_col, e_row, var, key=key)
+            end = Index(e_ch, e_alt, e_page, e_col, e_row, var, word=word)
 
-        return Index(ch, alt, page, col, row, var, end, b, i, key=key)
+        return Index(ch, alt, page, col, row, var, end, b, i, word=word)
 
     def __str__(self):
         """
