@@ -25,6 +25,7 @@ def _collect(group: List[List[str]], col: int) -> List[str]:
     """Collects the actual content in the group column"""
     return [group[i][col] for i in range(len(group)) if group[i][col]]
 
+
 def _normalise_multiword(multiword: Dict[str, str]) -> Dict[str, str]:
     result = {}
     for k, v in multiword.items():
@@ -33,11 +34,12 @@ def _normalise_multiword(multiword: Dict[str, str]) -> Dict[str, str]:
             result[c] = v
     return result
 
+
 def _collect_multiword(group: List[List[str]], sem: MainLangSemantics) -> str:
     """Collects the content of the multiwords for a variant in a group into a single string.
     The output is conformant with the multiword syntax.
     Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
-    collected : Dict[str, str]= {}
+    collected: Dict[str, str] = {}
     for row in group:
         # for k, v in _normalise_multiword(sem.var.multiword(row)).items():
         for k, v in sem.var.multiword(row).items():
