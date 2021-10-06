@@ -80,10 +80,9 @@ def test_LangSemantics_alternatives():
         + [""] * 14
     )
     result = sl_sem.var.alternatives(row, "WH")
-    assert result == ("\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
+    assert result == ("\ue205но\ue20dѧдъ", {})
     r1 = sl_sem.alternatives(row, "*IGNORED*")
-    r2 = sl_sem.var.alternatives(row, "G")
-    assert r1 == r2 == ("", {"WH": "\ue201д\ue205но\ue20dѧдъ"})
+    assert r1 == ("", {"WH": "\ue201д\ue205но\ue20dѧдъ"})
 
 
 def test_VarLangSemantics_multiword():
@@ -173,7 +172,7 @@ def test_LangSemantics_multilemma():
             "\ue205но\ue20dѧдъ",
         ]
     )
-    assert result == {"WH": "дноѧдъ", "G": "\ue205но\ue20dѧдъ"}
+    assert result == {"WH": "дноѧдъ"}
 
     dummy_sem2 = VarLangSemantics("gr", 0, [1])
     result = dummy_sem2.multilemma(["με C", "ἐγώ"])
@@ -198,7 +197,7 @@ def test_LangSemantics_multilemma():
         + [""] * 14
     )
     result = sl_sem.var.multilemma(row)
-    assert result == {"WH": "\ue201д\ue205но\ue20dѧдъ", "G": "\ue205но\ue20dѧдъ"}
+    assert result == {"WH": "\ue201д\ue205но\ue20dѧдъ"}
 
     row = (
         [
@@ -254,12 +253,7 @@ def test__is_variant_lemma():
     assert _is_variant_lemma(row, gr_sem, "", "ὑπερκλύζω")
     assert _is_variant_lemma(row, gr_sem.var, "C", "ὑπερβλύω")
 
-    exception = False
-    try:
-        _is_variant_lemma(row, gr_sem.var, "D", "ὑπερβλύω")
-    except KeyError:
-        exception = True
-    assert exception
+    assert not _is_variant_lemma(row, gr_sem.var, "D", "ὑπερβλύω")
 
     row = (
         ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"]
@@ -276,7 +270,7 @@ def test__is_variant_lemma():
     )
     assert _is_variant_lemma(row, sl_sem.var, "WH", "\ue201д\ue205но\ue20dѧдъ")
     assert not _is_variant_lemma(row, sl_sem.var, "G", "\ue201д\ue205но\ue20dѧдъ")
-    assert _is_variant_lemma(row, sl_sem.var, "G", "\ue205но\ue20dѧдъ")
+    assert not _is_variant_lemma(row, sl_sem.var, "G", "\ue205но\ue20dѧдъ")
     assert _is_variant_lemma(row, sl_sem, "", "\ue205но\ue20dѧдъ")
     assert _is_variant_lemma(row, gr_sem, "", "μονογενής")
     assert not _is_variant_lemma(row, gr_sem.var, "", "μονογενής")

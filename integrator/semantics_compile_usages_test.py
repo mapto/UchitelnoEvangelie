@@ -352,50 +352,12 @@ def test_monogenis():
     }
 
     d01 = SortedDict()
-    d01 = gr_sem.compile_usages(sl_sem.var, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
-    assert d01 == SortedDict(
-        {
-            "\ue205но\ue20dѧдъ": {
-                ("μονογενὴς", "Ø"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=False,
-                                page=5,
-                                col="a",
-                                row=4,
-                                word="μονογενὴς",
-                            ),
-                            lang="gr",
-                            var="G",
-                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
-                        )
-                    ]
-                )
-            },
-        }
-    )
+    # d01 = gr_sem.compile_usages(sl_sem.var, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
+    # assert d01 == SortedDict()
+
     d01 = gr_sem.compile_usages(sl_sem, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
     assert d01 == {
         "\ue205но\ue20dѧдъ": {
-            ("μονογενὴς", "Ø"): SortedSet(
-                [
-                    Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=False,
-                            page=5,
-                            col="a",
-                            row=4,
-                            word="μονογενὴς",
-                        ),
-                        lang="gr",
-                        var="G",
-                        trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
-                    )
-                ]
-            ),
             ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
                 [
                     Usage(
@@ -415,32 +377,31 @@ def test_monogenis():
         },
     }
 
-    d02 = SortedDict()
-    d02 = gr_sem.compile_usages(
-        sl_sem.var, row, d02, "μονογενής", "\ue201д\ue205но\ue20dѧдъ"
-    )
-    assert d02 == {
-        "\ue201д\ue205но\ue20dѧдъ": {
-            ("μονογενὴς", "\ue201д\ue205но\ue20dеды"): SortedSet(
-                [
-                    Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=False,
-                            page=5,
-                            col="a",
-                            row=4,
-                            word="μονογενὴς",
-                        ),
-                        lang="gr",
-                        var="WH",
-                        trans_alt="\ue205но\ue20dѧдъ",
-                        trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
-                    )
-                ]
-            )
-        }
-    }
+    # d02 = SortedDict()
+    # d02 = gr_sem.compile_usages(
+    #     sl_sem.var, row, d02, "μονογενής", "\ue201д\ue205но\ue20dѧдъ"
+    # )
+    # assert d02 == {
+    #     "\ue201д\ue205но\ue20dѧдъ": {
+    #         ("μονογενὴς", "\ue201д\ue205но\ue20dеды"): SortedSet(
+    #             [
+    #                 Usage(
+    #                     idx=Index(
+    #                         ch=1,
+    #                         alt=False,
+    #                         page=5,
+    #                         col="a",
+    #                         row=4,
+    #                         word="μονογενὴς",
+    #                     ),
+    #                     lang="gr",
+    #                     var="WH",
+    #                     trans_alt="\ue205но\ue20dѧдъ",
+    #                 )
+    #             ]
+    #         )
+    #     }
+    # }
 
     row = (
         [
@@ -480,8 +441,6 @@ def test_monogenis():
         var="G",
         orig_alt="\ue201д\ue205но\ue20dѧдъ",
         orig_alt_var={"H": "\ue201д\ue205нородъ"},
-        trans_alt="",
-        trans_alt_var={},
     )
 
     d2 = SortedDict()
@@ -503,8 +462,6 @@ def test_monogenis():
         var="H",
         orig_alt="\ue201д\ue205но\ue20dѧдъ",
         orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
-        trans_alt="",
-        trans_alt_var={},
     )
 
     row = (
@@ -538,18 +495,12 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=False,
-                            end=None,
-                            bold=False,
-                            italic=False,
                             word="\ue205но\ue20dедаго",
                         ),
                         lang="sl",
                         var="G",
                         orig_alt="\ue201д\ue205но\ue20dѧдъ",
                         orig_alt_var={"H": "\ue201д\ue205нородъ"},
-                        trans_alt="",
-                        trans_alt_var={},
                     )
                 ]
             )
@@ -570,18 +521,12 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=False,
-                            end=None,
-                            bold=False,
-                            italic=False,
                             word="\ue201д\ue205нородоу",
                         ),
                         lang="sl",
                         var="H",
                         orig_alt="\ue201д\ue205но\ue20dѧдъ",
                         orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
-                        trans_alt="",
-                        trans_alt_var={},
                     )
                 ]
             )
@@ -602,17 +547,10 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=False,
-                            end=None,
-                            bold=False,
-                            italic=False,
                             word="μονογενοῦς",
                         ),
                         lang="gr",
                         var="",
-                        orig_alt="",
-                        orig_alt_var={},
-                        trans_alt="",
                         trans_alt_var={
                             "H": "\ue201д\ue205нородъ",
                             "G": "\ue205но\ue20dѧдъ",
@@ -637,16 +575,10 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=False,
-                            end=None,
-                            bold=False,
-                            italic=False,
                             word="μονογενοῦς",
                         ),
                         lang="gr",
                         var="H",
-                        orig_alt="",
-                        orig_alt_var={},
                         trans_alt="\ue201д\ue205но\ue20dѧдъ",
                         trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
                     )
@@ -669,16 +601,10 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=False,
-                            end=None,
-                            bold=False,
-                            italic=False,
                             word="μονογενοῦς",
                         ),
                         lang="gr",
                         var="G",
-                        orig_alt="",
-                        orig_alt_var={},
                         trans_alt="\ue201д\ue205но\ue20dѧдъ",
                         trans_alt_var={"H": "\ue201д\ue205нородъ"},
                     )

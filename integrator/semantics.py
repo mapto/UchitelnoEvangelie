@@ -47,7 +47,7 @@ def _is_variant_lemma(
         assert len(mlem) == 1
         return current_lemma == mlem[""]
     # result = current_var not in mlem or current_lemma == mlem[current_var]
-    result = current_lemma == mlem[current_var]
+    result = current_var in mlem and current_lemma == mlem[current_var]
     # print(f"{current_var} in {current_lemma}: {result}")
     return result
 
@@ -227,7 +227,7 @@ class VarLangSemantics(LangSemantics):
         multilemma = self.multilemma(row)
         if present(row, self.main):
             assert self.main  # for mypy
-            if row[self.main.lemmas[0]] != multilemma[my_var]:
+            if my_var in multilemma and row[self.main.lemmas[0]] != multilemma[my_var]:
                 main = row[self.main.lemmas[0]]
         alt = {k: v for k, v in multilemma.items() if k != my_var}
         return (main, alt)
@@ -273,10 +273,7 @@ class VarLangSemantics(LangSemantics):
         if len(result) == 1 and next(iter(result.keys())) == "":
             updated = {}
             for k, v in self.multiword(row).items():
-                if v == EMPTY_CH:
-                    assert self.main
-                    updated[k] = row[self.main.lemmas[0]]
-                else:
+                if v != EMPTY_CH:
                     updated[k] = result[""]
 
             # words = {k: v for k, v in self.multiword(row).items() if v != EMPTY_CH}
