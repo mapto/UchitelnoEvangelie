@@ -33,7 +33,7 @@ def docx_usage(par, key: Tuple[str, str], usage: List[Usage], src_style: str) ->
             first = False
         else:
             _generate_text(par, ", ")
-        _generate_text(par, str(next.idx), bold=next.idx.bold, italic=next.idx.italic)
+        generate_index(par, next.idx)
     _generate_text(par, ")")
 
 
@@ -94,64 +94,6 @@ def export_docx(d: SortedDict, lang: str, fname: str) -> None:
 
 
 def generate_index(par, idx: Index) -> None:
-    _generate_text(par, str(idx))
+    _generate_text(par, str(idx), bold=idx.bold, italic=idx.italic)
     if idx.var:
-        _generate_text(par, "var", superscript=True)
-
-
-def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
-    first = True
-    _generate_text(par, f" {brace_open[lang]}")
-    for var, word in alt_var.items():
-        if first:
-            first = False
-        else:
-            _generate_text(par, ", ")
-        _generate_text(par, word, fonts[lang])
-        _generate_text(par, var, superscript=True)
-    _generate_text(par, brace_close[lang])
-
-
-def _generate_usage(par, u: Usage) -> None:
-    if (
-        not u.orig_alt
-        and not u.orig_alt_var
-        and not u.trans_alt
-        and not u.trans_alt_var
-    ):
-        return
-    _generate_text(par, f" {CF_SEP}")
-    if u.orig_alt:
-        _generate_text(par, " ")
-        _generate_text(par, u.orig_alt, fonts[u.lang])
-        _generate_text(par, f" {main_source[u.lang]}")
-
-    if u.orig_alt_var:
-        _generate_usage_alt_vars(par, u.lang, u.orig_alt_var)
-
-    # previous addition certainly finished with GENERIC_FONT
-    if u.trans_alt:
-        _generate_text(par, " ")
-        _generate_text(par, u.trans_alt, fonts[other_lang[u.lang]])
-        _generate_text(par, f" {main_source[other_lang[u.lang]]}")
-
-    if u.trans_alt_var:
-        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt_var)
-
-
-def docx_result(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -> None:
-    """
-    key: (word,translation)
-    usage: list of indices of usages also containing their styles
-    """
-    other_style = other_lang[src_style]
-
-    first = True
-    for next in usage:
-        if not first:
-            _generate_text(par, "; ")
-        _generate_text(par, str(next.idx), bold=next.idx.bold, italic=next.idx.italic)
-        if next.var:
-            _generate_text(par, next.var, superscript=True)
-        _generate_usage(par, next)
-        first = False
+        _generate_text(par, "var", superscript=True, bold=idx.bold, italic=idx.italic)

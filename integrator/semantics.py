@@ -28,7 +28,8 @@ def _build_usage(
 ):
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i, word=word)
+    v = type(osem) is VarLangSemantics
+    idx = Index.unpack(row[IDX_COL], b, i, v, word)
     (oaltm, oaltv) = osem.alternatives(row, ovar)
     (taltm, taltv) = tsem.alternatives(row, tvar)
     var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
@@ -88,6 +89,7 @@ class LangSemantics:
         return [self.lemmas[0]]
 
     def lemn_cols(self) -> List[int]:
+        """sublemmas (excluding first lemma)"""
         return self.lemmas[1:]
 
     def get_variant(self, row: List[str]) -> str:
@@ -143,6 +145,7 @@ class LangSemantics:
         # print(trans.multiword(row))
         for ovar, oword in self.multiword(row).items():
             for tvar, tword in trans.multiword(row).items():
+                # TODO: Variant to a lemma is the group of lemmas in the variant.
                 val = _build_usage(row, self, trans, ovar, tvar, oword)
                 for nxt in trans.build_paths(row):
                     orig_var_in_lemma = _is_variant_lemma(row, self, ovar, olemma)

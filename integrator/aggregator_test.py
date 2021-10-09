@@ -346,7 +346,7 @@ def test_aggregate_monogenis():
                                                         word="μονογενὴς",
                                                     ),
                                                     lang="gr",
-                                                                    trans_alt_var={
+                                                    trans_alt_var={
                                                         "WH": "\ue201д\ue205но\ue20dѧдъ"
                                                     },
                                                 )
@@ -367,7 +367,7 @@ def test_aggregate_monogenis():
                                                         word="μονογενοῦς",
                                                     ),
                                                     lang="gr",
-                                                                    trans_alt_var={
+                                                    trans_alt_var={
                                                         "WH": "\ue201д\ue205но\ue20dѧдъ"
                                                     },
                                                 )
@@ -417,7 +417,7 @@ def test_aggregate_monogenis():
                                                         word="μονογενοῦς",
                                                     ),
                                                     lang="gr",
-                                                                )
+                                                )
                                             ]
                                         ),
                                         (
@@ -437,7 +437,7 @@ def test_aggregate_monogenis():
                                                         word="μονογενοῦς",
                                                     ),
                                                     lang="gr",
-                                                                    trans_alt_var={
+                                                    trans_alt_var={
                                                         "H": "\ue201д\ue205нородъ",
                                                         "G": "\ue205но\ue20dѧдъ",
                                                     },
