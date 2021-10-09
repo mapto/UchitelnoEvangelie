@@ -142,18 +142,13 @@ def test_aggregate_monogenis():
                                 page=168,
                                 col="a",
                                 row=25,
-                                var=False,
-                                end=None,
-                                bold=False,
-                                italic=False,
+                                var=True,
                                 word="\ue201д\ue205нородоу",
                             ),
                             lang="sl",
                             var="H",
                             orig_alt="\ue201д\ue205но\ue20dѧдъ",
                             orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
-                            trans_alt="",
-                            trans_alt_var={},
                         )
                     ]
                 )
@@ -170,21 +165,13 @@ def test_aggregate_monogenis():
                                 page=168,
                                 col="a",
                                 row=25,
-                                var=False,
-                                end=None,
-                                bold=False,
-                                italic=False,
                                 word="\ue201д\ue205но\ue20dедоу",
                             ),
                             lang="sl",
-                            var="",
-                            orig_alt="",
                             orig_alt_var={
                                 "H": "\ue201д\ue205нородъ",
                                 "G": "\ue205но\ue20dѧдъ",
                             },
-                            trans_alt="",
-                            trans_alt_var={},
                         )
                     ]
                 )
@@ -201,18 +188,13 @@ def test_aggregate_monogenis():
                                 page=168,
                                 col="a",
                                 row=25,
-                                var=False,
-                                end=None,
-                                bold=False,
-                                italic=False,
+                                var=True,
                                 word="\ue205но\ue20dедаго",
                             ),
                             lang="sl",
                             var="G",
                             orig_alt="\ue201д\ue205но\ue20dѧдъ",
                             orig_alt_var={"H": "\ue201д\ue205нородъ"},
-                            trans_alt="",
-                            trans_alt_var={},
                         )
                     ]
                 )
@@ -580,6 +562,7 @@ def test_aggregate_ipercliso():
                                         page=168,
                                         col="c",
                                         row=17,
+                                        var=True,
                                         word="ὑπερβλύζων",
                                     ),
                                     lang="gr",
@@ -603,6 +586,7 @@ def test_aggregate_ipercliso():
                                         page=168,
                                         col="c",
                                         row=17,
+                                        var=True,
                                         word="ὑπερβλύσαι",
                                     ),
                                     lang="gr",
