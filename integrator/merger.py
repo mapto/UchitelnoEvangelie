@@ -50,27 +50,28 @@ def _collect_multiword(group: List[List[str]], sem: MainLangSemantics) -> str:
     return " ".join([f"{v} {k}" for k, v in collected.items() if v.strip()])
 
 
-def _highlighted(group: List[List[str]], col: int) -> bool:
+def _highlighted(row: List[str], col: int) -> bool:
+    return f"hl{col:02d}" in row[STYLE_COL]
+
+
+def _highlighted_sublemma(
+    osem: LangSemantics, tsem: LangSemantics, row: List[str]
+) -> bool:
     """
-    Gets whether at lease one cell in the column of the group is highlighted.
-    Clearly assumes that grouping is already done correctly.
-
-    >>> group = [['все WH', 'вьсь', '', '', '1/7c12', 'въ', 'въ сел\ue205ко', 'въ', 'въ + Acc.', '', '', 'εἰς', 'εἰς', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl00|hl08|hl11'], ['\ue201л\ue205ко WH', '\ue201л\ue205къ', '', '', '1/7c12', 'сел\ue205ко', 'въ сел\ue205ко', 'сел\ue205къ', '', '', '', 'τοῦτο', 'οὗτος', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl00|hl11']]
-    >>> _highlighted(group, 8)
+    >>> sl_sem = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
+    >>> gr_sem = MainLangSemantics("gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19]))
+    >>> r = ['', '', '', '', '1/W168a15', 'б\ue205хомь', 'б\ue205хомь стрьпѣтї• ', 'бꙑт\ue205 ', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']
+    >>> _highlighted_sublemma(sl_sem, gr_sem, r)
     True
-
-    >>> group = [['', '', '', '', '1/W168a14', 'вьꙁмогл\ue205', 'мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205', 'въꙁмощ\ue205', '', '', '', 'ἠδυνήθημεν', 'δύναμαι', 'pass.', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05'],['', '', '', '', '1/W168a15', 'б\ue205хомь', 'б\ue205хомь стрьпѣтї• ', 'бꙑт\ue205 ', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']]
-    >>> _highlighted(group, 5)
+    >>> _highlighted_sublemma(gr_sem, sl_sem, r)
     True
-
-    >>> group = [['', '', '', '', '1/W168a14', 'вьꙁмогл\ue205', 'мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205', 'въꙁмощ\ue205', '', '', '', 'ἠδυνήθημεν', 'δύναμαι', 'pass.', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05'],['', '', '', '', '1/W168a15', 'б\ue205хомь', 'б\ue205хомь стрьпѣтї• ', 'бꙑт\ue205 ', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']]
-    >>> _highlighted(group, 9)
-    True
+    >>> r = ['', '', '', '', '1/W168a14', 'вьꙁмогл\ue205', 'мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205', 'въꙁмощ\ue205', '', '', '', 'ἠδυνήθημεν', 'δύναμαι', 'pass.', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05']
+    >>> _highlighted_sublemma(sl_sem, gr_sem, r)
+    False
+    >>> _highlighted_sublemma(gr_sem, sl_sem, r)
+    False
     """
-    for i in range(len(group)):
-        if f"hl{col:02d}" in group[i][STYLE_COL]:
-            return True
-    return False
+    return any([_highlighted(row, c) for c in osem.lemn_cols() + tsem.lemn_cols()])
 
 
 def _merge_indices(group: List[List[str]]) -> Index:
@@ -116,32 +117,41 @@ def _close(
     variants = _group_variants(group, orig)
     if variants:
         for row in group:
-            print("*" * 10)
-            print(row)
             if row[orig.word] and not row[orig.var.word]:
                 row[orig.var.word] = f"{row[orig.word]} {variants}"
             if row[orig.lemmas[0]] and not row[orig.var.lemmas[0]]:
                 row[orig.var.lemmas[0]] = row[orig.lemmas[0]]
 
+    # only lines without highlited sublemmas, i.e. gramm. annotation
+    merge_rows = [
+        i for i, r in enumerate(group) if not _highlighted_sublemma(orig, trans, r)
+    ]
+    merge_group = [group[i] for i in merge_rows]
+
     # collect content
     line = [""] * STYLE_COL
-    for c in [orig.word, trans.word]:
-        line[c] = " ".join(_collect(group, c))
+
+    line[orig.word] = " ".join(_collect(group, orig.word))
+    line[trans.word] = " ".join(_collect(group, trans.word))
+
     line[orig.var.word] = _collect_multiword(group, orig)
     line[trans.var.word] = _collect_multiword(group, trans)
+
     for c in trans.lem1_cols():
-        g = [e for e in _collect(group, c) if e.strip() != MISSING_CH]
+        g = [e for e in _collect(merge_group, c) if e.strip() != MISSING_CH]
         line[c] = f" {V_LEMMA_SEP} ".join(g)
     for c in orig.lemn_cols() + trans.lemn_cols():
-        line[c] = " ".join(_collect(group, c))
+        g = [e for e in _collect(merge_group, c) if e.strip() != MISSING_CH]
+        line[c] = " ".join(g)
 
     # update content
     for i in range(len(group)):
         group[i][IDX_COL] = idx.longstr()
-        for c in orig.word_cols() + trans.cols():
-            group[i][c] = line[c]
-        for c in orig.lemn_cols():
-            if not _highlighted(group, c):
+        for c in orig.word_cols():
+            if not _highlighted_sublemma(orig, trans, group[i]):
+                group[i][c] = line[c]
+        for c in orig.lemn_cols() + trans.cols():
+            if i in merge_rows:
                 group[i][c] = line[c]
 
     return group
@@ -175,8 +185,8 @@ def merge(
     for raw in corpus:
         row = [v if v else "" for v in raw]
 
-        if "1/6a10" in row[IDX_COL]:
-            print(row)
+        # if "1/6a10" in row[IDX_COL]:
+        #     print(row)
 
         not_blank = [v for v in row if v]
         if not row[IDX_COL] and not_blank:
