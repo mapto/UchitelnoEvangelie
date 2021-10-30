@@ -23,6 +23,7 @@ class Index:
     col: str
     row: int
     var: bool = False
+    cnt: int = 0
     end: Optional["Index"] = None
     bold: bool = False
     italic: bool = False
@@ -47,6 +48,8 @@ class Index:
         '01/W167c04'
         >>> str(Index.unpack("1/6c4"))
         '1/6c4'
+        >>> str(Index.unpack("1/6c4(2)"))
+        '1/6c4(2)'
 
         >> str(Index.unpack("1/6c4var"))
         '1/6c4var'
@@ -74,12 +77,11 @@ class Index:
         >>> Index.unpack("2/6a8") < Index.unpack("2/W167c4")
         False
 
-        Regex using: https://pythex.org/
+        Regex using: https://regex101.com/
         """
-        # TODO: var from regex (shift indices)
         m = re.search(
-            r"(\d{1,2})/(W)?(\d{1,3})([abcd])(\d{1,2})(var)?"
-            + r"(-((((\d{1,2})/)?(W)?(\d{1,3}))?([abcd]))?(\d{1,2})(var)?)?",
+            r"(\d{1,2})\/(W)?(\d{1,3})([abcd])(\d{1,2})(var)?(\((\d)\))?"
+            + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([abcd]))?(\d{1,2})(var)?)?",
             value,
         )
         assert m
@@ -91,25 +93,26 @@ class Index:
         col = m.group(4)
         row = int(m.group(5))
         # v = m.group(6)
+        cnt = int(m.group(8)) if m.group(8) else 0
 
         end = None
-        if m.group(15):
+        if m.group(17):
             e_ch = ch
             e_alt = alt
             e_page = page
             e_col = col
-            e_row = int(m.group(15))
-            # e_var = m.group(16)
-            if m.group(14):
-                e_col = m.group(14)
-                if m.group(13):
-                    e_page = int(m.group(13))
-                    if m.group(11):
-                        e_ch = int(m.group(11))
-                    e_alt = not not m.group(12) if e_ch % 2 else not m.group(12)
+            e_row = int(m.group(17))
+            # e_var = m.group(18)
+            if m.group(16):
+                e_col = m.group(16)
+                if m.group(15):
+                    e_page = int(m.group(15))
+                    if m.group(13):
+                        e_ch = int(m.group(13))
+                    e_alt = not not m.group(14) if e_ch % 2 else not m.group(14)
             end = Index(e_ch, e_alt, e_page, e_col, e_row, var, word=word)
 
-        return Index(ch, alt, page, col, row, var, end, b, i, word=word)
+        return Index(ch, alt, page, col, row, var, cnt, end, b, i, word=word)
 
     def __str__(self):
         """
@@ -119,7 +122,7 @@ class Index:
         '1/6c4-11'
 
         Variants are not shown:
-        >>> str(Index(1, False, 6, "c", 4, True, Index(1, False, 6, "d", 4, True)))
+        >>> str(Index(1, False, 6, "c", 4, True, end=Index(1, False, 6, "d", 4, True)))
         '1/6c4-d4'
 
         >>> str(Index(1, True, 6, "c", 4))
@@ -128,7 +131,8 @@ class Index:
         '2/W6c4'
         """
         w = "W" if not not self.ch % 2 == self.alt else ""
-        start = f"{self.ch}/{w}{self.page}{self.col}{self.row}"
+        cnt = "" if not self.cnt else f"({self.cnt})"
+        start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{cnt}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{str(self.end)}"
@@ -155,7 +159,8 @@ class Index:
         """
         w = "W" if not not self.ch % 2 == self.alt else ""
         v = "var" if self.var else ""
-        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{v}"
+        cnt = "" if not self.cnt else f"({self.cnt})"
+        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{v}{cnt}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{self.end.longstr()}"
@@ -174,7 +179,7 @@ class Index:
         return start
 
 
-@dataclass(order=True, frozen=True)
+@dataclass(frozen=True)
 class Usage:
     """Variant is not only indicative, but also nominative - which variant.
     Here alt means other other transcriptions (main or var).
@@ -190,6 +195,18 @@ class Usage:
 
     def __hash__(self):
         return hash((self.idx, self.lang, self.orig_alt, self.trans_alt))
+
+    def __lt__(self, other):
+        return self.idx < other.idx or len(self.var) < len(other.var)
+
+    def __le__(self, other):
+        return self.idx <= other.idx or len(self.var) <= len(other.var)
+
+    def __gt__(self, other):
+        return self.idx > other.idx or len(self.var) > len(other.var)
+
+    def __ge__(self, other):
+        return self.idx >= other.idx or len(self.var) >= len(other.var)
 
 
 @dataclass
