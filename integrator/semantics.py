@@ -75,6 +75,10 @@ class LangSemantics:
     word: int
     lemmas: List[int]
 
+    """Nullable just because recursive reference and setting up needs to happen post-init. Non-null during runtime"""
+    var: Optional["VarLangSemantics"] = None
+    main: Optional["MainLangSemantics"] = None
+
     def cols(self) -> List[int]:
         c = []
         c += self.word_cols()
@@ -162,14 +166,13 @@ class LangSemantics:
 
 @dataclass
 class MainLangSemantics(LangSemantics):
-    var: "VarLangSemantics"
-
     def __post_init__(self):
         """
         If there is variant, make sure add correct number of lemma columns.
         relevant, because different language/variant combinations have different number of lemma columns.
         """
         assert self.lang == self.var.lang
+        self.main = self
         self.var.main = self
 
         if len(self.lemmas) == len(self.var.lemmas):
@@ -181,18 +184,22 @@ class MainLangSemantics(LangSemantics):
             self.lemmas += [STYLE_COL - 4 + i for i in range(-delta)]
 
     def word_cols(self) -> List[int]:
+        assert self.var  # for mypy
         return super().word_cols() + [self.var.word]
 
     def lem1_cols(self) -> List[int]:
+        assert self.var  # for mypy
         return super().lem1_cols() + [self.var.lemmas[0]]
 
     def lemn_cols(self) -> List[int]:
+        assert self.var  # for mypy
         return super().lemn_cols() + self.var.lemmas[1:]
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas, ignoring variants that coincide with main
         Returns (main_alt, dict(var_name,var_alt))
         Main alternative to main is always empty/nonexistent"""
+        assert self.var  # for mypy
         alt = {
             k: v
             for k, v in self.var.multilemma(row).items()
@@ -219,9 +226,8 @@ class MainLangSemantics(LangSemantics):
 
 @dataclass
 class VarLangSemantics(LangSemantics):
-    """main is nullable just because it's a recursive reference and setting up needs to happen post-init"""
-
-    main: Optional["MainLangSemantics"] = None
+    def __post_init__(self):
+        self.var = self
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas, skipping main if coincides with my variant

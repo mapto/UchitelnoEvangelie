@@ -15,6 +15,7 @@ ord_tuple = lambda x: ord_word(x[0])
 def _group_variants(group: List[List[str]], sem: MainLangSemantics) -> str:
     """Returns a list of variants (excluding main) that are present in this group"""
     variants = set()
+    assert sem.var  # for mypy
     for row in group:
         for var in [k for k, val in sem.var.multiword(row).items() if val]:
             variants.add(var)
@@ -40,6 +41,7 @@ def _collect_multiword(group: List[List[str]], sem: MainLangSemantics) -> str:
     The output is conformant with the multiword syntax.
     Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
     collected: Dict[str, str] = {}
+    assert sem.var  # for mypy
     for row in group:
         # for k, v in _normalise_multiword(sem.var.multiword(row)).items():
         for k, v in sem.var.multiword(row).items():
@@ -115,6 +117,8 @@ def _close(
 
     # populate variants equal to main
     variants = _group_variants(group, orig)
+    assert orig.var  # for mypy
+    assert trans.var  # for mypy
     if variants:
         for row in group:
             if row[orig.word] and not row[orig.var.word]:
@@ -161,6 +165,7 @@ def _grouped(row: List[str], sem: MainLangSemantics) -> bool:
     """Returns if the row takes part of a group with respect to this language (and its variants)"""
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
+    assert sem.var  # for mypy
     if f"hl{sem.var.word:02d}" in row[STYLE_COL]:
         return True
     return False
