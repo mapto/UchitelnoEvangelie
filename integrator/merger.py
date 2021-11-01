@@ -116,6 +116,7 @@ def _close(
     idx = _merge_indices(group)
 
     # populate variants equal to main
+    # TODO: How to do this when orig/current is variant?
     variants = _group_variants(group, orig)
     assert orig.var  # for mypy
     assert trans.var  # for mypy
@@ -165,8 +166,7 @@ def _grouped(row: List[str], sem: MainLangSemantics) -> bool:
     """Returns if the row takes part of a group with respect to this language (and its variants)"""
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
-    assert sem.var  # for mypy
-    if f"hl{sem.var.word:02d}" in row[STYLE_COL]:
+    if f"hl{sem.other().word:02d}" in row[STYLE_COL]:
         return True
     return False
 

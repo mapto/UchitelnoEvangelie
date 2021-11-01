@@ -96,8 +96,10 @@ class LangSemantics:
         """sublemmas (excluding first lemma)"""
         return self.lemmas[1:]
 
-    def get_variant(self, row: List[str]) -> str:
-        return "".join([k for k in self.multiword(row).keys()])
+    def other(self) -> "LangSemantics":
+        """For main returns variant, for variant returns main.
+        Be careful not to enter in infinite recursion"""
+        raise NotImplementedError("abstract method")
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas
@@ -195,6 +197,10 @@ class MainLangSemantics(LangSemantics):
         assert self.var  # for mypy
         return super().lemn_cols() + self.var.lemmas[1:]
 
+    def other(self) -> "LangSemantics":
+        assert self.var  # for mypy
+        return self.var
+
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas, ignoring variants that coincide with main
         Returns (main_alt, dict(var_name,var_alt))
@@ -228,6 +234,10 @@ class MainLangSemantics(LangSemantics):
 class VarLangSemantics(LangSemantics):
     def __post_init__(self):
         self.var = self
+
+    def other(self) -> "LangSemantics":
+        assert self.main  # for mypy
+        return self.main
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas, skipping main if coincides with my variant
