@@ -1,5 +1,8 @@
+from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
+
+from model import Index, Usage
 from semantics import MainLangSemantics, VarLangSemantics
-from semantics import _is_variant_lemma
+from semantics import _is_variant_lemma, _add_usage
 
 
 def test_post_init():
@@ -371,3 +374,230 @@ def test_build_paths():
     res = gr_sem.var.build_paths(row)
     res = [str(r) for r in res]
     assert res == ["παρά + Acc. → παρά"]
+
+
+def test_add_usage():
+    usages = [
+        Usage(
+            idx=Index(
+                ch=1,
+                alt=True,
+                page=168,
+                col="a",
+                row=25,
+                word="μονογενοῦς",
+            ),
+            lang="gr",
+            var="G",
+            trans_alt="\ue201д\ue205но\ue20dѧдъ",
+            trans_alt_var={"H": "\ue201д\ue205нородъ"},
+        ),
+        Usage(
+            idx=Index(
+                ch=1,
+                alt=False,
+                page=5,
+                col="a",
+                row=4,
+                word="μονογενὴς",
+            ),
+            lang="gr",
+            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+        ),
+        Usage(
+            idx=Index(
+                ch=1,
+                alt=False,
+                page=4,
+                col="c",
+                row=15,
+                word="μονογενοῦς",
+            ),
+            lang="gr",
+            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+        ),
+        Usage(
+            idx=Index(
+                ch=1,
+                alt=True,
+                page=168,
+                col="a",
+                row=25,
+                word="μονογενοῦς",
+            ),
+            lang="gr",
+            var="H",
+            trans_alt="\ue201д\ue205но\ue20dѧдъ",
+            trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+        ),
+        Usage(
+            idx=Index(
+                ch=1,
+                alt=True,
+                page=168,
+                col="a",
+                row=28,
+                word="μονογενοῦς",
+            ),
+            lang="gr",
+        ),
+        Usage(
+            idx=Index(
+                ch=1,
+                alt=True,
+                page=168,
+                col="a",
+                row=25,
+                word="μονογενοῦς",
+            ),
+            lang="gr",
+            trans_alt_var={
+                "H": "\ue201д\ue205нородъ",
+                "G": "\ue205но\ue20dѧдъ",
+            },
+        ),
+        Usage(
+            idx=Index(
+                ch=1,
+                alt=False,
+                page=5,
+                col="a",
+                row=4,
+                word="μονογενὴς",
+            ),
+            lang="gr",
+            var="WH",
+            trans_alt="\ue205но\ue20dѧдъ ",
+        ),
+        Usage(
+            idx=Index(
+                ch=1,
+                alt=False,
+                page=4,
+                col="c",
+                row=15,
+                word="μονογενοῦς",
+            ),
+            lang="gr",
+            var="WH",
+            trans_alt="\ue205но\ue20dѧдъ",
+        ),
+    ]
+
+    d = SortedDict()
+    for u in usages:
+        _add_usage(u, "", ("", ""), d)
+    assert d == SortedDict(
+        {
+            "": {
+                ("", ""): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=4,
+                                col="c",
+                                row=15,
+                                word="μονογενοῦς",
+                            ),
+                            lang="gr",
+                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                        ),
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=4,
+                                col="c",
+                                row=15,
+                                word="μονογενοῦς",
+                            ),
+                            lang="gr",
+                            var="WH",
+                            trans_alt="\ue205но\ue20dѧдъ",
+                        ),
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=5,
+                                col="a",
+                                row=4,
+                                word="μονογενὴς",
+                            ),
+                            lang="gr",
+                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                        ),
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=5,
+                                col="a",
+                                row=4,
+                                word="μονογενὴς",
+                            ),
+                            lang="gr",
+                            var="WH",
+                            trans_alt="\ue205но\ue20dѧдъ ",
+                        ),
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="a",
+                                row=25,
+                                word="μονογενοῦς",
+                            ),
+                            lang="gr",
+                            trans_alt_var={
+                                "H": "\ue201д\ue205нородъ",
+                                "G": "\ue205но\ue20dѧдъ",
+                            },
+                        ),
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="a",
+                                row=28,
+                                word="μονογενοῦς",
+                            ),
+                            lang="gr",
+                        ),
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="a",
+                                row=25,
+                                word="μονογενοῦς",
+                            ),
+                            lang="gr",
+                            var="G",
+                            trans_alt="\ue201д\ue205но\ue20dѧдъ",
+                            trans_alt_var={"H": "\ue201д\ue205нородъ"},
+                        ),
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=True,
+                                page=168,
+                                col="a",
+                                row=25,
+                                word="μονογενοῦς",
+                            ),
+                            lang="gr",
+                            var="H",
+                            trans_alt="\ue201д\ue205но\ue20dѧдъ",
+                            trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                        ),
+                    ]
+                )
+            }
+        }
+    )

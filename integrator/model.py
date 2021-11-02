@@ -200,13 +200,16 @@ class Usage:
         return self.idx < other.idx or len(self.var) < len(other.var)
 
     def __le__(self, other):
-        return self.idx <= other.idx or len(self.var) <= len(other.var)
+        return self < other or self == other
+        # return self.idx <= other.idx or len(self.var) <= len(other.var)
 
     def __gt__(self, other):
-        return self.idx > other.idx or len(self.var) > len(other.var)
+        return not self <= other
+        # return self.idx > other.idx or len(self.var) > len(other.var)
 
     def __ge__(self, other):
-        return self.idx >= other.idx or len(self.var) >= len(other.var)
+        return not self < other
+        # return self.idx >= other.idx or len(self.var) >= len(other.var)
 
 
 @dataclass

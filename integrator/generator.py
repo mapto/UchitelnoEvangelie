@@ -63,7 +63,7 @@ def _generate_usage(par, u: Usage) -> None:
         _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt_var)
 
 
-def docx_result(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -> None:
+def docx_result(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> None:
     """
     key: (word,translation)
     usage: list of indices of usages also containing their styles
@@ -238,8 +238,8 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
                 # run.font.name = GENERIC_FONT
                 run.add_text("): ")
                 first = True
-                pairs = dict(bottom_d.items())
-                for key in sorted(pairs, key=pairs.__getitem__):
+                pairs = SortedDict(bottom_d.items())
+                for key in pairs:
                     usage = bottom_d[key]
                     if not first:
                         par.add_run().add_text("; ")

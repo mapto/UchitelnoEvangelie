@@ -15,7 +15,7 @@ from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, colors, brace_open, brace_close
 
 
-def docx_usage(par, key: Tuple[str, str], usage: List[Usage], src_style: str) -> None:
+def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> None:
     """
     key: (word,translation)
     usage: list of indices of usages also containing their styles
@@ -75,8 +75,8 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
                 run = par.add_run()
                 run.add_text(": ")
                 first = True
-                pairs = dict(bottom_d.items())
-                for key in sorted(pairs, key=pairs.__getitem__):
+                pairs = SortedDict(bottom_d.items())
+                for key in pairs:
                     usage = bottom_d[key]
                     if not first:
                         par.add_run().add_text("; ")
