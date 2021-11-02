@@ -28,7 +28,7 @@ def _build_usage(
 ):
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    v = type(osem) is VarLangSemantics
+    v = osem.is_variant()
     idx = Index.unpack(row[IDX_COL], b, i, v, word)
     (oaltm, oaltv) = osem.alternatives(row, ovar)
     (taltm, taltv) = tsem.alternatives(row, tvar)
@@ -43,7 +43,7 @@ def _is_variant_lemma(
     if not mlem:
         return False
     # print(mlem)
-    if type(sem) == MainLangSemantics:
+    if not sem.is_variant():
         assert not current_var
         assert len(mlem) == 1
         return current_lemma == mlem[""]
@@ -100,6 +100,9 @@ class LangSemantics:
         """For main returns variant, for variant returns main.
         Be careful not to enter in infinite recursion"""
         raise NotImplementedError("abstract method")
+
+    def is_variant(self) -> bool:
+        return False
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas
@@ -238,6 +241,9 @@ class VarLangSemantics(LangSemantics):
     def other(self) -> "MainLangSemantics":
         assert self.main  # for mypy
         return self.main
+
+    def is_variant(self) -> bool:
+        return True
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas, skipping main if coincides with my variant

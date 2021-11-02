@@ -62,7 +62,7 @@ def _agg_lemma(
         return orig.compile_usages(trans, row, d, olemma, tlemma)
 
     # TODO: implement variants here
-    if type(orig) == VarLangSemantics and row[col]:
+    if orig.is_variant() and row[col]:
         row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
     # lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
     if not omultilemmas:
