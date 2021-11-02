@@ -95,7 +95,10 @@ def _agg_lemma(
 
 
 def aggregate(
-    corpus: List[List[str]], orig: MainLangSemantics, trans: MainLangSemantics
+    corpus: List[List[str]],
+    orig: LangSemantics,
+    trans: MainLangSemantics,
+    result: SortedDict,
 ) -> SortedDict:
     """Generate an aggregated index of translations. Recursion ensures that this works with variable depth.
 
@@ -103,22 +106,20 @@ def aggregate(
         corpus (List[List[str]]): input spreadsheet
         orig (LangSemantics): original language table column mapping
         trans (LangSemantics): translation language table column mapping
+        result: mutable return value
 
     Returns:
         SortedDict: hierarchical dictionary of all lemma levels in original language, that contains rows of the form: translation_lemma: word/tword (index)
     """
-    result = SortedDict(ord_word)
     for row in corpus:
         if not row[IDX_COL]:
             continue
 
-        # if "1/W168a25" in row[IDX_COL]:
+        # if "01/005a05" in row[IDX_COL]:
         # if "μονογεν" in row[orig.lemmas[0]]:
-        # print(row)
+        #    print(row)
 
         result = _agg_lemma(row, orig, trans, result)
-        result = _agg_lemma(row, orig.var, trans, result)
         result = _agg_lemma(row, orig, trans.var, result)
-        result = _agg_lemma(row, orig.var, trans.var, result)
 
     return result

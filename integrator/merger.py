@@ -6,7 +6,7 @@ from typing import Dict, List
 
 from const import IDX_COL, MISSING_CH, STYLE_COL, V_LEMMA_SEP
 from model import Index
-from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
+from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
 from util import ord_word
 
 ord_tuple = lambda x: ord_word(x[0])
@@ -15,6 +15,7 @@ ord_tuple = lambda x: ord_word(x[0])
 def _group_variants(group: List[List[str]], sem: MainLangSemantics) -> str:
     """Returns a list of variants (excluding main) that are present in this group"""
     variants = set()
+    assert sem.var  # for mypy
     for row in group:
         for var in [k for k, val in sem.var.multiword(row).items() if val]:
             variants.add(var)
@@ -40,6 +41,7 @@ def _collect_multiword(group: List[List[str]], sem: MainLangSemantics) -> str:
     The output is conformant with the multiword syntax.
     Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
     collected: Dict[str, str] = {}
+    assert sem.var  # for mypy
     for row in group:
         # for k, v in _normalise_multiword(sem.var.multiword(row)).items():
         for k, v in sem.var.multiword(row).items():
@@ -114,13 +116,13 @@ def _close(
     idx = _merge_indices(group)
 
     # populate variants equal to main
-    variants = _group_variants(group, orig)
+    assert orig.main  # for mypy
+    variants = _group_variants(group, orig.main)
+    assert orig.var  # for mypy
     if variants:
         for row in group:
-            if row[orig.word] and not row[orig.var.word]:
+            if present(row, orig.var) and row[orig.word] and not row[orig.var.word]:
                 row[orig.var.word] = f"{row[orig.word]} {variants}"
-            if row[orig.lemmas[0]] and not row[orig.var.lemmas[0]]:
-                row[orig.var.lemmas[0]] = row[orig.lemmas[0]]
 
     # only lines without highlited sublemmas, i.e. gramm. annotation
     merge_rows = [
@@ -135,6 +137,7 @@ def _close(
     line[trans.word] = " ".join(_collect(group, trans.word))
 
     line[orig.var.word] = _collect_multiword(group, orig)
+    assert trans.var  # for mypy
     line[trans.var.word] = _collect_multiword(group, trans)
 
     for c in trans.lem1_cols():
@@ -161,7 +164,7 @@ def _grouped(row: List[str], sem: MainLangSemantics) -> bool:
     """Returns if the row takes part of a group with respect to this language (and its variants)"""
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
-    if f"hl{sem.var.word:02d}" in row[STYLE_COL]:
+    if f"hl{sem.other().word:02d}" in row[STYLE_COL]:
         return True
     return False
 
