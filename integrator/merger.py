@@ -12,7 +12,7 @@ from util import ord_word
 ord_tuple = lambda x: ord_word(x[0])
 
 
-def _group_variants(group: List[List[str]], sem: MainLangSemantics) -> str:
+def _group_variants(group: List[List[str]], sem: LangSemantics) -> str:
     """Returns a list of variants (excluding main) that are present in this group"""
     variants = set()
     assert sem.var  # for mypy
@@ -36,7 +36,7 @@ def _normalise_multiword(multiword: Dict[str, str]) -> Dict[str, str]:
     return result
 
 
-def _collect_multiword(group: List[List[str]], sem: MainLangSemantics) -> str:
+def _collect_multiword(group: List[List[str]], sem: LangSemantics) -> str:
     """Collects the content of the multiwords for a variant in a group into a single string.
     The output is conformant with the multiword syntax.
     Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
@@ -89,7 +89,7 @@ def _merge_indices(group: List[List[str]]) -> Index:
 
 
 def _close(
-    group: List[List[str]], orig: MainLangSemantics, trans: MainLangSemantics
+    group: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> List[List[str]]:
     """Wraps up a group that is currently being read.
     *IN_PLACE*
@@ -160,7 +160,7 @@ def _close(
     return group
 
 
-def _grouped(row: List[str], sem: MainLangSemantics) -> bool:
+def _grouped(row: List[str], sem: LangSemantics) -> bool:
     """Returns if the row takes part of a group with respect to this language (and its variants)"""
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
