@@ -1,9 +1,7 @@
-import re
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from const import STYLE_COL
 
-from model import Index, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import present, _agg_lemma
 

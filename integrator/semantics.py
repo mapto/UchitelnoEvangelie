@@ -197,7 +197,7 @@ class MainLangSemantics(LangSemantics):
         assert self.var  # for mypy
         return super().lemn_cols() + self.var.lemmas[1:]
 
-    def other(self) -> "LangSemantics":
+    def other(self) -> "VarLangSemantics":
         assert self.var  # for mypy
         return self.var
 
@@ -235,7 +235,7 @@ class VarLangSemantics(LangSemantics):
     def __post_init__(self):
         self.var = self
 
-    def other(self) -> "LangSemantics":
+    def other(self) -> "MainLangSemantics":
         assert self.main  # for mypy
         return self.main
 
