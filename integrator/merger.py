@@ -92,7 +92,6 @@ def _close(
     group: List[List[str]], orig: LangSemantics, trans: LangSemantics
 ) -> List[List[str]]:
     """Wraps up a group that is currently being read.
-    *IN_PLACE*
     Redistributes content according to desired (complex) logic
     """
     if not group:
@@ -140,6 +139,8 @@ def _close(
     assert trans.var  # for mypy
     line[trans.var.word] = _collect_multiword(group, trans)
 
+    line[orig.other().lemmas[0]] = " ".join(_collect(group, orig.other().lemmas[0]))
+
     for c in trans.lem1_cols():
         g = [e for e in _collect(merge_group, c) if e.strip() != MISSING_CH]
         line[c] = f" {V_LEMMA_SEP} ".join(g)
@@ -156,8 +157,9 @@ def _close(
         for c in orig.lemn_cols() + trans.cols():
             if i in merge_rows:
                 group[i][c] = line[c]
+        group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
 
-    return group
+    return group.copy()
 
 
 def _grouped(row: List[str], sem: LangSemantics) -> bool:

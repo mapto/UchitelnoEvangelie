@@ -282,7 +282,7 @@ def test_close():
     ]
     res = _close(group, sl_sem, gr_sem)
     expected = [
-        ["все \ue201л\ue205ко WH", "вьсь"]
+        ["все \ue201л\ue205ко WH", "вьсь \ue201л\ue205къ"]
         + [""] * 2
         + [
             "01/007c12",
@@ -300,7 +300,7 @@ def test_close():
         + ["hl05|hl00|hl11"],
         [
             "все \ue201л\ue205ко WH",
-            "\ue201л\ue205къ",
+            "вьсь \ue201л\ue205къ",
         ]
         + [""] * 2
         + [

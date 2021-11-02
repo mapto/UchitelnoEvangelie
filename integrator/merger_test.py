@@ -157,8 +157,8 @@ def test_group_variants():
         + ["κἂν", "καί & ἀν", "κἄν"]
         + [""] * 12
         + ["hl11"],
-        ["\ue205л\ue205 WH"]
-        + [""] * 3
+        ["\ue205л\ue205 WH", "\ue205л\ue205"]
+        + [""] * 2
         + ["01/006a11", "л\ue205 "]
         + [""] * 5
         + ["κἂν", "καί & ἀν", "κἄν"]
@@ -195,7 +195,7 @@ def test_group_variants():
         + [""] * 3
         + [
             "κἂν",
-            "καί ἀν",
+            "καί",
             "κἄν",
         ]
         + [""] * 12
@@ -211,14 +211,13 @@ def test_group_variants():
         + [""] * 3
         + [
             "κἂν",
-            "καί ἀν",
+            "ἀν",
             "κἄν",
         ]
         + [""] * 12
         + ["hl11"],
     ]
-    # TODO
-    # assert res == expected
+    assert res == expected
 
     # TODO
     group = [
@@ -245,13 +244,15 @@ def test_group_variants():
     ]
     res = _close(group, sl_sem, gr_sem)
     expected = [
-        ["тѣмь \ue205л\ue205 WH", "тѣмь"]
-        + ["тѣмь \ue205л\ue205", ""]
-        + [
+        [
+            "тѣмь \ue205л\ue205 WH",
+            "тѣмь \ue205л\ue205",
+            "тѣмь \ue205л\ue205",
+            "",
             "01/006a10",
             "тѣмь л\ue205",
             "тѣмь л\ue205 в\ue205д\ue205мо",
-            "тѣмь л\ue205",
+            "тѣмь",
             "тѣмь л\ue205",
         ]
         + [""] * 2
@@ -261,13 +262,13 @@ def test_group_variants():
         ]
         + [""] * 13
         + ["hl05"],
-        ["тѣмь \ue205л\ue205 WH", "\ue205л\ue205"]
+        ["тѣмь \ue205л\ue205 WH", "тѣмь \ue205л\ue205"]
         + ["тѣмь \ue205л\ue205", ""]
         + [
             "01/006a10",
             "тѣмь л\ue205",
             "тѣмь л\ue205 в\ue205д\ue205мо",
-            "тѣмь л\ue205",
+            "л\ue205",
             "тѣмь л\ue205",
         ]
         + [""] * 2
@@ -278,8 +279,7 @@ def test_group_variants():
         + [""] * 13
         + ["hl05"],
     ]
-    # TODO
-    # assert res == expected
+    assert res == expected
 
     group = [
         [""] * 4
@@ -319,7 +319,7 @@ def test_group_variants():
         + [""] * 2
         + [
             "κἂν",
-            "καί ἀν",
+            "καί",
             "κἄν",
         ]
         + [""] * 12
@@ -336,14 +336,13 @@ def test_group_variants():
         + [""] * 2
         + [
             "κἂν",
-            "καί ἀν",
+            "ἀν",
             "κἄν",
         ]
         + [""] * 12
         + ["hl05"],
     ]
-    # TODO
-    # assert res == expected
+    assert res == expected
 
     g1 = (
         [""] * 4
