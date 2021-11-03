@@ -52,6 +52,11 @@ def _collect_multiword(group: List[List[str]], sem: LangSemantics) -> str:
     return " ".join([f"{v} {k}" for k, v in collected.items() if v.strip()])
 
 
+def _collect_multilemma(group: List[List[str]], sem: LangSemantics) -> str:
+    """TODO implement the multilemma part"""
+    return " ".join(_collect(group, sem.other().lemmas[0]))
+
+
 def _highlighted(row: List[str], col: int) -> bool:
     return f"hl{col:02d}" in row[STYLE_COL]
 
@@ -139,7 +144,7 @@ def _close(
     assert trans.var  # for mypy
     line[trans.var.word] = _collect_multiword(group, trans)
 
-    line[orig.other().lemmas[0]] = " ".join(_collect(group, orig.other().lemmas[0]))
+    line[orig.other().lemmas[0]] = _collect_multilemma(group, orig)
 
     for c in trans.lem1_cols():
         g = [e for e in _collect(merge_group, c) if e.strip() != MISSING_CH]
@@ -150,9 +155,9 @@ def _close(
 
     # update content
     for i in range(len(group)):
-        group[i][IDX_COL] = idx.longstr()
-        for c in orig.word_cols():
-            if not _highlighted_sublemma(orig, trans, group[i]):
+        if not _highlighted_sublemma(orig, trans, group[i]):
+            group[i][IDX_COL] = idx.longstr()
+            for c in orig.word_cols():
                 group[i][c] = line[c]
         for c in orig.lemn_cols() + trans.cols():
             if i in merge_rows:

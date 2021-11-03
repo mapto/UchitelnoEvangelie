@@ -31,7 +31,7 @@ class Index:
     This is when we distinguish between the two uses by the own language word from the key pair.
     Used as distinctor only by hash function, so no explicit logic using it.
     Whenever not set, means we don't care to distinguish.
-    TODO: Remains the case if the same word occurs twice in row.
+    When same word occurs twice in row, cnt needs to be indicated manually in spreadsheet
     """
     word: str = ""
 
@@ -44,39 +44,6 @@ class Index:
         word: str = "",
     ) -> "Index":
         """
-        >>> Index.unpack("1/W167c4").longstr()
-        '01/W167c04'
-        >>> str(Index.unpack("1/6c4"))
-        '1/6c4'
-        >>> str(Index.unpack("1/6c4(2)"))
-        '1/6c4(2)'
-
-        >> str(Index.unpack("1/6c4var"))
-        '1/6c4var'
-        >>> str(Index.unpack("1/6c4-8"))
-        '1/6c4-8'
-
-        >> str(Index.unpack("1/6c4-8var"))
-        '1/6c4-8var'
-        >>> str(Index.unpack("1/6c4-d4"))
-        '1/6c4-d4'
-        >>> str(Index.unpack("1/6c4-6d4"))
-        '1/6c4-d4'
-        >>> str(Index.unpack("1/6c4-7d4"))
-        '1/6c4-7d4'
-        >>> str(Index.unpack("1/6c4-2/6d4"))
-        '1/6c4-2/6d4'
-
-        >> str(Index.unpack("1/6c4var-2/6d4var"))
-        '1/6c4var-2/6d4var'
-
-        >>> Index.unpack("1/6a8") < Index.unpack("1/6a17")
-        True
-        >>> Index.unpack("1/6a8") < Index.unpack("1/W167c4")
-        True
-        >>> Index.unpack("2/6a8") < Index.unpack("2/W167c4")
-        False
-
         Regex using: https://regex101.com/
         """
         m = re.search(
@@ -194,20 +161,27 @@ class Usage:
     trans_alt_var: Dict[str, str] = field(default_factory=lambda: {})
 
     def __hash__(self):
-        return hash((self.idx, self.lang, self.orig_alt, self.trans_alt))
+        return hash((self.idx, self.lang, self.var, self.orig_alt, self.trans_alt))
 
-    def __lt__(self, other):
-        return self.idx < other.idx or len(self.var) < len(other.var)
+    def __eq__(self, other) -> bool:
+        return self.idx == other.idx and len(self.var) == len(other.var)
 
-    def __le__(self, other):
+    def __lt__(self, other) -> bool:
+        return (
+            self.idx < other.idx
+            or self.idx == other.idx
+            and len(self.var) < len(other.var)
+        )
+
+    def __le__(self, other) -> bool:
         return self < other or self == other
         # return self.idx <= other.idx or len(self.var) <= len(other.var)
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return not self <= other
         # return self.idx > other.idx or len(self.var) > len(other.var)
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return not self < other
         # return self.idx >= other.idx or len(self.var) >= len(other.var)
 
