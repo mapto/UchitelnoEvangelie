@@ -112,6 +112,41 @@ def test_VarLangSemantics_multiword():
     assert result == {"C": "με"}
 
 
+def test_VarLangSemantics_multiword_greek_paris():
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    row = (
+        [""] * 4
+        + ["12/67d19", "\ue20dьтеть•", "\ue20dьтеть• въꙁлѣга-", "\ue20d\ue205ст\ue205"]
+        + [""] * 3
+        + ["τιμὰς"]
+        + [""] * 4
+        + ["τιμᾷ MPaPb", "τιμάω"]
+        + [""] * 9
+    )
+    result = gr_sem.var.multiword(row)
+    assert result == {"MPaPb": "τιμᾷ"}
+
+    row = (
+        [""] * 4
+        + [
+            "12/67d19",
+            "въꙁлѣган\ue205е",
+            "\ue20dьтеть• въꙁлѣга-",
+            "въꙁлѣган\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἀνάκλισιν", "ἀνάκλισις"]
+        + [""] * 3
+        + ["ἀνάκλησιν CMPcPa"]
+        + [""] * 10
+    )
+    result = gr_sem.var.multiword(row)
+    assert result == {"CMPcPa": "ἀνάκλησιν"}
+
+
 def test_LangSemantics_multilemma():
     # old semantics
     sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
@@ -222,6 +257,43 @@ def test_LangSemantics_multilemma():
     assert result == {"": "\ue201д\ue205но\ue20dѧдъ"}
     result = sl_sem.var.multilemma(row)
     assert result == {"H": "\ue201д\ue205нородъ"}
+
+
+def test_LangSemantics_multilemma_greek_paris():
+    """Copies held in Paris library are indicated by P?"""
+    # old semantics, so that variants are in word, not lemma
+    gr_sem = MainLangSemantics(
+        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+    )
+
+    row = (
+        [""] * 4
+        + ["12/67d19", "\ue20dьтеть•", "\ue20dьтеть• въꙁлѣга-", "\ue20d\ue205ст\ue205"]
+        + [""] * 3
+        + ["τιμὰς"]
+        + [""] * 4
+        + ["τιμᾷ MPaPb", "τιμάω"]
+        + [""] * 9
+    )
+    result = gr_sem.var.multilemma(row)
+    assert result == {"MPaPb": "τιμᾷ"}
+
+    row = (
+        [""] * 4
+        + [
+            "12/67d19",
+            "въꙁлѣган\ue205е",
+            "\ue20dьтеть• въꙁлѣга-",
+            "въꙁлѣган\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἀνάκλισιν", "ἀνάκλισις"]
+        + [""] * 3
+        + ["ἀνάκλησιν CMPcPa"]
+        + [""] * 10
+    )
+    result = gr_sem.var.multilemma(row)
+    assert result == {"CMPcPa": "ἀνάκλησιν"}
 
 
 def test__is_variant_lemma():

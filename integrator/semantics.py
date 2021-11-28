@@ -269,12 +269,13 @@ class VarLangSemantics(LangSemantics):
         return [""]
 
     def multiword(self, row: List[str]) -> Dict[str, str]:
+        regex = r"^([^A-Z]+)(([A-Z][a-z]?)+)(.*)$"
         result = {}
-        m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", row[self.word].strip())
+        m = re.search(regex, row[self.word].strip())
         while m:
             result[m.group(2)] = m.group(1).strip()
-            rest = m.group(3).strip()
-            m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest)
+            rest = m.group(4).strip()
+            m = re.search(regex, rest)
         if not result:
             return {default_sources[self.lang]: row[self.word].strip()}
             # return {'': row[self.word].strip()}
@@ -284,14 +285,14 @@ class VarLangSemantics(LangSemantics):
         result = {}
         # TODO: accepting both & and / as separators is not neccessary
         m = re.search(
-            r"^([^A-Z]+)([A-Z]+)?(\s*[\&\/])?(.*)$", row[self.lemmas[0]].strip()
+            r"^([^A-Z]+)(([A-Z][a-z]?)+)?(\s*[\&\/])?(.*)$", row[self.lemmas[0]].strip()
         )
         while m:
             v = m.group(1).strip() if m.group(1) else ""
             k = m.group(2) if m.group(2) else ""
             result[k] = v
-            rest = m.group(4) if len(m.groups()) == 4 else ""
-            m = re.search(r"^([^A-Z]+)([A-Z]+)(.*)$", rest.strip())
+            rest = m.group(5) if len(m.groups()) == 5 else ""
+            m = re.search(r"^([^A-Z]+)(([A-Z][a-z]?)+)(.*)$", rest.strip())
 
         # When lemma in variant does not have source, read source from word
         # When in some variants word is missing, get lemma for this variant from main
