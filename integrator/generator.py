@@ -204,13 +204,14 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
             if level > 0:
                 par.paragraph_format.first_line_indent = Pt(10)
 
+            prefix = "| " * level
             _generate_text(
                 par,
-                li,
+                f"{prefix} {li}",
                 fonts[lang],
                 size=Pt(14 if level == 0 else 12),
                 bold=level == 0,
-                indent=Cm(0.25 * level),
+                indent=Cm(0.75 * level),
             )
 
             _generate_counts(par, next_d, False)

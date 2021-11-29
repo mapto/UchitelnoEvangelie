@@ -26,6 +26,7 @@ def _collect(group: List[List[str]], col: int) -> List[str]:
     """Collects the actual content in the group column"""
     return [group[i][col] for i in range(len(group)) if group[i][col]]
 
+
 def _collect_multiword(group: List[List[str]], sem: LangSemantics) -> str:
     """Collects the content of the multiwords for a variant in a group into a single string.
     The output is conformant with the multiword syntax.
