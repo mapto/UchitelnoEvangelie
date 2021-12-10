@@ -105,6 +105,23 @@ class LangSemantics:
         return False
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
+        m = len(self.lemmas)
+        for l in range(m - 1, 0, -1):  # does not reach 0
+            if row[self.lemmas[l]].strip():
+                # mlem = self.multilemma(row, l)
+                # if len(mlem) == 1 and not next(iter(mlem.keys())):
+                #     continue
+                lalt = self.level_alternatives(row, my_var, l)
+                print(lalt)
+                if not lalt[0] and not lalt[1]:
+                    continue
+                print("good")
+                return lalt
+        return self.level_alternatives(row, my_var)  # return with 0 if reach this line
+
+    def level_alternatives(
+        self, row: List[str], my_var: str, lidx: int = 0
+    ) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas
         Returns (main_alt, dict(var_name,var_alt))"""
         raise NotImplementedError("abstract method")
@@ -118,7 +135,7 @@ class LangSemantics:
     def multiword(self, row: List[str]) -> Dict[str, str]:
         raise NotImplementedError("abstract method")
 
-    def multilemma(self, row: List[str]) -> Dict[str, str]:
+    def multilemma(self, row: List[str], lidx: int = 0) -> Dict[str, str]:
         raise NotImplementedError("abstract method")
 
     def build_paths(self, row: List[str]) -> List[Path]:
@@ -204,15 +221,17 @@ class MainLangSemantics(LangSemantics):
         assert self.var  # for mypy
         return self.var
 
-    def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
+    def level_alternatives(
+        self, row: List[str], my_var: str, lidx: int = 0
+    ) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas, ignoring variants that coincide with main
         Returns (main_alt, dict(var_name,var_alt))
         Main alternative to main is always empty/nonexistent"""
         assert self.var  # for mypy
         alt = {
             k: v
-            for k, v in self.var.multilemma(row).items()
-            if v != row[self.lemmas[0]]
+            for k, v in self.var.multilemma(row, lidx).items()
+            if v != row[self.lemmas[lidx]]
         }
         return ("", alt)
 
@@ -228,15 +247,27 @@ class MainLangSemantics(LangSemantics):
         """Main variant does not have multiple words in a cell"""
         return {"": row[self.word].strip()}
 
-    def multilemma(self, row: List[str]) -> Dict[str, str]:
+    def multilemma(self, row: List[str], lidx: int = 0) -> Dict[str, str]:
         """Main variant does not have multiple words in a cell"""
-        return {"": row[self.lemmas[0]].strip()}
+        return {"": row[self.lemmas[lidx]].strip()}
 
 
 @dataclass
 class VarLangSemantics(LangSemantics):
     def __post_init__(self):
         self.var = self
+
+    def word_cols(self) -> List[int]:
+        assert self.main  # for mypy
+        return super().word_cols() + [self.main.word]
+
+    def lem1_cols(self) -> List[int]:
+        assert self.main  # for mypy
+        return super().lem1_cols() + [self.main.lemmas[0]]
+
+    def lemn_cols(self) -> List[int]:
+        assert self.main  # for mypy
+        return super().lemn_cols() + self.main.lemmas[1:]
 
     def other(self) -> "MainLangSemantics":
         assert self.main  # for mypy
@@ -245,15 +276,20 @@ class VarLangSemantics(LangSemantics):
     def is_variant(self) -> bool:
         return True
 
-    def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
+    def level_alternatives(
+        self, row: List[str], my_var: str, lidx: int = 0
+    ) -> Tuple[str, Dict[str, str]]:
         """Get alternative lemmas, skipping main if coincides with my variant
         Returns (main_alt, dict(var_name,var_alt))"""
         main = ""
-        multilemma = self.multilemma(row)
+        multilemma = self.multilemma(row, lidx)
         if present(row, self.main):
             assert self.main  # for mypy
-            if my_var in multilemma and row[self.main.lemmas[0]] != multilemma[my_var]:
-                main = row[self.main.lemmas[0]]
+            if (
+                my_var in multilemma
+                and row[self.main.lemmas[lidx]] != multilemma[my_var]
+            ):
+                main = row[self.main.lemmas[lidx]]
         alt = {k: v for k, v in multilemma.items() if k != my_var}
         return (main, alt)
 
@@ -281,18 +317,21 @@ class VarLangSemantics(LangSemantics):
             # return {'': row[self.word].strip()}
         return result
 
-    def multilemma(self, row: List[str]) -> Dict[str, str]:
-        result = {}
+    def multilemma(self, row: List[str], lidx: int = 0) -> Dict[str, str]:
         # TODO: accepting both & and / as separators is not neccessary
-        m = re.search(
-            r"^([^A-Z]+)(([A-Z][a-z]?)+)?(\s*[\&\/])?(.*)$", row[self.lemmas[0]].strip()
-        )
+        regex = r"^([^A-Z\+]+)(\+\s\w+\.)?(([A-Z][a-z]?)+)?(\s*[\&\/])?(.*)$"
+        # regex = r"^([^A-Z]+)(([A-Z][a-z]?)+)?(\s*[\&\/])?(.*)$"
+        result = {}
+        m = re.search(regex, row[self.lemmas[lidx]].strip())
         while m:
-            v = m.group(1).strip() if m.group(1) else ""
-            k = m.group(2) if m.group(2) else ""
+            v = m.group(1) if m.group(1) else ""
+            v = v + m.group(2) if m.group(2) else v
+            v = v.strip()
+
+            k = m.group(3) if m.group(3) else ""
             result[k] = v
-            rest = m.group(5) if len(m.groups()) == 5 else ""
-            m = re.search(r"^([^A-Z]+)(([A-Z][a-z]?)+)(.*)$", rest.strip())
+            rest = m.group(6) if len(m.groups()) == 6 else ""
+            m = re.search(regex, rest.strip())
 
         # When lemma in variant does not have source, read source from word
         # When in some variants word is missing, get lemma for this variant from main

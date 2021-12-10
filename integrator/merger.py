@@ -68,6 +68,11 @@ def _highlighted_sublemma(
     False
     >>> _highlighted_sublemma(gr_sem, sl_sem, r)
     False
+    >>> r = ['+ \ue201сть GH', 'бꙑт\ue205', 'gramm.', '', '07/47a06', 'om.', 'сътвор\ue205лъ', 'om.', '', '', '', 'Ø', 'Ø', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl02']
+    >>> _highlighted_sublemma(sl_sem, gr_sem, r)
+    True
+    >>> _highlighted_sublemma(sl_sem.var, gr_sem.var, r)
+    True
     """
     return any([_highlighted(row, c) for c in osem.lemn_cols() + tsem.lemn_cols()])
 

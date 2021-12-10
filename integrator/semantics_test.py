@@ -54,7 +54,7 @@ def test_LangSemantics_alternatives():
         ]
         + [""] * 3
         + ["μονογενοῦς", "μονογενής"]
-        + [""] * 11
+        + [""] * 12
         + ["bold|italic"]
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
@@ -257,6 +257,56 @@ def test_LangSemantics_multilemma():
     assert result == {"": "\ue201д\ue205но\ue20dѧдъ"}
     result = sl_sem.var.multilemma(row)
     assert result == {"H": "\ue201д\ue205нородъ"}
+
+
+def test_LangSemantics_multilemma_sub():
+    # old semantics
+    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    gr_sem = MainLangSemantics(
+        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+    )
+    row = (
+        ["вь WGH", "въ", "въ + Loc.", "1/7d1", "оу", "оу насъ", "ѹ"]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + ["παρ’ C", "παρά ", "παρά + Acc."]
+        + [""] * 6
+    )
+    result = gr_sem.var.multilemma(row, 1)
+    assert result == {"C": "παρά + Acc."}
+
+    result = sl_sem.var.multilemma(row, 1)
+    assert result == {"WGH": "въ + Loc."}
+
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    row = (
+        [
+            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
+            "ходъ WG",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/072d18-19",
+            "",
+            "себе• по поут\ue205 хо-",
+            "ход\ue205т\ue205 спѣт\ue205",
+            "ход\ue205т\ue205 спѣѭще ≠",
+        ]
+        + [""] * 2
+        + ["προβαίνοντες", "προβαίνω"]
+        + [""] * 13
+        + ["hl05|hl00"]
+    )
+    result = sl_sem.var.multilemma(row, 1)
+    assert result == {"WG": "ходомь спѣт\ue205"}
+    result = sl_sem.var.multilemma(row)
+    assert result == {"WG": "ходъ"}
 
 
 def test_LangSemantics_multilemma_greek_paris():
