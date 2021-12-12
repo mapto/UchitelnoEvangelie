@@ -73,6 +73,11 @@ def _highlighted_sublemma(
     True
     >>> _highlighted_sublemma(sl_sem.var, gr_sem.var, r)
     True
+    >>> r = ['', '', '', '', '12/67c10', 'бꙑхомъ•', 'в\ue205дѣл\ue205 бꙑхо-', 'бꙑт\ue205', '', 'gramm.', '', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']
+    >>> _highlighted_sublemma(sl_sem, gr_sem, r)
+    True
+    >>> _highlighted_sublemma(sl_sem.var, gr_sem, r)
+    True
     """
     return any([_highlighted(row, c) for c in osem.lemn_cols() + tsem.lemn_cols()])
 
@@ -133,14 +138,14 @@ def _close(
     # collect content
     line = [""] * STYLE_COL
 
-    line[orig.word] = " ".join(_collect(group, orig.word))
+    line[orig.word] = " ".join(_collect(merge_group, orig.word))
     line[trans.word] = " ".join(_collect(group, trans.word))
 
-    line[orig.var.word] = _collect_multiword(group, orig)
+    line[orig.var.word] = _collect_multiword(merge_group, orig)
     assert trans.var  # for mypy
     line[trans.var.word] = _collect_multiword(group, trans)
 
-    line[orig.other().lemmas[0]] = _collect_multilemma(group, orig)
+    line[orig.other().lemmas[0]] = _collect_multilemma(merge_group, orig)
 
     for c in trans.lem1_cols():
         g = [e for e in _collect(merge_group, c) if e.strip() != MISSING_CH]
@@ -153,12 +158,12 @@ def _close(
     for i in range(len(group)):
         if not _highlighted_sublemma(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
-            for c in orig.word_cols():
+            for c in orig.word_cols() + orig.lemn_cols():
                 group[i][c] = line[c]
-        for c in orig.lemn_cols() + trans.cols():
+            group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
+        for c in trans.cols():
             if i in merge_rows:
                 group[i][c] = line[c]
-        group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
 
     return group.copy()
 

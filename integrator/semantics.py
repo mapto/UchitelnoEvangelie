@@ -112,10 +112,8 @@ class LangSemantics:
                 # if len(mlem) == 1 and not next(iter(mlem.keys())):
                 #     continue
                 lalt = self.level_alternatives(row, my_var, l)
-                print(lalt)
                 if not lalt[0] and not lalt[1]:
                     continue
-                print("good")
                 return lalt
         return self.level_alternatives(row, my_var)  # return with 0 if reach this line
 
