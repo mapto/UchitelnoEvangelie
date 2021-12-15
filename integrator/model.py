@@ -4,8 +4,7 @@ from abc import abstractmethod
 
 import re
 
-from const import EMPTY_CH, H_LEMMA_SEP, PATH_SEP, VAR_SEP, default_sources
-from const import IDX_COL, EXAMPLE_COL, STYLE_COL
+from const import PATH_SEP
 
 from util import base_word
 
