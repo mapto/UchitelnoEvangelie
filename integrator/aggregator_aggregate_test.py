@@ -562,3 +562,213 @@ def test_aggregate_satvoriti():
     assert not result
     result = aggregate(rows, gr_sem.var, sl_sem.var, result)
     assert not result
+
+
+def test_aggregate_bozhii():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    r = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+    )
+
+    result = SortedDict()
+    result = aggregate([r], sl_sem, gr_sem, result)
+    assert result == {
+        "богъ": {
+            "Dat.": {
+                "": {
+                    "": {
+                        "θεός Gen.": {
+                            ("боꙁѣ", "Θεοῦ"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="a",
+                                            row=4,
+                                            word="боꙁѣ",
+                                        ),
+                                        lang="sl",
+                                        orig_alt_var={
+                                            "WGH": "бож\ue205\ue205",
+                                        },
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    # TODO: merge bozhii
+    result = SortedDict()
+    result = aggregate([r], sl_sem.var, gr_sem, result)
+    assert result == {
+        "бож\ue205\ue205": {
+            "": {
+                "": {
+                    "": {
+                        "θεός Gen.": {
+                            ("б\ue010ж\ue205", "Θεοῦ"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="a",
+                                            row=4,
+                                            var=True,
+                                            word="б\ue010ж\ue205",
+                                        ),
+                                        lang="sl",
+                                        var="W",
+                                        orig_alt="богъ",
+                                        orig_alt_var={
+                                            "G": "бож\ue205\ue205",
+                                            "H": "бож\ue205\ue205",
+                                        },
+                                    )
+                                ]
+                            ),
+                            ("б\ue010ж\ue205\ue205", "Θεοῦ"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="a",
+                                            row=4,
+                                            var=True,
+                                            word="б\ue010ж\ue205\ue205",
+                                        ),
+                                        lang="sl",
+                                        var="G",
+                                        orig_alt="богъ",
+                                        orig_alt_var={
+                                            "W": "бож\ue205\ue205",
+                                            "H": "бож\ue205\ue205",
+                                        },
+                                    )
+                                ]
+                            ),
+                            ("б\ue010жї\ue205", "Θεοῦ"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="a",
+                                            row=4,
+                                            var=True,
+                                            word="б\ue010жї\ue205",
+                                        ),
+                                        lang="sl",
+                                        var="H",
+                                        orig_alt="богъ",
+                                        orig_alt_var={
+                                            "W": "бож\ue205\ue205",
+                                            "G": "бож\ue205\ue205",
+                                        },
+                                    )
+                                ]
+                            ),
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    # TODO: merge bozhii
+    result = SortedDict()
+    result = aggregate([r], gr_sem, sl_sem.var, result)
+    assert result == {
+        "θεός": {
+            "Gen.": {
+                "": {
+                    "бож\ue205\ue205": {
+                        ("Θεοῦ", "б\ue010ж\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=7,
+                                        col="a",
+                                        row=4,
+                                        word="Θεοῦ",
+                                    ),
+                                    lang="gr",
+                                    var="W",
+                                    trans_alt="богъ",
+                                    trans_alt_var={
+                                        "G": "бож\ue205\ue205",
+                                        "H": "бож\ue205\ue205",
+                                    },
+                                )
+                            ]
+                        ),
+                        ("Θεοῦ", "б\ue010ж\ue205\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=7,
+                                        col="a",
+                                        row=4,
+                                        word="Θεοῦ",
+                                    ),
+                                    lang="gr",
+                                    var="G",
+                                    trans_alt="богъ",
+                                    trans_alt_var={
+                                        "W": "бож\ue205\ue205",
+                                        "H": "бож\ue205\ue205",
+                                    },
+                                )
+                            ]
+                        ),
+                        ("Θεοῦ", "б\ue010жї\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=7,
+                                        col="a",
+                                        row=4,
+                                        word="Θεοῦ",
+                                    ),
+                                    lang="gr",
+                                    var="H",
+                                    trans_alt="богъ",
+                                    trans_alt_var={
+                                        "W": "бож\ue205\ue205",
+                                        "G": "бож\ue205\ue205",
+                                    },
+                                )
+                            ]
+                        ),
+                    }
+                }
+            }
+        }
+    }

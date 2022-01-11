@@ -18,12 +18,6 @@ BULLET_STYLE = "List Bullet"
 LEVEL_OFFSET = 0.5
 
 
-def generate_index(par, idx: Index) -> None:
-    _generate_text(par, str(idx))
-    if idx.var:
-        _generate_text(par, "var", superscript=True)
-
-
 def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
@@ -64,13 +58,10 @@ def _generate_usage(par, u: Usage) -> None:
         _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt_var)
 
 
-def docx_result(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> None:
+def docx_result(par, usage: SortedSet, src_style: str) -> None:
     """
-    key: (word,translation)
     usage: list of indices of usages also containing their styles
     """
-    other_style = other_lang[src_style]
-
     first = True
     for next in usage:
         if not first:
@@ -239,14 +230,10 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
                 run = par.add_run()
                 # run.font.name = GENERIC_FONT
                 run.add_text("): ")
-                first = True
-                pairs = SortedDict(bottom_d.items())
-                for key in pairs:
-                    usage = bottom_d[key]
-                    if not first:
-                        par.add_run().add_text("; ")
-                    docx_result(par, key, usage, lang)
-                    first = False
+                all = SortedSet()
+                for nxt in bottom_d.values():
+                    all.update(nxt)
+                docx_result(par, all, lang)
 
         else:
             _generate_line(level + 1, lang, next_d, doc)
