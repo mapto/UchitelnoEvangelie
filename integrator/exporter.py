@@ -15,12 +15,6 @@ from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, colors, brace_open, brace_close
 
 
-def generate_index(par, idx: Index) -> None:
-    _generate_text(par, str(idx), bold=idx.bold, italic=idx.italic)
-    if idx.var:
-        _generate_text(par, "var", superscript=True, bold=idx.bold, italic=idx.italic)
-
-
 def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
@@ -35,6 +29,12 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
 
 
 def _generate_usage(par, u: Usage) -> None:
+    _generate_text(par, str(u.idx), bold=u.idx.bold, italic=u.idx.italic)
+    if u.var:
+        _generate_text(
+            par, u.var, superscript=True, bold=u.idx.bold, italic=u.idx.italic
+        )
+
     if (
         not u.orig_alt
         and not u.orig_alt_var
@@ -42,6 +42,7 @@ def _generate_usage(par, u: Usage) -> None:
         and not u.trans_alt_var
     ):
         return
+
     _generate_text(par, f" {CF_SEP}")
     if u.orig_alt:
         _generate_text(par, " ")
@@ -75,11 +76,11 @@ def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> N
 
     first = True
     for next in usage:
-        if not first:
+        if first:
+            first = False
+        else:
             _generate_text(par, ", ")
-        generate_index(par, next.idx)
         _generate_usage(par, next)
-        first = False
     _generate_text(par, ")")
 
 

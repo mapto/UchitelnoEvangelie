@@ -39,6 +39,7 @@ def _generate_usage(par, u: Usage) -> None:
         and not u.trans_alt_var
     ):
         return
+
     _generate_text(par, f" {CF_SEP}")
     if u.orig_alt:
         _generate_text(par, " ")
@@ -64,13 +65,14 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
     """
     first = True
     for next in usage:
-        if not first:
+        if first:
+            first = False
+        else:
             _generate_text(par, "; ")
         _generate_text(par, str(next.idx), bold=next.idx.bold, italic=next.idx.italic)
         if next.var:
             _generate_text(par, next.var, superscript=True)
         _generate_usage(par, next)
-        first = False
 
 
 def _get_set_counts(s: SortedSet) -> Counter:

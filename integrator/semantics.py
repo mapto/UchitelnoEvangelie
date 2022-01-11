@@ -106,12 +106,10 @@ class LangSemantics:
         return False
 
     def alternatives(self, row: List[str], my_var: str) -> Tuple[str, Dict[str, str]]:
+        """TODO: Also add functionality to get alternative words"""
         m = len(self.lemmas)
         for l in range(m - 1, 0, -1):  # does not reach 0
             if row[self.lemmas[l]].strip():
-                # mlem = self.multilemma(row, l)
-                # if len(mlem) == 1 and not next(iter(mlem.keys())):
-                #     continue
                 lalt = self.level_alternatives(row, my_var, l)
                 if not lalt[0] and not lalt[1]:
                     continue
