@@ -1,6 +1,6 @@
 """The exporter specific to the indexgenerator"""
 
-from const import VAR_GR, VAR_SL
+from const import VAR_GR, VAR_SL, SPECIAL_CHARS
 from typing import Dict, List, Tuple, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
@@ -15,6 +15,7 @@ from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, brace_open, brace_close
 
 BULLET_STYLE = "List Bullet"
+LEVEL_OFFSET = 0.5
 
 
 def generate_index(par, idx: Index) -> None:
@@ -199,19 +200,19 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
         if li:
             par = doc.add_paragraph()
             par.style.font.name = GENERIC_FONT
-            par.paragraph_format.space_before = Pt(0)
-            par.paragraph_format.space_after = Pt(0)
+            par.paragraph_format.space_before = Cm(0)
+            par.paragraph_format.space_after = Cm(0)
             if level > 0:
-                par.paragraph_format.first_line_indent = Pt(10)
+                par.paragraph_format.first_line_indent = Cm(LEVEL_OFFSET * level)
 
-            prefix = "| " * level
+            prefix = "" if li[0] in SPECIAL_CHARS else "| " * level
             _generate_text(
                 par,
-                f"{prefix} {li}",
+                f"{prefix}{li}",
                 fonts[lang],
                 size=Pt(14 if level == 0 else 12),
                 bold=level == 0,
-                indent=Cm(0.75 * level),
+                indent=Cm(LEVEL_OFFSET * level),
             )
 
             _generate_counts(par, next_d, False)
@@ -228,9 +229,9 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
                 par = doc.add_paragraph()
                 par.style = doc.styles[BULLET_STYLE]
                 par.style.font.name = GENERIC_FONT
-                par.paragraph_format.space_before = Pt(0)
-                par.paragraph_format.space_after = Pt(0)
-                par.paragraph_format.left_indent = Cm(1)
+                par.paragraph_format.space_before = Cm(0)
+                par.paragraph_format.space_after = Cm(0)
+                par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 3)
 
                 _generate_text(par, t, fonts[trans_lang])
                 _generate_counts(par, bottom_d, True)

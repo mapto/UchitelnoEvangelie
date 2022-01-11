@@ -521,3 +521,44 @@ def test_aggregate_ipercliso():
             },
         },
     }
+
+
+def test_aggregate_satvoriti():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    r1 = (
+        ["+ \ue201сть GH", "сътвор\ue205т\ue205"]
+        + [""] * 2
+        + ["17/047a06", "сътвор\ue205лъ", "сътвор\ue205лъ", "сътвор\ue205т\ue205"]
+        + [""] * 4
+        + ["Ø"]
+        + [""] * 13
+        + ["hl05"]
+    )
+    r2 = (
+        [
+            "+ \ue201сть GH",
+            "бꙑт\ue205",
+            "",
+            "gramm.",
+            "17/47a06",
+            "",
+            "сътвор\ue205лъ",
+            "om.",
+        ]
+        + [""] * 18
+        + ["hl05|hl03"]
+    )
+
+    rows = [r1, r2]
+
+    result = SortedDict()
+    result = aggregate(rows, gr_sem.var, sl_sem, result)
+    assert not result
+    result = aggregate(rows, gr_sem.var, sl_sem.var, result)
+    assert not result

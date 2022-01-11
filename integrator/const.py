@@ -10,6 +10,7 @@ VAR_SEP = "-"  # used to separate the two language in variant source annotation
 
 MISSING_CH = "ₓ"
 EMPTY_CH = "Ø"
+SPECIAL_CHARS = ["~", "*", "≠"]
 
 # first letter is main variant
 MAIN_SL = "S"
