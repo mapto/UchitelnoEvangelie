@@ -15,7 +15,7 @@ Options:
   -p --no-pause         Disable pause at end of execution
 
 """
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 from docopt import docopt  # type: ignore
 
@@ -42,10 +42,11 @@ if __name__ == "__main__":
 
     try:
         doc = Document(fname)
-    except OpcError:
+    except OpcError as oe:
         print(
             "Файлът трябва да е във формат .docx. Посоченият файл изглежда развален. Моля регенерирайте го"
         )
+        print(oe)
         exit()
 
     # fname = "../text/00-Prolog-tab.docx"

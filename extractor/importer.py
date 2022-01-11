@@ -131,7 +131,13 @@ def parse_document(ch: int, doc: Document, comments: Dict[int, Comment]) -> Word
 def import_chapter(fname: str) -> WordList:
     """Import a preformatted chapter of a manuscript"""
     doc = Document(fname)
-    book_prefix = int(Path(fname).name.split("-")[0])
+    parts = Path(fname).name.split("-")
+    book_prefix = 0
+    try:
+        book_prefix = int(parts[0])
+    except ValueError:
+        print("Името на файла не започва с <номер>-, затова допускаме глава 0.")
+
     comments = parse_comments(doc)
     # print(comments)
     return parse_document(book_prefix, doc, comments)
