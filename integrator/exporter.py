@@ -83,6 +83,29 @@ def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> N
     _generate_text(par, ")")
 
 
+def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
+    """Lists ordered occurences for each word usage pair"""
+    trans_lang = "gr" if lang == "sl" else "sl"
+    for t, bottom_d in d.items():
+        par = doc.add_paragraph()
+        par.style.font.name = GENERIC_FONT
+        par.paragraph_format.left_indent = Pt(30)
+        par.paragraph_format.first_line_indent = Pt(-10)
+
+        _generate_text(par, t, fonts[trans_lang])
+
+        run = par.add_run()
+        run.add_text(": ")
+        first = True
+        pairs = SortedDict(bottom_d.items())
+        for key in pairs:
+            usage = bottom_d[key]
+            if not first:
+                par.add_run().add_text("; ")
+            docx_usage(par, key, usage, lang)
+            first = False
+
+
 def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
     """Builds the hierarchical entries for detailed comparison.
     Recursion ensures that this works with variable depth.
@@ -109,26 +132,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
 
         any_of_any = any_grandchild(next_d)
         if type(any_of_any) is SortedSet:  # bottom of structure
-            trans_lang = "gr" if lang == "sl" else "sl"
-            for t, bottom_d in next_d.items():
-                par = doc.add_paragraph()
-                par.style.font.name = GENERIC_FONT
-                par.paragraph_format.left_indent = Pt(30)
-                par.paragraph_format.first_line_indent = Pt(-10)
-
-                _generate_text(par, t, fonts[trans_lang])
-
-                run = par.add_run()
-                run.add_text(": ")
-                first = True
-                pairs = SortedDict(bottom_d.items())
-                for key in pairs:
-                    usage = bottom_d[key]
-                    if not first:
-                        par.add_run().add_text("; ")
-                    docx_usage(par, key, usage, lang)
-                    first = False
-
+            _generate_usage_line(lang, next_d, doc)
         else:
             _export_line(level + 1, lang, next_d, doc)
 

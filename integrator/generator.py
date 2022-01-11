@@ -172,6 +172,33 @@ def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> No
         _generate_text(par, "var", superscript=True)
 
 
+def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
+    """Merges together all occurences for the purposes of ordering, because usage pairs are not shown"""
+    trans_lang = "gr" if lang == "sl" else "sl"
+    for t, bottom_d in d.items():
+        # c = _get_dict_counts(d).get_counts(True)
+        # if not c[0] and not c[1]:
+        #    return
+
+        par = doc.add_paragraph()
+        par.style = doc.styles[BULLET_STYLE]
+        par.style.font.name = GENERIC_FONT
+        par.paragraph_format.space_before = Cm(0)
+        par.paragraph_format.space_after = Cm(0)
+        par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 3)
+
+        _generate_text(par, t, fonts[trans_lang])
+        _generate_counts(par, bottom_d, True)
+
+        run = par.add_run()
+        # run.font.name = GENERIC_FONT
+        run.add_text("): ")
+        all = SortedSet()
+        for nxt in bottom_d.values():
+            all.update(nxt)
+        docx_result(par, all, lang)
+
+
 def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
     """Builds the hierarchical entries of the dictionary.
     Recursion ensures that this works with variable depth.
@@ -211,30 +238,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
 
         any_of_any = any_grandchild(next_d)
         if type(any_of_any) is SortedSet:  # bottom of structure
-            trans_lang = "gr" if lang == "sl" else "sl"
-            for t, bottom_d in next_d.items():
-                # c = _get_dict_counts(d).get_counts(True)
-                # if not c[0] and not c[1]:
-                #    return
-
-                par = doc.add_paragraph()
-                par.style = doc.styles[BULLET_STYLE]
-                par.style.font.name = GENERIC_FONT
-                par.paragraph_format.space_before = Cm(0)
-                par.paragraph_format.space_after = Cm(0)
-                par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 3)
-
-                _generate_text(par, t, fonts[trans_lang])
-                _generate_counts(par, bottom_d, True)
-
-                run = par.add_run()
-                # run.font.name = GENERIC_FONT
-                run.add_text("): ")
-                all = SortedSet()
-                for nxt in bottom_d.values():
-                    all.update(nxt)
-                docx_result(par, all, lang)
-
+            _generate_usage_line(lang, next_d, doc)
         else:
             _generate_line(level + 1, lang, next_d, doc)
 

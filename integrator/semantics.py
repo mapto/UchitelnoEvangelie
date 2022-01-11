@@ -26,6 +26,7 @@ def _build_usage(
     tvar: str,
     word: str,
 ):
+    """ovar and tvar are a list of variant identifiers"""
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
     v = osem.is_variant()
