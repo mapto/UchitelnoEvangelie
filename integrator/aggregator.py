@@ -12,7 +12,6 @@ from util import ord_word, base_word
 from semantics import present
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
 
-ord_tuple = lambda x: ord_word(x[0])
 
 
 def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[str, str]:

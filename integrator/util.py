@@ -7,8 +7,7 @@ from typing import Dict, List, Set
 import unicodedata
 from sortedcontainers import SortedSet  # type: ignore
 
-from alphabet import remap
-from const import PATH_SEP, H_LEMMA_SEP
+from alphabet import remap, reduce
 
 
 max_char = ord("ѵ") - ord(" ") + 1
@@ -36,6 +35,7 @@ def _ord(a: str) -> float:
     return ord(a)
 
 
+'''
 def cmp_chr(a: str, b: str) -> int:
     """
     >>> cmp_chr("а", "б")
@@ -81,6 +81,7 @@ def cmp_chr(a: str, b: str) -> int:
 
     return 0 if _ord(a) - _ord(b) == 0 else 1 if _ord(a) > _ord(b) else -1
     # return _ord(a) - _ord(b)
+'''
 
 
 def base_word(w: str) -> str:
@@ -89,6 +90,23 @@ def base_word(w: str) -> str:
     w = w.strip()
     # w.replace("оу", "ѹ")
     w = unicodedata.normalize("NFKC", w)
+    return w
+
+
+def clean_word(w: str) -> str:
+    """
+    Remove fake ambiguities due to OCR
+
+    >>> clean_word("λέγω")
+    'λέγω'
+    >>> clean_word("εἰμί")
+    'εἰμί'
+    >>> clean_word("δέ")
+    'δέ'
+    """
+    for k in reduce.keys():
+        if k in w:
+            w = w.replace(k, reduce[k])
     return w
 
 

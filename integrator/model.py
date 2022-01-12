@@ -154,9 +154,9 @@ class Usage:
     idx: Index
     lang: str
     var: str = ""
-    orig_alt: str = "" # TODO this is lemma, for integrator we also need word
+    orig_alt: str = ""  # TODO this is lemma, for integrator we also need word
     orig_alt_var: Dict[str, str] = field(default_factory=lambda: {})
-    trans_alt: str = "" # TODO this is lemma, for integrator we also need word
+    trans_alt: str = ""  # TODO this is lemma, for integrator we also need word
     trans_alt_var: Dict[str, str] = field(default_factory=lambda: {})
 
     def __hash__(self):

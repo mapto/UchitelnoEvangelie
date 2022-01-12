@@ -2,7 +2,6 @@
 
 from typing import List, Dict, Optional
 
-from openpyxl import Workbook  # type: ignore
 from openpyxl import load_workbook  # type: ignore
 from openpyxl.styles import Font  # type: ignore
 

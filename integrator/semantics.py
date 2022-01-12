@@ -6,7 +6,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import EMPTY_CH, PATH_SEP, VAR_SEP, default_sources
+from const import EMPTY_CH, VAR_SEP, default_sources
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 from util import base_word

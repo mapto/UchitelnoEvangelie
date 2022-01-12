@@ -7,9 +7,7 @@ from typing import Dict, List
 from const import IDX_COL, MISSING_CH, STYLE_COL, V_LEMMA_SEP
 from model import Index
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
-from util import ord_word
-
-ord_tuple = lambda x: ord_word(x[0])
+from util import clean_word
 
 
 def _group_variants(group: List[List[str]], sem: LangSemantics) -> str:
@@ -194,13 +192,12 @@ def merge(
     result: List[List[str]] = []
 
     for raw in corpus:
-        row = [v if v else "" for v in raw]
+        row = [clean_word(v) if v else "" for v in raw]
 
         # if "1/6a10" in row[IDX_COL]:
         #     print(row)
 
-        not_blank = [v for v in row if v]
-        if not row[IDX_COL] and not_blank:
+        if not row[IDX_COL] and any(row):
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
 
         if _grouped(row, orig) or _grouped(row, trans):
