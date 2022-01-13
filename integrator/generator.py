@@ -71,7 +71,7 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
             _generate_text(par, "; ")
         _generate_text(par, str(next.idx), bold=next.idx.bold, italic=next.idx.italic)
         if next.var:
-            _generate_text(par, next.var, superscript=True)
+            _generate_text(par, str(next.var), superscript=True)
         _generate_usage(par, next)
 
 
