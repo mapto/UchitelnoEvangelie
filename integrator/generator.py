@@ -1,7 +1,7 @@
 """The exporter specific to the indexgenerator"""
 
 from const import VAR_GR, VAR_SL, SPECIAL_CHARS
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
@@ -9,7 +9,7 @@ from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
 from const import CF_SEP, main_source
-from model import Index, Usage, Counter
+from model import Index, Usage, Counter, Source
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, brace_open, brace_close
@@ -18,7 +18,7 @@ BULLET_STYLE = "List Bullet"
 LEVEL_OFFSET = 0.5
 
 
-def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
+def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
     for var, word in alt_var.items():
@@ -27,7 +27,7 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
         else:
             _generate_text(par, ", ")
         _generate_text(par, word, fonts[lang])
-        _generate_text(par, var, superscript=True)
+        _generate_text(par, str(var), superscript=True)
     _generate_text(par, brace_close[lang])
 
 

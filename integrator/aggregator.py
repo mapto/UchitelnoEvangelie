@@ -9,12 +9,13 @@ from const import IDX_COL, H_LEMMA_SEP, V_LEMMA_SEP, MISSING_CH
 
 from util import ord_word, base_word
 
+from model import Source
+
 from semantics import present
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
 
 
-
-def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[str, str]:
+def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[Source, str]:
     if not present(row, sem):
         return {}
     assert sem
@@ -60,14 +61,13 @@ def _agg_lemma(
         assert row[IDX_COL]
         return orig.compile_usages(trans, row, d, olemma, tlemma)
 
-    # TODO: implement variants here
     if orig.is_variant() and row[col]:
         row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
     # lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
     if not omultilemmas:
-        omultilemmas[""] = row[col]
+        omultilemmas[Source("")] = row[col]
     if not tmultilemmas:
-        tmultilemmas[""] = tlemma
+        tmultilemmas[Source("")] = tlemma
 
     lem_col = orig.lemmas
     for oli in omultilemmas.values():

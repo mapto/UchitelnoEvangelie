@@ -9,6 +9,111 @@ from const import PATH_SEP
 from util import base_word
 
 
+@dataclass(frozen=True)
+class Source:
+    """Represents a list of sources, could be one or two letter symbols"""
+
+    src: str
+
+    def _sort_vars(self) -> str:
+        """
+        >>> Source('WGH')._sort_vars()
+        'GHW'
+        >>> Source('PbPa')._sort_vars()
+        'PaPb'
+        >>> Source('CMB')._sort_vars()
+        'BCM'
+        >>> Source('WH')._sort_vars()
+        'HW'
+        >>> Source('HW')._sort_vars()
+        'HW'
+        """
+        return "".join(sorted(self.values()))
+
+    def values(self) -> Set[str]:
+        split = set()
+        prev = ""
+        for c in self.src:
+            if c == c.lower():
+                split.add(prev + c)
+                prev = ""
+            else:
+                split.add(prev)
+                prev = c
+        if prev:
+            split.add(prev)
+        return split
+
+    def __eq__(self, other) -> bool:
+        """
+        >>> Source('A') == Source('B')
+        False
+        >>> Source('HW') == Source('WH')
+        True
+        >>> hash(Source('HW')) == hash(Source('HW'))
+        True
+        >>> hash(Source('HW')) == hash(Source('WH'))
+        True
+        >>> Source('HW') in {Source('HW')}
+        True
+        >>> Source('HW') in {Source('WH')}
+        True
+        >>> Source('HW') in {Source('WH'): '\ue201д\ue205но\ue20dѧдъ'}
+        True
+        """
+        return self._sort_vars() == Source(str(other))._sort_vars()
+
+    def __ne__(self, other) -> bool:
+        return not (self == other)
+
+    def __str__(self) -> str:
+        return self.src
+
+    def __repr__(self) -> str:
+        return f"Source('{self.src}')"
+        # return f"'{self.src}'"
+
+    def __len__(self) -> int:
+        return len(self.src)
+
+    def __add__(self, other) -> "Source":
+        return Source(self.src + str(other))
+
+    def __hash__(self) -> int:
+        """
+        >>> hash(Source('WH')) == hash(Source('HW'))
+        True
+        """
+        # print("-"*8)
+        # print(self._sort_vars())
+        # print((self._sort_vars()).__hash__())
+        # print(hash((self._sort_vars())))
+        return hash(self._sort_vars())
+
+    def __iter__(self):
+        return iter(self.src)
+
+    def __contains__(self, other) -> bool:
+        """
+        >>> Source('GH') in Source('GWH')
+        True
+        >>> Source('HW') in Source('WH')
+        True
+        >>> Source('WH') in Source('HW')
+        True
+        >>> Source('PaPb') in Source('MPaPb')
+        True
+        >>> Source('MP') in Source('MPaPb')
+        False
+        >>> Source('D') in Source('GWH')
+        False
+        """
+        return all(c in self.values() for c in Source(str(other)).values())
+
+    def __bool__(self) -> bool:
+        return bool(self.src)
+
+
 @dataclass(order=True, frozen=True)
 class Index:
     """Index only indicates if it is from a variant.
@@ -153,11 +258,11 @@ class Usage:
 
     idx: Index
     lang: str
-    var: str = ""
+    var: Source = field(default_factory=lambda: Source(""))
     orig_alt: str = ""  # TODO this is lemma, for integrator we also need word
-    orig_alt_var: Dict[str, str] = field(default_factory=lambda: {})
+    orig_alt_var: Dict[Source, str] = field(default_factory=lambda: {})
     trans_alt: str = ""  # TODO this is lemma, for integrator we also need word
-    trans_alt_var: Dict[str, str] = field(default_factory=lambda: {})
+    trans_alt_var: Dict[Source, str] = field(default_factory=lambda: {})
 
     def __hash__(self):
         return hash((self.idx, self.lang, self.var, self.orig_alt, self.trans_alt))

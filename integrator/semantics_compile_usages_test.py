@@ -621,3 +621,79 @@ def test_monogenis():
         }
     }
     assert d == expected
+
+
+def test_bozhii():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    r = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+    )
+
+    result = SortedDict()
+    result = sl_sem.compile_usages(gr_sem, r, result, "богъ", "θεός")
+    assert result == {
+        "θεός Gen.": {
+            ("боꙁѣ", "Θεοῦ"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=False,
+                            page=7,
+                            col="a",
+                            row=4,
+                            word="боꙁѣ",
+                        ),
+                        lang="sl",
+                        orig_alt_var={"GHW": "бож\ue205\ue205"},
+                    )
+                ]
+            )
+        }
+    }
+
+    result = SortedDict()
+    result = sl_sem.var.compile_usages(gr_sem, r, result, "бож\ue205\ue205", "θεός")
+    print(result)
+    # TODO: This is incorrect, fix it
+    assert result == {
+        "богъ": {
+            "Dat.": {
+                "": {
+                    "": {
+                        "θεός Gen.": {
+                            ("боꙁѣ", "Θεοῦ"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="a",
+                                            row=4,
+                                            word="боꙁѣ",
+                                        ),
+                                        lang="sl",
+                                        orig_alt_var={
+                                            "GHW": "бож\ue205\ue205",
+                                        },
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }

@@ -9,13 +9,13 @@ from docx import Document  # type: ignore
 from docx.shared import Pt  # type: ignore
 
 from const import CF_SEP, main_source
-from model import Index, Usage
+from model import Usage, Source
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, colors, brace_open, brace_close
 
 
-def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
+def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
     for var, word in alt_var.items():
@@ -24,7 +24,7 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
         else:
             _generate_text(par, ", ")
         _generate_text(par, word, fonts[lang])
-        _generate_text(par, var, superscript=True)
+        _generate_text(par, str(var), superscript=True)
     _generate_text(par, brace_close[lang])
 
 
@@ -32,7 +32,7 @@ def _generate_usage(par, u: Usage) -> None:
     _generate_text(par, str(u.idx), bold=u.idx.bold, italic=u.idx.italic)
     if u.var:
         _generate_text(
-            par, u.var, superscript=True, bold=u.idx.bold, italic=u.idx.italic
+            par, str(u.var), superscript=True, bold=u.idx.bold, italic=u.idx.italic
         )
 
     if (
