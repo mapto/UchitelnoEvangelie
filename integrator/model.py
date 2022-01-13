@@ -302,6 +302,26 @@ class Usage:
         return not self < other
         # return self.idx >= other.idx or len(self.var) >= len(other.var)
 
+    def __add__(self, other) -> "Usage":
+        """
+        >>> Usage(Index.unpack("1/1a1"), "sl", Source("G")) + Usage(Index.unpack("1/1a1"), "sl", Source("H"))
+        Usage(idx=Index(ch=1, alt=False, page=1, col='a', row=1, var=False, cnt=0, end=None, bold=False, italic=False, word=''), lang='sl', var=Source('GH'), orig_alt='', orig_alt_var={}, trans_alt='', trans_alt_var={})
+        """
+        assert self.idx == other.idx
+        assert self.lang == other.lang
+        assert self.orig_alt == other.orig_alt or (
+            bool(self.orig_alt) != bool(other.orig_alt)
+        )
+        assert self.trans_alt == other.trans_alt or (
+            bool(self.trans_alt) != bool(other.trans_alt)
+        )
+        orig_alt = self.orig_alt if self.orig_alt else other.orig_alt
+        trans_alt = self.trans_alt if self.trans_alt else other.trans_alt
+        # TODO: complete parameters
+        return Usage(
+            self.idx, self.lang, self.var + other.var, orig_alt, trans_alt=trans_alt
+        )
+
 
 @dataclass
 class Path:
