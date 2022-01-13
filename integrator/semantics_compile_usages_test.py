@@ -1,7 +1,7 @@
 """Tests of LangSemantics.compile_usages"""
 
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
-from model import Index, Usage
+from model import Index, Usage, Source
 from semantics import MainLangSemantics, VarLangSemantics
 
 
@@ -641,59 +641,64 @@ def test_bozhii():
     )
 
     result = SortedDict()
-    result = sl_sem.compile_usages(gr_sem, r, result, "богъ", "θεός")
-    assert result == {
-        "θεός Gen.": {
-            ("боꙁѣ", "Θεοῦ"): SortedSet(
-                [
-                    Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=False,
-                            page=7,
-                            col="a",
-                            row=4,
-                            word="боꙁѣ",
-                        ),
-                        lang="sl",
-                        orig_alt_var={"GHW": "бож\ue205\ue205"},
-                    )
-                ]
-            )
-        }
-    }
-
-    result = SortedDict()
     result = sl_sem.var.compile_usages(gr_sem, r, result, "бож\ue205\ue205", "θεός")
-    print(result)
-    # TODO: This is incorrect, fix it
-    assert result == {
-        "богъ": {
-            "Dat.": {
-                "": {
-                    "": {
-                        "θεός Gen.": {
-                            ("боꙁѣ", "Θεοῦ"): SortedSet(
-                                [
-                                    Usage(
-                                        idx=Index(
-                                            ch=1,
-                                            alt=False,
-                                            page=7,
-                                            col="a",
-                                            row=4,
-                                            word="боꙁѣ",
-                                        ),
-                                        lang="sl",
-                                        orig_alt_var={
-                                            "GHW": "бож\ue205\ue205",
-                                        },
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
+    assert result == SortedDict(
+        {
+            "θεός Gen.": {
+                ("б\ue010ж\ue205", "Θεοῦ"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=7,
+                                col="a",
+                                row=4,
+                                var=True,
+                                word="б\ue010ж\ue205",
+                            ),
+                            lang="sl",
+                            var=Source("W"),
+                            orig_alt="богъ",
+                        )
+                    ]
+                ),
+                ("б\ue010ж\ue205\ue205", "Θεοῦ"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=7,
+                                col="a",
+                                row=4,
+                                var=True,
+                                word="б\ue010ж\ue205\ue205",
+                            ),
+                            lang="sl",
+                            var=Source("G"),
+                            orig_alt="богъ",
+                        )
+                    ]
+                ),
+                ("б\ue010жї\ue205", "Θεοῦ"): SortedSet(
+                    [
+                        Usage(
+                            idx=Index(
+                                ch=1,
+                                alt=False,
+                                page=7,
+                                col="a",
+                                row=4,
+                                var=True,
+                                word="б\ue010жї\ue205",
+                            ),
+                            lang="sl",
+                            var=Source("H"),
+                            orig_alt="богъ",
+                        )
+                    ]
+                ),
             }
         }
-    }
+    )

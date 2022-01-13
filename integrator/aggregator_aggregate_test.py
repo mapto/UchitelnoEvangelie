@@ -627,85 +627,72 @@ def test_aggregate_bozhii():
     # TODO: merge bozhii
     result = SortedDict()
     result = aggregate([r], sl_sem.var, gr_sem, result)
-    print(result)
-    # assert result == {
-    #     "бож\ue205\ue205": {
-    #         "": {
-    #             "": {
-    #                 "": {
-    #                     "θεός Gen.": {
-    #                         ("б\ue010ж\ue205", "Θεοῦ"): SortedSet(
-    #                             [
-    #                                 Usage(
-    #                                     idx=Index(
-    #                                         ch=1,
-    #                                         alt=False,
-    #                                         page=7,
-    #                                         col="a",
-    #                                         row=4,
-    #                                         var=True,
-    #                                         word="б\ue010ж\ue205",
-    #                                     ),
-    #                                     lang="sl",
-    #                                     var="W",
-    #                                     orig_alt="богъ",
-    #                                     orig_alt_var={
-    #                                         "G": "бож\ue205\ue205",
-    #                                         "H": "бож\ue205\ue205",
-    #                                     },
-    #                                 )
-    #                             ]
-    #                         ),
-    #                         ("б\ue010ж\ue205\ue205", "Θεοῦ"): SortedSet(
-    #                             [
-    #                                 Usage(
-    #                                     idx=Index(
-    #                                         ch=1,
-    #                                         alt=False,
-    #                                         page=7,
-    #                                         col="a",
-    #                                         row=4,
-    #                                         var=True,
-    #                                         word="б\ue010ж\ue205\ue205",
-    #                                     ),
-    #                                     lang="sl",
-    #                                     var="G",
-    #                                     orig_alt="богъ",
-    #                                     orig_alt_var={
-    #                                         "W": "бож\ue205\ue205",
-    #                                         "H": "бож\ue205\ue205",
-    #                                     },
-    #                                 )
-    #                             ]
-    #                         ),
-    #                         ("б\ue010жї\ue205", "Θεοῦ"): SortedSet(
-    #                             [
-    #                                 Usage(
-    #                                     idx=Index(
-    #                                         ch=1,
-    #                                         alt=False,
-    #                                         page=7,
-    #                                         col="a",
-    #                                         row=4,
-    #                                         var=True,
-    #                                         word="б\ue010жї\ue205",
-    #                                     ),
-    #                                     lang="sl",
-    #                                     var="H",
-    #                                     orig_alt="богъ",
-    #                                     orig_alt_var={
-    #                                         "W": "бож\ue205\ue205",
-    #                                         "G": "бож\ue205\ue205",
-    #                                     },
-    #                                 )
-    #                             ]
-    #                         ),
-    #                     }
-    #                 }
-    #             }
-    #         }
-    #     }
-    # }
+    assert result == {
+        "бож\ue205\ue205": {
+            "": {
+                "": {
+                    "": {
+                        "θεός Gen.": {
+                            ("б\ue010ж\ue205", "Θεοῦ"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="a",
+                                            row=4,
+                                            var=True,
+                                            word="б\ue010ж\ue205",
+                                        ),
+                                        lang="sl",
+                                        var=Source("W"),
+                                        orig_alt="богъ",
+                                    )
+                                ]
+                            ),
+                            ("б\ue010ж\ue205\ue205", "Θεοῦ"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="a",
+                                            row=4,
+                                            var=True,
+                                            word="б\ue010ж\ue205\ue205",
+                                        ),
+                                        lang="sl",
+                                        var=Source("G"),
+                                        orig_alt="богъ",
+                                    )
+                                ]
+                            ),
+                            ("б\ue010жї\ue205", "Θεοῦ"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="a",
+                                            row=4,
+                                            var=True,
+                                            word="б\ue010жї\ue205",
+                                        ),
+                                        lang="sl",
+                                        var=Source("H"),
+                                        orig_alt="богъ",
+                                    )
+                                ]
+                            ),
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     # TODO: merge bozhii
     result = SortedDict()

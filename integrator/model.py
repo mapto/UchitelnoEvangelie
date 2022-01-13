@@ -113,6 +113,19 @@ class Source:
     def __bool__(self) -> bool:
         return bool(self.src)
 
+    def inside(self, iterable) -> Optional["Source"]:
+        """
+        >>> Source("A").inside([Source("AB"), Source("C")])
+        Source('AB')
+        >>> Source("A").inside({Source("AB"): 1, Source("C"): 2})
+        Source('AB')
+        >>> Source("F").inside([Source("AB"), Source("CD")])
+        """
+        for i in iterable:
+            if Source(str(self)) in Source(str(i)):
+                return i
+        return None
+
 
 @dataclass(order=True, frozen=True)
 class Index:

@@ -39,7 +39,7 @@ def test_LangSemantics_alternatives():
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
     assert result == ("", {})
-    result == gr_sem.var.alternatives(row, "C")
+    result == gr_sem.var.alternatives(row, Source("C"))
     # assert result == ("μὲν", {})
 
     row = (
@@ -59,9 +59,9 @@ def test_LangSemantics_alternatives():
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
     assert result == ("", {"G": "\ue205но\ue20dѧдъ", "H": "\ue201д\ue205нородъ"})
-    result = sl_sem.var.alternatives(row, "G")
+    result = sl_sem.var.alternatives(row, Source("G"))
     assert result == ("\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"})
-    result = sl_sem.var.alternatives(row, "H")
+    result = sl_sem.var.alternatives(row, Source("H"))
     assert result == ("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
 
     # semantics update from September 2021
@@ -82,10 +82,10 @@ def test_LangSemantics_alternatives():
         + ["μονογενὴς", "μονογενής"]
         + [""] * 14
     )
-    result = sl_sem.var.alternatives(row, "WH")
+    result = sl_sem.var.alternatives(row, Source("WH"))
     assert result == ("\ue205но\ue20dѧдъ", {})
     r1 = sl_sem.alternatives(row, "*IGNORED*")
-    assert r1 == ("", {"WH": "\ue201д\ue205но\ue20dѧдъ"})
+    assert r1 == ("", {Source("WH"): "\ue201д\ue205но\ue20dѧдъ"})
 
 
 def test_LangSemantics_alternatives_bozhii():
@@ -102,14 +102,13 @@ def test_LangSemantics_alternatives_bozhii():
         + [""] * 13
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {"G": "\ue205 pron."})
+    assert result == ("", {Source("WGH"): "бож\ue205\ue205"})
 
-    result = sl_sem.var.alternatives(row, "G")
-    print(result)
-    assert result == ("", {"G": "\ue205 pron."})
+    result = sl_sem.var.alternatives(row, Source("G"))
+    assert result == ("богъ", {})
 
-    result = sl_sem.var.alternatives(row, "GHW")
-    print(result)
+    result = sl_sem.var.alternatives(row, Source("GHW"))
+    assert result == ("богъ", {})
 
 
 def test_VarLangSemantics_multiword():
@@ -123,13 +122,13 @@ def test_VarLangSemantics_multiword():
     assert result == {"G": "\ue205но\ue20dедаго"}
 
     result = sem.multiword(["", ""])
-    assert result == {"WGH": ""}
+    assert result == {Source("WGH"): ""}
 
     result = sem.multiword(["дноеды WH Ø G", "дноѧдъ"])
-    assert result == {"WH": "дноеды", "G": "Ø"}
+    assert result == {Source("WH"): "дноеды", "G": "Ø"}
 
     result = sem.multiword(["дноеды", "дноѧдъ"])
-    assert result == {"WGH": "дноеды"}
+    assert result == {Source("WGH"): "дноеды"}
 
     gr_sem = VarLangSemantics("gr", 0, [1])
     result = gr_sem.multiword(["με C", "ἐγώ"])
@@ -168,7 +167,7 @@ def test_VarLangSemantics_multiword_greek_paris():
         + [""] * 10
     )
     result = gr_sem.var.multiword(row)
-    assert result == {"CMPcPa": "ἀνάκλησιν"}
+    assert result == {Source("CMPcPa"): "ἀνάκλησιν"}
 
 
 def test_VarLangSemantics_multiword_bozhii():
@@ -217,7 +216,7 @@ def test_LangSemantics_multilemma():
         + [""] * 6
     )
     result = sl_sem.var.multilemma(row)
-    assert result == {"WGH": "въ"}
+    assert result == {Source("WGH"): "въ"}
     result = gr_sem.var.multilemma(row)
     assert result == {"C": "παρά"}
 
@@ -255,7 +254,7 @@ def test_LangSemantics_multilemma():
             "\ue205но\ue20dѧдъ",
         ]
     )
-    assert result == {"WH": "дноѧдъ"}
+    assert result == {Source("WH"): "дноѧдъ"}
 
     dummy_sem2 = VarLangSemantics("gr", 0, [1])
     result = dummy_sem2.multilemma(["με C", "ἐγώ"])
@@ -280,7 +279,7 @@ def test_LangSemantics_multilemma():
         + [""] * 14
     )
     result = sl_sem.var.multilemma(row)
-    assert result == {"WH": "\ue201д\ue205но\ue20dѧдъ"}
+    assert result == {Source("WH"): "\ue201д\ue205но\ue20dѧдъ"}
 
     row = (
         [
@@ -322,7 +321,7 @@ def test_LangSemantics_multilemma_sub():
     assert result == {"C": "παρά + Acc."}
 
     result = sl_sem.var.multilemma(row, 1)
-    assert result == {"WGH": "въ + Loc."}
+    assert result == {Source("WGH"): "въ + Loc."}
 
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
@@ -349,9 +348,9 @@ def test_LangSemantics_multilemma_sub():
         + ["hl05|hl00"]
     )
     result = sl_sem.var.multilemma(row, 1)
-    assert result == {"WG": "ходомь спѣт\ue205"}
+    assert result == {Source("WG"): "ходомь спѣт\ue205"}
     result = sl_sem.var.multilemma(row)
-    assert result == {"WG": "ходъ"}
+    assert result == {Source("WG"): "ходъ"}
 
 
 def test_LangSemantics_multilemma_paris():
@@ -388,7 +387,7 @@ def test_LangSemantics_multilemma_paris():
         + [""] * 10
     )
     result = gr_sem.var.multilemma(row)
-    assert result == {"CMPcPa": "ἀνάκλησιν"}
+    assert result == {Source("CMPcPa"): "ἀνάκλησιν"}
 
 
 def test_LangSemantics_multiword_bozhii():
@@ -440,7 +439,6 @@ def test__is_variant_lemma():
     assert _is_variant_lemma(row, gr_sem, Source(""), "ὑπερκλύζω")
     assert _is_variant_lemma(row, gr_sem.var, Source("C"), "ὑπερβλύω")
 
-    print("??D")
     assert not _is_variant_lemma(row, gr_sem.var, Source("D"), "ὑπερβλύω")
 
     row = (
@@ -464,6 +462,24 @@ def test__is_variant_lemma():
     assert _is_variant_lemma(row, sl_sem, Source(""), "\ue205но\ue20dѧдъ")
     assert _is_variant_lemma(row, gr_sem, Source(""), "μονογενής")
     assert not _is_variant_lemma(row, gr_sem.var, Source(""), "μονογενής")
+
+
+def test_is_variant_lemma_bozhii():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+    row = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+    )
+    assert _is_variant_lemma(row, sl_sem.var, Source("W"), "бож\ue205\ue205")
 
 
 def test_build_paths():

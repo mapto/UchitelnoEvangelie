@@ -43,12 +43,12 @@ def _is_variant_lemma(
     mlem = sem.multilemma(row)
     if not mlem:
         return False
-    # print(mlem)
     if not sem.is_variant():
         assert not current_var
         assert len(mlem) == 1
         return current_lemma == mlem[Source("")]
-    result = current_var in mlem and current_lemma == mlem[current_var]
+    loc = current_var.inside(mlem)
+    result = loc is not None and current_lemma == mlem[loc]
     return result
 
 
@@ -177,7 +177,6 @@ class LangSemantics:
                     trans_var_in_lemma = _is_variant_lemma(row, trans, tvar, tlemma)
                     # print(f"{tvar} in {tlemma}: {trans_var_in_lemma}")
                     # TODO: what if nxt is gram. or other annotation?
-                    # print(f"{tlemma} in {nxt}: {tlemma in nxt}")
                     if orig_var_in_lemma and trans_var_in_lemma and tlemma in nxt:
                         key = (oword, tword)
                         d = _add_usage(val, nxt, key, d)
@@ -283,17 +282,10 @@ class VarLangSemantics(LangSemantics):
         multilemma = self.multilemma(row, lidx)
         if present(row, self.main):
             assert self.main  # for mypy
-            if (
-                my_var in multilemma
-                and row[self.main.lemmas[lidx]] != multilemma[my_var]
-            ):
+            loc = my_var.inside(multilemma)
+            if loc and row[self.main.lemmas[lidx]] != multilemma[loc]:
                 main = row[self.main.lemmas[lidx]]
-        # alt = {
-        #     k: v
-        #     for k, v in multilemma.items()
-        #     if k != my_var and (my_var not in multilemma or v != multilemma[my_var])
-        # }
-        alt = {k: v for k, v in multilemma.items() if k != my_var}
+        alt = {k: v for k, v in multilemma.items() if my_var not in k}
         return (main, alt)
 
     def key(self, text: str) -> str:
