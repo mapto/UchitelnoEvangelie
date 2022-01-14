@@ -221,12 +221,15 @@ class MainLangSemantics(LangSemantics):
         """Get alternative lemmas, ignoring variants that coincide with main
         Main alternative to main is always empty/nonexistent"""
         assert self.var  # for mypy
-        alt = {
+        alt_lemmas = {
             k: v
             for k, v in self.var.multilemma(row, lidx).items()
             if v != row[self.lemmas[lidx]]
         }
-        return Alternative("", alt)
+        alt_words = {
+            k: v for k, v in self.var.multiword(row).items() if k.inside(alt_lemmas)
+        }
+        return Alternative("", alt_lemmas, "", alt_words)
 
     def key(self, text: str) -> str:
         return text
@@ -273,15 +276,19 @@ class VarLangSemantics(LangSemantics):
         self, row: List[str], my_var: Source, lidx: int = 0
     ) -> Alternative:
         """Get alternative lemmas, skipping main if coincides with my variant"""
-        main = ""
+        main_lemma = ""
+        main_word = ""
         multilemma = self.multilemma(row, lidx)
+        multiword = self.multiword(row)
         if present(row, self.main):
             assert self.main  # for mypy
             loc = my_var.inside(multilemma)
             if loc and row[self.main.lemmas[lidx]] != multilemma[loc]:
-                main = row[self.main.lemmas[lidx]]
-        alt = {k: v for k, v in multilemma.items() if my_var not in k}
-        return Alternative(main, alt)
+                main_lemma = row[self.main.lemmas[lidx]]
+                main_word = row[self.main.word]
+        alt_lemmas = {k: v for k, v in multilemma.items() if my_var not in k}
+        alt_words = {k: v for k, v in multiword.items() if k.inside(alt_lemmas)}
+        return Alternative(main_lemma, alt_lemmas, main_word, alt_words)
 
     def key(self, text: str) -> str:
         m = re.search(r"^([^A-Z]+)([A-Z]+)$", text.strip())

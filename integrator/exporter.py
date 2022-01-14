@@ -39,22 +39,22 @@ def _generate_usage(par, u: Usage) -> None:
         return
 
     _generate_text(par, f" {CF_SEP}")
-    if u.orig_alt.main_lemma:
+    if u.orig_alt.main_word:
         _generate_text(par, " ")
-        _generate_text(par, u.orig_alt.main_lemma, fonts[u.lang])
+        _generate_text(par, u.orig_alt.main_word, fonts[u.lang])
         _generate_text(par, f" {main_source[u.lang]}")
 
-    if u.orig_alt.var_lemmas:
-        _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_lemmas)
+    if u.orig_alt.var_words:
+        _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_words)
 
     # previous addition certainly finished with GENERIC_FONT
-    if u.trans_alt.main_lemma:
+    if u.trans_alt.main_word:
         _generate_text(par, " ")
-        _generate_text(par, u.trans_alt.main_lemma, fonts[other_lang[u.lang]])
+        _generate_text(par, u.trans_alt.main_word, fonts[other_lang[u.lang]])
         _generate_text(par, f" {main_source[other_lang[u.lang]]}")
 
-    if u.trans_alt.var_lemmas:
-        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_lemmas)
+    if u.trans_alt.var_words:
+        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_words)
 
 
 def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> None:

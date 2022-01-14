@@ -26,7 +26,10 @@ def test_LangSemantics_alternatives():
         + [""] * 12
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == Alternative("", {"G": "\ue205 pron."})
+    assert result == Alternative(
+        var_lemmas={Source("G"): "\ue205 pron."},
+        var_words={Source("G"): "ю"},
+    )
 
     row = (
         ([""] * 3)
@@ -59,14 +62,29 @@ def test_LangSemantics_alternatives():
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
     assert result == Alternative(
-        "", {"G": "\ue205но\ue20dѧдъ", "H": "\ue201д\ue205нородъ"}
+        var_lemmas={
+            Source("H"): "\ue201д\ue205нородъ",
+            Source("G"): "\ue205но\ue20dѧдъ",
+        },
+        var_words={
+            Source("G"): "\ue205но\ue20dедаго",
+            Source("H"): "\ue201д\ue205нородоу",
+        },
     )
     result = sl_sem.var.alternatives(row, Source("G"))
     assert result == Alternative(
-        "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
+        main_lemma="\ue201д\ue205но\ue20dѧдъ",
+        var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
+        main_word="\ue201д\ue205но\ue20dедоу",
+        var_words={Source("H"): "\ue201д\ue205нородоу"},
     )
     result = sl_sem.var.alternatives(row, Source("H"))
-    assert result == Alternative("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
+    assert result == Alternative(
+        main_lemma="\ue201д\ue205но\ue20dѧдъ",
+        var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+        main_word="\ue201д\ue205но\ue20dедоу",
+        var_words={Source("G"): "\ue205но\ue20dедаго"},
+    )
 
     # semantics update from September 2021
     sl_sem = MainLangSemantics(
@@ -87,9 +105,14 @@ def test_LangSemantics_alternatives():
         + [""] * 14
     )
     result = sl_sem.var.alternatives(row, Source("WH"))
-    assert result == Alternative("\ue205но\ue20dѧдъ")
+    assert result == Alternative(
+        "\ue205но\ue20dѧдъ", main_word="\ue205но\ue20dадꙑ\ue205"
+    )
     r1 = sl_sem.alternatives(row, "*IGNORED*")
-    assert r1 == Alternative("", {Source("WH"): "\ue201д\ue205но\ue20dѧдъ"})
+    assert r1 == Alternative(
+        var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
+        var_words={Source("WH"): "\ue201д\ue205но\ue20dеды"},
+    )
 
 
 def test_LangSemantics_alternatives_bozhii():
@@ -106,13 +129,20 @@ def test_LangSemantics_alternatives_bozhii():
         + [""] * 13
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == Alternative("", {Source("WGH"): "бож\ue205\ue205"})
+    assert result == Alternative(
+        var_lemmas={Source("WGH"): "бож\ue205\ue205"},
+        var_words={
+            Source("W"): "б\ue010ж\ue205",
+            Source("G"): "б\ue010ж\ue205\ue205",
+            Source("H"): "б\ue010жї\ue205",
+        },
+    )
 
     result = sl_sem.var.alternatives(row, Source("G"))
-    assert result == Alternative("богъ")
+    assert result == Alternative("богъ", {}, "боꙁѣ")
 
     result = sl_sem.var.alternatives(row, Source("GHW"))
-    assert result == Alternative("богъ")
+    assert result == Alternative("богъ", {}, "боꙁѣ")
 
 
 def test_VarLangSemantics_multiword():
