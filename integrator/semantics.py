@@ -10,7 +10,7 @@ from const import EMPTY_CH, VAR_SEP, default_sources
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
 from util import base_word
-from model import Index, Usage, Path, Source
+from model import Alternative, Index, Usage, Path, Source
 
 
 def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
@@ -31,10 +31,10 @@ def _build_usage(
     i = "italic" in row[STYLE_COL]
     v = osem.is_variant()
     idx = Index.unpack(row[IDX_COL], b, i, v, word)
-    (oaltm, oaltv) = osem.alternatives(row, ovar)
-    (taltm, taltv) = tsem.alternatives(row, tvar)
+    oalt = osem.alternatives(row, ovar)
+    talt = tsem.alternatives(row, tvar)
     var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
-    return Usage(idx, osem.lang, var, oaltm, oaltv, taltm, taltv)
+    return Usage(idx, osem.lang, var, oalt, talt)
 
 
 def _is_variant_lemma(
@@ -103,24 +103,21 @@ class LangSemantics:
     def is_variant(self) -> bool:
         return False
 
-    def alternatives(
-        self, row: List[str], my_var: Source
-    ) -> Tuple[str, Dict[Source, str]]:
+    def alternatives(self, row: List[str], my_var: Source) -> Alternative:
         """TODO: Also add functionality to get alternative words"""
         m = len(self.lemmas)
         for l in range(m - 1, 0, -1):  # does not reach 0
             if row[self.lemmas[l]].strip():
                 lalt = self.level_alternatives(row, my_var, l)
-                if not lalt[0] and not lalt[1]:
+                if not lalt:
                     continue
                 return lalt
         return self.level_alternatives(row, my_var)  # return with 0 if reach this line
 
     def level_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Tuple[str, Dict[Source, str]]:
-        """Get alternative lemmas
-        Returns (main_alt, dict(var_name,var_alt))"""
+    ) -> Alternative:
+        """Get alternative lemmas"""
         raise NotImplementedError("abstract method")
 
     def key(self, text: str) -> str:
@@ -220,9 +217,8 @@ class MainLangSemantics(LangSemantics):
 
     def level_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Tuple[str, Dict[Source, str]]:
+    ) -> Alternative:
         """Get alternative lemmas, ignoring variants that coincide with main
-        Returns (main_alt, dict(var_name,var_alt))
         Main alternative to main is always empty/nonexistent"""
         assert self.var  # for mypy
         alt = {
@@ -230,7 +226,7 @@ class MainLangSemantics(LangSemantics):
             for k, v in self.var.multilemma(row, lidx).items()
             if v != row[self.lemmas[lidx]]
         }
-        return ("", alt)
+        return Alternative("", alt)
 
     def key(self, text: str) -> str:
         return text
@@ -275,9 +271,8 @@ class VarLangSemantics(LangSemantics):
 
     def level_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Tuple[str, Dict[Source, str]]:
-        """Get alternative lemmas, skipping main if coincides with my variant
-        Returns (main_alt, dict(var_name,var_alt))"""
+    ) -> Alternative:
+        """Get alternative lemmas, skipping main if coincides with my variant"""
         main = ""
         multilemma = self.multilemma(row, lidx)
         if present(row, self.main):
@@ -286,7 +281,7 @@ class VarLangSemantics(LangSemantics):
             if loc and row[self.main.lemmas[lidx]] != multilemma[loc]:
                 main = row[self.main.lemmas[lidx]]
         alt = {k: v for k, v in multilemma.items() if my_var not in k}
-        return (main, alt)
+        return Alternative(main, alt)
 
     def key(self, text: str) -> str:
         m = re.search(r"^([^A-Z]+)([A-Z]+)$", text.strip())

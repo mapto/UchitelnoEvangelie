@@ -1,7 +1,7 @@
 """Tests of LangSemantics.compile_usages"""
 
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
-from model import Index, Usage, Source
+from model import Index, Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
 
 
@@ -74,7 +74,7 @@ def test_para():
                             ),
                             lang="gr",
                             var="C",
-                            trans_alt_var={"WGH": "въ"},
+                            trans_alt=Alternative(var_lemmas={"WGH": "въ"}),
                         )
                     ]
                 )
@@ -142,7 +142,7 @@ def test_ipercliso():
                             ),
                             lang="gr",
                             var="C",
-                            orig_alt="ὑπερκλύζω",
+                            orig_alt=Alternative("ὑπερκλύζω"),
                         )
                     ]
                 )
@@ -162,7 +162,7 @@ def test_ipercliso():
                             ),
                             lang="gr",
                             var="C",
-                            orig_alt="ὑπερκλύζω",
+                            orig_alt=Alternative("ὑπερκλύζω"),
                         )
                     ]
                 )
@@ -215,7 +215,7 @@ def test_verovat():
                             word="вѣроують",
                         ),
                         lang="sl",
-                        orig_alt_var={"GH": "вѣра"},
+                        orig_alt=Alternative(var_lemmas={"GH": "вѣра"}),
                     )
                 ]
             )
@@ -237,7 +237,7 @@ def test_verovat():
                             word="πιστεύσωσι",
                         ),
                         lang="gr",
-                        trans_alt_var={"GH": "вѣра"},
+                        trans_alt=Alternative(var_lemmas={"GH": "вѣра"}),
                     )
                 ]
             )
@@ -348,7 +348,9 @@ def test_monogenis():
                             word="\ue205но\ue20dадꙑ\ue205",
                         ),
                         lang="sl",
-                        orig_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                        orig_alt=Alternative(
+                            var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                        ),
                     )
                 ]
             )
@@ -374,7 +376,9 @@ def test_monogenis():
                             word="μονογενὴς",
                         ),
                         lang="gr",
-                        trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                        trans_alt=Alternative(
+                            var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                        ),
                     )
                 ]
             ),
@@ -444,8 +448,7 @@ def test_monogenis():
         ),
         lang="sl",
         var="G",
-        orig_alt="\ue201д\ue205но\ue20dѧдъ",
-        orig_alt_var={"H": "\ue201д\ue205нородъ"},
+        orig_alt=Alternative("\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}),
     )
 
     d2 = SortedDict()
@@ -466,8 +469,7 @@ def test_monogenis():
         ),
         lang="sl",
         var="H",
-        orig_alt="\ue201д\ue205но\ue20dѧдъ",
-        orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
+        orig_alt=Alternative("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}),
     )
 
     row = (
@@ -506,8 +508,9 @@ def test_monogenis():
                         ),
                         lang="sl",
                         var="G",
-                        orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                        orig_alt_var={"H": "\ue201д\ue205нородъ"},
+                        orig_alt=Alternative(
+                            "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
+                        ),
                     )
                 ]
             )
@@ -533,8 +536,9 @@ def test_monogenis():
                         ),
                         lang="sl",
                         var="H",
-                        orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                        orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                        orig_alt=Alternative(
+                            "\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}
+                        ),
                     )
                 ]
             )
@@ -559,10 +563,12 @@ def test_monogenis():
                         ),
                         lang="gr",
                         var="",
-                        trans_alt_var={
-                            "H": "\ue201д\ue205нородъ",
-                            "G": "\ue205но\ue20dѧдъ",
-                        },
+                        trans_alt=Alternative(
+                            var_lemmas={
+                                "H": "\ue201д\ue205нородъ",
+                                "G": "\ue205но\ue20dѧдъ",
+                            }
+                        ),
                     )
                 ]
             )
@@ -587,8 +593,9 @@ def test_monogenis():
                         ),
                         lang="gr",
                         var="H",
-                        trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                        trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                        trans_alt=Alternative(
+                            "\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}
+                        ),
                     )
                 ]
             )
@@ -613,8 +620,9 @@ def test_monogenis():
                         ),
                         lang="gr",
                         var="G",
-                        trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                        trans_alt_var={"H": "\ue201д\ue205нородъ"},
+                        trans_alt=Alternative(
+                            "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
+                        ),
                     )
                 ]
             )
@@ -659,7 +667,7 @@ def test_bozhii():
                             ),
                             lang="sl",
                             var=Source("W"),
-                            orig_alt="богъ",
+                            orig_alt=Alternative("богъ"),
                         )
                     ]
                 ),
@@ -677,7 +685,7 @@ def test_bozhii():
                             ),
                             lang="sl",
                             var=Source("G"),
-                            orig_alt="богъ",
+                            orig_alt=Alternative("богъ"),
                         )
                     ]
                 ),
@@ -695,7 +703,7 @@ def test_bozhii():
                             ),
                             lang="sl",
                             var=Source("H"),
-                            orig_alt="богъ",
+                            orig_alt=Alternative("богъ"),
                         )
                     ]
                 ),

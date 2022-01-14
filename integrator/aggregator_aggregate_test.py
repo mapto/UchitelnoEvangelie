@@ -1,6 +1,6 @@
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
-from model import Index, Usage, Source
+from model import Index, Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import aggregate
 
@@ -44,10 +44,12 @@ def test_aggregate_monogenis():
                                 word="\ue201д\ue205но\ue20dедоу",
                             ),
                             lang="sl",
-                            orig_alt_var={
-                                "H": "\ue201д\ue205нородъ",
-                                "G": "\ue205но\ue20dѧдъ",
-                            },
+                            orig_alt=Alternative(
+                                var_lemmas={
+                                    "H": "\ue201д\ue205нородъ",
+                                    "G": "\ue205но\ue20dѧдъ",
+                                }
+                            ),
                         )
                     ]
                 )
@@ -74,8 +76,9 @@ def test_aggregate_monogenis():
                             ),
                             lang="sl",
                             var="H",
-                            orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                            orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                            orig_alt=Alternative(
+                                "\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}
+                            ),
                         )
                     ]
                 )
@@ -97,8 +100,9 @@ def test_aggregate_monogenis():
                             ),
                             lang="sl",
                             var="G",
-                            orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                            orig_alt_var={"H": "\ue201д\ue205нородъ"},
+                            orig_alt=Alternative(
+                                "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
+                            ),
                         )
                     ]
                 )
@@ -211,12 +215,14 @@ def test_aggregate_monogenis():
                                                     ),
                                                     lang="gr",
                                                     var=Source("G"),
-                                                    trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                                                    trans_alt_var={
-                                                        Source(
-                                                            "H"
-                                                        ): "\ue201д\ue205нородъ"
-                                                    },
+                                                    trans_alt=Alternative(
+                                                        "\ue201д\ue205но\ue20dѧдъ",
+                                                        {
+                                                            Source(
+                                                                "H"
+                                                            ): "\ue201д\ue205нородъ"
+                                                        },
+                                                    ),
                                                 )
                                             ]
                                         ),
@@ -235,11 +241,13 @@ def test_aggregate_monogenis():
                                                         word="μονογενὴς",
                                                     ),
                                                     lang="gr",
-                                                    trans_alt_var={
-                                                        Source(
-                                                            "WH"
-                                                        ): "\ue201д\ue205но\ue20dѧдъ"
-                                                    },
+                                                    trans_alt=Alternative(
+                                                        var_lemmas={
+                                                            Source(
+                                                                "WH"
+                                                            ): "\ue201д\ue205но\ue20dѧдъ"
+                                                        }
+                                                    ),
                                                 )
                                             ]
                                         ),
@@ -258,11 +266,13 @@ def test_aggregate_monogenis():
                                                         word="μονογενοῦς",
                                                     ),
                                                     lang="gr",
-                                                    trans_alt_var={
-                                                        Source(
-                                                            "WH"
-                                                        ): "\ue201д\ue205но\ue20dѧдъ"
-                                                    },
+                                                    trans_alt=Alternative(
+                                                        var_lemmas={
+                                                            Source(
+                                                                "WH"
+                                                            ): "\ue201д\ue205но\ue20dѧдъ"
+                                                        }
+                                                    ),
                                                 )
                                             ]
                                         ),
@@ -286,10 +296,14 @@ def test_aggregate_monogenis():
                                                     ),
                                                     lang="gr",
                                                     var=Source("H"),
-                                                    trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                                                    trans_alt_var={
-                                                        Source("G"): "\ue205но\ue20dѧдъ"
-                                                    },
+                                                    trans_alt=Alternative(
+                                                        "\ue201д\ue205но\ue20dѧдъ",
+                                                        {
+                                                            Source(
+                                                                "G"
+                                                            ): "\ue205но\ue20dѧдъ"
+                                                        },
+                                                    ),
                                                 )
                                             ]
                                         )
@@ -330,14 +344,16 @@ def test_aggregate_monogenis():
                                                         word="μονογενοῦς",
                                                     ),
                                                     lang="gr",
-                                                    trans_alt_var={
-                                                        Source(
-                                                            "H"
-                                                        ): "\ue201д\ue205нородъ",
-                                                        Source(
-                                                            "G"
-                                                        ): "\ue205но\ue20dѧдъ",
-                                                    },
+                                                    trans_alt=Alternative(
+                                                        var_lemmas={
+                                                            Source(
+                                                                "H"
+                                                            ): "\ue201д\ue205нородъ",
+                                                            Source(
+                                                                "G"
+                                                            ): "\ue205но\ue20dѧдъ",
+                                                        }
+                                                    ),
                                                 )
                                             ]
                                         ),
@@ -357,7 +373,9 @@ def test_aggregate_monogenis():
                                                     ),
                                                     lang="gr",
                                                     var=Source("WH"),
-                                                    trans_alt="\ue205но\ue20dѧдъ ",
+                                                    trans_alt=Alternative(
+                                                        "\ue205но\ue20dѧдъ "
+                                                    ),
                                                 )
                                             ]
                                         ),
@@ -377,7 +395,9 @@ def test_aggregate_monogenis():
                                                     ),
                                                     lang="gr",
                                                     var=Source("WH"),
-                                                    trans_alt="\ue205но\ue20dѧдъ",
+                                                    trans_alt=Alternative(
+                                                        "\ue205но\ue20dѧдъ"
+                                                    ),
                                                 )
                                             ]
                                         ),
@@ -445,7 +465,7 @@ def test_aggregate_ipercliso():
                                         word="ὑπερκλύζων",
                                     ),
                                     lang="gr",
-                                    orig_alt_var={"C": "ὑπερβλύω"},
+                                    orig_alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
                                 )
                             ]
                         )
@@ -467,7 +487,7 @@ def test_aggregate_ipercliso():
                                         word="ὑπερκλύσαι",
                                     ),
                                     lang="gr",
-                                    orig_alt_var={"C": "ὑπερβλύω"},
+                                    orig_alt=Alternative({"C": "ὑπερβλύω"}),
                                 )
                             ]
                         )
@@ -498,7 +518,7 @@ def test_aggregate_ipercliso():
                                     ),
                                     lang="gr",
                                     var="C",
-                                    orig_alt="ὑπερκλύζω",
+                                    orig_alt=Alternative("ὑπερκλύζω"),
                                 )
                             ]
                         )
@@ -522,7 +542,7 @@ def test_aggregate_ipercliso():
                                     ),
                                     lang="gr",
                                     var="C",
-                                    orig_alt="ὑπερκλύζω",
+                                    orig_alt=Alternative("ὑπερκλύζω"),
                                 )
                             ]
                         )
@@ -611,9 +631,11 @@ def test_aggregate_bozhii():
                                             word="боꙁѣ",
                                         ),
                                         lang="sl",
-                                        orig_alt_var={
-                                            "WGH": "бож\ue205\ue205",
-                                        },
+                                        orig_alt=Alternative(
+                                            var_lemmas={
+                                                "WGH": "бож\ue205\ue205",
+                                            }
+                                        ),
                                     )
                                 ]
                             )
@@ -647,7 +669,7 @@ def test_aggregate_bozhii():
                                         ),
                                         lang="sl",
                                         var=Source("W"),
-                                        orig_alt="богъ",
+                                        orig_alt=Alternative("богъ"),
                                     )
                                 ]
                             ),
@@ -665,7 +687,7 @@ def test_aggregate_bozhii():
                                         ),
                                         lang="sl",
                                         var=Source("G"),
-                                        orig_alt="богъ",
+                                        orig_alt=Alternative("богъ"),
                                     )
                                 ]
                             ),
@@ -683,7 +705,7 @@ def test_aggregate_bozhii():
                                         ),
                                         lang="sl",
                                         var=Source("H"),
-                                        orig_alt="богъ",
+                                        orig_alt=Alternative("богъ"),
                                     )
                                 ]
                             ),
@@ -715,11 +737,13 @@ def test_aggregate_bozhii():
                                     ),
                                     lang="gr",
                                     var="W",
-                                    trans_alt="богъ",
-                                    trans_alt_var={
-                                        "G": "бож\ue205\ue205",
-                                        "H": "бож\ue205\ue205",
-                                    },
+                                    trans_alt=Alternative(
+                                        "богъ",
+                                        {
+                                            "G": "бож\ue205\ue205",
+                                            "H": "бож\ue205\ue205",
+                                        },
+                                    ),
                                 )
                             ]
                         ),
@@ -736,11 +760,13 @@ def test_aggregate_bozhii():
                                     ),
                                     lang="gr",
                                     var="G",
-                                    trans_alt="богъ",
-                                    trans_alt_var={
-                                        "W": "бож\ue205\ue205",
-                                        "H": "бож\ue205\ue205",
-                                    },
+                                    trans_alt=Alternative(
+                                        "богъ",
+                                        {
+                                            "W": "бож\ue205\ue205",
+                                            "H": "бож\ue205\ue205",
+                                        },
+                                    ),
                                 )
                             ]
                         ),
@@ -757,11 +783,13 @@ def test_aggregate_bozhii():
                                     ),
                                     lang="gr",
                                     var="H",
-                                    trans_alt="богъ",
-                                    trans_alt_var={
-                                        "W": "бож\ue205\ue205",
-                                        "G": "бож\ue205\ue205",
-                                    },
+                                    trans_alt=Alternative(
+                                        "богъ",
+                                        {
+                                            "W": "бож\ue205\ue205",
+                                            "G": "бож\ue205\ue205",
+                                        },
+                                    ),
                                 )
                             ]
                         ),

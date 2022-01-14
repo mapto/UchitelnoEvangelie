@@ -1,6 +1,6 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
-from model import Index, Usage, Source
+from model import Index, Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
 from semantics import _is_variant_lemma, _add_usage
 
@@ -26,7 +26,7 @@ def test_LangSemantics_alternatives():
         + [""] * 12
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {"G": "\ue205 pron."})
+    assert result == Alternative("", {"G": "\ue205 pron."})
 
     row = (
         ([""] * 3)
@@ -38,7 +38,7 @@ def test_LangSemantics_alternatives():
         + ([""] * 7)
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {})
+    assert result == Alternative()
     result == gr_sem.var.alternatives(row, Source("C"))
     # assert result == ("μὲν", {})
 
@@ -58,11 +58,15 @@ def test_LangSemantics_alternatives():
         + ["bold|italic"]
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {"G": "\ue205но\ue20dѧдъ", "H": "\ue201д\ue205нородъ"})
+    assert result == Alternative(
+        "", {"G": "\ue205но\ue20dѧдъ", "H": "\ue201д\ue205нородъ"}
+    )
     result = sl_sem.var.alternatives(row, Source("G"))
-    assert result == ("\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"})
+    assert result == Alternative(
+        "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
+    )
     result = sl_sem.var.alternatives(row, Source("H"))
-    assert result == ("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
+    assert result == Alternative("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
 
     # semantics update from September 2021
     sl_sem = MainLangSemantics(
@@ -83,9 +87,9 @@ def test_LangSemantics_alternatives():
         + [""] * 14
     )
     result = sl_sem.var.alternatives(row, Source("WH"))
-    assert result == ("\ue205но\ue20dѧдъ", {})
+    assert result == Alternative("\ue205но\ue20dѧдъ")
     r1 = sl_sem.alternatives(row, "*IGNORED*")
-    assert r1 == ("", {Source("WH"): "\ue201д\ue205но\ue20dѧдъ"})
+    assert r1 == Alternative("", {Source("WH"): "\ue201д\ue205но\ue20dѧдъ"})
 
 
 def test_LangSemantics_alternatives_bozhii():
@@ -102,13 +106,13 @@ def test_LangSemantics_alternatives_bozhii():
         + [""] * 13
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {Source("WGH"): "бож\ue205\ue205"})
+    assert result == Alternative("", {Source("WGH"): "бож\ue205\ue205"})
 
     result = sl_sem.var.alternatives(row, Source("G"))
-    assert result == ("богъ", {})
+    assert result == Alternative("богъ")
 
     result = sl_sem.var.alternatives(row, Source("GHW"))
-    assert result == ("богъ", {})
+    assert result == Alternative("богъ")
 
 
 def test_VarLangSemantics_multiword():
@@ -592,8 +596,10 @@ def test_add_usage():
             ),
             lang="gr",
             var="G",
-            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-            trans_alt_var={"H": "\ue201д\ue205нородъ"},
+            trans_alt=Alternative(
+                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                var_lemmas={"H": "\ue201д\ue205нородъ"},
+            ),
         ),
         Usage(
             idx=Index(
@@ -605,7 +611,7 @@ def test_add_usage():
                 word="μονογενὴς",
             ),
             lang="gr",
-            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+            trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
         ),
         Usage(
             idx=Index(
@@ -617,7 +623,7 @@ def test_add_usage():
                 word="μονογενοῦς",
             ),
             lang="gr",
-            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+            trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
         ),
         Usage(
             idx=Index(
@@ -630,8 +636,10 @@ def test_add_usage():
             ),
             lang="gr",
             var="H",
-            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-            trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+            trans_alt=Alternative(
+                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                var_lemmas={"G": "\ue205но\ue20dѧдъ"},
+            ),
         ),
         Usage(
             idx=Index(
@@ -654,10 +662,12 @@ def test_add_usage():
                 word="μονογενοῦς",
             ),
             lang="gr",
-            trans_alt_var={
-                "H": "\ue201д\ue205нородъ",
-                "G": "\ue205но\ue20dѧдъ",
-            },
+            trans_alt=Alternative(
+                var_lemmas={
+                    "H": "\ue201д\ue205нородъ",
+                    "G": "\ue205но\ue20dѧдъ",
+                }
+            ),
         ),
         Usage(
             idx=Index(
@@ -670,7 +680,7 @@ def test_add_usage():
             ),
             lang="gr",
             var="WH",
-            trans_alt="\ue205но\ue20dѧдъ ",
+            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
         ),
         Usage(
             idx=Index(
@@ -683,7 +693,7 @@ def test_add_usage():
             ),
             lang="gr",
             var="WH",
-            trans_alt="\ue205но\ue20dѧдъ",
+            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
         ),
     ]
 
@@ -705,7 +715,9 @@ def test_add_usage():
                                 word="μονογενοῦς",
                             ),
                             lang="gr",
-                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                            trans_alt=Alternative(
+                                var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                            ),
                         ),
                         Usage(
                             idx=Index(
@@ -718,7 +730,7 @@ def test_add_usage():
                             ),
                             lang="gr",
                             var="WH",
-                            trans_alt="\ue205но\ue20dѧдъ",
+                            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
                         ),
                         Usage(
                             idx=Index(
@@ -730,7 +742,9 @@ def test_add_usage():
                                 word="μονογενὴς",
                             ),
                             lang="gr",
-                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                            trans_alt=Alternative(
+                                var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                            ),
                         ),
                         Usage(
                             idx=Index(
@@ -743,7 +757,7 @@ def test_add_usage():
                             ),
                             lang="gr",
                             var="WH",
-                            trans_alt="\ue205но\ue20dѧдъ ",
+                            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
                         ),
                         Usage(
                             idx=Index(
@@ -755,10 +769,12 @@ def test_add_usage():
                                 word="μονογενοῦς",
                             ),
                             lang="gr",
-                            trans_alt_var={
-                                "H": "\ue201д\ue205нородъ",
-                                "G": "\ue205но\ue20dѧдъ",
-                            },
+                            trans_alt=Alternative(
+                                var_lemmas={
+                                    "H": "\ue201д\ue205нородъ",
+                                    "G": "\ue205но\ue20dѧдъ",
+                                }
+                            ),
                         ),
                         Usage(
                             idx=Index(
@@ -782,8 +798,10 @@ def test_add_usage():
                             ),
                             lang="gr",
                             var="G",
-                            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                            trans_alt_var={"H": "\ue201д\ue205нородъ"},
+                            trans_alt=Alternative(
+                                "\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={"H": "\ue201д\ue205нородъ"},
+                            ),
                         ),
                         Usage(
                             idx=Index(
@@ -796,8 +814,10 @@ def test_add_usage():
                             ),
                             lang="gr",
                             var="H",
-                            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                            trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                            trans_alt=Alternative(
+                                "\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={"G": "\ue205но\ue20dѧдъ"},
+                            ),
                         ),
                     ]
                 )

@@ -32,31 +32,26 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None
 
 
 def _generate_usage(par, u: Usage) -> None:
-    if (
-        not u.orig_alt
-        and not u.orig_alt_var
-        and not u.trans_alt
-        and not u.trans_alt_var
-    ):
+    if not u.orig_alt and not u.trans_alt:
         return
 
     _generate_text(par, f" {CF_SEP}")
-    if u.orig_alt:
+    if u.orig_alt.main_lemma:
         _generate_text(par, " ")
-        _generate_text(par, u.orig_alt, fonts[u.lang])
+        _generate_text(par, u.orig_alt.main_lemma, fonts[u.lang])
         _generate_text(par, f" {main_source[u.lang]}")
 
-    if u.orig_alt_var:
-        _generate_usage_alt_vars(par, u.lang, u.orig_alt_var)
+    if u.orig_alt.var_lemmas:
+        _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_lemmas)
 
     # previous addition certainly finished with GENERIC_FONT
-    if u.trans_alt:
+    if u.trans_alt.main_lemma:
         _generate_text(par, " ")
-        _generate_text(par, u.trans_alt, fonts[other_lang[u.lang]])
+        _generate_text(par, u.trans_alt.main_lemma, fonts[other_lang[u.lang]])
         _generate_text(par, f" {main_source[other_lang[u.lang]]}")
 
-    if u.trans_alt_var:
-        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt_var)
+    if u.trans_alt.var_lemmas:
+        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_lemmas)
 
 
 def docx_result(par, usage: SortedSet, src_style: str) -> None:

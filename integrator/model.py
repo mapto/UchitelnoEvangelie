@@ -13,7 +13,7 @@ from util import base_word
 class Source:
     """Represents a list of sources, could be one or two letter symbols"""
 
-    src: str
+    src: str = ""
 
     def _sort_vars(self) -> str:
         """
@@ -111,6 +111,14 @@ class Source:
         return all(c in self.values() for c in Source(str(other)).values())
 
     def __bool__(self) -> bool:
+        """
+        >>> True if Source() else False
+        False
+        >>> True if Source("") else False
+        False
+        >>> True if Source("A") else False
+        True
+        """
         return bool(self.src)
 
     def inside(self, iterable) -> Optional["Source"]:
@@ -264,6 +272,27 @@ class Index:
 
 
 @dataclass(frozen=True)
+class Alternative:
+    main_lemma: str = ""
+    var_lemmas: Dict[Source, str] = field(default_factory=lambda: {})
+    main_word: str = ""
+    var_words: Dict[Source, str] = field(default_factory=lambda: {})
+
+    # def __repr__(self):
+    #     return f"('{self.main_lemma}', {self.var_lemmas})"
+
+    # def __hash__(self) -> int:
+    #     # TODO: Add variants
+    #     return hash((self.main_word, self.main_lemma))
+
+    def __bool__(self) -> bool:
+        return bool(self.main_lemma) or bool(self.var_lemmas)
+
+    # def __not__(self):
+    #     return not self.main_lemma and not self.var
+
+
+@dataclass(frozen=True)
 class Usage:
     """Variant is not only indicative, but also nominative - which variant.
     Here alt means other other transcriptions (main or var).
@@ -272,13 +301,11 @@ class Usage:
     idx: Index
     lang: str
     var: Source = field(default_factory=lambda: Source(""))
-    orig_alt: str = ""  # TODO this is lemma, for integrator we also need word
-    orig_alt_var: Dict[Source, str] = field(default_factory=lambda: {})
-    trans_alt: str = ""  # TODO this is lemma, for integrator we also need word
-    trans_alt_var: Dict[Source, str] = field(default_factory=lambda: {})
+    orig_alt: Alternative = field(default_factory=lambda: Alternative())
+    trans_alt: Alternative = field(default_factory=lambda: Alternative())
 
     def __hash__(self):
-        return hash((self.idx, self.lang, self.var, self.orig_alt, self.trans_alt))
+        return hash((self.idx, self.lang, self.var))
 
     def __eq__(self, other) -> bool:
         return self.idx == other.idx and len(self.var) == len(other.var)
@@ -302,25 +329,25 @@ class Usage:
         return not self < other
         # return self.idx >= other.idx or len(self.var) >= len(other.var)
 
-    def __add__(self, other) -> "Usage":
-        """
-        >>> Usage(Index.unpack("1/1a1"), "sl", Source("G")) + Usage(Index.unpack("1/1a1"), "sl", Source("H"))
-        Usage(idx=Index(ch=1, alt=False, page=1, col='a', row=1, var=False, cnt=0, end=None, bold=False, italic=False, word=''), lang='sl', var=Source('GH'), orig_alt='', orig_alt_var={}, trans_alt='', trans_alt_var={})
-        """
-        assert self.idx == other.idx
-        assert self.lang == other.lang
-        assert self.orig_alt == other.orig_alt or (
-            bool(self.orig_alt) != bool(other.orig_alt)
-        )
-        assert self.trans_alt == other.trans_alt or (
-            bool(self.trans_alt) != bool(other.trans_alt)
-        )
-        orig_alt = self.orig_alt if self.orig_alt else other.orig_alt
-        trans_alt = self.trans_alt if self.trans_alt else other.trans_alt
-        # TODO: complete parameters
-        return Usage(
-            self.idx, self.lang, self.var + other.var, orig_alt, trans_alt=trans_alt
-        )
+    # def __add__(self, other) -> "Usage":
+    #     """
+    #     >>> Usage(Index.unpack("1/1a1"), "sl", Source("G")) + Usage(Index.unpack("1/1a1"), "sl", Source("H"))
+    #     Usage(idx=Index(ch=1, alt=False, page=1, col='a', row=1, var=False, cnt=0, end=None, bold=False, italic=False, word=''), lang='sl', var=Source('GH'), orig_alt='', orig_alt_var={}, trans_alt='', trans_alt_var={})
+    #     """
+    #     assert self.idx == other.idx
+    #     assert self.lang == other.lang
+    #     assert self.orig_alt == other.orig_alt or (
+    #         bool(self.orig_alt) != bool(other.orig_alt)
+    #     )
+    #     assert self.trans_alt == other.trans_alt or (
+    #         bool(self.trans_alt) != bool(other.trans_alt)
+    #     )
+    #     orig_alt = self.orig_alt if self.orig_alt else other.orig_alt
+    #     trans_alt = self.trans_alt if self.trans_alt else other.trans_alt
+    #     # TODO: complete parameters
+    #     return Usage(
+    #         self.idx, self.lang, self.var + other.var, orig_alt, trans_alt=trans_alt
+    #     )
 
 
 @dataclass
