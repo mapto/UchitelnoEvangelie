@@ -153,14 +153,19 @@ class LangSemantics:
 
         return paths
 
-    def compile_words_by_lemma(self, row: List[str], var: Source, lem: str) -> str:
+    def compile_words_by_lemma(self, row: List[str], var: Source) -> str:
         vars = SortedSet()
-        multilemma = self.multilemma(row)
+        # print(var)
         multiword = self.multiword(row)
+        # print(multiword)
         for v in var:
-            for kw, vw in multiword.items():
-                if v in kw:
+            for kw in multiword.keys():
+                if not kw and v in Source(default_sources[self.lang]):
+                    vars.add(f"{multiword[Source()]} {kw}")
+                elif v in kw and kw in multiword:
                     vars.add(f"{multiword[kw]} {kw}")
+        # if len(vars) == 1:
+        #     return vars[0].split(" ")[0]
         return " ".join(vars)
 
     def compile_usages(
@@ -174,11 +179,11 @@ class LangSemantics:
         # print(self.multiword(row))
         # print(trans.multiword(row))
         # TODO: When words are different, but lemmas are the same how do we unite variants
-        for ovar, olem in self.multilemma(row).items():
-            for tvar, tlem in trans.multilemma(row).items():
+        for ovar in self.multilemma(row).keys():
+            for tvar in trans.multilemma(row).keys():
                 # TODO: Variant to a lemma is the group of lemmas in the variant.
-                oword = self.compile_words_by_lemma(row, ovar, olem)
-                tword = trans.compile_words_by_lemma(row, tvar, tlem)
+                oword = self.compile_words_by_lemma(row, ovar)
+                tword = trans.compile_words_by_lemma(row, tvar)
                 val = _build_usage(row, self, trans, ovar, tvar, oword)
                 for nxt in trans.build_paths(row):
                     orig_var_in_lemma = _is_variant_lemma(row, self, ovar, olemma)
@@ -238,8 +243,11 @@ class MainLangSemantics(LangSemantics):
             for k, v in self.var.multilemma(row, lidx).items()
             if v != row[self.lemmas[lidx]]
         }
+        # alt_words = {
+        #     k: v for k, v in self.var.multiword(row).items() if k.inside(alt_lemmas)
+        # }
         alt_words = {
-            k: v for k, v in self.var.multiword(row).items() if k.inside(alt_lemmas)
+            l: self.var.compile_words_by_lemma(row, l) for l in alt_lemmas.keys()
         }
         return Alternative("", alt_lemmas, "", alt_words)
 

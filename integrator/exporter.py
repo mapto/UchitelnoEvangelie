@@ -24,7 +24,7 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None
         else:
             _generate_text(par, ", ")
         _generate_text(par, word, fonts[lang])
-        _generate_text(par, str(var), superscript=True)
+        # _generate_text(par, str(var), superscript=True)
     _generate_text(par, brace_close[lang])
 
 

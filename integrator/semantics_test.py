@@ -28,7 +28,7 @@ def test_LangSemantics_alternatives():
     result = sl_sem.alternatives(row, "*IGNORED*")
     assert result == Alternative(
         var_lemmas={Source("G"): "\ue205 pron."},
-        var_words={Source("G"): "ю"},
+        var_words={Source("G"): "ю G"},
     )
 
     row = (
@@ -67,8 +67,8 @@ def test_LangSemantics_alternatives():
             Source("G"): "\ue205но\ue20dѧдъ",
         },
         var_words={
-            Source("G"): "\ue205но\ue20dедаго",
-            Source("H"): "\ue201д\ue205нородоу",
+            Source("G"): "\ue205но\ue20dедаго G",
+            Source("H"): "\ue201д\ue205нородоу H",
         },
     )
     result = sl_sem.var.alternatives(row, Source("G"))
@@ -111,7 +111,7 @@ def test_LangSemantics_alternatives():
     r1 = sl_sem.alternatives(row, "*IGNORED*")
     assert r1 == Alternative(
         var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-        var_words={Source("WH"): "\ue201д\ue205но\ue20dеды"},
+        var_words={Source("WH"): "\ue201д\ue205но\ue20dеды WH"},
     )
 
 
@@ -132,9 +132,7 @@ def test_LangSemantics_alternatives_bozhii():
     assert result == Alternative(
         var_lemmas={Source("WGH"): "бож\ue205\ue205"},
         var_words={
-            Source("W"): "б\ue010ж\ue205",
-            Source("G"): "б\ue010ж\ue205\ue205",
-            Source("H"): "б\ue010жї\ue205",
+            Source("WGH"): "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G"
         },
     )
 
@@ -143,6 +141,46 @@ def test_LangSemantics_alternatives_bozhii():
 
     result = sl_sem.var.alternatives(row, Source("GHW"))
     assert result == Alternative("богъ", {}, "боꙁѣ")
+
+
+def test_MainLangSemantics_alternatives_ot():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    row = [
+        "ѿ WG  ѡ H",
+        "отъ",
+        "",
+        "",
+        "1/5d11",
+        "om.",
+        "",
+        "om.",
+        "",
+        "",
+        "",
+        "ἐπὶ",
+        "ἐπί",
+        "ἐπί + Gen.",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+    ]
+
+    result = sl_sem.alternatives(row, Source())
+    assert result == Alternative(
+        var_lemmas={Source("WGH"): "отъ"}, var_words={Source("WGH"): "ѡ H ѿ WG"}
+    )
 
 
 def test_VarLangSemantics_multiword():
@@ -860,9 +898,6 @@ def test_LangSemantics_compile_words_by_lemma():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
-    gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
-    )
     row = (
         ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
         + [""] * 2
@@ -872,5 +907,38 @@ def test_LangSemantics_compile_words_by_lemma():
         + [""] * 13
     )
 
-    result = sl_sem.var.compile_words_by_lemma(row, "WGH", "бож\ue205\ue205")
+    result = sl_sem.var.compile_words_by_lemma(row, "WGH")
     assert result == "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G"
+
+    row = [
+        "ѿ WG  ѡ H",
+        "отъ",
+        "",
+        "",
+        "1/5d11",
+        "om.",
+        "",
+        "om.",
+        "",
+        "",
+        "",
+        "ἐπὶ",
+        "ἐπί",
+        "ἐπί + Gen.",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+    ]
+
+    result = sl_sem.var.compile_words_by_lemma(row, "WGH")
+    assert result == "ѡ H ѿ WG"
