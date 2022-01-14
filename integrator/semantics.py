@@ -153,6 +153,16 @@ class LangSemantics:
 
         return paths
 
+    def compile_words_by_lemma(self, row: List[str], var: Source, lem: str) -> str:
+        vars = SortedSet()
+        multilemma = self.multilemma(row)
+        multiword = self.multiword(row)
+        for v in var:
+            for kw, vw in multiword.items():
+                if v in kw:
+                    vars.add(f"{multiword[kw]} {kw}")
+        return " ".join(vars)
+
     def compile_usages(
         self,
         trans: "LangSemantics",
@@ -164,9 +174,11 @@ class LangSemantics:
         # print(self.multiword(row))
         # print(trans.multiword(row))
         # TODO: When words are different, but lemmas are the same how do we unite variants
-        for ovar, oword in self.multiword(row).items():
-            for tvar, tword in trans.multiword(row).items():
+        for ovar, olem in self.multilemma(row).items():
+            for tvar, tlem in trans.multilemma(row).items():
                 # TODO: Variant to a lemma is the group of lemmas in the variant.
+                oword = self.compile_words_by_lemma(row, ovar, olem)
+                tword = trans.compile_words_by_lemma(row, tvar, tlem)
                 val = _build_usage(row, self, trans, ovar, tvar, oword)
                 for nxt in trans.build_paths(row):
                     orig_var_in_lemma = _is_variant_lemma(row, self, ovar, olemma)
