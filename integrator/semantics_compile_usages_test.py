@@ -27,7 +27,7 @@ def test_para():
     # print(d2)
     assert d2 == {
         "Instr.": {
-            ("", ""): SortedSet(
+            ("παρὰ", "Instr."): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -36,6 +36,7 @@ def test_para():
                             page=168,
                             col="a",
                             row=19,
+                            word="παρὰ",
                         ),
                         lang="gr",
                     )
@@ -56,7 +57,7 @@ def test_para():
     d3 = gr_sem.var.compile_usages(sl_sem, row, d3, "παρά", "ѹ")
     assert d3 == {
         "ѹ": {
-            ("παρ’ C", ""): SortedSet(
+            ("παρ’ C", "оу"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -72,7 +73,7 @@ def test_para():
                         var=Source("C"),
                         trans_alt=Alternative(
                             var_lemmas={Source("WGH"): "въ"},
-                            var_words={Source("WGH"): "вь"},
+                            var_words={Source("WGH"): "вь WGH"},
                         ),
                     )
                 ]
@@ -125,7 +126,7 @@ def test_ipercliso():
     )
     assert d2 == {
         "прѣ\ue205сто\ue20d\ue205т\ue205": {
-            ("ὑπερβλύζων C", ""): SortedSet(
+            ("ὑπερβλύζων C", "прѣ\ue205сто\ue20dе"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -148,7 +149,7 @@ def test_ipercliso():
             )
         },
         "\ue205сто\ue20dен\ue205\ue201": {
-            ("ὑπερβλύσαι C", ""): SortedSet(
+            ("ὑπερβλύσαι C", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -205,7 +206,7 @@ def test_verovat():
     d1 = sl_sem.compile_usages(gr_sem, row, d1, "вѣроват_", "πιστεύω")
     assert d1 == {
         "πιστεύω": {
-            ("", ""): SortedSet(
+            ("вѣроують", "πιστεύσωσι"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -214,11 +215,12 @@ def test_verovat():
                             page=7,
                             col="b",
                             row=19,
+                            word="вѣроують",
                         ),
                         lang="sl",
                         orig_alt=Alternative(
                             var_lemmas={Source("GH"): "вѣра"},
-                            var_words={Source("GH"): "вѣроу"},
+                            var_words={Source("GH"): "вѣроу GH"},
                         ),
                     )
                 ]
@@ -229,7 +231,7 @@ def test_verovat():
     d2 = gr_sem.compile_usages(sl_sem, row, d2, "πιστεύω", "вѣроват_")
     assert d2 == {
         "вѣроват_": {
-            ("", ""): SortedSet(
+            ("πιστεύσωσι", "вѣроують"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -238,11 +240,12 @@ def test_verovat():
                             page=7,
                             col="b",
                             row=19,
+                            word="πιστεύσωσι",
                         ),
                         lang="gr",
                         trans_alt=Alternative(
                             var_lemmas={Source("GH"): "вѣра"},
-                            var_words={Source("GH"): "вѣроу"},
+                            var_words={Source("GH"): "вѣроу GH"},
                         ),
                     )
                 ]
@@ -273,7 +276,7 @@ def test_mene():
     d3 = sl_sem.compile_usages(gr_sem.var, row, d3, "аꙁъ", "ἐγώ")
     assert d3 == {
         "ἐγώ": {
-            ("", "με C"): SortedSet(
+            ("мене", "με C"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -282,6 +285,7 @@ def test_mene():
                             page=168,
                             col="c",
                             row=7,
+                            word="мене",
                         ),
                         lang="sl",
                         var=Source("C"),
@@ -294,7 +298,7 @@ def test_mene():
     d4 = gr_sem.var.compile_usages(sl_sem, row, d4, "ἐγώ", "аꙁъ")
     assert d4 == {
         "аꙁъ": {
-            ("με C", ""): SortedSet(
+            ("με C", "мене"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -304,20 +308,10 @@ def test_mene():
                             col="c",
                             row=7,
                             var=True,
-                            cnt=0,
-                            end=None,
-                            bold=False,
-                            italic=False,
                             word="με C",
                         ),
                         lang="gr",
                         var=Source("C"),
-                        orig_alt=Alternative(
-                            main_lemma="", var_lemmas={}, main_word="", var_words={}
-                        ),
-                        trans_alt=Alternative(
-                            main_lemma="", var_lemmas={}, main_word="", var_words={}
-                        ),
                     )
                 ]
             )
@@ -351,7 +345,7 @@ def test_monogenis():
     d0 = sl_sem.compile_usages(gr_sem, row, d0, "\ue205но\ue20dѧдъ", "μονογενής")
     assert d0 == {
         "μονογενής": {
-            ("", ""): SortedSet(
+            ("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -360,11 +354,12 @@ def test_monogenis():
                             page=5,
                             col="a",
                             row=4,
+                            word="\ue205но\ue20dадꙑ\ue205",
                         ),
                         lang="sl",
                         orig_alt=Alternative(
                             var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-                            var_words={Source("WH"): "\ue201д\ue205но\ue20dеды"},
+                            var_words={Source("WH"): "\ue201д\ue205но\ue20dеды WH"},
                         ),
                     )
                 ]
@@ -379,7 +374,7 @@ def test_monogenis():
     d01 = gr_sem.compile_usages(sl_sem, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
     assert d01 == {
         "\ue205но\ue20dѧдъ": {
-            ("", ""): SortedSet(
+            ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -388,11 +383,12 @@ def test_monogenis():
                             page=5,
                             col="a",
                             row=4,
+                            word="μονογενὴς",
                         ),
                         lang="gr",
                         trans_alt=Alternative(
                             var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-                            var_words={Source("WH"): "\ue201д\ue205но\ue20dеды"},
+                            var_words={Source("WH"): "\ue201д\ue205но\ue20dеды WH"},
                         ),
                     )
                 ]
@@ -448,7 +444,7 @@ def test_monogenis():
     d1 = sl_sem.var.compile_usages(gr_sem, row, d1, "\ue205но\ue20dѧдъ", "μονογενής")
     assert d1 == {
         "μονογενής": {
-            ("\ue205но\ue20dедаго G", ""): SortedSet(
+            ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -480,7 +476,7 @@ def test_monogenis():
     d2 = sl_sem.var.compile_usages(gr_sem, row, d2, "\ue201д\ue205нородъ", "μονογενής")
     assert d2 == {
         "μονογενής": {
-            ("\ue201д\ue205нородоу H", ""): SortedSet(
+            ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -530,7 +526,7 @@ def test_monogenis():
     # print(d)
     expected = {
         "μονογενής": {
-            ("\ue205но\ue20dедаго G", ""): SortedSet(
+            ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -540,8 +536,6 @@ def test_monogenis():
                             col="a",
                             row=25,
                             var=True,
-                            bold=False,
-                            italic=False,
                             word="\ue205но\ue20dедаго G",
                         ),
                         lang="sl",
@@ -563,7 +557,7 @@ def test_monogenis():
     d = sl_sem.var.compile_usages(gr_sem, row, d, "\ue201д\ue205нородъ", "μονογενής")
     expected = {
         "μονογενής": {
-            ("\ue201д\ue205нородоу H", ""): SortedSet(
+            ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -594,7 +588,7 @@ def test_monogenis():
     d = gr_sem.compile_usages(sl_sem, row, d, "μονογενής", "\ue201д\ue205но\ue20dѧдъ")
     expected = {
         "\ue201д\ue205но\ue20dѧдъ": {
-            ("", ""): SortedSet(
+            ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -603,6 +597,7 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
+                            word="μονογενοῦς",
                         ),
                         lang="gr",
                         trans_alt=Alternative(
@@ -611,8 +606,8 @@ def test_monogenis():
                                 Source("G"): "\ue205но\ue20dѧдъ",
                             },
                             var_words={
-                                Source("G"): "\ue205но\ue20dедаго",
-                                Source("H"): "\ue201д\ue205нородоу",
+                                Source("H"): "\ue201д\ue205нородоу H",
+                                Source("G"): "\ue205но\ue20dедаго G",
                             },
                         ),
                     )
@@ -626,7 +621,7 @@ def test_monogenis():
     d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue201д\ue205нородъ")
     expected = {
         "\ue201д\ue205нородъ": {
-            ("", "\ue201д\ue205нородоу H"): SortedSet(
+            ("μονογενοῦς", "\ue201д\ue205нородоу H"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -635,6 +630,7 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
+                            word="μονογενοῦς",
                         ),
                         lang="gr",
                         var=Source("H"),
@@ -655,7 +651,7 @@ def test_monogenis():
     d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue205но\ue20dѧдъ")
     expected = {
         "\ue205но\ue20dѧдъ": {
-            ("", "\ue205но\ue20dедаго G"): SortedSet(
+            ("μονογενοῦς", "\ue205но\ue20dедаго G"): SortedSet(
                 [
                     Usage(
                         idx=Index(
@@ -664,6 +660,7 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
+                            word="μονογενοῦς",
                         ),
                         lang="gr",
                         var=Source("G"),
@@ -704,7 +701,7 @@ def test_bozhii():
         "θεός Gen.": {
             (
                 "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
-                "",
+                "Θεοῦ",
             ): SortedSet(
                 [
                     Usage(

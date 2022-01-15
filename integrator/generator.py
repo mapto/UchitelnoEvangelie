@@ -15,7 +15,7 @@ from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, brace_open, brace_close
 
 BULLET_STYLE = "List Bullet"
-LEVEL_OFFSET = 0.5
+LEVEL_OFFSET = 0.4
 
 
 def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None:
@@ -182,7 +182,7 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         par.style.font.name = GENERIC_FONT
         par.paragraph_format.space_before = Cm(0)
         par.paragraph_format.space_after = Cm(0)
-        par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 3)
+        par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 4)
 
         _generate_text(par, t, fonts[trans_lang])
         _generate_counts(par, bottom_d, True)

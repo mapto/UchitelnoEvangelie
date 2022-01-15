@@ -154,19 +154,7 @@ class LangSemantics:
         return paths
 
     def compile_words_by_lemma(self, row: List[str], var: Source) -> str:
-        vars = SortedSet()
-        # print(var)
-        multiword = self.multiword(row)
-        # print(multiword)
-        for v in var:
-            for kw in multiword.keys():
-                if not kw and v in Source(default_sources[self.lang]):
-                    vars.add(f"{multiword[Source()]} {kw}")
-                elif v in kw and kw in multiword:
-                    vars.add(f"{multiword[kw]} {kw}")
-        # if len(vars) == 1:
-        #     return vars[0].split(" ")[0]
-        return " ".join(vars)
+        raise NotImplementedError("abstract method")
 
     def compile_usages(
         self,
@@ -266,6 +254,9 @@ class MainLangSemantics(LangSemantics):
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
         """Main variant does not have multiple words in a cell"""
         return {Source(""): row[self.lemmas[lidx]].strip()}
+
+    def compile_words_by_lemma(self, row: List[str], var: Source = Source()) -> str:
+        return row[self.word]
 
 
 @dataclass
@@ -368,6 +359,21 @@ class VarLangSemantics(LangSemantics):
             return {keys: result[Source("")]}
 
         return result
+
+    def compile_words_by_lemma(self, row: List[str], var: Source) -> str:
+        vars = SortedSet()
+        # print(var)
+        multiword = self.multiword(row)
+        # print(multiword)
+        for v in var:
+            for kw in multiword.keys():
+                if not kw and v in Source(default_sources[self.lang]):
+                    vars.add(f"{multiword[Source()]} {kw}")
+                elif v in kw and kw in multiword:
+                    vars.add(f"{multiword[kw]} {kw}")
+        # if len(vars) == 1:
+        #     return vars[0].split(" ")[0]
+        return " ".join(vars)
 
     def __repr__(self):
         """main ignored to avoid recursion"""

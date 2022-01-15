@@ -147,35 +147,15 @@ def test_MainLangSemantics_alternatives_ot():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
-    row = [
-        "ѿ WG  ѡ H",
-        "отъ",
-        "",
-        "",
-        "1/5d11",
-        "om.",
-        "",
-        "om.",
-        "",
-        "",
-        "",
-        "ἐπὶ",
-        "ἐπί",
-        "ἐπί + Gen.",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-    ]
+    row = (
+        ["ѿ WG  ѡ H", "отъ"]
+        + [""] * 2
+        + ["1/5d11"]
+        + ["om.", ""] * 2
+        + [""] * 2
+        + ["ἐπὶ", "ἐπί", "ἐπί + Gen."]
+        + [""] * 13
+    )
 
     result = sl_sem.alternatives(row, Source())
     assert result == Alternative(
@@ -910,35 +890,17 @@ def test_LangSemantics_compile_words_by_lemma():
     result = sl_sem.var.compile_words_by_lemma(row, "WGH")
     assert result == "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G"
 
-    row = [
-        "ѿ WG  ѡ H",
-        "отъ",
-        "",
-        "",
-        "1/5d11",
-        "om.",
-        "",
-        "om.",
-        "",
-        "",
-        "",
-        "ἐπὶ",
-        "ἐπί",
-        "ἐπί + Gen.",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-    ]
+    row = (
+        ["ѿ WG  ѡ H", "отъ"]
+        + [""] * 2
+        + ["1/5d11"]
+        + ["om.", ""] * 2
+        + [""] * 2
+        + ["ἐπὶ", "ἐπί", "ἐπί + Gen."]
+        + [""] * 13
+    )
 
     result = sl_sem.var.compile_words_by_lemma(row, "WGH")
     assert result == "ѡ H ѿ WG"
+
+    row = ()
