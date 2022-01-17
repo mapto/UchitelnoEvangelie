@@ -1,6 +1,6 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
-from model import Index, Usage
+from model import Index, Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
 from semantics import _is_variant_lemma, _add_usage
 
@@ -26,7 +26,10 @@ def test_LangSemantics_alternatives():
         + [""] * 12
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {"G": "\ue205 pron."})
+    assert result == Alternative(
+        var_lemmas={Source("G"): "\ue205 pron."},
+        var_words={Source("G"): "ю G"},
+    )
 
     row = (
         ([""] * 3)
@@ -38,8 +41,8 @@ def test_LangSemantics_alternatives():
         + ([""] * 7)
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {})
-    result == gr_sem.var.alternatives(row, "C")
+    assert result == Alternative()
+    result == gr_sem.var.alternatives(row, Source("C"))
     # assert result == ("μὲν", {})
 
     row = (
@@ -58,11 +61,30 @@ def test_LangSemantics_alternatives():
         + ["bold|italic"]
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == ("", {"G": "\ue205но\ue20dѧдъ", "H": "\ue201д\ue205нородъ"})
-    result = sl_sem.var.alternatives(row, "G")
-    assert result == ("\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"})
-    result = sl_sem.var.alternatives(row, "H")
-    assert result == ("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
+    assert result == Alternative(
+        var_lemmas={
+            Source("H"): "\ue201д\ue205нородъ",
+            Source("G"): "\ue205но\ue20dѧдъ",
+        },
+        var_words={
+            Source("G"): "\ue205но\ue20dедаго G",
+            Source("H"): "\ue201д\ue205нородоу H",
+        },
+    )
+    result = sl_sem.var.alternatives(row, Source("G"))
+    assert result == Alternative(
+        main_lemma="\ue201д\ue205но\ue20dѧдъ",
+        var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
+        main_word="\ue201д\ue205но\ue20dедоу",
+        var_words={Source("H"): "\ue201д\ue205нородоу"},
+    )
+    result = sl_sem.var.alternatives(row, Source("H"))
+    assert result == Alternative(
+        main_lemma="\ue201д\ue205но\ue20dѧдъ",
+        var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+        main_word="\ue201д\ue205но\ue20dедоу",
+        var_words={Source("G"): "\ue205но\ue20dедаго"},
+    )
 
     # semantics update from September 2021
     sl_sem = MainLangSemantics(
@@ -82,10 +104,63 @@ def test_LangSemantics_alternatives():
         + ["μονογενὴς", "μονογενής"]
         + [""] * 14
     )
-    result = sl_sem.var.alternatives(row, "WH")
-    assert result == ("\ue205но\ue20dѧдъ", {})
+    result = sl_sem.var.alternatives(row, Source("WH"))
+    assert result == Alternative(
+        "\ue205но\ue20dѧдъ", main_word="\ue205но\ue20dадꙑ\ue205"
+    )
     r1 = sl_sem.alternatives(row, "*IGNORED*")
-    assert r1 == ("", {"WH": "\ue201д\ue205но\ue20dѧдъ"})
+    assert r1 == Alternative(
+        var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
+        var_words={Source("WH"): "\ue201д\ue205но\ue20dеды WH"},
+    )
+
+
+def test_LangSemantics_alternatives_bozhii():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+
+    row = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+    )
+    result = sl_sem.alternatives(row, "*IGNORED*")
+    assert result == Alternative(
+        var_lemmas={Source("WGH"): "бож\ue205\ue205"},
+        var_words={
+            Source("WGH"): "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G"
+        },
+    )
+
+    result = sl_sem.var.alternatives(row, Source("G"))
+    assert result == Alternative("богъ", {}, "боꙁѣ")
+
+    result = sl_sem.var.alternatives(row, Source("GHW"))
+    assert result == Alternative("богъ", {}, "боꙁѣ")
+
+
+def test_MainLangSemantics_alternatives_ot():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    row = (
+        ["ѿ WG  ѡ H", "отъ"]
+        + [""] * 2
+        + ["1/5d11"]
+        + ["om.", ""] * 2
+        + [""] * 2
+        + ["ἐπὶ", "ἐπί", "ἐπί + Gen."]
+        + [""] * 13
+    )
+
+    result = sl_sem.alternatives(row, Source())
+    assert result == Alternative(
+        var_lemmas={Source("WGH"): "отъ"}, var_words={Source("WGH"): "ѡ H ѿ WG"}
+    )
 
 
 def test_VarLangSemantics_multiword():
@@ -99,13 +174,13 @@ def test_VarLangSemantics_multiword():
     assert result == {"G": "\ue205но\ue20dедаго"}
 
     result = sem.multiword(["", ""])
-    assert result == {"WGH": ""}
+    assert result == {Source("WGH"): ""}
 
     result = sem.multiword(["дноеды WH Ø G", "дноѧдъ"])
-    assert result == {"WH": "дноеды", "G": "Ø"}
+    assert result == {Source("WH"): "дноеды", "G": "Ø"}
 
     result = sem.multiword(["дноеды", "дноѧдъ"])
-    assert result == {"WGH": "дноеды"}
+    assert result == {Source("WGH"): "дноеды"}
 
     gr_sem = VarLangSemantics("gr", 0, [1])
     result = gr_sem.multiword(["με C", "ἐγώ"])
@@ -144,7 +219,28 @@ def test_VarLangSemantics_multiword_greek_paris():
         + [""] * 10
     )
     result = gr_sem.var.multiword(row)
-    assert result == {"CMPcPa": "ἀνάκλησιν"}
+    assert result == {Source("CMPcPa"): "ἀνάκλησιν"}
+
+
+def test_VarLangSemantics_multiword_bozhii():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+
+    r = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+    )
+    result = sl_sem.var.multiword(r)
+    assert result == {
+        "G": "б\ue010ж\ue205\ue205",
+        "H": "б\ue010жї\ue205",
+        "W": "б\ue010ж\ue205",
+    }
 
 
 def test_LangSemantics_multilemma():
@@ -172,7 +268,7 @@ def test_LangSemantics_multilemma():
         + [""] * 6
     )
     result = sl_sem.var.multilemma(row)
-    assert result == {"WGH": "въ"}
+    assert result == {Source("WGH"): "въ"}
     result = gr_sem.var.multilemma(row)
     assert result == {"C": "παρά"}
 
@@ -210,7 +306,7 @@ def test_LangSemantics_multilemma():
             "\ue205но\ue20dѧдъ",
         ]
     )
-    assert result == {"WH": "дноѧдъ"}
+    assert result == {Source("WH"): "дноѧдъ"}
 
     dummy_sem2 = VarLangSemantics("gr", 0, [1])
     result = dummy_sem2.multilemma(["με C", "ἐγώ"])
@@ -235,7 +331,7 @@ def test_LangSemantics_multilemma():
         + [""] * 14
     )
     result = sl_sem.var.multilemma(row)
-    assert result == {"WH": "\ue201д\ue205но\ue20dѧдъ"}
+    assert result == {Source("WH"): "\ue201д\ue205но\ue20dѧдъ"}
 
     row = (
         [
@@ -277,7 +373,7 @@ def test_LangSemantics_multilemma_sub():
     assert result == {"C": "παρά + Acc."}
 
     result = sl_sem.var.multilemma(row, 1)
-    assert result == {"WGH": "въ + Loc."}
+    assert result == {Source("WGH"): "въ + Loc."}
 
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
@@ -304,13 +400,13 @@ def test_LangSemantics_multilemma_sub():
         + ["hl05|hl00"]
     )
     result = sl_sem.var.multilemma(row, 1)
-    assert result == {"WG": "ходомь спѣт\ue205"}
+    assert result == {Source("WG"): "ходомь спѣт\ue205"}
     result = sl_sem.var.multilemma(row)
-    assert result == {"WG": "ходъ"}
+    assert result == {Source("WG"): "ходъ"}
 
 
-def test_LangSemantics_multilemma_greek_paris():
-    """Copies held in Paris library are indicated by P?"""
+def test_LangSemantics_multilemma_paris():
+    """Greek opies held in Paris library are indicated by P?"""
     # old semantics, so that variants are in word, not lemma
     gr_sem = MainLangSemantics(
         "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
@@ -343,7 +439,24 @@ def test_LangSemantics_multilemma_greek_paris():
         + [""] * 10
     )
     result = gr_sem.var.multilemma(row)
-    assert result == {"CMPcPa": "ἀνάκλησιν"}
+    assert result == {Source("CMPcPa"): "ἀνάκλησιν"}
+
+
+def test_LangSemantics_multiword_bozhii():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+
+    row = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+    )
+    result = sl_sem.var.multilemma(row)
+    assert result == {Source("GHW"): "бож\ue205\ue205"}
 
 
 def test__is_variant_lemma():
@@ -370,15 +483,15 @@ def test__is_variant_lemma():
     )
     exception = False
     try:
-        _is_variant_lemma(row, gr_sem, "C", "ὑπερκλύζω")
+        _is_variant_lemma(row, gr_sem, Source("C"), "ὑπερκλύζω")
     except AssertionError:
         exception = True
     assert exception
 
-    assert _is_variant_lemma(row, gr_sem, "", "ὑπερκλύζω")
-    assert _is_variant_lemma(row, gr_sem.var, "C", "ὑπερβλύω")
+    assert _is_variant_lemma(row, gr_sem, Source(""), "ὑπερκλύζω")
+    assert _is_variant_lemma(row, gr_sem.var, Source("C"), "ὑπερβλύω")
 
-    assert not _is_variant_lemma(row, gr_sem.var, "D", "ὑπερβλύω")
+    assert not _is_variant_lemma(row, gr_sem.var, Source("D"), "ὑπερβλύω")
 
     row = (
         ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"]
@@ -393,12 +506,32 @@ def test__is_variant_lemma():
         + ["μονογενὴς", "μονογενής"]
         + [""] * 14
     )
-    assert _is_variant_lemma(row, sl_sem.var, "WH", "\ue201д\ue205но\ue20dѧдъ")
-    assert not _is_variant_lemma(row, sl_sem.var, "G", "\ue201д\ue205но\ue20dѧдъ")
-    assert not _is_variant_lemma(row, sl_sem.var, "G", "\ue205но\ue20dѧдъ")
-    assert _is_variant_lemma(row, sl_sem, "", "\ue205но\ue20dѧдъ")
-    assert _is_variant_lemma(row, gr_sem, "", "μονογενής")
-    assert not _is_variant_lemma(row, gr_sem.var, "", "μονογενής")
+    assert _is_variant_lemma(row, sl_sem.var, Source("HW"), "\ue201д\ue205но\ue20dѧдъ")
+    assert not _is_variant_lemma(
+        row, sl_sem.var, Source("G"), "\ue201д\ue205но\ue20dѧдъ"
+    )
+    assert not _is_variant_lemma(row, sl_sem.var, Source("G"), "\ue205но\ue20dѧдъ")
+    assert _is_variant_lemma(row, sl_sem, Source(""), "\ue205но\ue20dѧдъ")
+    assert _is_variant_lemma(row, gr_sem, Source(""), "μονογενής")
+    assert not _is_variant_lemma(row, gr_sem.var, Source(""), "μονογενής")
+
+
+def test_is_variant_lemma_bozhii():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+    row = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+    )
+    assert _is_variant_lemma(row, sl_sem.var, Source("W"), "бож\ue205\ue205")
 
 
 def test_build_paths():
@@ -511,8 +644,10 @@ def test_add_usage():
             ),
             lang="gr",
             var="G",
-            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-            trans_alt_var={"H": "\ue201д\ue205нородъ"},
+            trans_alt=Alternative(
+                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                var_lemmas={"H": "\ue201д\ue205нородъ"},
+            ),
         ),
         Usage(
             idx=Index(
@@ -524,7 +659,7 @@ def test_add_usage():
                 word="μονογενὴς",
             ),
             lang="gr",
-            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+            trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
         ),
         Usage(
             idx=Index(
@@ -536,7 +671,7 @@ def test_add_usage():
                 word="μονογενοῦς",
             ),
             lang="gr",
-            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+            trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
         ),
         Usage(
             idx=Index(
@@ -549,8 +684,10 @@ def test_add_usage():
             ),
             lang="gr",
             var="H",
-            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-            trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+            trans_alt=Alternative(
+                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                var_lemmas={"G": "\ue205но\ue20dѧдъ"},
+            ),
         ),
         Usage(
             idx=Index(
@@ -573,10 +710,12 @@ def test_add_usage():
                 word="μονογενοῦς",
             ),
             lang="gr",
-            trans_alt_var={
-                "H": "\ue201д\ue205нородъ",
-                "G": "\ue205но\ue20dѧдъ",
-            },
+            trans_alt=Alternative(
+                var_lemmas={
+                    "H": "\ue201д\ue205нородъ",
+                    "G": "\ue205но\ue20dѧдъ",
+                }
+            ),
         ),
         Usage(
             idx=Index(
@@ -589,7 +728,7 @@ def test_add_usage():
             ),
             lang="gr",
             var="WH",
-            trans_alt="\ue205но\ue20dѧдъ ",
+            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
         ),
         Usage(
             idx=Index(
@@ -602,7 +741,7 @@ def test_add_usage():
             ),
             lang="gr",
             var="WH",
-            trans_alt="\ue205но\ue20dѧдъ",
+            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
         ),
     ]
 
@@ -624,7 +763,9 @@ def test_add_usage():
                                 word="μονογενοῦς",
                             ),
                             lang="gr",
-                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                            trans_alt=Alternative(
+                                var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                            ),
                         ),
                         Usage(
                             idx=Index(
@@ -637,7 +778,7 @@ def test_add_usage():
                             ),
                             lang="gr",
                             var="WH",
-                            trans_alt="\ue205но\ue20dѧдъ",
+                            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
                         ),
                         Usage(
                             idx=Index(
@@ -649,7 +790,9 @@ def test_add_usage():
                                 word="μονογενὴς",
                             ),
                             lang="gr",
-                            trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                            trans_alt=Alternative(
+                                var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                            ),
                         ),
                         Usage(
                             idx=Index(
@@ -662,7 +805,7 @@ def test_add_usage():
                             ),
                             lang="gr",
                             var="WH",
-                            trans_alt="\ue205но\ue20dѧдъ ",
+                            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
                         ),
                         Usage(
                             idx=Index(
@@ -674,10 +817,12 @@ def test_add_usage():
                                 word="μονογενοῦς",
                             ),
                             lang="gr",
-                            trans_alt_var={
-                                "H": "\ue201д\ue205нородъ",
-                                "G": "\ue205но\ue20dѧдъ",
-                            },
+                            trans_alt=Alternative(
+                                var_lemmas={
+                                    "H": "\ue201д\ue205нородъ",
+                                    "G": "\ue205но\ue20dѧдъ",
+                                }
+                            ),
                         ),
                         Usage(
                             idx=Index(
@@ -701,8 +846,10 @@ def test_add_usage():
                             ),
                             lang="gr",
                             var="G",
-                            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                            trans_alt_var={"H": "\ue201д\ue205нородъ"},
+                            trans_alt=Alternative(
+                                "\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={"H": "\ue201д\ue205нородъ"},
+                            ),
                         ),
                         Usage(
                             idx=Index(
@@ -715,11 +862,45 @@ def test_add_usage():
                             ),
                             lang="gr",
                             var="H",
-                            trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                            trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                            trans_alt=Alternative(
+                                "\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={"G": "\ue205но\ue20dѧдъ"},
+                            ),
                         ),
                     ]
                 )
             }
         }
     )
+
+
+def test_LangSemantics_compile_words_by_lemma():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    row = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+    )
+
+    result = sl_sem.var.compile_words_by_lemma(row, "WGH")
+    assert result == "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G"
+
+    row = (
+        ["ѿ WG  ѡ H", "отъ"]
+        + [""] * 2
+        + ["1/5d11"]
+        + ["om.", ""] * 2
+        + [""] * 2
+        + ["ἐπὶ", "ἐπί", "ἐπί + Gen."]
+        + [""] * 13
+    )
+
+    result = sl_sem.var.compile_words_by_lemma(row, "WGH")
+    assert result == "ѡ H ѿ WG"
+
+    row = ()

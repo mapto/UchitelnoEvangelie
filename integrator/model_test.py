@@ -1,5 +1,5 @@
 from sortedcontainers import SortedSet  # type: ignore
-from model import Index, Usage
+from model import Index, Usage, Alternative
 
 
 def test_index_unpack():
@@ -82,8 +82,9 @@ def test_sort_usage():
                 ),
                 lang="gr",
                 var="G",
-                trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                trans_alt_var={"H": "\ue201д\ue205нородъ"},
+                trans_alt=Alternative(
+                    "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
+                ),
             ),
             Usage(
                 idx=Index(
@@ -95,7 +96,7 @@ def test_sort_usage():
                     word="μονογενὴς",
                 ),
                 lang="gr",
-                trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
             ),
             Usage(
                 idx=Index(
@@ -107,7 +108,7 @@ def test_sort_usage():
                     word="μονογενοῦς",
                 ),
                 lang="gr",
-                trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
             ),
             Usage(
                 idx=Index(
@@ -120,8 +121,9 @@ def test_sort_usage():
                 ),
                 lang="gr",
                 var="H",
-                trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                trans_alt=Alternative(
+                    "\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}
+                ),
             ),
             Usage(
                 idx=Index(
@@ -144,10 +146,12 @@ def test_sort_usage():
                     word="μονογενοῦς",
                 ),
                 lang="gr",
-                trans_alt_var={
-                    "H": "\ue201д\ue205нородъ",
-                    "G": "\ue205но\ue20dѧдъ",
-                },
+                trans_alt=Alternative(
+                    var_lemmas={
+                        "H": "\ue201д\ue205нородъ",
+                        "G": "\ue205но\ue20dѧдъ",
+                    }
+                ),
             ),
             Usage(
                 idx=Index(
@@ -160,7 +164,7 @@ def test_sort_usage():
                 ),
                 lang="gr",
                 var="WH",
-                trans_alt="\ue205но\ue20dѧдъ ",
+                trans_alt=Alternative("\ue205но\ue20dѧдъ "),
             ),
             Usage(
                 idx=Index(
@@ -173,7 +177,7 @@ def test_sort_usage():
                 ),
                 lang="gr",
                 var="WH",
-                trans_alt="\ue205но\ue20dѧдъ",
+                trans_alt=Alternative("\ue205но\ue20dѧдъ"),
             ),
         ]
     )
@@ -189,7 +193,7 @@ def test_sort_usage():
                     word="μονογενοῦς",
                 ),
                 lang="gr",
-                trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
             ),
             Usage(
                 idx=Index(
@@ -202,7 +206,7 @@ def test_sort_usage():
                 ),
                 lang="gr",
                 var="WH",
-                trans_alt="\ue205но\ue20dѧдъ",
+                trans_alt=Alternative("\ue205но\ue20dѧдъ"),
             ),
             Usage(
                 idx=Index(
@@ -214,7 +218,7 @@ def test_sort_usage():
                     word="μονογενὴς",
                 ),
                 lang="gr",
-                trans_alt_var={"WH": "\ue201д\ue205но\ue20dѧдъ"},
+                trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
             ),
             Usage(
                 idx=Index(
@@ -227,7 +231,7 @@ def test_sort_usage():
                 ),
                 lang="gr",
                 var="WH",
-                trans_alt="\ue205но\ue20dѧдъ ",
+                trans_alt=Alternative("\ue205но\ue20dѧдъ "),
             ),
             Usage(
                 idx=Index(
@@ -239,7 +243,9 @@ def test_sort_usage():
                     word="μονογενοῦς",
                 ),
                 lang="gr",
-                trans_alt_var={"H": "\ue201д\ue205нородъ", "G": "\ue205но\ue20dѧдъ"},
+                trans_alt=Alternative(
+                    var_lemmas={"H": "\ue201д\ue205нородъ", "G": "\ue205но\ue20dѧдъ"}
+                ),
             ),
             Usage(
                 idx=Index(
@@ -263,8 +269,9 @@ def test_sort_usage():
                 ),
                 lang="gr",
                 var="G",
-                trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                trans_alt_var={"H": "\ue201д\ue205нородъ"},
+                trans_alt=Alternative(
+                    "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
+                ),
             ),
             Usage(
                 idx=Index(
@@ -277,8 +284,9 @@ def test_sort_usage():
                 ),
                 lang="gr",
                 var="H",
-                trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                trans_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                trans_alt=Alternative(
+                    "\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}
+                ),
             ),
         ]
     )

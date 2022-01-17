@@ -1,7 +1,7 @@
 """The exporter specific to the indexgenerator"""
 
 from const import VAR_GR, VAR_SL, SPECIAL_CHARS
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
@@ -9,16 +9,16 @@ from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
 from const import CF_SEP, main_source
-from model import Index, Usage, Counter
+from model import Index, Usage, Counter, Source
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, brace_open, brace_close
 
 BULLET_STYLE = "List Bullet"
-LEVEL_OFFSET = 0.5
+LEVEL_OFFSET = 0.4
 
 
-def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
+def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
     for var, word in alt_var.items():
@@ -27,36 +27,31 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
         else:
             _generate_text(par, ", ")
         _generate_text(par, word, fonts[lang])
-        _generate_text(par, var, superscript=True)
+        _generate_text(par, str(var), superscript=True)
     _generate_text(par, brace_close[lang])
 
 
 def _generate_usage(par, u: Usage) -> None:
-    if (
-        not u.orig_alt
-        and not u.orig_alt_var
-        and not u.trans_alt
-        and not u.trans_alt_var
-    ):
+    if not u.orig_alt and not u.trans_alt:
         return
 
     _generate_text(par, f" {CF_SEP}")
-    if u.orig_alt:
+    if u.orig_alt.main_lemma:
         _generate_text(par, " ")
-        _generate_text(par, u.orig_alt, fonts[u.lang])
+        _generate_text(par, u.orig_alt.main_lemma, fonts[u.lang])
         _generate_text(par, f" {main_source[u.lang]}")
 
-    if u.orig_alt_var:
-        _generate_usage_alt_vars(par, u.lang, u.orig_alt_var)
+    if u.orig_alt.var_lemmas:
+        _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_lemmas)
 
     # previous addition certainly finished with GENERIC_FONT
-    if u.trans_alt:
+    if u.trans_alt.main_lemma:
         _generate_text(par, " ")
-        _generate_text(par, u.trans_alt, fonts[other_lang[u.lang]])
+        _generate_text(par, u.trans_alt.main_lemma, fonts[other_lang[u.lang]])
         _generate_text(par, f" {main_source[other_lang[u.lang]]}")
 
-    if u.trans_alt_var:
-        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt_var)
+    if u.trans_alt.var_lemmas:
+        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_lemmas)
 
 
 def docx_result(par, usage: SortedSet, src_style: str) -> None:
@@ -71,7 +66,7 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
             _generate_text(par, "; ")
         _generate_text(par, str(next.idx), bold=next.idx.bold, italic=next.idx.italic)
         if next.var:
-            _generate_text(par, next.var, superscript=True)
+            _generate_text(par, str(next.var), superscript=True)
         _generate_usage(par, next)
 
 
@@ -187,7 +182,7 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         par.style.font.name = GENERIC_FONT
         par.paragraph_format.space_before = Cm(0)
         par.paragraph_format.space_after = Cm(0)
-        par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 3)
+        par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 4)
 
         _generate_text(par, t, fonts[trans_lang])
         _generate_counts(par, bottom_d, True)
@@ -196,6 +191,8 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         # run.font.name = GENERIC_FONT
         run.add_text("): ")
         all = SortedSet()
+        # TODO: also merge different variants with same index and lemma
+        # TODO: do it before counting
         for nxt in bottom_d.values():
             all.update(nxt)
         docx_result(par, all, lang)
@@ -248,5 +245,6 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
 def generate_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
     doc.styles["Normal"].font.name = GENERIC_FONT
+    # simplify here (before counting)
     _generate_line(0, lang, d, doc)
     doc.save(fname)

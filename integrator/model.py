@@ -9,6 +9,132 @@ from const import PATH_SEP
 from util import base_word
 
 
+@dataclass(frozen=True)
+class Source:
+    """Represents a list of sources, could be one or two letter symbols"""
+
+    src: str = ""
+
+    def _sort_vars(self) -> str:
+        """
+        >>> Source('WGH')._sort_vars()
+        'GHW'
+        >>> Source('PbPa')._sort_vars()
+        'PaPb'
+        >>> Source('CMB')._sort_vars()
+        'BCM'
+        >>> Source('WH')._sort_vars()
+        'HW'
+        >>> Source('HW')._sort_vars()
+        'HW'
+        """
+        return "".join(sorted(self.values()))
+
+    def values(self) -> Set[str]:
+        split = set()
+        prev = ""
+        for c in self.src:
+            if c == c.lower():
+                split.add(prev + c)
+                prev = ""
+            else:
+                split.add(prev)
+                prev = c
+        if prev:
+            split.add(prev)
+        return split
+
+    def __eq__(self, other) -> bool:
+        """
+        >>> Source('A') == Source('B')
+        False
+        >>> Source('HW') == Source('WH')
+        True
+        >>> hash(Source('HW')) == hash(Source('HW'))
+        True
+        >>> hash(Source('HW')) == hash(Source('WH'))
+        True
+        >>> Source('HW') in {Source('HW')}
+        True
+        >>> Source('HW') in {Source('WH')}
+        True
+        >>> Source('HW') in {Source('WH'): '\ue201д\ue205но\ue20dѧдъ'}
+        True
+        """
+        return self._sort_vars() == Source(str(other))._sort_vars()
+
+    def __ne__(self, other) -> bool:
+        return not (self == other)
+
+    def __str__(self) -> str:
+        return self.src
+
+    def __repr__(self) -> str:
+        return f"Source('{self.src}')"
+        # return f"'{self.src}'"
+
+    def __len__(self) -> int:
+        return len(self.src)
+
+    def __add__(self, other) -> "Source":
+        return Source(self.src + str(other))
+
+    def __hash__(self) -> int:
+        """
+        >>> hash(Source('WH')) == hash(Source('HW'))
+        True
+        """
+        # print("-"*8)
+        # print(self._sort_vars())
+        # print((self._sort_vars()).__hash__())
+        # print(hash((self._sort_vars())))
+        return hash(self._sort_vars())
+
+    def __iter__(self):
+        return iter(self.src)
+
+    def __contains__(self, other) -> bool:
+        """
+        >>> Source('GH') in Source('GWH')
+        True
+        >>> Source('HW') in Source('WH')
+        True
+        >>> Source('WH') in Source('HW')
+        True
+        >>> Source('PaPb') in Source('MPaPb')
+        True
+        >>> Source('MP') in Source('MPaPb')
+        False
+        >>> Source('D') in Source('GWH')
+        False
+        """
+        return all(c in self.values() for c in Source(str(other)).values())
+
+    def __bool__(self) -> bool:
+        """
+        >>> True if Source() else False
+        False
+        >>> True if Source("") else False
+        False
+        >>> True if Source("A") else False
+        True
+        """
+        return bool(self.src)
+
+    def inside(self, iterable) -> Optional["Source"]:
+        """
+        >>> Source("A").inside([Source("AB"), Source("C")])
+        Source('AB')
+        >>> Source("A").inside({Source("AB"): 1, Source("C"): 2})
+        Source('AB')
+        >>> Source("F").inside([Source("AB"), Source("CD")])
+        """
+        for i in iterable:
+            if Source(str(self)) in Source(str(i)):
+                return i
+        return None
+
+
 @dataclass(order=True, frozen=True)
 class Index:
     """Index only indicates if it is from a variant.
@@ -146,6 +272,27 @@ class Index:
 
 
 @dataclass(frozen=True)
+class Alternative:
+    main_lemma: str = ""
+    var_lemmas: Dict[Source, str] = field(default_factory=lambda: {})
+    main_word: str = ""
+    var_words: Dict[Source, str] = field(default_factory=lambda: {})
+
+    # def __repr__(self):
+    #     return f"('{self.main_lemma}', {self.var_lemmas})"
+
+    # def __hash__(self) -> int:
+    #     # TODO: Add variants
+    #     return hash((self.main_word, self.main_lemma))
+
+    def __bool__(self) -> bool:
+        return bool(self.main_lemma) or bool(self.var_lemmas)
+
+    # def __not__(self):
+    #     return not self.main_lemma and not self.var
+
+
+@dataclass(frozen=True)
 class Usage:
     """Variant is not only indicative, but also nominative - which variant.
     Here alt means other other transcriptions (main or var).
@@ -153,14 +300,12 @@ class Usage:
 
     idx: Index
     lang: str
-    var: str = ""
-    orig_alt: str = ""  # TODO this is lemma, for integrator we also need word
-    orig_alt_var: Dict[str, str] = field(default_factory=lambda: {})
-    trans_alt: str = ""  # TODO this is lemma, for integrator we also need word
-    trans_alt_var: Dict[str, str] = field(default_factory=lambda: {})
+    var: Source = field(default_factory=lambda: Source(""))
+    orig_alt: Alternative = field(default_factory=lambda: Alternative())
+    trans_alt: Alternative = field(default_factory=lambda: Alternative())
 
     def __hash__(self):
-        return hash((self.idx, self.lang, self.var, self.orig_alt, self.trans_alt))
+        return hash((self.idx, self.lang, self.var))
 
     def __eq__(self, other) -> bool:
         return self.idx == other.idx and len(self.var) == len(other.var)
@@ -183,6 +328,26 @@ class Usage:
     def __ge__(self, other) -> bool:
         return not self < other
         # return self.idx >= other.idx or len(self.var) >= len(other.var)
+
+    # def __add__(self, other) -> "Usage":
+    #     """
+    #     >>> Usage(Index.unpack("1/1a1"), "sl", Source("G")) + Usage(Index.unpack("1/1a1"), "sl", Source("H"))
+    #     Usage(idx=Index(ch=1, alt=False, page=1, col='a', row=1, var=False, cnt=0, end=None, bold=False, italic=False, word=''), lang='sl', var=Source('GH'), orig_alt='', orig_alt_var={}, trans_alt='', trans_alt_var={})
+    #     """
+    #     assert self.idx == other.idx
+    #     assert self.lang == other.lang
+    #     assert self.orig_alt == other.orig_alt or (
+    #         bool(self.orig_alt) != bool(other.orig_alt)
+    #     )
+    #     assert self.trans_alt == other.trans_alt or (
+    #         bool(self.trans_alt) != bool(other.trans_alt)
+    #     )
+    #     orig_alt = self.orig_alt if self.orig_alt else other.orig_alt
+    #     trans_alt = self.trans_alt if self.trans_alt else other.trans_alt
+    #     # TODO: complete parameters
+    #     return Usage(
+    #         self.idx, self.lang, self.var + other.var, orig_alt, trans_alt=trans_alt
+    #     )
 
 
 @dataclass

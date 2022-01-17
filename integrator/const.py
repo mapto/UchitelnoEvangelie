@@ -17,7 +17,7 @@ MAIN_SL = "S"
 VAR_SL = "WGH"
 DEFAULT_SL = VAR_SL
 MAIN_GR = "C"
-VAR_GR = "C"
+VAR_GR = "BCMPaPbPc"
 DEFAULT_GR = "C"
 
 main_source = {"gr": MAIN_GR, "sl": MAIN_SL}

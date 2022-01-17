@@ -1,5 +1,6 @@
 from typing import List
 
+from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 from merger import merge, _close, _grouped, _group_variants
 
@@ -120,7 +121,7 @@ def test_group_variants():
     ]
     group = [g1, g2]
     res = _group_variants(group, sl_sem)
-    assert res == "WH"
+    assert res == Source("WH")
 
     group = [
         [

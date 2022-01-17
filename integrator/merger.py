@@ -5,19 +5,19 @@
 from typing import Dict, List
 
 from const import IDX_COL, MISSING_CH, STYLE_COL, V_LEMMA_SEP
-from model import Index
+from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
 from util import clean_word
 
 
-def _group_variants(group: List[List[str]], sem: LangSemantics) -> str:
+def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
     """Returns a list of variants (excluding main) that are present in this group"""
     variants = set()
     assert sem.var  # for mypy
     for row in group:
         for var in [k for k, val in sem.var.multiword(row).items() if val]:
             variants.add(var)
-    return "".join(variants).strip()
+    return Source("".join(str(v) for v in variants).strip())
 
 
 def _collect(group: List[List[str]], col: int) -> List[str]:
@@ -29,7 +29,7 @@ def _collect_multiword(group: List[List[str]], sem: LangSemantics) -> str:
     """Collects the content of the multiwords for a variant in a group into a single string.
     The output is conformant with the multiword syntax.
     Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
-    collected: Dict[str, str] = {}
+    collected: Dict[Source, str] = {}
     assert sem.var  # for mypy
     for row in group:
         # for k, v in _normalise_multiword(sem.var.multiword(row)).items():

@@ -9,13 +9,13 @@ from docx import Document  # type: ignore
 from docx.shared import Pt  # type: ignore
 
 from const import CF_SEP, main_source
-from model import Index, Usage
+from model import Usage, Source
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, colors, brace_open, brace_close
 
 
-def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
+def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
     for var, word in alt_var.items():
@@ -24,7 +24,7 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[str, str]) -> None:
         else:
             _generate_text(par, ", ")
         _generate_text(par, word, fonts[lang])
-        _generate_text(par, var, superscript=True)
+        # _generate_text(par, str(var), superscript=True)
     _generate_text(par, brace_close[lang])
 
 
@@ -32,34 +32,29 @@ def _generate_usage(par, u: Usage) -> None:
     _generate_text(par, str(u.idx), bold=u.idx.bold, italic=u.idx.italic)
     if u.var:
         _generate_text(
-            par, u.var, superscript=True, bold=u.idx.bold, italic=u.idx.italic
+            par, str(u.var), superscript=True, bold=u.idx.bold, italic=u.idx.italic
         )
 
-    if (
-        not u.orig_alt
-        and not u.orig_alt_var
-        and not u.trans_alt
-        and not u.trans_alt_var
-    ):
+    if not u.orig_alt and not u.trans_alt:
         return
 
     _generate_text(par, f" {CF_SEP}")
-    if u.orig_alt:
+    if u.orig_alt.main_word:
         _generate_text(par, " ")
-        _generate_text(par, u.orig_alt, fonts[u.lang])
+        _generate_text(par, u.orig_alt.main_word, fonts[u.lang])
         _generate_text(par, f" {main_source[u.lang]}")
 
-    if u.orig_alt_var:
-        _generate_usage_alt_vars(par, u.lang, u.orig_alt_var)
+    if u.orig_alt.var_words:
+        _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_words)
 
     # previous addition certainly finished with GENERIC_FONT
-    if u.trans_alt:
+    if u.trans_alt.main_word:
         _generate_text(par, " ")
-        _generate_text(par, u.trans_alt, fonts[other_lang[u.lang]])
+        _generate_text(par, u.trans_alt.main_word, fonts[other_lang[u.lang]])
         _generate_text(par, f" {main_source[other_lang[u.lang]]}")
 
-    if u.trans_alt_var:
-        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt_var)
+    if u.trans_alt.var_words:
+        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_words)
 
 
 def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> None:

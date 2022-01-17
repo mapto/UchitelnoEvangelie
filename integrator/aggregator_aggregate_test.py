@@ -1,6 +1,6 @@
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
-from model import Index, Usage
+from model import Index, Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import aggregate
 
@@ -44,15 +44,21 @@ def test_aggregate_monogenis():
                                 word="\ue201д\ue205но\ue20dедоу",
                             ),
                             lang="sl",
-                            orig_alt_var={
-                                "H": "\ue201д\ue205нородъ",
-                                "G": "\ue205но\ue20dѧдъ",
-                            },
+                            orig_alt=Alternative(
+                                var_lemmas={
+                                    Source("H"): "\ue201д\ue205нородъ",
+                                    Source("G"): "\ue205но\ue20dѧдъ",
+                                },
+                                var_words={
+                                    Source("H"): "\ue201д\ue205нородоу H",
+                                    Source("G"): "\ue205но\ue20dедаго G",
+                                },
+                            ),
                         )
                     ]
                 )
             }
-        },
+        }
     }
 
     result = SortedDict()
@@ -60,7 +66,7 @@ def test_aggregate_monogenis():
     assert result == {
         "\ue201д\ue205нородъ": {
             "μονογενής": {
-                ("\ue201д\ue205нородоу", "μονογενοῦς"): SortedSet(
+                ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                     [
                         Usage(
                             idx=Index(
@@ -70,12 +76,16 @@ def test_aggregate_monogenis():
                                 col="a",
                                 row=25,
                                 var=True,
-                                word="\ue201д\ue205нородоу",
+                                word="\ue201д\ue205нородоу H",
                             ),
                             lang="sl",
-                            var="H",
-                            orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                            orig_alt_var={"G": "\ue205но\ue20dѧдъ"},
+                            var=Source("H"),
+                            orig_alt=Alternative(
+                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+                                main_word="\ue201д\ue205но\ue20dедоу",
+                                var_words={Source("G"): "\ue205но\ue20dедаго"},
+                            ),
                         )
                     ]
                 )
@@ -83,7 +93,7 @@ def test_aggregate_monogenis():
         },
         "\ue205но\ue20dѧдъ": {
             "μονογενής": {
-                ("\ue205но\ue20dедаго", "μονογενοῦς"): SortedSet(
+                ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                     [
                         Usage(
                             idx=Index(
@@ -93,12 +103,16 @@ def test_aggregate_monogenis():
                                 col="a",
                                 row=25,
                                 var=True,
-                                word="\ue205но\ue20dедаго",
+                                word="\ue205но\ue20dедаго G",
                             ),
                             lang="sl",
-                            var="G",
-                            orig_alt="\ue201д\ue205но\ue20dѧдъ",
-                            orig_alt_var={"H": "\ue201д\ue205нородъ"},
+                            var=Source("G"),
+                            orig_alt=Alternative(
+                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
+                                main_word="\ue201д\ue205но\ue20dедоу",
+                                var_words={Source("H"): "\ue201д\ue205нородоу"},
+                            ),
                         )
                     ]
                 )
@@ -184,202 +198,198 @@ def test_aggregate_monogenis():
 
     result = SortedDict()
     result = aggregate(rows, gr_sem, sl_sem, result)
-    assert result == SortedDict(
-        {
-            "μονογενής": SortedDict(
-                {
-                    "": SortedDict(
-                        {
-                            "": SortedDict(
-                                {
-                                    "\ue205но\ue20dѧдъ": {
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue205но\ue20dедаго",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=True,
-                                                        page=168,
-                                                        col="a",
-                                                        row=25,
-                                                        bold=True,
-                                                        italic=True,
-                                                        word="μονογενοῦς",
-                                                    ),
-                                                    lang="gr",
-                                                    var="G",
-                                                    trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                                                    trans_alt_var={
-                                                        "H": "\ue201д\ue205нородъ"
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                        (
-                                            "μονογενὴς",
-                                            "\ue205но\ue20dадꙑ\ue205",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=False,
-                                                        page=5,
-                                                        col="a",
-                                                        row=4,
-                                                        word="μονογενὴς",
-                                                    ),
-                                                    lang="gr",
-                                                    trans_alt_var={
-                                                        "WH": "\ue201д\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue205но\ue20dадѣмь",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=False,
-                                                        page=4,
-                                                        col="c",
-                                                        row=15,
-                                                        word="μονογενοῦς",
-                                                    ),
-                                                    lang="gr",
-                                                    trans_alt_var={
-                                                        "WH": "\ue201д\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                    },
-                                    "\ue201д\ue205нородъ": {
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue201д\ue205нородоу",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=True,
-                                                        page=168,
-                                                        col="a",
-                                                        row=25,
-                                                        bold=True,
-                                                        italic=True,
-                                                        word="μονογενοῦς",
-                                                    ),
-                                                    lang="gr",
-                                                    var="H",
-                                                    trans_alt="\ue201д\ue205но\ue20dѧдъ",
-                                                    trans_alt_var={
-                                                        "G": "\ue205но\ue20dѧдъ"
-                                                    },
-                                                )
-                                            ]
-                                        )
-                                    },
-                                    "\ue201д\ue205но\ue20dѧдъ": {
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue201д\ue205но\ue20dедаго",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=True,
-                                                        page=168,
-                                                        col="a",
-                                                        row=28,
-                                                        word="μονογενοῦς",
-                                                    ),
-                                                    lang="gr",
-                                                )
-                                            ]
-                                        ),
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue201д\ue205но\ue20dедоу",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=True,
-                                                        page=168,
-                                                        col="a",
-                                                        row=25,
-                                                        bold=True,
-                                                        italic=True,
-                                                        word="μονογενοῦς",
-                                                    ),
-                                                    lang="gr",
-                                                    trans_alt_var={
-                                                        "H": "\ue201д\ue205нородъ",
-                                                        "G": "\ue205но\ue20dѧдъ",
-                                                    },
-                                                )
-                                            ]
-                                        ),
-                                        (
-                                            "μονογενὴς",
-                                            "\ue201д\ue205но\ue20dеды",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=False,
-                                                        page=5,
-                                                        col="a",
-                                                        row=4,
-                                                        word="μονογενὴς",
-                                                    ),
-                                                    lang="gr",
-                                                    var="WH",
-                                                    trans_alt="\ue205но\ue20dѧдъ ",
-                                                )
-                                            ]
-                                        ),
-                                        (
-                                            "μονογενοῦς",
-                                            "\ue201д\ue205но\ue20dедѣмь",
-                                        ): SortedSet(
-                                            [
-                                                Usage(
-                                                    idx=Index(
-                                                        ch=1,
-                                                        alt=False,
-                                                        page=4,
-                                                        col="c",
-                                                        row=15,
-                                                        word="μονογενοῦς",
-                                                    ),
-                                                    lang="gr",
-                                                    var="WH",
-                                                    trans_alt="\ue205но\ue20dѧдъ",
-                                                )
-                                            ]
-                                        ),
-                                    },
-                                }
-                            )
-                        }
-                    )
+    assert result == {
+        "μονογενής": {
+            "": {
+                "": {
+                    "\ue201д\ue205нородъ": {
+                        ("μονογενοῦς", "\ue201д\ue205нородоу H"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="a",
+                                        row=25,
+                                        bold=True,
+                                        italic=True,
+                                        word="μονογενοῦς",
+                                    ),
+                                    lang="gr",
+                                    var=Source("H"),
+                                    trans_alt=Alternative(
+                                        main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                        var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+                                        main_word="\ue201д\ue205но\ue20dедоу",
+                                        var_words={Source("G"): "\ue205но\ue20dедаго"},
+                                    ),
+                                )
+                            ]
+                        )
+                    },
+                    "\ue201д\ue205но\ue20dѧдъ": {
+                        ("μονογενοῦς", "\ue201д\ue205но\ue20dедаго"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="a",
+                                        row=28,
+                                        word="μονογενοῦς",
+                                    ),
+                                    lang="gr",
+                                )
+                            ]
+                        ),
+                        ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="a",
+                                        row=25,
+                                        bold=True,
+                                        italic=True,
+                                        word="μονογενοῦς",
+                                    ),
+                                    lang="gr",
+                                    trans_alt=Alternative(
+                                        var_lemmas={
+                                            Source("H"): "\ue201д\ue205нородъ",
+                                            Source("G"): "\ue205но\ue20dѧдъ",
+                                        },
+                                        var_words={
+                                            Source("H"): "\ue201д\ue205нородоу H",
+                                            Source("G"): "\ue205но\ue20dедаго G",
+                                        },
+                                    ),
+                                )
+                            ]
+                        ),
+                        ("μονογενοῦς", "\ue201д\ue205но\ue20dедѣмь WH"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=4,
+                                        col="c",
+                                        row=15,
+                                        word="μονογενοῦς",
+                                    ),
+                                    lang="gr",
+                                    var=Source("WH"),
+                                    trans_alt=Alternative(
+                                        main_lemma="\ue205но\ue20dѧдъ",
+                                        main_word="\ue205но\ue20dадѣмь",
+                                    ),
+                                )
+                            ]
+                        ),
+                        ("μονογενὴς", "\ue201д\ue205но\ue20dеды WH"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=5,
+                                        col="a",
+                                        row=4,
+                                        word="μονογενὴς",
+                                    ),
+                                    lang="gr",
+                                    var=Source("WH"),
+                                    trans_alt=Alternative(
+                                        main_lemma="\ue205но\ue20dѧдъ ",
+                                        main_word="\ue205но\ue20dадꙑ\ue205",
+                                    ),
+                                )
+                            ]
+                        ),
+                    },
+                    "\ue205но\ue20dѧдъ": {
+                        ("μονογενοῦς", "\ue205но\ue20dадѣмь"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=4,
+                                        col="c",
+                                        row=15,
+                                        word="μονογενοῦς",
+                                    ),
+                                    lang="gr",
+                                    trans_alt=Alternative(
+                                        var_lemmas={
+                                            Source("WH"): "\ue201д\ue205но\ue20dѧдъ"
+                                        },
+                                        var_words={
+                                            Source(
+                                                "WH"
+                                            ): "\ue201д\ue205но\ue20dедѣмь WH"
+                                        },
+                                    ),
+                                )
+                            ]
+                        ),
+                        ("μονογενοῦς", "\ue205но\ue20dедаго G"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=True,
+                                        page=168,
+                                        col="a",
+                                        row=25,
+                                        bold=True,
+                                        italic=True,
+                                        word="μονογενοῦς",
+                                    ),
+                                    lang="gr",
+                                    var=Source("G"),
+                                    trans_alt=Alternative(
+                                        main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                        var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
+                                        main_word="\ue201д\ue205но\ue20dедоу",
+                                        var_words={Source("H"): "\ue201д\ue205нородоу"},
+                                    ),
+                                )
+                            ]
+                        ),
+                        ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=1,
+                                        alt=False,
+                                        page=5,
+                                        col="a",
+                                        row=4,
+                                        word="μονογενὴς",
+                                    ),
+                                    lang="gr",
+                                    trans_alt=Alternative(
+                                        var_lemmas={
+                                            Source("WH"): "\ue201д\ue205но\ue20dѧдъ"
+                                        },
+                                        var_words={
+                                            Source("WH"): "\ue201д\ue205но\ue20dеды WH"
+                                        },
+                                    ),
+                                )
+                            ]
+                        ),
+                    },
                 }
-            )
+            }
         }
-    )
+    }
 
 
 def test_aggregate_ipercliso():
@@ -435,7 +445,10 @@ def test_aggregate_ipercliso():
                                         word="ὑπερκλύζων",
                                     ),
                                     lang="gr",
-                                    orig_alt_var={"C": "ὑπερβλύω"},
+                                    orig_alt=Alternative(
+                                        var_lemmas={Source("C"): "ὑπερβλύω"},
+                                        var_words={Source("C"): "ὑπερβλύζων C"},
+                                    ),
                                 )
                             ]
                         )
@@ -457,14 +470,17 @@ def test_aggregate_ipercliso():
                                         word="ὑπερκλύσαι",
                                     ),
                                     lang="gr",
-                                    orig_alt_var={"C": "ὑπερβλύω"},
+                                    orig_alt=Alternative(
+                                        var_lemmas={Source("C"): "ὑπερβλύω"},
+                                        var_words={Source("C"): "ὑπερβλύσαι C"},
+                                    ),
                                 )
                             ]
                         )
                     }
                 }
             },
-        },
+        }
     }
 
     result = SortedDict()
@@ -474,7 +490,7 @@ def test_aggregate_ipercliso():
             "": {
                 "": {
                     "прѣ\ue205сто\ue20d\ue205т\ue205": {
-                        ("ὑπερβλύζων", "прѣ\ue205сто\ue20dе"): SortedSet(
+                        ("ὑπερβλύζων C", "прѣ\ue205сто\ue20dе"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -484,11 +500,14 @@ def test_aggregate_ipercliso():
                                         col="c",
                                         row=17,
                                         var=True,
-                                        word="ὑπερβλύζων",
+                                        word="ὑπερβλύζων C",
                                     ),
                                     lang="gr",
-                                    var="C",
-                                    orig_alt="ὑπερκλύζω",
+                                    var=Source("C"),
+                                    orig_alt=Alternative(
+                                        main_lemma="ὑπερκλύζω",
+                                        main_word="ὑπερκλύζων",
+                                    ),
                                 )
                             ]
                         )
@@ -498,7 +517,7 @@ def test_aggregate_ipercliso():
             "inf.": {
                 "": {
                     "\ue205сто\ue20dен\ue205\ue201": {
-                        ("ὑπερβλύσαι", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
+                        ("ὑπερβλύσαι C", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -508,18 +527,21 @@ def test_aggregate_ipercliso():
                                         col="c",
                                         row=17,
                                         var=True,
-                                        word="ὑπερβλύσαι",
+                                        word="ὑπερβλύσαι C",
                                     ),
                                     lang="gr",
-                                    var="C",
-                                    orig_alt="ὑπερκλύζω",
+                                    var=Source("C"),
+                                    orig_alt=Alternative(
+                                        main_lemma="ὑπερκλύζω",
+                                        main_word="ὑπερκλύσαι",
+                                    ),
                                 )
                             ]
                         )
                     }
                 }
             },
-        },
+        }
     }
 
 
@@ -601,9 +623,16 @@ def test_aggregate_bozhii():
                                             word="боꙁѣ",
                                         ),
                                         lang="sl",
-                                        orig_alt_var={
-                                            "WGH": "бож\ue205\ue205",
-                                        },
+                                        orig_alt=Alternative(
+                                            var_lemmas={
+                                                Source("WGH"): "бож\ue205\ue205"
+                                            },
+                                            var_words={
+                                                Source(
+                                                    "WGH"
+                                                ): "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G"
+                                            },
+                                        ),
                                     )
                                 ]
                             )
@@ -623,7 +652,10 @@ def test_aggregate_bozhii():
                 "": {
                     "": {
                         "θεός Gen.": {
-                            ("б\ue010ж\ue205", "Θεοῦ"): SortedSet(
+                            (
+                                "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
+                                "Θεοῦ",
+                            ): SortedSet(
                                 [
                                     Usage(
                                         idx=Index(
@@ -633,62 +665,17 @@ def test_aggregate_bozhii():
                                             col="a",
                                             row=4,
                                             var=True,
-                                            word="б\ue010ж\ue205",
+                                            word="б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
                                         ),
                                         lang="sl",
-                                        var="W",
-                                        orig_alt="богъ",
-                                        orig_alt_var={
-                                            "G": "бож\ue205\ue205",
-                                            "H": "бож\ue205\ue205",
-                                        },
-                                    )
-                                ]
-                            ),
-                            ("б\ue010ж\ue205\ue205", "Θεοῦ"): SortedSet(
-                                [
-                                    Usage(
-                                        idx=Index(
-                                            ch=1,
-                                            alt=False,
-                                            page=7,
-                                            col="a",
-                                            row=4,
-                                            var=True,
-                                            word="б\ue010ж\ue205\ue205",
+                                        var=Source("WGH"),
+                                        orig_alt=Alternative(
+                                            main_lemma="богъ",
+                                            main_word="боꙁѣ",
                                         ),
-                                        lang="sl",
-                                        var="G",
-                                        orig_alt="богъ",
-                                        orig_alt_var={
-                                            "W": "бож\ue205\ue205",
-                                            "H": "бож\ue205\ue205",
-                                        },
                                     )
                                 ]
-                            ),
-                            ("б\ue010жї\ue205", "Θεοῦ"): SortedSet(
-                                [
-                                    Usage(
-                                        idx=Index(
-                                            ch=1,
-                                            alt=False,
-                                            page=7,
-                                            col="a",
-                                            row=4,
-                                            var=True,
-                                            word="б\ue010жї\ue205",
-                                        ),
-                                        lang="sl",
-                                        var="H",
-                                        orig_alt="богъ",
-                                        orig_alt_var={
-                                            "W": "бож\ue205\ue205",
-                                            "G": "бож\ue205\ue205",
-                                        },
-                                    )
-                                ]
-                            ),
+                            )
                         }
                     }
                 }
@@ -696,7 +683,6 @@ def test_aggregate_bozhii():
         }
     }
 
-    # TODO: merge bozhii
     result = SortedDict()
     result = aggregate([r], gr_sem, sl_sem.var, result)
     assert result == {
@@ -704,7 +690,10 @@ def test_aggregate_bozhii():
             "Gen.": {
                 "": {
                     "бож\ue205\ue205": {
-                        ("Θεοῦ", "б\ue010ж\ue205"): SortedSet(
+                        (
+                            "Θεοῦ",
+                            "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
+                        ): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -716,57 +705,14 @@ def test_aggregate_bozhii():
                                         word="Θεοῦ",
                                     ),
                                     lang="gr",
-                                    var="W",
-                                    trans_alt="богъ",
-                                    trans_alt_var={
-                                        "G": "бож\ue205\ue205",
-                                        "H": "бож\ue205\ue205",
-                                    },
-                                )
-                            ]
-                        ),
-                        ("Θεοῦ", "б\ue010ж\ue205\ue205"): SortedSet(
-                            [
-                                Usage(
-                                    idx=Index(
-                                        ch=1,
-                                        alt=False,
-                                        page=7,
-                                        col="a",
-                                        row=4,
-                                        word="Θεοῦ",
+                                    var=Source("WGH"),
+                                    trans_alt=Alternative(
+                                        main_lemma="богъ",
+                                        main_word="боꙁѣ",
                                     ),
-                                    lang="gr",
-                                    var="G",
-                                    trans_alt="богъ",
-                                    trans_alt_var={
-                                        "W": "бож\ue205\ue205",
-                                        "H": "бож\ue205\ue205",
-                                    },
                                 )
                             ]
-                        ),
-                        ("Θεοῦ", "б\ue010жї\ue205"): SortedSet(
-                            [
-                                Usage(
-                                    idx=Index(
-                                        ch=1,
-                                        alt=False,
-                                        page=7,
-                                        col="a",
-                                        row=4,
-                                        word="Θεοῦ",
-                                    ),
-                                    lang="gr",
-                                    var="H",
-                                    trans_alt="богъ",
-                                    trans_alt_var={
-                                        "W": "бож\ue205\ue205",
-                                        "G": "бож\ue205\ue205",
-                                    },
-                                )
-                            ]
-                        ),
+                        )
                     }
                 }
             }
