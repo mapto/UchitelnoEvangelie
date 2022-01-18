@@ -1,6 +1,6 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
-from model import Index, Usage, Source, Alternative
+from model import Alternative, Index, Path, Source, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 from semantics import _is_variant_lemma, _add_usage
 
@@ -76,14 +76,14 @@ def test_LangSemantics_alternatives():
         main_lemma="\ue201д\ue205но\ue20dѧдъ",
         var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
         main_word="\ue201д\ue205но\ue20dедоу",
-        var_words={Source("H"): "\ue201д\ue205нородоу"},
+        var_words={Source("H"): "\ue201д\ue205нородоу H"},
     )
     result = sl_sem.var.alternatives(row, Source("H"))
     assert result == Alternative(
         main_lemma="\ue201д\ue205но\ue20dѧдъ",
         var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
         main_word="\ue201д\ue205но\ue20dедоу",
-        var_words={Source("G"): "\ue205но\ue20dедаго"},
+        var_words={Source("G"): "\ue205но\ue20dедаго G"},
     )
 
     # semantics update from September 2021
@@ -631,6 +631,38 @@ def test_build_paths():
     assert res == ["παρά + Acc. → παρά"]
 
 
+def test_build_paths_special():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    row = (
+        ["свѣть WH"]
+        + [""] * 3
+        + ["1/6c8", "всѣмъ", "всѣмъ \ue20dл\ue010вкомъ•", "вьсь", "≈ вьсѣмъ"]
+        + [""] * 2
+        + ["καθόλου", "καθόλου"]
+        + [""] * 14
+    )
+    res = sl_sem.build_paths(row)
+    assert [str(p) for p in res] == ["≈ вьсѣмъ → вьсь"]
+    assert res == [Path(parts=["вьсь", "≈ вьсѣмъ"])]
+
+    row = (
+        [""] * 4
+        + ["1/4b16", "на\ue20dатъ", "семоу на\ue20dатъ", "на\ue20dѧт\ue205", "≠"]
+        + [""] * 2
+        + ["ᾐνίξατο", "αἰνίσσομαι"]
+        + [""] * 14
+    )
+    res = sl_sem.build_paths(row)
+    assert [str(p) for p in res] == ["≠ на\ue20dѧт\ue205"]
+    assert res == [Path(parts=["на\ue20dѧт\ue205", "≠"])]
+
+
 def test_add_usage():
     usages = [
         Usage(
@@ -903,4 +935,21 @@ def test_LangSemantics_compile_words_by_lemma():
     result = sl_sem.var.compile_words_by_lemma(row, "WGH")
     assert result == "ѡ H ѿ WG"
 
-    row = ()
+    row = (
+        [
+            "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
+            "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
+        ]
+        + [""] * 2
+        + [
+            "1/W168a25",
+            "\ue201д\ue205но\ue20dедоу",
+            "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
+            "\ue201д\ue205но\ue20dѧдъ",
+        ]
+        + [""] * 3
+        + ["μονογενοῦς", "μονογενής"]
+        + [""] * 14
+    )
+    result = sl_sem.var.compile_words_by_lemma(row, "H")
+    assert result == "днородоу H"

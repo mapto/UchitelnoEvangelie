@@ -243,7 +243,7 @@ class MainLangSemantics(LangSemantics):
         return text
 
     def build_keys(self, row: List[str]) -> List[str]:
-        if present(row, self) and self.word != None and not not row[self.word]:
+        if present(row, self) and self.word != None and bool(row[self.word]):
             return [base_word(row[self.word])]
         return [""]
 
@@ -298,7 +298,11 @@ class VarLangSemantics(LangSemantics):
                 main_lemma = row[self.main.lemmas[lidx]]
                 main_word = row[self.main.word]
         alt_lemmas = {k: v for k, v in multilemma.items() if my_var not in k}
-        alt_words = {k: v for k, v in multiword.items() if k.inside(alt_lemmas)}
+        alt_words = {
+            k: self.compile_words_by_lemma(row, k)
+            for k, v in multiword.items()
+            if k.inside(alt_lemmas)
+        }
         return Alternative(main_lemma, alt_lemmas, main_word, alt_words)
 
     def key(self, text: str) -> str:
@@ -308,7 +312,7 @@ class VarLangSemantics(LangSemantics):
         return f" {{{text}}}"
 
     def build_keys(self, row: List[str]) -> List[str]:
-        if present(row, self) and self.word != None and not not row[self.word]:
+        if present(row, self) and self.word != None and bool(row[self.word]):
             return [base_word(w) for w in self.multiword(row).values()]
         return [""]
 

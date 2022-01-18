@@ -50,34 +50,35 @@ def _highlighted(row: List[str], col: int) -> bool:
     return f"hl{col:02d}" in row[STYLE_COL]
 
 
-def _highlighted_sublemma(
+def _highlighted_lemma(
     osem: LangSemantics, tsem: LangSemantics, row: List[str]
 ) -> bool:
     """
     >>> sl_sem = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
     >>> gr_sem = MainLangSemantics("gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19]))
     >>> r = ['', '', '', '', '1/W168a15', 'б\ue205хомь', 'б\ue205хомь стрьпѣтї• ', 'бꙑт\ue205 ', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']
-    >>> _highlighted_sublemma(sl_sem, gr_sem, r)
+    >>> _highlighted_lemma(sl_sem, gr_sem, r)
     True
-    >>> _highlighted_sublemma(gr_sem, sl_sem, r)
+    >>> _highlighted_lemma(gr_sem, sl_sem, r)
     True
     >>> r = ['', '', '', '', '1/W168a14', 'вьꙁмогл\ue205', 'мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205', 'въꙁмощ\ue205', '', '', '', 'ἠδυνήθημεν', 'δύναμαι', 'pass.', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05']
-    >>> _highlighted_sublemma(sl_sem, gr_sem, r)
+    >>> _highlighted_lemma(sl_sem, gr_sem, r)
     False
-    >>> _highlighted_sublemma(gr_sem, sl_sem, r)
+    >>> _highlighted_lemma(gr_sem, sl_sem, r)
     False
     >>> r = ['+ \ue201сть GH', 'бꙑт\ue205', 'gramm.', '', '07/47a06', 'om.', 'сътвор\ue205лъ', 'om.', '', '', '', 'Ø', 'Ø', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl02']
-    >>> _highlighted_sublemma(sl_sem, gr_sem, r)
+    >>> _highlighted_lemma(sl_sem, gr_sem, r)
     True
-    >>> _highlighted_sublemma(sl_sem.var, gr_sem.var, r)
+    >>> _highlighted_lemma(sl_sem.var, gr_sem.var, r)
     True
     >>> r = ['', '', '', '', '12/67c10', 'бꙑхомъ•', 'в\ue205дѣл\ue205 бꙑхо-', 'бꙑт\ue205', '', 'gramm.', '', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']
-    >>> _highlighted_sublemma(sl_sem, gr_sem, r)
+    >>> _highlighted_lemma(sl_sem, gr_sem, r)
     True
-    >>> _highlighted_sublemma(sl_sem.var, gr_sem, r)
+    >>> _highlighted_lemma(sl_sem.var, gr_sem, r)
     True
     """
-    return any([_highlighted(row, c) for c in osem.lemn_cols() + tsem.lemn_cols()])
+    cols = osem.lem1_cols() + osem.lemn_cols() + tsem.lem1_cols() + tsem.lemn_cols()
+    return any(_highlighted(row, c) for c in cols)
 
 
 def _merge_indices(group: List[List[str]]) -> Index:
@@ -129,7 +130,7 @@ def _close(
 
     # only lines without highlited sublemmas, i.e. gramm. annotation
     merge_rows = [
-        i for i, r in enumerate(group) if not _highlighted_sublemma(orig, trans, r)
+        i for i, r in enumerate(group) if not _highlighted_lemma(orig, trans, r)
     ]
     merge_group = [group[i] for i in merge_rows]
 
@@ -154,7 +155,7 @@ def _close(
 
     # update content
     for i in range(len(group)):
-        if not _highlighted_sublemma(orig, trans, group[i]):
+        if not _highlighted_lemma(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
             for c in orig.word_cols() + orig.lemn_cols():
                 group[i][c] = line[c]

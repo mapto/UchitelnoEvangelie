@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 import re
 
-from const import PATH_SEP
+from const import PATH_SEP, SPECIAL_CHARS
 
 from util import base_word
 
@@ -180,7 +180,7 @@ class Index:
         # print(m.groups())
         ch = int(m.group(1))
         # alt puts W at end of ch1 and at start of ch2
-        alt = not not m.group(2) if ch % 2 else not m.group(2)
+        alt = bool(m.group(2)) if ch % 2 else not m.group(2)
         page = int(m.group(3))
         col = m.group(4)
         row = int(m.group(5))
@@ -201,7 +201,7 @@ class Index:
                     e_page = int(m.group(15))
                     if m.group(13):
                         e_ch = int(m.group(13))
-                    e_alt = not not m.group(14) if e_ch % 2 else not m.group(14)
+                    e_alt = bool(m.group(14)) if e_ch % 2 else not m.group(14)
             end = Index(e_ch, e_alt, e_page, e_col, e_row, var, word=word)
 
         return Index(ch, alt, page, col, row, var, cnt, end, b, i, word=word)
@@ -222,7 +222,7 @@ class Index:
         >>> str(Index(2, False, 6, "c", 4))
         '2/W6c4'
         """
-        w = "W" if not not self.ch % 2 == self.alt else ""
+        w = "W" if bool(self.ch % 2) == self.alt else ""
         cnt = "" if not self.cnt else f"({self.cnt})"
         start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{cnt}"
         if self.end:
@@ -249,7 +249,7 @@ class Index:
         >> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4, True)).longstr()
         '01/006c04-02/006c04WH'
         """
-        w = "W" if not not self.ch % 2 == self.alt else ""
+        w = "W" if bool(self.ch % 2) == self.alt else ""
         v = "var" if self.var else ""
         cnt = "" if not self.cnt else f"({self.cnt})"
         start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{v}{cnt}"
@@ -382,9 +382,14 @@ class Path:
         return item in self.parts or item == self.annotation
 
     def __str__(self):
-        """We want to see results in reverse order"""
-        if self.parts:
-            content = PATH_SEP.join(self.parts[::-1])
+        """We want to see results in reverse order.
+	Also, if last part is special character, display it smarter"""
+        parts = self.parts.copy()
+        if parts:
+            if parts[-1] in SPECIAL_CHARS:
+                ch = parts.pop(len(parts) - 1)
+                parts[-1] = f"{ch} {parts[-1]}"
+            content = PATH_SEP.join(parts[::-1])
             return f"{content} {self.annotation}" if self.annotation else content
         return self.annotation if self.annotation else ""
 

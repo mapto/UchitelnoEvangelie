@@ -10,15 +10,15 @@ VAR_SEP = "-"  # used to separate the two language in variant source annotation
 
 MISSING_CH = "ₓ"
 EMPTY_CH = "Ø"
-SPECIAL_CHARS = ["~", "*", "≠", "≈"]
+SPECIAL_CHARS = ["*", "≠", "≈"]
 
 # first letter is main variant
-MAIN_SL = "S"
+MAIN_SL = "S"  # for Synodal
 VAR_SL = "WGH"
 DEFAULT_SL = VAR_SL
-MAIN_GR = "C"
-VAR_GR = "BCMPaPbPc"
-DEFAULT_GR = "C"
+MAIN_GR = ""  # "C" for Cramer
+VAR_GR = "BCMPaPbPc"  # for Paris x
+DEFAULT_GR = "C"  # for Cramer
 
 main_source = {"gr": MAIN_GR, "sl": MAIN_SL}
 # var_sources = {"gr": VAR_GR, "sl": VAR_SL}
