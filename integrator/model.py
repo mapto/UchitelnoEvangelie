@@ -383,7 +383,7 @@ class Path:
 
     def __str__(self):
         """We want to see results in reverse order.
-	Also, if last part is special character, display it smarter"""
+        Also, if last part is special character, display it smarter"""
         parts = self.parts.copy()
         if parts:
             if parts[-1] in SPECIAL_CHARS:

@@ -1,7 +1,7 @@
 """The exporter specific to the integrator"""
 
-from const import VAR_GR, VAR_SL
-from typing import Dict, List, Tuple
+from const import SPECIAL_CHARS
+from typing import Dict, Tuple
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
@@ -121,9 +121,9 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             if level > 0:
                 par.paragraph_format.first_line_indent = Pt(10)
 
-            prefix = "| " * level
+            prefix = "" if li[0] in SPECIAL_CHARS else "| " * level
             _generate_text(
-                par, f"{prefix} {li}", fonts[lang], size=Pt(18 if level == 0 else 14)
+                par, f"{prefix} {li}", fonts[lang], size=Pt(14 if level == 0 else 12)
             )
 
         any_of_any = any_grandchild(next_d)
@@ -135,5 +135,6 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
 
 def export_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
+    doc.styles["Normal"].font.name = GENERIC_FONT
     _export_line(0, lang, d, doc)
     doc.save(fname)

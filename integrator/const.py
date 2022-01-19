@@ -9,7 +9,7 @@ V_LEMMA_SEP = "&"  # indicates lemmas merged from several rows
 VAR_SEP = "-"  # used to separate the two language in variant source annotation
 
 MISSING_CH = "ₓ"
-EMPTY_CH = "Ø"
+EMPTY_CH = "Ø"  # used when text is original, so no translation
 SPECIAL_CHARS = ["*", "≠", "≈"]
 
 # first letter is main variant

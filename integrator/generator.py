@@ -1,7 +1,7 @@
 """The exporter specific to the indexgenerator"""
 
 from const import VAR_GR, VAR_SL, SPECIAL_CHARS
-from typing import Dict, List, Union
+from typing import Dict, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
@@ -245,6 +245,5 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
 def generate_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
     doc.styles["Normal"].font.name = GENERIC_FONT
-    # simplify here (before counting)
     _generate_line(0, lang, d, doc)
     doc.save(fname)

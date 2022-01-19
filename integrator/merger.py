@@ -94,13 +94,18 @@ def _merge_indices(group: List[List[str]]) -> Index:
 
 
 def _close(
-    group: List[List[str]], orig: LangSemantics, trans: LangSemantics
+    group: List[List[str]],
+    orig: LangSemantics,
+    trans: LangSemantics,
+    incl_hilited: bool = False,
 ) -> List[List[str]]:
     """Wraps up a group that is currently being read.
     Redistributes content according to desired (complex) logic
     """
     if not group:
         return []
+
+    # locate index
     if not group[0][IDX_COL]:
         idxline = 0
         for i, row in enumerate(group):
@@ -128,9 +133,11 @@ def _close(
             if present(row, orig.var) and row[orig.word] and not row[orig.var.word]:
                 row[orig.var.word] = f"{row[orig.word]} {variants}"
 
-    # only lines without highlited sublemmas, i.e. gramm. annotation
+    # only lines without highlited lemmas, i.e. gramm. annotation
     merge_rows = [
-        i for i, r in enumerate(group) if not _highlighted_lemma(orig, trans, r)
+        i
+        for i, r in enumerate(group)
+        if incl_hilited or not _highlighted_lemma(orig, trans, r)
     ]
     merge_group = [group[i] for i in merge_rows]
 
@@ -155,7 +162,7 @@ def _close(
 
     # update content
     for i in range(len(group)):
-        if not _highlighted_lemma(orig, trans, group[i]):
+        if incl_hilited or not _highlighted_lemma(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
             for c in orig.word_cols() + orig.lemn_cols():
                 group[i][c] = line[c]
@@ -177,7 +184,10 @@ def _grouped(row: List[str], sem: LangSemantics) -> bool:
 
 
 def merge(
-    corpus: List[List[str]], orig: MainLangSemantics, trans: MainLangSemantics
+    corpus: List[List[str]],
+    orig: MainLangSemantics,
+    trans: MainLangSemantics,
+    incl_hilited: bool = False,
 ) -> List[List[str]]:
     """Merge lines according to color groups. This is an asymmetric operation
 
@@ -205,13 +215,13 @@ def merge(
             group.append(row)
         else:
             if group:
-                group = _close(group, orig, trans)
+                group = _close(group, orig, trans, incl_hilited)
                 result += group
                 group = []
             result.append(row)
 
     if group:
-        group = _close(group, orig, trans)
+        group = _close(group, orig, trans, incl_hilited)
         result += group
 
     return result
