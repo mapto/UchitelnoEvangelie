@@ -24,7 +24,6 @@ from merger import merge
 from aggregator import aggregate
 from exporter import export_docx
 
-INCL_HILITED = True
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
@@ -100,7 +99,7 @@ if __name__ == "__main__":
 
     for p in pairs:
         print(f"Събиране на многоредови преводи {p['label']}...")
-        merged = merge(lines, p["orig"], p["trans"], INCL_HILITED)
+        merged = merge(lines, p["orig"], p["trans"])
         print(f"{len(merged)} думи")
 
         print(f"Кондензиране {p['label']}...")
