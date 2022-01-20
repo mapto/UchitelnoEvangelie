@@ -386,9 +386,8 @@ class Path:
         Also, if last part is special character, display it smarter"""
         parts = self.parts.copy()
         if parts:
-            if parts[-1] in SPECIAL_CHARS:
-                ch = parts.pop(len(parts) - 1)
-                parts[-1] = f"{ch} {parts[-1]}"
+            if parts[-1][0] in SPECIAL_CHARS and parts[-1].endswith(parts[-2]):
+                parts.pop(-2)
             content = PATH_SEP.join(parts[::-1])
             return f"{content} {self.annotation}" if self.annotation else content
         return self.annotation if self.annotation else ""

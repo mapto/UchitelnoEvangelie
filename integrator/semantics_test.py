@@ -653,14 +653,20 @@ def test_build_paths_special():
 
     row = (
         [""] * 4
-        + ["1/4b16", "на\ue20dатъ", "семоу на\ue20dатъ", "на\ue20dѧт\ue205", "≠"]
+        + [
+            "1/4b16",
+            "на\ue20dатъ",
+            "семоу на\ue20dатъ",
+            "на\ue20dѧт\ue205",
+            "≠ на\ue20dѧт\ue205",
+        ]
         + [""] * 2
         + ["ᾐνίξατο", "αἰνίσσομαι"]
         + [""] * 14
     )
     res = sl_sem.build_paths(row)
     assert [str(p) for p in res] == ["≠ на\ue20dѧт\ue205"]
-    assert res == [Path(parts=["на\ue20dѧт\ue205", "≠"])]
+    assert res == [Path(parts=["на\ue20dѧт\ue205", "≠ на\ue20dѧт\ue205"])]
 
 
 def test_add_usage():

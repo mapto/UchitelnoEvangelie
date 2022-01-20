@@ -471,3 +471,48 @@ def test_merge():
         + ["hl05"],
     ]
     assert result == expected
+
+
+def test_merge_special():
+    sl_sem = MainLangSemantics(
+        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+    )
+    gr_sem = MainLangSemantics(
+        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+    )
+
+    row = (
+        [""] * 4
+        + ["1/4b16", "на\ue20dатъ", "семоу на\ue20dатъ", "на\ue20dѧт\ue205", "≠"]
+        + [""] * 2
+        + ["ᾐνίξατο", "αἰνίσσομαι"]
+        + [""] * 14
+    )
+    res = merge([row.copy()], sl_sem, gr_sem)
+    assert res == [
+        [""] * 4
+        + [
+            "1/4b16",
+            "на\ue20dатъ",
+            "семоу на\ue20dатъ",
+            "на\ue20dѧт\ue205",
+            "≠ на\ue20dѧт\ue205",
+        ]
+        + [""] * 2
+        + ["ᾐνίξατο", "αἰνίσσομαι"]
+        + [""] * 14
+    ]
+    res = merge([row.copy()], gr_sem, sl_sem)
+    assert res == [
+        [""] * 4
+        + [
+            "1/4b16",
+            "на\ue20dатъ",
+            "семоу на\ue20dатъ",
+            "на\ue20dѧт\ue205",
+            "≠ на\ue20dѧт\ue205",
+        ]
+        + [""] * 2
+        + ["ᾐνίξατο", "αἰνίσσομαι"]
+        + [""] * 14
+    ]

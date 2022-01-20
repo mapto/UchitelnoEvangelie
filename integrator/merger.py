@@ -4,7 +4,7 @@
 
 from typing import Dict, List
 
-from const import IDX_COL, MISSING_CH, STYLE_COL, V_LEMMA_SEP
+from const import IDX_COL, MISSING_CH, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
 from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
 from util import clean_word
@@ -46,39 +46,38 @@ def _collect_multilemma(group: List[List[str]], sem: LangSemantics) -> str:
     return " ".join(_collect(group, sem.other().lemmas[0]))
 
 
-def _highlighted(row: List[str], col: int) -> bool:
+def _hilited(row: List[str], col: int) -> bool:
+    """highlighting implemented via background colour"""
     return f"hl{col:02d}" in row[STYLE_COL]
 
 
-def _highlighted_lemma(
-    osem: LangSemantics, tsem: LangSemantics, row: List[str]
-) -> bool:
+def _hilited_lemma(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
     """
     >>> sl_sem = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
     >>> gr_sem = MainLangSemantics("gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19]))
     >>> r = ['', '', '', '', '1/W168a15', 'б\ue205хомь', 'б\ue205хомь стрьпѣтї• ', 'бꙑт\ue205 ', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']
-    >>> _highlighted_lemma(sl_sem, gr_sem, r)
+    >>> _hilited_lemma(sl_sem, gr_sem, r)
     True
-    >>> _highlighted_lemma(gr_sem, sl_sem, r)
+    >>> _hilited_lemma(gr_sem, sl_sem, r)
     True
     >>> r = ['', '', '', '', '1/W168a14', 'вьꙁмогл\ue205', 'мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205', 'въꙁмощ\ue205', '', '', '', 'ἠδυνήθημεν', 'δύναμαι', 'pass.', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05']
-    >>> _highlighted_lemma(sl_sem, gr_sem, r)
+    >>> _hilited_lemma(sl_sem, gr_sem, r)
     False
-    >>> _highlighted_lemma(gr_sem, sl_sem, r)
+    >>> _hilited_lemma(gr_sem, sl_sem, r)
     False
     >>> r = ['+ \ue201сть GH', 'бꙑт\ue205', 'gramm.', '', '07/47a06', 'om.', 'сътвор\ue205лъ', 'om.', '', '', '', 'Ø', 'Ø', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl02']
-    >>> _highlighted_lemma(sl_sem, gr_sem, r)
+    >>> _hilited_lemma(sl_sem, gr_sem, r)
     True
-    >>> _highlighted_lemma(sl_sem.var, gr_sem.var, r)
+    >>> _hilited_lemma(sl_sem.var, gr_sem.var, r)
     True
     >>> r = ['', '', '', '', '12/67c10', 'бꙑхомъ•', 'в\ue205дѣл\ue205 бꙑхо-', 'бꙑт\ue205', '', 'gramm.', '', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']
-    >>> _highlighted_lemma(sl_sem, gr_sem, r)
+    >>> _hilited_lemma(sl_sem, gr_sem, r)
     True
-    >>> _highlighted_lemma(sl_sem.var, gr_sem, r)
+    >>> _hilited_lemma(sl_sem.var, gr_sem, r)
     True
     """
     cols = osem.lem1_cols() + osem.lemn_cols() + tsem.lem1_cols() + tsem.lemn_cols()
-    return any(_highlighted(row, c) for c in cols)
+    return any(_hilited(row, c) for c in cols)
 
 
 def _merge_indices(group: List[List[str]]) -> Index:
@@ -91,6 +90,22 @@ def _merge_indices(group: List[List[str]]) -> Index:
     if not s_end:
         s_end = group[0][IDX_COL]
     return Index.unpack(f"{group[0][IDX_COL]}-{s_end}")
+
+
+def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
+    """
+    *IN_PLACE*
+
+    >> sl_sem = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
+    >>> sl_sem = VarLangSemantics("sl", 0, [1, 2, 3], None)
+    >>> _expand_special_char(sl_sem, ["word", "lemma", "*", ""])
+    ['word', 'lemma', '* lemma', '']
+    >>> _expand_special_char(sl_sem, ["word", "lemma", "* l2", ""])
+    ['word', 'lemma', '* l2', '']
+    """
+    if row[sem.lemmas[1]] in SPECIAL_CHARS:
+        row[sem.lemmas[1]] = f"{row[sem.lemmas[1]]} {row[sem.lemmas[0]]}"
+    return row
 
 
 def _close(
@@ -131,9 +146,7 @@ def _close(
                 row[orig.var.word] = f"{row[orig.word]} {variants}"
 
     # only lines without highlited lemmas, i.e. gramm. annotation
-    merge_rows = [
-        i for i, r in enumerate(group) if not _highlighted_lemma(orig, trans, r)
-    ]
+    merge_rows = [i for i, r in enumerate(group) if not _hilited_lemma(orig, trans, r)]
     merge_group = [group[i] for i in merge_rows]
 
     # collect content
@@ -157,7 +170,7 @@ def _close(
 
     # update content
     for i in range(len(group)):
-        if not _highlighted_lemma(orig, trans, group[i]):
+        if not _hilited_lemma(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
             for c in orig.word_cols() + orig.lemn_cols():
                 group[i][c] = line[c]
@@ -202,6 +215,9 @@ def merge(
 
         if not row[IDX_COL] and any(row):
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
+
+        row = _expand_special_char(orig, row)
+        row = _expand_special_char(trans, row)
 
         if _grouped(row, orig) or _grouped(row, trans):
             group.append(row)
