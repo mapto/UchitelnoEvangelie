@@ -1,6 +1,6 @@
 IDX_COL = 4
 EXAMPLE_COL = 6
-STYLE_COL = 26
+STYLE_COL = 26  # at end of content columns
 
 PATH_SEP = " → "  # used to show path in hierarchy
 CF_SEP = "»"  # used to indicate details about alternatives to a usage
