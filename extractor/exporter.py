@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 from openpyxl import Workbook  # type: ignore
 from openpyxl.cell import WriteOnlyCell  # type: ignore

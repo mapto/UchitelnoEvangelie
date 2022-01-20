@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from typing import List, Tuple, Dict, Optional
+from typing import Optional
 
 import re
 
 from const import LINE_CH
-from model import Comment, Word, WordList
+from model import Word, WordList
 
 
 def dehyphenate(words: WordList) -> WordList:

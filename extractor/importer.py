@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import List, Tuple, Dict, Set
+from typing import List, Dict, Set
 
 from pathlib import Path
 import re
