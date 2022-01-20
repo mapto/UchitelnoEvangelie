@@ -109,7 +109,10 @@ def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
 
 
 def _close(
-    group: List[List[str]], orig: LangSemantics, trans: LangSemantics
+    group: List[List[str]],
+    orig: LangSemantics,
+    trans: LangSemantics,
+    incl_hilited: bool = False,
 ) -> List[List[str]]:
     """Wraps up a group that is currently being read.
     Redistributes content according to desired (complex) logic
@@ -152,10 +155,10 @@ def _close(
     # collect content
     line = [""] * STYLE_COL
 
-    line[orig.word] = " ".join(_collect(merge_group, orig.word))
+    line[orig.word] = " ".join(_collect(group, orig.word))
     line[trans.word] = " ".join(_collect(group, trans.word))
 
-    line[orig.var.word] = _collect_multiword(merge_group, orig)
+    line[orig.var.word] = _collect_multiword(group, orig)
     assert trans.var  # for mypy
     line[trans.var.word] = _collect_multiword(group, trans)
 
@@ -170,13 +173,15 @@ def _close(
 
     # update content
     for i in range(len(group)):
-        if not _hilited_lemma(orig, trans, group[i]):
+        for c in orig.word_cols():
+            group[i][c] = line[c]
+        if incl_hilited or not _hilited_lemma(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
-            for c in orig.word_cols() + orig.lemn_cols():
+            for c in orig.lemn_cols():
                 group[i][c] = line[c]
             group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
         for c in trans.cols():
-            if i in merge_rows:
+            if i in merge_rows or c in trans.word_cols():
                 group[i][c] = line[c]
 
     return group.copy()
@@ -192,7 +197,10 @@ def _grouped(row: List[str], sem: LangSemantics) -> bool:
 
 
 def merge(
-    corpus: List[List[str]], orig: MainLangSemantics, trans: MainLangSemantics
+    corpus: List[List[str]],
+    orig: MainLangSemantics,
+    trans: MainLangSemantics,
+    incl_hilited: bool = False,
 ) -> List[List[str]]:
     """Merge lines according to color groups. This is an asymmetric operation
 
@@ -223,13 +231,13 @@ def merge(
             group.append(row)
         else:
             if group:
-                group = _close(group, orig, trans)
+                group = _close(group, orig, trans, incl_hilited)
                 result += group
                 group = []
             result.append(row)
 
     if group:
-        group = _close(group, orig, trans)
+        group = _close(group, orig, trans, incl_hilited)
         result += group
 
     return result
