@@ -49,19 +49,6 @@ def sheet_column(i: int) -> str:
     return chr(ord("A") + i)
 
 
-# def ifna_vlookup_old(ref: str, ret: str, rows: int) -> str:
-#     """
-#     https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1
-#     https://support.microsoft.com/en-us/office/ifna-function-6626c961-a569-42fc-a49d-79b4951fd461
-
-#     >>> ifna_vlookup("A3", "C", 5)
-#     '=_xlfn.IFNA(VLOOKUP(A3,A1:C5,3,FALSE),"")'
-#     """
-#     table_array = f"{ref[0]}1:{ret[0]}{rows}"
-#     col_index_num = ord(ret[0]) - ord(ref[0]) + 1
-#     return f'=_xlfn.IFNA(VLOOKUP({ref},{table_array},{col_index_num},FALSE),"")'
-
-
 def ifna_vlookup(val_col: int, row: int, ret_col: int, rows: int) -> str:
     """
     https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1
