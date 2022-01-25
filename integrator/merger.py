@@ -7,7 +7,7 @@ from typing import Dict, List
 from const import IDX_COL, MISSING_CH, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
 from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
-from util import clean_word
+from util import clean_word, collect
 
 
 def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
@@ -18,32 +18,6 @@ def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
         for var in [k for k, val in sem.var.multiword(row).items() if val]:
             variants.add(var)
     return Source("".join(str(v) for v in variants).strip())
-
-
-def _collect(group: List[List[str]], col: int) -> List[str]:
-    """Collects the actual content in the group column"""
-    return [group[i][col] for i in range(len(group)) if group[i][col]]
-
-
-def _collect_multiword(group: List[List[str]], sem: LangSemantics) -> str:
-    """Collects the content of the multiwords for a variant in a group into a single string.
-    The output is conformant with the multiword syntax.
-    Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
-    collected: Dict[Source, str] = {}
-    assert sem.var  # for mypy
-    for row in group:
-        # for k, v in _normalise_multiword(sem.var.multiword(row)).items():
-        for k, v in sem.var.multiword(row).items():
-            if k in collected:
-                collected[k] = collected[k] + " " + v
-            else:
-                collected[k] = v
-    return " ".join([f"{v} {k}" for k, v in collected.items() if v.strip()])
-
-
-def _collect_multilemma(group: List[List[str]], sem: LangSemantics) -> str:
-    """TODO implement the multilemma part"""
-    return " ".join(_collect(group, sem.other().lemmas[0]))
 
 
 def _hilited(row: List[str], col: int) -> bool:
@@ -155,21 +129,21 @@ def _close(
     # collect content
     line = [""] * STYLE_COL
 
-    line[orig.word] = " ".join(_collect(group, orig.word))
-    line[trans.word] = " ".join(_collect(group, trans.word))
+    line[orig.word] = orig.collect_word(group)
+    line[trans.word] = trans.collect_word(group)
 
-    line[orig.var.word] = _collect_multiword(group, orig)
-    assert trans.var  # for mypy
-    line[trans.var.word] = _collect_multiword(group, trans)
+    line[orig.other().word] = orig.other().collect_word(group)
+    # assert trans.var  # for mypy
+    line[trans.other().word] = trans.other().collect_word(group)
 
-    line[orig.other().lemmas[0]] = _collect_multilemma(merge_group, orig)
+    line[orig.other().lemmas[0]] = orig.other().collect_lemma(
+        merge_group, orig.other().lemmas[0]
+    )
 
     for c in trans.lem1_cols():
-        g = [e for e in _collect(merge_group, c) if e.strip() != MISSING_CH]
-        line[c] = f" {V_LEMMA_SEP} ".join(g)
+        line[c] = trans.collect_lemma(merge_group, c, V_LEMMA_SEP)
     for c in orig.lemn_cols() + trans.lemn_cols():
-        g = [e for e in _collect(merge_group, c) if e.strip() != MISSING_CH]
-        line[c] = " ".join(g)
+        line[c] = trans.collect_lemma(merge_group, c)
 
     # update content
     for i in range(len(group)):

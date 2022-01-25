@@ -370,7 +370,7 @@ def test_close():
     assert res == expected
 
 
-def test_close_tyam_li():
+def test_tyam_li():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -539,7 +539,7 @@ def test_close_tyam_li():
     assert res == expected
 
 
-def test_close_biti():
+def test_biti():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -656,7 +656,7 @@ def test_close_biti():
     assert res == expected
 
 
-def test_close_vetuhu():
+def test_vetuhu():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -707,7 +707,7 @@ def test_close_vetuhu():
     assert res == expected
 
 
-def test_close_vidit():
+def test_vidit():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -772,7 +772,12 @@ def test_close_vidit():
     e1 = (
         ["вѣдѣл\ue205 WG оувѣдѣл\ue205 H", "ѹвѣдѣт\ue205 H"]
         + [""] * 2
-        + ["12/067c10", "", "в\ue205дѣл\ue205 бꙑхо-", "в\ue205дѣт\ue205"]
+        + [
+            "12/067c10",
+            "в\ue205дѣл\ue205 бꙑхомъ•",
+            "в\ue205дѣл\ue205 бꙑхо-",
+            "в\ue205дѣт\ue205",
+        ]
         + [""] * 3
         + ["ἔγνωμεν", "γιγνώσκω"]
         + [""] * 13
@@ -783,7 +788,7 @@ def test_close_vidit():
         + [""] * 3
         + [
             "12/67c10",
-            "",
+            "в\ue205дѣл\ue205 бꙑхомъ•",
             "в\ue205дѣл\ue205 бꙑхо-",
             "бꙑт\ue205",
             "",
@@ -840,7 +845,7 @@ def test_close_vidit():
             "в\ue205дѣт\ue205",
         ]
         + [""] * 3
-        + ["", "γιγνώσκω"]
+        + ["ἔγνωμεν", "γιγνώσκω"]
         + [""] * 13
         + ["hl05"]
     )
@@ -852,9 +857,13 @@ def test_close_vidit():
             "в\ue205дѣл\ue205 бꙑхомъ•",
             "в\ue205дѣл\ue205 бꙑхо-",
             "бꙑт\ue205",
+            "",
+            "gramm.",
+            "",
+            "ἔγνωμεν",
+            "gramm.",
         ]
-        + ["", "gramm.", ""] * 2
-        + [""] * 12
+        + [""] * 13
         + ["hl05|hl09"]
     )
 

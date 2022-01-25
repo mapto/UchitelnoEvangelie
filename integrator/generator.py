@@ -8,7 +8,8 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
-from const import CF_SEP, main_source
+from const import CF_SEP
+from util import main_source
 from model import Index, Usage, Counter, Source
 
 from wordproc import _generate_text, any_grandchild
@@ -39,7 +40,7 @@ def _generate_usage(par, u: Usage) -> None:
     if u.orig_alt.main_lemma:
         _generate_text(par, " ")
         _generate_text(par, u.orig_alt.main_lemma, fonts[u.lang])
-        _generate_text(par, f" {main_source[u.lang]}")
+        _generate_text(par, f" {main_source(u.lang, u.idx.alt)}")
 
     if u.orig_alt.var_lemmas:
         _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_lemmas)
@@ -48,7 +49,7 @@ def _generate_usage(par, u: Usage) -> None:
     if u.trans_alt.main_lemma:
         _generate_text(par, " ")
         _generate_text(par, u.trans_alt.main_lemma, fonts[other_lang[u.lang]])
-        _generate_text(par, f" {main_source[other_lang[u.lang]]}")
+        _generate_text(par, f" {main_source(other_lang[u.lang], u.idx.alt)}")
 
     if u.trans_alt.var_lemmas:
         _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_lemmas)

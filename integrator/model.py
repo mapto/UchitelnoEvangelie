@@ -180,7 +180,7 @@ class Index:
         # print(m.groups())
         ch = int(m.group(1))
         # alt puts W at end of ch1 and at start of ch2
-        alt = bool(m.group(2)) if ch % 2 else not m.group(2)
+        alt = (bool(m.group(2)) if ch % 2 else not m.group(2)) if ch < 3 else False
         page = int(m.group(3))
         col = m.group(4)
         row = int(m.group(5))
@@ -201,7 +201,11 @@ class Index:
                     e_page = int(m.group(15))
                     if m.group(13):
                         e_ch = int(m.group(13))
-                    e_alt = bool(m.group(14)) if e_ch % 2 else not m.group(14)
+                    e_alt = (
+                        (bool(m.group(14)) if e_ch % 2 else not m.group(14))
+                        if e_ch < 3
+                        else False
+                    )
             end = Index(e_ch, e_alt, e_page, e_col, e_row, var, word=word)
 
         return Index(ch, alt, page, col, row, var, cnt, end, b, i, word=word)
@@ -222,14 +226,14 @@ class Index:
         >>> str(Index(2, False, 6, "c", 4))
         '2/W6c4'
         """
-        w = "W" if bool(self.ch % 2) == self.alt else ""
+        w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
         cnt = "" if not self.cnt else f"({self.cnt})"
         start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{cnt}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{str(self.end)}"
             if self.end.alt != self.alt:
-                ew = "W" if self.end.alt and self.end.ch % 2 else ""
+                ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
                 return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}"
             if self.end.page != self.page:
                 return f"{start}-{self.end.page}{self.end.col}{self.end.row}"
@@ -249,7 +253,7 @@ class Index:
         >> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4, True)).longstr()
         '01/006c04-02/006c04WH'
         """
-        w = "W" if bool(self.ch % 2) == self.alt else ""
+        w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
         v = "var" if self.var else ""
         cnt = "" if not self.cnt else f"({self.cnt})"
         start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{v}{cnt}"
@@ -258,7 +262,7 @@ class Index:
                 return f"{start}-{self.end.longstr()}"
             ev = "var" if self.end.var else ""
             if self.end.alt != self.alt:
-                ew = "W" if self.end.alt and self.end.ch % 2 else ""
+                ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
                 return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ev}"
             if self.end.page != self.page:
                 return (

@@ -5,7 +5,7 @@ from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import aggregate
 
 
-def test_aggregate_monogenis():
+def test_monogenis():
     # simplified semantics
     sl_sem = MainLangSemantics("sl", 5, [7], VarLangSemantics("sl", 0, [1]))
     gr_sem = MainLangSemantics("gr", 11, [12], VarLangSemantics("gr", 16, [17, 18]))
@@ -392,7 +392,7 @@ def test_aggregate_monogenis():
     }
 
 
-def test_aggregate_ipercliso():
+def test_ipercliso():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -545,7 +545,7 @@ def test_aggregate_ipercliso():
     }
 
 
-def test_aggregate_satvoriti():
+def test_satvoriti():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )
@@ -586,7 +586,7 @@ def test_aggregate_satvoriti():
     assert not result
 
 
-def test_aggregate_bozhii():
+def test_bozhii():
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
     )

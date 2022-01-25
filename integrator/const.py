@@ -14,12 +14,12 @@ SPECIAL_CHARS = ["*", "≠", "≈"]
 
 # first letter is main variant
 MAIN_SL = "S"  # for Synodal
+ALT_SL = "W" # for Wiener
 VAR_SL = "WGH"
 DEFAULT_SL = VAR_SL
 MAIN_GR = ""  # "C" for Cramer
 VAR_GR = "BCMPaPbPc"  # for Paris x
 DEFAULT_GR = "C"  # for Cramer
 
-main_source = {"gr": MAIN_GR, "sl": MAIN_SL}
 # var_sources = {"gr": VAR_GR, "sl": VAR_SL}
 default_sources = {"gr": DEFAULT_GR, "sl": DEFAULT_SL}

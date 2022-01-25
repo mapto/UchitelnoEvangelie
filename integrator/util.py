@@ -5,6 +5,7 @@ so to avoid circular references they cannot use it"""
 
 from typing import Dict, List, Set
 import unicodedata
+from const import MAIN_SL, ALT_SL, MAIN_GR
 from sortedcontainers import SortedSet  # type: ignore
 
 from alphabet import remap, reduce
@@ -155,3 +156,17 @@ if __name__ == "__main__":
     print(ord_word(" conj.: н*"))
     print(ord_word(" conj."))
     print(ord_word("*"))
+
+
+def collect(group: List[List[str]], col: int) -> List[str]:
+    """Collects the actual content in the group column"""
+    return [group[i][col] for i in range(len(group)) if group[i][col]]
+
+
+def main_source(lang: str, alt: bool):
+    if lang == "gr":
+        return MAIN_GR
+    assert lang == "sl"
+    if alt:
+        return ALT_SL
+    return MAIN_SL

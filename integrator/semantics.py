@@ -6,10 +6,12 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import EMPTY_CH, VAR_SEP, default_sources
+from const import EMPTY_CH, MISSING_CH
+from const import VAR_SEP
+from const import default_sources
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 
-from util import base_word
+from util import base_word, collect
 from model import Alternative, Index, Usage, Path, Source
 
 
@@ -102,6 +104,14 @@ class LangSemantics:
 
     def is_variant(self) -> bool:
         return False
+
+    def collect_word(self, group: List[List[str]]) -> str:
+        raise NotImplementedError("abstract method")
+
+    def collect_lemma(
+        self, group: List[List[str]], cidx: int, separator: str = None
+    ) -> str:
+        raise NotImplementedError("abstract method")
 
     def alternatives(self, row: List[str], my_var: Source) -> Alternative:
         """TODO: Also add functionality to get alternative words"""
@@ -220,6 +230,17 @@ class MainLangSemantics(LangSemantics):
         assert self.var  # for mypy
         return self.var
 
+    def collect_word(self, group: List[List[str]]) -> str:
+        return " ".join(collect(group, self.word))
+
+    def collect_lemma(
+        self, group: List[List[str]], cidx: int, separator: str = None
+    ) -> str:
+        g = [e for e in collect(group, cidx) if e.strip() != MISSING_CH]
+        if separator:
+            return f" {separator} ".join(g)
+        return f" ".join(g)
+
     def level_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
     ) -> Alternative:
@@ -282,6 +303,30 @@ class VarLangSemantics(LangSemantics):
 
     def is_variant(self) -> bool:
         return True
+
+    def collect_word(self, group: List[List[str]]) -> str:
+        """Collects the content of the multiwords for a variant in a group into a single string.
+        The output is conformant with the multiword syntax.
+        Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
+        collected: Dict[Source, str] = {}
+        # assert self.var  # for mypy
+        for row in group:
+            # for k, v in _normalise_multiword(sem.var.multiword(row)).items():
+            for k, v in self.multiword(row).items():
+                if k in collected:
+                    collected[k] = collected[k] + " " + v
+                else:
+                    collected[k] = v
+        return " ".join([f"{v} {k}" for k, v in collected.items() if v.strip()])
+
+    def collect_lemma(
+        self, group: List[List[str]], cidx: int, separator: str = None
+    ) -> str:
+        """TODO implement the multilemma part. Necessary for multilemmas present in row groups"""
+        g = [e for e in collect(group, cidx) if e.strip() != MISSING_CH]
+        if separator:
+            return f" {separator} ".join(g)
+        return f" ".join(g)
 
     def level_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
