@@ -133,7 +133,6 @@ def _close(
     line[trans.word] = trans.collect_word(group)
 
     line[orig.other().word] = orig.other().collect_word(group)
-    # assert trans.var  # for mypy
     line[trans.other().word] = trans.other().collect_word(group)
 
     line[orig.other().lemmas[0]] = orig.other().collect_lemma(
@@ -189,6 +188,8 @@ def merge(
     group: List[List[str]] = []
     result: List[List[str]] = []
 
+    row_words: Dict[str, int] = {}
+    cur_idx = ""
     for raw in corpus:
         row = [clean_word(v) if v else "" for v in raw]
 
@@ -198,6 +199,19 @@ def merge(
         if not row[IDX_COL] and any(row):
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
 
+        if cur_idx != row[IDX_COL]:
+            cur_idx = row[IDX_COL]
+            row_words = {}
+
+        # based on word expand index
+        if row[orig.word] in row_words:
+            row_words[row[orig.word]] += 1
+            row[IDX_COL] += f"({row_words[row[orig.word]]})"
+        else:
+            row_words[row[orig.word]] = 1
+            # fallback to default value for cnt in Index
+
+        # in lemmas
         row = _expand_special_char(orig, row)
         row = _expand_special_char(trans, row)
 

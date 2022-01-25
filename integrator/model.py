@@ -148,7 +148,7 @@ class Index:
     col: str
     row: int
     var: bool = False
-    cnt: int = 0
+    cnt: int = 1
     end: Optional["Index"] = None
     bold: bool = False
     italic: bool = False
@@ -185,7 +185,7 @@ class Index:
         col = m.group(4)
         row = int(m.group(5))
         # v = m.group(6)
-        cnt = int(m.group(8)) if m.group(8) else 0
+        cnt = int(m.group(8)) if m.group(8) else 1
 
         end = None
         if m.group(17):
@@ -227,7 +227,7 @@ class Index:
         '2/W6c4'
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        cnt = "" if not self.cnt else f"({self.cnt})"
+        cnt = "" if self.cnt == 1 else f"({self.cnt})"
         start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{cnt}"
         if self.end:
             if self.end.ch != self.ch:
@@ -255,7 +255,7 @@ class Index:
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
         v = "var" if self.var else ""
-        cnt = "" if not self.cnt else f"({self.cnt})"
+        cnt = "" if self.cnt == 1 else f"({self.cnt})"
         start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{v}{cnt}"
         if self.end:
             if self.end.ch != self.ch:

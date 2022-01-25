@@ -14,7 +14,7 @@ SPECIAL_CHARS = ["*", "≠", "≈"]
 
 # first letter is main variant
 MAIN_SL = "S"  # for Synodal
-ALT_SL = "W" # for Wiener
+ALT_SL = "W"  # for Wiener
 VAR_SL = "WGH"
 DEFAULT_SL = VAR_SL
 MAIN_GR = ""  # "C" for Cramer
