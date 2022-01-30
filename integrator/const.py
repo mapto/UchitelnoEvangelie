@@ -11,6 +11,18 @@ VAR_SEP = "-"  # used to separate the two language in variant source annotation
 MISSING_CH = "ₓ"
 EMPTY_CH = "Ø"  # used when text is original, so no translation
 SPECIAL_CHARS = ["*", "≠", "≈"]
+PRIMES = [
+    "",
+    "\u2082",
+    "\u2083",
+    "\u2084",
+    "\u2085",
+    "\u2086",
+    "\u2087",
+    "\u2088",
+    "\u2089",
+]
+PRIME_MAP = {c: i + 1 for i, c in enumerate(PRIMES)}
 
 # first letter is main variant
 MAIN_SL = "S"  # for Synodal

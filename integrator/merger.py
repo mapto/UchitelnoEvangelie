@@ -4,7 +4,7 @@
 
 from typing import Dict, List
 
-from const import IDX_COL, MISSING_CH, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
+from const import IDX_COL, MISSING_CH, PRIMES, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
 from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
 from util import clean_word, collect
@@ -204,12 +204,13 @@ def merge(
             row_words = {}
 
         # based on word expand index
-        if row[orig.word] in row_words:
-            row_words[row[orig.word]] += 1
-            row[IDX_COL] += f"({row_words[row[orig.word]]})"
-        else:
-            row_words[row[orig.word]] = 1
-            # fallback to default value for cnt in Index
+        if row[orig.word]:
+            if row[orig.word] in row_words:
+                row_words[row[orig.word]] += 1
+                row[IDX_COL] += PRIMES[row_words[row[orig.word]] - 1]
+            else:
+                row_words[row[orig.word]] = 1
+                # fallback to default value for cnt in Index
 
         # in lemmas
         row = _expand_special_char(orig, row)

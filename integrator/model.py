@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 import re
 
-from const import PATH_SEP, SPECIAL_CHARS
+from const import PATH_SEP, SPECIAL_CHARS, PRIMES, PRIME_MAP
 
 from util import base_word
 
@@ -171,9 +171,10 @@ class Index:
         """
         Regex using: https://regex101.com/
         """
+        # TODO: derive regex from parts
         m = re.search(
-            r"(\d{1,2})\/(W)?(\d{1,3})([abcd])(\d{1,2})(var)?(\((\d)\))?"
-            + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([abcd]))?(\d{1,2})(var)?)?",
+            r"(\d{1,2})\/(W)?(\d{1,3})([abcd])(\d{1,2})([₂₃₄₅₆₇₈₉])?(var)?"
+            + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([abcd]))?(\d{1,2})([₂₃₄₅₆₇₈₉])?(var)?)?",
             value,
         )
         assert m
@@ -185,29 +186,28 @@ class Index:
         col = m.group(4)
         row = int(m.group(5))
         # v = m.group(6)
-        cnt = int(m.group(8)) if m.group(8) else 1
-
+        cnt = PRIME_MAP[m.group(6)] if m.group(6) else 1
         end = None
-        if m.group(17):
+        if m.group(16):
             e_ch = ch
             e_alt = alt
             e_page = page
             e_col = col
-            e_row = int(m.group(17))
+            e_row = int(m.group(16))
+            e_cnt = PRIME_MAP[m.group(18)] if m.group(18) else 1
             # e_var = m.group(18)
-            if m.group(16):
-                e_col = m.group(16)
-                if m.group(15):
-                    e_page = int(m.group(15))
-                    if m.group(13):
-                        e_ch = int(m.group(13))
+            if m.group(15):
+                e_col = m.group(15)
+                if m.group(14):
+                    e_page = int(m.group(14))
+                    if m.group(12):
+                        e_ch = int(m.group(12))
                     e_alt = (
-                        (bool(m.group(14)) if e_ch % 2 else not m.group(14))
+                        (bool(m.group(13)) if e_ch % 2 else not m.group(13))
                         if e_ch < 3
                         else False
                     )
-            end = Index(e_ch, e_alt, e_page, e_col, e_row, var, word=word)
-
+            end = Index(e_ch, e_alt, e_page, e_col, e_row, var, e_cnt, word=word)
         return Index(ch, alt, page, col, row, var, cnt, end, b, i, word=word)
 
     def __str__(self):
@@ -227,20 +227,23 @@ class Index:
         '2/W6c4'
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        cnt = "" if self.cnt == 1 else f"({self.cnt})"
+        cnt = PRIMES[self.cnt - 1]
         start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{cnt}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{str(self.end)}"
+            ecnt = PRIMES[self.end.cnt - 1]
             if self.end.alt != self.alt:
                 ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
-                return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}"
+                return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}{ecnt}"
             if self.end.page != self.page:
-                return f"{start}-{self.end.page}{self.end.col}{self.end.row}"
+                return f"{start}-{self.end.page}{self.end.col}{self.end.row}{ecnt}"
             if self.end.col != self.col:
-                return f"{start}-{self.end.col}{self.end.row}"
+                return f"{start}-{self.end.col}{self.end.row}{ecnt}"
             if self.end.row != self.row:
-                return f"{start}-{self.end.row}"
+                return f"{start}-{self.end.row}{ecnt}"
+            if self.end.cnt != self.cnt:
+                return f"{start}-{self.end.row}{ecnt}"
         return start
 
     def longstr(self):
@@ -255,23 +258,22 @@ class Index:
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
         v = "var" if self.var else ""
-        cnt = "" if self.cnt == 1 else f"({self.cnt})"
-        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{v}{cnt}"
+        cnt = PRIMES[self.cnt - 1]
+        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{cnt}{v}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{self.end.longstr()}"
             ev = "var" if self.end.var else ""
+            ecnt = PRIMES[self.end.cnt - 1]
             if self.end.alt != self.alt:
                 ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
-                return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ev}"
+                return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}{ev}"
             if self.end.page != self.page:
-                return (
-                    f"{start}-{self.end.page:03d}{self.end.col}{self.end.row:02d}{ev}"
-                )
+                return f"{start}-{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}{ev}"
             if self.end.col != self.col:
-                return f"{start}-" f"{self.end.col}{self.end.row:02d}{ev}"
+                return f"{start}-" f"{self.end.col}{self.end.row:02d}{ecnt}{ev}"
             if self.end.row != self.row:
-                return f"{start}-{self.end.row:02d}{ev}"
+                return f"{start}-{self.end.row:02d}{ecnt}{ev}"
         return start
 
 
