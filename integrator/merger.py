@@ -77,7 +77,7 @@ def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
     >>> _expand_special_char(sl_sem, ["word", "lemma", "* l2", ""])
     ['word', 'lemma', '* l2', '']
     """
-    if row[sem.lemmas[1]] in SPECIAL_CHARS:
+    if row[sem.lemmas[1]].strip() in SPECIAL_CHARS:
         row[sem.lemmas[1]] = f"{row[sem.lemmas[1]]} {row[sem.lemmas[0]]}"
     return row
 

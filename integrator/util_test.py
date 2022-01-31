@@ -1,4 +1,4 @@
-from util import collect as _collect
+from util import collect, ord_word
 from semantics import MainLangSemantics, VarLangSemantics
 
 
@@ -30,5 +30,26 @@ def test_collect_words():
 
     group = [r1, r2, r3]
 
-    result = _collect(group, sl_sem.word)
+    result = collect(group, sl_sem.word)
     assert result == ["не", "бѣ", "ꙗвленъ•"]
+
+
+def test_ord_word():
+    assert ord_word("свѣтъ") < ord_word("свѧтъ")
+    assert ord_word("μαρτυρέω") == ord_word("μαρτυρέω")
+    assert ord_word("διαλεγομαι") < ord_word("διαλεγω") < ord_word("διατριβω")
+    assert ord_word("а conj.") > ord_word("а")
+    assert ord_word("на + Acc.") > ord_word("на")
+    assert ord_word("*") > ord_word(" conj.: н*") > ord_word(" conj.")
+
+    assert ord_word("свѣтъ") < ord_word("om.")
+    assert ord_word("μαρτυρέω") < ord_word("gram.")
+
+    assert ord_word("μαρτυρέω") < ord_word("Ø")
+    assert ord_word("Ø") < ord_word("≠")
+    assert ord_word("μαρτυρέω") < ord_word("≈ μαρτυρέω")
+    assert ord_word("свѣтъ") < ord_word("≠ свѣтъ")
+    assert ord_word("* свѣтъ") < ord_word("om.")
+
+    assert ord_word("om.") < ord_word("свѣтъ & на")
+    assert ord_word("gram.") < ord_word("μαρτυρέω & διαλεγομαι")

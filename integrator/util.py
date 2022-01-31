@@ -5,13 +5,13 @@ so to avoid circular references they cannot use it"""
 
 from typing import Dict, List, Set
 import unicodedata
-from const import MAIN_SL, ALT_SL, MAIN_GR
+from const import EMPTY_CH, MAIN_SL, ALT_SL, MAIN_GR, SPECIAL_CHARS, V_LEMMA_SEP
 from sortedcontainers import SortedSet  # type: ignore
 
 from alphabet import remap, reduce
 
 
-max_char = ord("ѵ") - ord(" ") + 1
+MAX_CHAR = ord("ѵ") - ord(" ") + 30
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
 
 MAX_LEN = 65
@@ -31,6 +31,11 @@ def chars(cells: List[List[str]]) -> Set:
 
 def _ord(a: str) -> float:
     assert len(a) == 1
+    # Latin letters are special annotation, they should show up after Cyrillic or Greek
+    if "a" <= a <= "z":
+        return ord("ѵ") - ord("a") + 1 + ord(a)
+    if a in SPECIAL_CHARS:
+        return ord("ѵ") + 2 + SPECIAL_CHARS.index(a)
     if a in remap:
         return remap[a]
     return ord(a)
@@ -112,27 +117,19 @@ def clean_word(w: str) -> str:
 
 
 def ord_word(w: str, max_len=MAX_LEN) -> int:
-    """
-    >>> ord_word("свѣтъ") < ord_word("свѧтъ")
-    True
-    >>> ord_word("μαρτυρέω") == ord_word("μαρτυρέω")
-    True
-    >>> ord_word("διαλεγομαι") < ord_word("διαλεγω") < ord_word("διατριβω")
-    True
-    >>> ord_word("а conj.") > ord_word("а")
-    True
-    >>> ord_word("на + Acc.") > ord_word("на")
-    True
-    >>> ord_word("*") > ord_word(" conj.: н*") > ord_word(" conj.")
-    True
+    """Order needs to be:
+    1. Greek or Cyrillic lemmas
+    2. Special annotations (using Latin alphabet)
+    3. Combined lemmas in Greek or Cyrilic
     """
     a = base_word(w).lower()
     a.replace("оу", "ѹ")
     if max_len <= len(a):
         print(a)
     assert max_len > len(a)
-    base = 2 * max_char
-    r = 0
+    base = 2 * MAX_CHAR
+    # if combined lemma, order after all other
+    r = 1 if V_LEMMA_SEP in a else 0
     for ch in a:
         r = r * base + int(2 * _ord(ch))
         # print("%s%d"%(ch,r))
