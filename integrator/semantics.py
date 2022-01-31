@@ -31,8 +31,7 @@ def _build_usage(
     """ovar and tvar are a list of variant identifiers"""
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    v = osem.is_variant()
-    idx = Index.unpack(row[IDX_COL], b, i, v, word)
+    idx = Index.unpack(row[IDX_COL], b, i, word)
     oalt = osem.alternatives(row, ovar)
     talt = tsem.alternatives(row, tvar)
     var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar

@@ -147,17 +147,10 @@ class Index:
     page: int
     col: str
     row: int
-    var: bool = False
     cnt: int = 1
     end: Optional["Index"] = None
     bold: bool = False
     italic: bool = False
-    """There's this border case when one lemma occurs two times in a line.
-    This is when we distinguish between the two uses by the own language word from the key pair.
-    Used as distinctor only by hash function, so no explicit logic using it.
-    Whenever not set, means we don't care to distinguish.
-    When same word occurs twice in row, cnt needs to be indicated manually in spreadsheet
-    """
     word: str = ""
 
     @staticmethod
@@ -165,7 +158,6 @@ class Index:
         value: str,
         b: bool = False,
         i: bool = False,
-        var: bool = False,
         word: str = "",
     ) -> "Index":
         """
@@ -185,7 +177,6 @@ class Index:
         page = int(m.group(3))
         col = m.group(4)
         row = int(m.group(5))
-        # v = m.group(6)
         cnt = PRIME_MAP[m.group(6)] if m.group(6) else 1
         end = None
         if m.group(16):
@@ -207,8 +198,8 @@ class Index:
                         if e_ch < 3
                         else False
                     )
-            end = Index(e_ch, e_alt, e_page, e_col, e_row, var, e_cnt, word=word)
-        return Index(ch, alt, page, col, row, var, cnt, end, b, i, word=word)
+            end = Index(e_ch, e_alt, e_page, e_col, e_row, e_cnt, word=word)
+        return Index(ch, alt, page, col, row, cnt, end, b, i, word=word)
 
     def __str__(self):
         """
@@ -218,7 +209,7 @@ class Index:
         '1/6c4-11'
 
         Variants are not shown:
-        >>> str(Index(1, False, 6, "c", 4, True, end=Index(1, False, 6, "d", 4, True)))
+        >>> str(Index(1, False, 6, "c", 4, end=Index(1, False, 6, "d", 4)))
         '1/6c4-d4'
 
         >>> str(Index(1, True, 6, "c", 4))
@@ -251,29 +242,29 @@ class Index:
         >>> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4)).longstr()
         '01/006c04-02/006c04'
 
-        >> Index(1, False, 6, "c", 4, True, Index(2, True, 6, "c", 4)).longstr()
+        >> Index(1, False, 6, "c", 4, Index(2, True, 6, "c", 4)).longstr()
         '01/006c04WH-02/006c04'
-        >> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4, True)).longstr()
+        >> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4)).longstr()
         '01/006c04-02/006c04WH'
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        v = "var" if self.var else ""
         cnt = PRIMES[self.cnt - 1]
-        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{cnt}{v}"
+        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{cnt}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{self.end.longstr()}"
-            ev = "var" if self.end.var else ""
             ecnt = PRIMES[self.end.cnt - 1]
             if self.end.alt != self.alt:
                 ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
-                return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}{ev}"
+                return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}"
             if self.end.page != self.page:
-                return f"{start}-{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}{ev}"
+                return (
+                    f"{start}-{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}"
+                )
             if self.end.col != self.col:
-                return f"{start}-" f"{self.end.col}{self.end.row:02d}{ecnt}{ev}"
+                return f"{start}-" f"{self.end.col}{self.end.row:02d}{ecnt}"
             if self.end.row != self.row:
-                return f"{start}-{self.end.row:02d}{ecnt}{ev}"
+                return f"{start}-{self.end.row:02d}{ecnt}"
         return start
 
 
@@ -284,18 +275,8 @@ class Alternative:
     main_word: str = ""
     var_words: Dict[Source, str] = field(default_factory=lambda: {})
 
-    # def __repr__(self):
-    #     return f"('{self.main_lemma}', {self.var_lemmas})"
-
-    # def __hash__(self) -> int:
-    #     # TODO: Add variants
-    #     return hash((self.main_word, self.main_lemma))
-
     def __bool__(self) -> bool:
         return bool(self.main_lemma) or bool(self.var_lemmas)
-
-    # def __not__(self):
-    #     return not self.main_lemma and not self.var
 
 
 @dataclass(frozen=True)
@@ -325,35 +306,12 @@ class Usage:
 
     def __le__(self, other) -> bool:
         return self < other or self == other
-        # return self.idx <= other.idx or len(self.var) <= len(other.var)
 
     def __gt__(self, other) -> bool:
         return not self <= other
-        # return self.idx > other.idx or len(self.var) > len(other.var)
 
     def __ge__(self, other) -> bool:
         return not self < other
-        # return self.idx >= other.idx or len(self.var) >= len(other.var)
-
-    # def __add__(self, other) -> "Usage":
-    #     """
-    #     >>> Usage(Index.unpack("1/1a1"), "sl", Source("G")) + Usage(Index.unpack("1/1a1"), "sl", Source("H"))
-    #     Usage(idx=Index(ch=1, alt=False, page=1, col='a', row=1, var=False, cnt=0, end=None, bold=False, italic=False, word=''), lang='sl', var=Source('GH'), orig_alt='', orig_alt_var={}, trans_alt='', trans_alt_var={})
-    #     """
-    #     assert self.idx == other.idx
-    #     assert self.lang == other.lang
-    #     assert self.orig_alt == other.orig_alt or (
-    #         bool(self.orig_alt) != bool(other.orig_alt)
-    #     )
-    #     assert self.trans_alt == other.trans_alt or (
-    #         bool(self.trans_alt) != bool(other.trans_alt)
-    #     )
-    #     orig_alt = self.orig_alt if self.orig_alt else other.orig_alt
-    #     trans_alt = self.trans_alt if self.trans_alt else other.trans_alt
-    #     # TODO: complete parameters
-    #     return Usage(
-    #         self.idx, self.lang, self.var + other.var, orig_alt, trans_alt=trans_alt
-    #     )
 
 
 @dataclass
@@ -365,21 +323,9 @@ class Path:
     parts: List[str] = field(default_factory=lambda: [])
     annotation: str = ""
 
-    # def __init__(self, lemma: str = ""):
-    #     if lemma:
-    #         self.parts = [lemma]
-
     def __iadd__(self, s: str):
         self.parts += [s]
         return self
-
-    # def __bool__(self):
-    #     return bool(self.parts)  # or bool(self.annotation)
-
-    # def __getitem__(self, i: int):
-    #     # if not self.parts:
-    #     # return self.annotation
-    #     return self.parts[i]
 
     def __len__(self):
         return len(self.parts)
@@ -397,14 +343,6 @@ class Path:
             content = PATH_SEP.join(parts[::-1])
             return f"{content} {self.annotation}" if self.annotation else content
         return self.annotation if self.annotation else ""
-
-    # def pop(self, i: int):
-    #     # if not self.parts:
-    #     # return self.annotation
-    #     return self.parts.pop(i)
-
-    # def reverse(self):
-    #     self.parts.reverse()
 
     def compile(self):
         """Remove empty steps, extract annotations"""

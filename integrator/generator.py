@@ -90,8 +90,8 @@ def _get_set_counts(s: SortedSet) -> Counter:
     >>> c.get_counts(False)
     (2, 0)
 
-    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7, var=True), Index(ch=1, alt=True, page=168, col='c', row=7)]
-    >>> s = SortedSet([Usage(n, "sl", "W" if n.var else "") for n in i])
+    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=168, col='c', row=7, cnt=2)]
+    >>> s = SortedSet([Usage(n, "sl", "W" if x == 0 else "") for x, n in enumerate(i)])
     >>> c = _get_set_counts(s)
     >>> c.get_counts(False)
     (1, 1)

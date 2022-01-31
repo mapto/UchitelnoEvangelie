@@ -66,7 +66,6 @@ def test_para():
                             page=7,
                             col="d",
                             row=1,
-                            var=True,
                             word="παρ’ C",
                         ),
                         lang="gr",
@@ -135,7 +134,6 @@ def test_ipercliso():
                             page=168,
                             col="c",
                             row=17,
-                            var=True,
                             word="ὑπερβλύζων C",
                         ),
                         lang="gr",
@@ -158,7 +156,6 @@ def test_ipercliso():
                             page=168,
                             col="c",
                             row=17,
-                            var=True,
                             word="ὑπερβλύσαι C",
                         ),
                         lang="gr",
@@ -307,7 +304,6 @@ def test_mene():
                             page=168,
                             col="c",
                             row=7,
-                            var=True,
                             word="με C",
                         ),
                         lang="gr",
@@ -396,32 +392,6 @@ def test_monogenis():
         }
     }
 
-    # d02 = SortedDict()
-    # d02 = gr_sem.compile_usages(
-    #     sl_sem.var, row, d02, "μονογενής", "\ue201д\ue205но\ue20dѧдъ"
-    # )
-    # assert d02 == {
-    #     "\ue201д\ue205но\ue20dѧдъ": {
-    #         ("μονογενὴς", "\ue201д\ue205но\ue20dеды"): SortedSet(
-    #             [
-    #                 Usage(
-    #                     idx=Index(
-    #                         ch=1,
-    #                         alt=False,
-    #                         page=5,
-    #                         col="a",
-    #                         row=4,
-    #                         word="μονογενὴς",
-    #                     ),
-    #                     lang="gr",
-    #                     var="WH",
-    #                     trans_alt="\ue205но\ue20dѧдъ",
-    #                 )
-    #             ]
-    #         )
-    #     }
-    # }
-
     row = (
         [
             "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
@@ -453,7 +423,6 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=True,
                             bold=True,
                             italic=True,
                             word="\ue205но\ue20dедаго G",
@@ -485,7 +454,6 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=True,
                             bold=True,
                             italic=True,
                             word="\ue201д\ue205нородоу H",
@@ -535,7 +503,6 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=True,
                             word="\ue205но\ue20dедаго G",
                         ),
                         lang="sl",
@@ -566,7 +533,6 @@ def test_monogenis():
                             page=168,
                             col="a",
                             row=25,
-                            var=True,
                             word="\ue201д\ue205нородоу H",
                         ),
                         lang="sl",
@@ -711,7 +677,6 @@ def test_bozhii():
                             page=7,
                             col="a",
                             row=4,
-                            var=True,
                             word="б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
                         ),
                         lang="sl",
