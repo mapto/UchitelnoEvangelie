@@ -29,13 +29,19 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None
     _generate_text(par, brace_close[lang])
 
 
-def _generate_usage(par, u: Usage) -> None:
-    _generate_text(par, str(u.idx), bold=u.idx.bold, italic=u.idx.italic)
+def _generate_index(par, u: Usage) -> None:
+    s = str(u.idx)
+    if u.idx.cnt != 1:
+        s = s[:-1]
+    _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
     if u.var:
-        _generate_text(
-            par, str(u.var), superscript=True, bold=u.idx.bold, italic=u.idx.italic
-        )
+        _generate_text(par, str(u.var), superscript=True)
+    if u.idx.cnt > 1:
+        _generate_text(par, str(u.idx.cnt), subscript=True)
 
+
+def _generate_usage(par, u: Usage) -> None:
+    _generate_index(par, u)
     if not u.orig_alt and not u.trans_alt:
         return
 

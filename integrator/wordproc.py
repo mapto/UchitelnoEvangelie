@@ -25,6 +25,7 @@ def _generate_text(
     italic: bool = False,
     indent: Optional[Cm] = None,
     superscript: bool = False,
+    subscript: bool = False,
 ):
     run = par.add_run()
     if font:
@@ -41,6 +42,8 @@ def _generate_text(
         par.paragraph_format.first_line_indent = indent
     if superscript:
         run.font.superscript = True
+    if subscript:
+        run.font.subscript = True
     run.add_text(text)
 
 
