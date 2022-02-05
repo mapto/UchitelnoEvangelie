@@ -1,4 +1,4 @@
-from util import collect, ord_word
+from util import collect, ord_word, subscript
 from semantics import MainLangSemantics, VarLangSemantics
 
 
@@ -53,3 +53,10 @@ def test_ord_word():
 
     assert ord_word("om.") < ord_word("свѣтъ & на")
     assert ord_word("gram.") < ord_word("μαρτυρέω & διαλεγομαι")
+
+
+def test_subscript():
+    assert subscript(1, "sl") == ""
+    assert subscript(1, "gr") == ""
+    assert subscript(2, "sl") == "2"
+    assert subscript(2, "gr") == "b"

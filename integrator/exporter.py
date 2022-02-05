@@ -9,7 +9,7 @@ from docx import Document  # type: ignore
 from docx.shared import Pt  # type: ignore
 
 from const import CF_SEP
-from util import main_source
+from util import main_source, subscript
 from model import Usage, Source
 
 from wordproc import _generate_text, any_grandchild
@@ -37,7 +37,8 @@ def _generate_index(par, u: Usage) -> None:
     if u.var:
         _generate_text(par, str(u.var), superscript=True)
     if u.idx.cnt > 1:
-        _generate_text(par, str(u.idx.cnt), subscript=True)
+        subs = subscript(u.idx.cnt, u.lang)
+        _generate_text(par, subs, subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:

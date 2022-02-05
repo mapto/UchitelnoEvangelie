@@ -167,3 +167,11 @@ def main_source(lang: str, alt: bool):
     if alt:
         return ALT_SL
     return MAIN_SL
+
+
+def subscript(cnt: int, lang: str) -> str:
+    if cnt == 1:
+        return ""
+    if lang == "sl":
+        return chr(ord("0") + cnt)
+    return chr(ord("a") + cnt - 1)

@@ -5,6 +5,7 @@ from abc import abstractmethod
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS, PRIMES, PRIME_MAP
+from const import idx_regex
 
 from util import base_word
 
@@ -165,8 +166,7 @@ class Index:
         """
         # TODO: derive regex from parts
         m = re.search(
-            r"(\d{1,2})\/(W)?(\d{1,3})([abcd])(\d{1,2})([₂₃₄₅₆₇₈₉])?(var)?"
-            + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([abcd]))?(\d{1,2})([₂₃₄₅₆₇₈₉])?(var)?)?",
+            idx_regex,
             value,
         )
         assert m

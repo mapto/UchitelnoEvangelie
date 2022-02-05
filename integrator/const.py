@@ -35,3 +35,11 @@ DEFAULT_GR = "C"  # for Cramer
 
 # var_sources = {"gr": VAR_GR, "sl": VAR_SL}
 default_sources = {"gr": DEFAULT_GR, "sl": DEFAULT_SL}
+
+idx_regex = (
+    r"(\d{1,2})\/(W)?(\d{1,3})([abcd])(\d{1,2})([₂-₉])?(var)?"
+    + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([abcd]))?(\d{1,2})([₂-₉])?(var)?)?"
+)
+word_regex = r"^([^A-Z]+)([₂-₉])?"
+multiword_regex = r"^([^A-Z₂-₉\s]+)([₂-₉])?\s(([A-Z][a-z]?)+)(.*)$"
+multilemma_regex = r"^([^A-Z\+]+)(\+\s\w+\.)?(([A-Z][a-z]?)+)?(\s*[\&\/])?(.*)$"

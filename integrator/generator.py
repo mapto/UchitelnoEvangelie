@@ -128,7 +128,6 @@ def _get_set_counts(s: SortedSet) -> Counter:
 
 def _get_dict_counts(d: Union[SortedDict, dict]) -> Counter:
     """
-    TODO: Need to decide what to do in this case. Is it an accepted scenario or not?
     >> c = _get_dict_counts({})
     >> c.get_counts(True)
     (0, 0)

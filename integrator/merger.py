@@ -15,7 +15,7 @@ def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
     variants = set()
     assert sem.var  # for mypy
     for row in group:
-        for var in [k for k, val in sem.var.multiword(row).items() if val]:
+        for var in [k for k, val in sem.var.multiword(row).items() if val[0]]:
             variants.add(var)
     return Source("".join(str(v) for v in variants).strip())
 
@@ -188,7 +188,10 @@ def merge(
     group: List[List[str]] = []
     result: List[List[str]] = []
 
-    row_words: Dict[str, int] = {}
+    row_owords: Dict[str, int] = {}
+    row_owords_var: Dict[str, int] = {}
+    row_twords: Dict[str, int] = {}
+    row_twords_var: Dict[str, int] = {}
     cur_idx = ""
     for raw in corpus:
         row = [clean_word(v) if v else "" for v in raw]
@@ -201,16 +204,16 @@ def merge(
 
         if cur_idx != row[IDX_COL]:
             cur_idx = row[IDX_COL]
-            row_words = {}
+            row_owords = {}
+            row_owords_var = {}
+            row_twords = {}
+            row_twords_var = {}
 
-        # based on word expand index
-        if row[orig.word]:
-            if row[orig.word] in row_words:
-                row_words[row[orig.word]] += 1
-                row[IDX_COL] += PRIMES[row_words[row[orig.word]] - 1]
-            else:
-                row_words[row[orig.word]] = 1
-                # fallback to default value for cnt in Index
+        # based on word column expand it with count
+        row_owords = orig.add_count(row, row_owords)
+        row_owords_var = orig.other().add_count(row, row_owords_var)
+        row_twords = trans.add_count(row, row_twords)
+        row_twords_var = trans.other().add_count(row, row_twords_var)
 
         # in lemmas
         row = _expand_special_char(orig, row)
