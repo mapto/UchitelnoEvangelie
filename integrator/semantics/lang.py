@@ -6,14 +6,15 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import EMPTY_CH, MISSING_CH, PRIME_MAP, PRIMES
+from const import IDX_COL, STYLE_COL
+from const import EMPTY_CH, MISSING_CH
+from const import PRIMES, PRIME_MAP
 from const import VAR_SEP
 from const import default_sources
-from const import IDX_COL, EXAMPLE_COL, STYLE_COL
-from const import word_regex, multiword_regex, multilemma_regex
+from const import multiword_regex, multilemma_regex, word_regex
 
 from util import base_word, collect
-from model import Alternative, Index, Usage, Path, Source
+from model import Alternative, Index, Path, Source, Usage
 
 
 def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
@@ -286,13 +287,14 @@ class MainLangSemantics(LangSemantics):
         return row[self.word]
 
     def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:
-        if row[self.word]:
-            if row[self.word] in row_counts:
-                row_counts[row[self.word]] += 1
-                row[self.word] += PRIMES[row_counts[row[self.word]] - 1]
-            else:
-                row_counts[row[self.word]] = 1
-                # fallback to default value for cnt in Index
+        if not row[self.word] or row[self.word] == EMPTY_CH:
+            return row_counts
+        if row[self.word] in row_counts:
+            row_counts[row[self.word]] += 1
+            row[self.word] += PRIMES[row_counts[row[self.word]] - 1]
+        else:
+            row_counts[row[self.word]] = 1
+            # fallback to default value for cnt in Index
         return row_counts
 
 
@@ -478,9 +480,10 @@ class VarLangSemantics(LangSemantics):
         multiword = self.multiword(row)
         result = []
         for k, v in multiword.items():
+            if v[0] == EMPTY_CH:
+                continue
             if v[0] in row_counts:
                 row_counts[v[0]] += 1
-                # v[0] += PRIMES[row_counts[v[0]] - 1]
                 result += [f"{v[0]}{PRIMES[row_counts[v[0]] - 1]}{' ' if k else ''}{k}"]
             else:
                 row_counts[v[0]] = 1
@@ -488,42 +491,3 @@ class VarLangSemantics(LangSemantics):
                 # fallback to default value for cnt in Index
         row[self.word] = " ".join(result)
         return row_counts
-
-
-@dataclass
-class TableSemantics:
-    """Overall table column mapping"""
-
-    sl: "MainLangSemantics"
-    gr: "MainLangSemantics"
-    idx: int = IDX_COL
-    example: int = EXAMPLE_COL
-    style: int = STYLE_COL
-
-    def cols(self) -> List[int]:
-        """extract word and lemma columns"""
-        c = []
-        c += self.sl.cols()
-        c += self.gr.cols()
-        return c
-
-    def word_cols(self) -> List[int]:
-        """extract word columns"""
-        c = []
-        c += self.sl.word_cols()
-        c += self.gr.word_cols()
-        return c
-
-    def lem1_cols(self) -> List[int]:
-        """extract first lemma columns"""
-        c = []
-        c += self.sl.lem1_cols()
-        c += self.gr.lem1_cols()
-        return c
-
-    def lemn_cols(self) -> List[int]:
-        """extract word and lemma columns"""
-        c = []
-        c += self.sl.lemn_cols()
-        c += self.gr.lemn_cols()
-        return c
