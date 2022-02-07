@@ -1,16 +1,26 @@
 """Tests of LangSemantics.compile_usages"""
 
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
+
+from const import STYLE_COL
 from model import Index, Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
 
 
 def test_para():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        "sl",
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        "gr",
+        11,
+        [12, 13, 14],
+        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
     )
 
     row = (
@@ -20,6 +30,7 @@ def test_para():
         + [""] * 2
         + ["παρὰ", "παρά", "παρά + Dat."]
         + [""] * 13
+        + ["1"] * 4
     )
 
     d2 = SortedDict()
@@ -52,6 +63,7 @@ def test_para():
         + [""] * 4
         + ["παρ’ C", "παρά", "παρά + Acc."]
         + [""] * 8
+        + ["1"] * 4
     )
     d3 = SortedDict()
     d3 = gr_sem.var.compile_usages(sl_sem, row, d3, "παρά", "ѹ")
@@ -83,10 +95,18 @@ def test_para():
 
 def test_ipercliso():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        "sl",
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        "gr",
+        11,
+        [12, 13, 14],
+        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
     )
 
     rows = [
@@ -101,7 +121,8 @@ def test_ipercliso():
         + ["ὑπερκλύσαι", "ὑπερκλύζω", "inf."]
         + [""] * 2
         + ["ὑπερβλύσαι C", "ὑπερβλύω", "inf."]
-        + [""] * 8,
+        + [""] * 8
+        + ["1"] * 4,
         [""] * 4
         + [
             "1/W168c17",
@@ -113,7 +134,8 @@ def test_ipercliso():
         + ["ὑπερκλύζων", "ὑπερκλύζω"]
         + [""] * 3
         + ["ὑπερβλύζων C", "ὑπερβλύω"]
-        + [""] * 9,
+        + [""] * 9
+        + ["1"] * 4,
     ]
 
     d2 = SortedDict()
@@ -173,10 +195,18 @@ def test_ipercliso():
 
 def test_verovat():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        "sl",
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        "gr",
+        11,
+        [12, 13, 14],
+        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
     )
 
     row = (
@@ -197,6 +227,7 @@ def test_verovat():
         ]
         + ([""] * 13)
         + ["hl00"]
+        + ["1"] * 4
     )
 
     d1 = SortedDict()
@@ -253,20 +284,29 @@ def test_verovat():
 
 def test_mene():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        "sl",
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        "gr",
+        11,
+        [12, 13, 14],
+        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
     )
 
     row = (
-        ([""] * 4)
+        [""] * 4
         + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
-        + ([""] * 3)
+        + [""] * 3
         + ["μὲν"]
-        + ([""] * 4)
+        + [""] * 4
         + ["με C", "ἐγώ"]
-        + ([""] * 9)
+        + [""] * 9
+        + ["1"] * 4
     )
 
     d3 = SortedDict()
@@ -317,10 +357,18 @@ def test_mene():
 
 def test_monogenis():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        "sl",
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        "gr",
+        11,
+        [12, 13, 14],
+        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
     )
 
     row = (
@@ -335,6 +383,7 @@ def test_monogenis():
         + [""] * 3
         + ["μονογενὴς", "μονογενής"]
         + [""] * 14
+        + ["1"] * 4
     )
 
     d0 = SortedDict()
@@ -408,6 +457,7 @@ def test_monogenis():
         + ["μονογενοῦς", "μονογενής"]
         + [""] * 13
         + ["bold|italic"]
+        + ["1"] * 4
     )
 
     d1 = SortedDict()
@@ -487,6 +537,7 @@ def test_monogenis():
         + [""] * 3
         + ["μονογενοῦς", "μονογενής"]
         + [""] * 14
+        + ["1"] * 4
     )
 
     d = SortedDict()
@@ -646,10 +697,18 @@ def test_monogenis():
 
 def test_bozhii():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        "sl",
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        "gr",
+        11,
+        [12, 13, 14],
+        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
     )
 
     r = (
@@ -659,6 +718,7 @@ def test_bozhii():
         + [""] * 2
         + ["Θεοῦ", "θεός", "Gen."]
         + [""] * 13
+        + ["1"] * 4
     )
 
     result = SortedDict()

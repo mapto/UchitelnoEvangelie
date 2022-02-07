@@ -1,5 +1,6 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
+from const import STYLE_COL
 from model import Alternative, Index, Path, Source, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 from semantics import _is_variant_lemma, _add_usage
@@ -467,7 +468,10 @@ def test_add_usage():
 
 def test_LangSemantics_compile_words_by_lemma():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        "sl",
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 1),
     )
     row = (
         ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
@@ -476,10 +480,11 @@ def test_LangSemantics_compile_words_by_lemma():
         + [""] * 2
         + ["Θεοῦ", "θεός", "Gen."]
         + [""] * 13
+        + ["1"]
     )
 
     result = sl_sem.var.compile_words_by_lemma(row, "WGH")
-    assert result == "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G"
+    assert result == ("б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G", 1)
 
     row = (
         ["ѿ WG  ѡ H", "отъ"]
@@ -489,10 +494,11 @@ def test_LangSemantics_compile_words_by_lemma():
         + [""] * 2
         + ["ἐπὶ", "ἐπί", "ἐπί + Gen."]
         + [""] * 13
+        + ["1"]
     )
 
     result = sl_sem.var.compile_words_by_lemma(row, "WGH")
-    assert result == "ѡ H ѿ WG"
+    assert result == ("ѡ H ѿ WG", 1)
 
     row = (
         [
@@ -509,30 +515,31 @@ def test_LangSemantics_compile_words_by_lemma():
         + [""] * 3
         + ["μονογενοῦς", "μονογενής"]
         + [""] * 14
+        + ["2"]
     )
     result = sl_sem.var.compile_words_by_lemma(row, "H")
-    assert result == "днородоу H"
+    assert result == ("днородоу H", 2)
 
 
 def test_add_count():
     sem = MainLangSemantics("sl", 5, [], VarLangSemantics("sl", 0, []))
     counts = {}
-    rows = [[""] * 5 + ["om."], [""] * 5 + ["om."]]
+    rows = [[""] * 5 + ["om."], [""] * 4 + ["1/1a1", "om."]]
     for r in rows:
         counts = sem.add_count(r, counts)
     assert counts == {"om.": 2}
-    assert rows == [[""] * 5 + ["om."], [""] * 5 + ["om.\u2082"]]
+    assert rows == [[""] * 5 + ["om.", "1"], [""] * 4 + ["1/1a1\u2082", "om.", "2"]]
 
     counts = {}
     rows = [["om."], ["om."], ["om."]]
     for r in rows:
         counts = sem.var.add_count(r, counts)
     assert counts == {"om.": 3}
-    assert rows == [["om. WGH"], ["om.\u2082 WGH"], ["om.\u2083 WGH"]]
+    assert rows == [["om.", "1"], ["om.", "2"], ["om.", "3"]]
 
     counts = {}
     rows = [["om. WH"], ["om. WH"], ["om. WH"]]
     for r in rows:
         counts = sem.var.add_count(r, counts)
     assert counts == {"om.": 3}
-    assert rows == [["om. WH"], ["om.\u2082 WH"], ["om.\u2083 WH"]]
+    assert rows == [["om. WH", "1"], ["om. WH", "2"], ["om. WH", "3"]]

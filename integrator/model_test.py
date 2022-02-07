@@ -5,7 +5,7 @@ from model import Index, Usage, Alternative
 def test_index_unpack():
     assert Index.unpack("1/W167c4").longstr() == "01/W167c04"
     assert str(Index.unpack("1/6c4")) == "1/6c4"
-    assert str(Index.unpack("1/6c4\u2083")) == "1/6c4₃"
+    assert str(Index.unpack("1/6c4", ocnt=3)) == "1/6c4₃"
 
     """
     >> str(Index.unpack("1/6c4var"))

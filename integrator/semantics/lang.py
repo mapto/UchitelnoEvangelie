@@ -29,11 +29,13 @@ def _build_usage(
     ovar: Source,
     tvar: Source,
     word: str,
+    ocnt: int,
+    tcnt: int,
 ):
     """ovar and tvar are a list of variant identifiers"""
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i, word)
+    idx = Index.unpack(row[IDX_COL], b, i, word, ocnt, tcnt)
     oalt = osem.alternatives(row, ovar)
     talt = tsem.alternatives(row, tvar)
     var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
@@ -80,6 +82,8 @@ class LangSemantics:
     """Nullable just because recursive reference and setting up needs to happen post-init. Non-null during runtime"""
     var: Optional["VarLangSemantics"] = None
     main: Optional["MainLangSemantics"] = None
+
+    cnt_col: int = 0
 
     def cols(self) -> List[int]:
         c = []
@@ -136,7 +140,7 @@ class LangSemantics:
     def build_keys(self, row: List[str]) -> List[str]:
         raise NotImplementedError("abstract method")
 
-    def multiword(self, row: List[str]) -> Dict[Source, Tuple[str, int]]:
+    def multiword(self, row: List[str]) -> Dict[Source, str]:
         raise NotImplementedError("abstract method")
 
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
@@ -163,7 +167,7 @@ class LangSemantics:
 
         return paths
 
-    def compile_words_by_lemma(self, row: List[str], var: Source) -> str:
+    def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, int]:
         raise NotImplementedError("abstract method")
 
     def compile_usages(
@@ -178,9 +182,9 @@ class LangSemantics:
         # print(trans.multiword(row))
         for ovar in self.multilemma(row).keys():
             for tvar in trans.multilemma(row).keys():
-                oword = self.compile_words_by_lemma(row, ovar)
-                tword = trans.compile_words_by_lemma(row, tvar)
-                val = _build_usage(row, self, trans, ovar, tvar, oword)
+                (oword, ocnt) = self.compile_words_by_lemma(row, ovar)
+                (tword, tcnt) = trans.compile_words_by_lemma(row, tvar)
+                val = _build_usage(row, self, trans, ovar, tvar, oword, ocnt, tcnt)
                 for nxt in trans.build_paths(row):
                     orig_var_in_lemma = _is_variant_lemma(row, self, ovar, olemma)
                     # print(f"{ovar} in {olemma}: {orig_var_in_lemma}")
@@ -231,7 +235,6 @@ class MainLangSemantics(LangSemantics):
         return self.var
 
     def collect_word(self, group: List[List[str]]) -> str:
-        # TODO: consider the presence of counts (with regex)
         return " ".join(collect(group, self.word))
 
     def collect_lemma(
@@ -251,7 +254,6 @@ class MainLangSemantics(LangSemantics):
         alt_lemmas = {
             k: v
             for k, v in self.var.multilemma(row, lidx).items()
-            # TODO: comparison without counter
             if v != row[self.lemmas[lidx]]
         }
         # alt_words = {
@@ -270,28 +272,35 @@ class MainLangSemantics(LangSemantics):
             return [base_word(row[self.word])]
         return [""]
 
-    def multiword(self, row: List[str]) -> Dict[Source, Tuple[str, int]]:
-        """Main variant does not have multiple words in a cell,
-        but it does have row repetition counters.
-        If call comes from merger, it doesn't have such counters set yet"""
-        m = re.search(word_regex, row[self.word].strip())
-        assert m
-        cnt = PRIME_MAP[m.group(2)] if m.group(2) else 1
-        return {Source(""): (m.group(1).strip(), cnt)}
+    def multiword(self, row: List[str]) -> Dict[Source, str]:
+        """Main variant does not have multiple words in a cell"""
+        return {Source(""): row[self.word].strip()}
 
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
         """Main variant does not have multiple words in a cell"""
         return {Source(""): row[self.lemmas[lidx]].strip()}
 
-    def compile_words_by_lemma(self, row: List[str], var: Source = Source()) -> str:
-        return row[self.word]
+    def compile_words_by_lemma(
+        self, row: List[str], var: Source = Source()
+    ) -> Tuple[str, int]:
+        return (row[self.word], int(row[self.cnt_col]))
 
     def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:
+        """based on word (in column) expand it with counter
+        *IN PLACE*
+        Updates both row and row_counts"""
+        if not self.cnt_col:
+            self.cnt_col = len(row)
+        while len(row) < self.cnt_col + 1:
+            row += ["1"]
+
         if not row[self.word] or row[self.word] == EMPTY_CH:
             return row_counts
         if row[self.word] in row_counts:
             row_counts[row[self.word]] += 1
-            row[self.word] += PRIMES[row_counts[row[self.word]] - 1]
+            row[IDX_COL] += PRIMES[row_counts[row[self.word]] - 1]
+            # row[self.word] += PRIMES[row_counts[row[self.word]] - 1]
+            row[self.cnt_col] = str(row_counts[row[self.word]])
         else:
             row_counts[row[self.word]] = 1
             # fallback to default value for cnt in Index
@@ -326,26 +335,16 @@ class VarLangSemantics(LangSemantics):
         """Collects the content of the multiwords for a variant in a group into a single string.
         The output is conformant with the multiword syntax.
         Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
-        collected: Dict[Source, Tuple[str, int]] = {}
+        collected: Dict[Source, str] = {}
         # assert self.var  # for mypy
         for row in group:
             # for k, v in _normalise_multiword(sem.var.multiword(row)).items():
             for k, v in self.multiword(row).items():
                 if k in collected:
-                    # TODO: how do we count groups
-                    collected[k] = (
-                        collected[k][0] + " " + v[0],
-                        max(collected[k][1], v[1]),
-                    )
+                    collected[k] = collected[k] + " " + v
                 else:
                     collected[k] = v
-        return " ".join(
-            [
-                f"{v[0]}{PRIMES[v[1]-1]} {k}"
-                for k, v in collected.items()
-                if v[0].strip()
-            ]
-        )
+        return " ".join([f"{v} {k}" for k, v in collected.items() if v.strip()])
 
     def collect_lemma(
         self, group: List[List[str]], cidx: int, separator: str = None
@@ -373,7 +372,7 @@ class VarLangSemantics(LangSemantics):
         alt_lemmas = {k: v for k, v in multilemma.items() if my_var not in k}
         alt_words = {
             k: self.compile_words_by_lemma(row, k)
-            for k in multiword.keys()
+            for k, v in multiword.items()
             if k.inside(alt_lemmas)
         }
         return Alternative(main_lemma, alt_lemmas, main_word, alt_words)
@@ -386,21 +385,19 @@ class VarLangSemantics(LangSemantics):
 
     def build_keys(self, row: List[str]) -> List[str]:
         if present(row, self) and self.word != None and bool(row[self.word]):
-            return [base_word(w[0]) for w in self.multiword(row).values()]
+            return [base_word(w) for w in self.multiword(row).values()]
         return [""]
 
-    def multiword(self, row: List[str]) -> Dict[Source, Tuple[str, int]]:
-        # TODO: counter before source
+    def multiword(self, row: List[str]) -> Dict[Source, str]:
+        regex = r"^([^A-Z]+)(([A-Z][a-z]?)+)(.*)$"
         result = {}
-        m = re.search(multiword_regex, row[self.word].strip())
-        cnt = 1
+        m = re.search(regex, row[self.word].strip())
         while m:
-            cnt = PRIME_MAP[m.group(2)] if m.group(2) else 1
-            result[Source(m.group(3))] = (m.group(1).strip(), cnt)
-            rest = m.group(5).strip()
-            m = re.search(multiword_regex, rest)
+            result[Source(m.group(2))] = m.group(1).strip()
+            rest = m.group(4).strip()
+            m = re.search(regex, rest)
         if not result:
-            return {Source(default_sources[self.lang]): (row[self.word].strip(), cnt)}
+            return {Source(default_sources[self.lang]): row[self.word].strip()}
             # return {'': row[self.word].strip()}
         return result
 
@@ -423,9 +420,7 @@ class VarLangSemantics(LangSemantics):
         # When different variants have same lemma, unite. Case present only when deduced from different multiwords
         if len(result) == 1 and next(iter(result.keys())) == "":
             keys = Source(
-                "".join(
-                    str(k) for k, v in self.multiword(row).items() if v[0] != EMPTY_CH
-                )
+                "".join(str(k) for k, v in self.multiword(row).items() if v != EMPTY_CH)
             )
             # keys = ""
             # for k, v in self.multiword(row).items():
@@ -439,27 +434,17 @@ class VarLangSemantics(LangSemantics):
 
         return result
 
-    def compile_words_by_lemma(self, row: List[str], var: Source) -> str:
+    def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, int]:
         vars = SortedSet()
-        # print(var)
         multiword = self.multiword(row)
-        # print(multiword)
         for v in var:
             for kw in multiword.keys():
-                # TODO: counter before source x2
                 if not kw and v in Source(default_sources[self.lang]):
-                    src = Source()
-                    word = multiword[src][0]
-                    cnt = multiword[src][1]
-                    vars.add(f"{word}{PRIMES[cnt-1]} {kw}")
+                    vars.add(f"{multiword[Source()]} {kw}")
                 elif v in kw and kw in multiword:
-                    src = kw
-                    word = multiword[src][0]
-                    cnt = multiword[src][1]
-                    vars.add(f"{word}{PRIMES[cnt-1]} {kw}")
-        # if len(vars) == 1:
-        #     return vars[0].split(" ")[0]
-        return " ".join(vars)
+                    vars.add(f"{multiword[kw]} {kw}")
+        # TODO: multiword counts need to distinguish between variants
+        return (" ".join(vars), int(row[self.cnt_col]))
 
     def __repr__(self):
         """main ignored to avoid recursion"""
@@ -471,23 +456,27 @@ class VarLangSemantics(LangSemantics):
         """based on word (in column) expand it with counter
         *IN PLACE*
         Updates both row and row_counts"""
-        # TODO: count multiwords separately in the case of var
-        # TODO: insert before source if present
+        # TODO: multiword counts need to distinguish between variants
+        if not self.cnt_col:
+            self.cnt_col = len(row)
+        while len(row) < self.cnt_col + 1:
+            row += ["1"]
+
         col = self.word
         # Counts should be ignored, as they clearly don't exist before coming here
         if not row[self.word]:
             return row_counts
         multiword = self.multiword(row)
-        result = []
         for k, v in multiword.items():
-            if v[0] == EMPTY_CH:
+            if v == EMPTY_CH:
                 continue
-            if v[0] in row_counts:
-                row_counts[v[0]] += 1
-                result += [f"{v[0]}{PRIMES[row_counts[v[0]] - 1]}{' ' if k else ''}{k}"]
+            if v in row_counts:
+                row_counts[v] += 1
+                row[self.cnt_col] = str(row_counts[v])
+                # result += [f"{v[0]}{PRIMES[row_counts[v[0]] - 1]}{' ' if k else ''}{k}"]
             else:
-                row_counts[v[0]] = 1
-                result += [f"{v[0]}{' ' if k else ''}{k}"]
+                row_counts[v] = 1
+                # result += [f"{v[0]}{' ' if k else ''}{k}"]
                 # fallback to default value for cnt in Index
-        row[self.word] = " ".join(result)
+        # row[self.word] = " ".join(result)
         return row_counts

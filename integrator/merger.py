@@ -15,7 +15,7 @@ def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
     variants = set()
     assert sem.var  # for mypy
     for row in group:
-        for var in [k for k, val in sem.var.multiword(row).items() if val[0]]:
+        for var in [k for k, val in sem.var.multiword(row).items() if val]:
             variants.add(var)
     return Source("".join(str(v) for v in variants).strip())
 

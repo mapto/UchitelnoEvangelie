@@ -22,25 +22,25 @@ LEVEL_OFFSET = 0.4
 def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
-    for var, word in alt_var.items():
+    for var, lemma in alt_var.items():
         if first:
             first = False
         else:
             _generate_text(par, ", ")
-        _generate_text(par, word, fonts[lang])
+        _generate_text(par, lemma, fonts[lang])
         _generate_text(par, str(var), superscript=True)
     _generate_text(par, brace_close[lang])
 
 
 def _generate_index(par, u: Usage) -> None:
     s = str(u.idx)
-    if u.idx.cnt != 1:
+    if u.idx.ocnt != 1:
         s = s[:-1]
     _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
     if u.var:
         _generate_text(par, str(u.var), superscript=True)
-    if u.idx.cnt > 1:
-        _generate_text(par, str(u.idx.cnt), subscript=True)
+    if u.idx.ocnt > 1:
+        _generate_text(par, str(u.idx.ocnt), subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:
@@ -90,7 +90,7 @@ def _get_set_counts(s: SortedSet) -> Counter:
     >>> c.get_counts(False)
     (2, 0)
 
-    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=168, col='c', row=7, cnt=2)]
+    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=168, col='c', row=7, ocnt=2)]
     >>> s = SortedSet([Usage(n, "sl", "W" if x == 0 else "") for x, n in enumerate(i)])
     >>> c = _get_set_counts(s)
     >>> c.get_counts(False)

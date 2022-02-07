@@ -6,34 +6,32 @@ def test_VarLangSemantics_multiword():
     sem = VarLangSemantics("sl", 0, [1])
     result = sem.multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"])
     assert len(result) == 2
-    assert result["G"] == ("\ue205но\ue20dедаго", 1)
-    assert result["H"] == ("\ue201д\ue205нородоу", 1)
+    assert result["G"] == ("\ue205но\ue20dедаго")
+    assert result["H"] == ("\ue201д\ue205нородоу")
 
     result = sem.multiword(["ноедаго G", "днородъ H / ноѧдъ G"])
-    assert result == {"G": ("\ue205но\ue20dедаго", 1)}
+    assert result == {"G": ("\ue205но\ue20dедаго")}
 
     result = sem.multiword(["", ""])
-    assert result == {Source("WGH"): ("", 1)}
+    assert result == {Source("WGH"): ("")}
 
     result = sem.multiword(["дноеды WH Ø G", "дноѧдъ"])
-    assert result == {Source("WH"): ("дноеды", 1), Source("G"): ("Ø", 1)}
+    assert result == {Source("WH"): ("дноеды"), Source("G"): ("Ø")}
 
     result = sem.multiword(["дноеды", "дноѧдъ"])
-    assert result == {Source("WGH"): ("дноеды", 1)}
+    assert result == {Source("WGH"): "дноеды"}
 
     gr_sem = VarLangSemantics("gr", 0, [1])
     result = gr_sem.multiword(["με C", "ἐγώ"])
-    assert result == {"C": ("με", 1)}
+    assert result == {"C": "με"}
 
 
 def test_repeated():
     sem = VarLangSemantics("sl", 0, [1])
-    result = sem.multiword(
-        ["ноедаго\u2083 G  днородоу\u2084 H", "днородъ H / ноѧдъ G"]
-    )
+    result = sem.multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"])
     assert len(result) == 2
-    assert result["G"] == ("\ue205но\ue20dедаго", 3)
-    assert result["H"] == ("\ue201д\ue205нородоу", 4)
+    assert result["G"] == "\ue205но\ue20dедаго"
+    assert result["H"] == "\ue201д\ue205нородоу"
 
 
 def test_greek_paris():
@@ -51,7 +49,7 @@ def test_greek_paris():
         + [""] * 9
     )
     result = gr_sem.var.multiword(row)
-    assert result == {"MPaPb": ("τιμᾷ", 1)}
+    assert result == {"MPaPb": "τιμᾷ"}
 
     row = (
         [""] * 4
@@ -68,7 +66,7 @@ def test_greek_paris():
         + [""] * 10
     )
     result = gr_sem.var.multiword(row)
-    assert result == {Source("CMPcPa"): ("ἀνάκλησιν", 1)}
+    assert result == {Source("CMPcPa"): "ἀνάκλησιν"}
 
 
 def test_bozhii():
@@ -86,7 +84,7 @@ def test_bozhii():
     )
     result = sl_sem.var.multiword(r)
     assert result == {
-        "G": ("б\ue010ж\ue205\ue205", 1),
-        "H": ("б\ue010жї\ue205", 1),
-        "W": ("б\ue010ж\ue205", 1),
+        "G": "б\ue010ж\ue205\ue205",
+        "H": "б\ue010жї\ue205",
+        "W": "б\ue010ж\ue205",
     }

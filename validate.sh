@@ -13,11 +13,14 @@ echo '>>> Skipping Pylint'
 echo '>>> Running Mypy'
 mypy extractor
 mypy integrator
+mypy integrator/semantics
 
 echo '>>> Running Pytest'
 pytest -vv --doctest-modules -s extractor # --disable-warnings
 pytest -vv --doctest-modules -s integrator # --disable-warnings
+# pytest -vv --doctest-modules -s integrator/semantics # --disable-warnings
 
 echo '>>> Running Black'
 black extractor
 black integrator
+black integrator/semantics

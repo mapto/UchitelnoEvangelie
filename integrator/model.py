@@ -148,7 +148,8 @@ class Index:
     page: int
     col: str
     row: int
-    cnt: int = 1
+    ocnt: int = 1
+    tcnt: int = 1
     end: Optional["Index"] = None
     bold: bool = False
     italic: bool = False
@@ -160,8 +161,13 @@ class Index:
         b: bool = False,
         i: bool = False,
         word: str = "",
+        ocnt: int = 1,
+        tcnt: int = 1,
     ) -> "Index":
         """
+        Parsing the format produced by exporter or merger.
+        Thus, repetition indices external to the string,
+        as they are stored in a separate column in the spreadsheet
         Regex using: https://regex101.com/
         """
         # TODO: derive regex from parts
@@ -177,7 +183,7 @@ class Index:
         page = int(m.group(3))
         col = m.group(4)
         row = int(m.group(5))
-        cnt = PRIME_MAP[m.group(6)] if m.group(6) else 1
+        # cnt = PRIME_MAP[m.group(6)] if m.group(6) else 1
         end = None
         if m.group(16):
             e_ch = ch
@@ -185,7 +191,7 @@ class Index:
             e_page = page
             e_col = col
             e_row = int(m.group(16))
-            e_cnt = PRIME_MAP[m.group(18)] if m.group(18) else 1
+            # e_cnt = PRIME_MAP[m.group(18)] if m.group(18) else 1
             # e_var = m.group(18)
             if m.group(15):
                 e_col = m.group(15)
@@ -198,8 +204,19 @@ class Index:
                         if e_ch < 3
                         else False
                     )
-            end = Index(e_ch, e_alt, e_page, e_col, e_row, e_cnt, word=word)
-        return Index(ch, alt, page, col, row, cnt, end, b, i, word=word)
+            end = Index(
+                e_ch,
+                e_alt,
+                e_page,
+                e_col,
+                e_row,
+                ocnt,
+                tcnt,
+                bold=b,
+                italic=i,
+                word=word,
+            )
+        return Index(ch, alt, page, col, row, ocnt, tcnt, end, b, i, word=word)
 
     def __str__(self):
         """
@@ -218,12 +235,13 @@ class Index:
         '2/W6c4'
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        cnt = PRIMES[self.cnt - 1]
+        # TODO: distinguish between symbold for ocnt and tcnt
+        cnt = PRIMES[self.ocnt - 1] + PRIMES[self.tcnt - 1]
         start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{cnt}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{str(self.end)}"
-            ecnt = PRIMES[self.end.cnt - 1]
+            ecnt = PRIMES[self.end.ocnt - 1]
             if self.end.alt != self.alt:
                 ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
                 return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}{ecnt}"
@@ -233,7 +251,7 @@ class Index:
                 return f"{start}-{self.end.col}{self.end.row}{ecnt}"
             if self.end.row != self.row:
                 return f"{start}-{self.end.row}{ecnt}"
-            if self.end.cnt != self.cnt:
+            if self.end.ocnt != self.ocnt:
                 return f"{start}-{self.end.row}{ecnt}"
         return start
 
@@ -248,12 +266,12 @@ class Index:
         '01/006c04-02/006c04WH'
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        cnt = PRIMES[self.cnt - 1]
+        cnt = PRIMES[self.ocnt - 1]
         start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{cnt}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{self.end.longstr()}"
-            ecnt = PRIMES[self.end.cnt - 1]
+            ecnt = PRIMES[self.end.ocnt - 1]
             if self.end.alt != self.alt:
                 ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
                 return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}"
@@ -270,10 +288,15 @@ class Index:
 
 @dataclass(frozen=True)
 class Alternative:
+    """Word occurences in a line are counted.
+    For main alternative this is in a separate variable,
+    but for variants, it's part of the dictionary"""
+
     main_lemma: str = ""
     var_lemmas: Dict[Source, str] = field(default_factory=lambda: {})
     main_word: str = ""
-    var_words: Dict[Source, str] = field(default_factory=lambda: {})
+    var_words: Dict[Source, Tuple[str, int]] = field(default_factory=lambda: {})
+    main_cnt: int = 1
 
     def __bool__(self) -> bool:
         return bool(self.main_lemma) or bool(self.var_lemmas)
