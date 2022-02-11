@@ -174,4 +174,4 @@ def subscript(cnt: int, lang: str) -> str:
         return ""
     if lang == "sl":
         return chr(ord("0") + cnt)
-    return chr(ord("a") + cnt - 1)
+    return chr(ord("α") + cnt - 1)
