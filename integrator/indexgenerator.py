@@ -12,7 +12,7 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "0.0.5"
+__version__ = "0.1.0"
 
 from docopt import docopt  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
@@ -83,17 +83,20 @@ if __name__ == "__main__":
             after = len(p.result)
             print(f"{after-before} леми")
 
-    print("Генериране слявянски...")
-    export_fname = "index-sla.docx"
+    fname_prefix = ""
     if len(fnames) == 1:
-        export_fname = f"{fnames[0][:-5]}-{export_fname}"
+        if fnames[0].lower().endswith(".xlsx"):
+            fname_prefix = fnames[0][:-5] + "-"
+        else:
+            fname_prefix = fnames[0] + "-"
+
+    print("Генериране слявянски...")
+    export_fname = f"{fname_prefix}index-sla.docx"
     generate_docx(sla, "sl", export_fname)
     print(f"Записване: {export_fname}")
 
     print("Генериране гръцки...")
-    export_fname = "index-gre.docx"
-    if len(fnames) == 1:
-        export_fname = f"{fnames[0][:-5]}-{export_fname}"
+    export_fname = f"{fname_prefix}index-gre.docx"
     generate_docx(gre, "gr", export_fname)
     print(f"Записване: {export_fname}")
 

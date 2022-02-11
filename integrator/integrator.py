@@ -12,7 +12,7 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "1.0.4"
+__version__ = "1.1.0"
 
 from docopt import docopt  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
@@ -100,17 +100,20 @@ if __name__ == "__main__":
             after = len(p.result)
             print(f"{after-before} леми")
 
-    print("Експорт слявянски...")
-    export_fname = "list-sla.docx"
+    fname_prefix = ""
     if len(fnames) == 1:
-        export_fname = f"{fnames[0][:-5]}-{export_fname}"
+        if fnames[0].lower().endswith(".xlsx"):
+            fname_prefix = fnames[0][:-5] + "-"
+        else:
+            fname_prefix = fnames[0] + "-"
+
+    print("Експорт слявянски...")
+    export_fname = f"{fname_prefix}list-sla.docx"
     export_docx(sla, "sl", export_fname)
     print(f"Записване: {export_fname}")
 
     print("Експорт гръцки...")
-    export_fname = "list-gre.docx"
-    if len(fnames) == 1:
-        export_fname = f"{fnames[0][:-5]}-{export_fname}"
+    export_fname = f"{fname_prefix}list-gre.docx"
     export_docx(gre, "gr", export_fname)
     print(f"Записване: {export_fname}")
 

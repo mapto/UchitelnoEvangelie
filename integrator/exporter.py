@@ -27,8 +27,8 @@ def _generate_usage_alt_vars(
         else:
             _generate_text(par, ", ")
         _generate_text(par, word, fonts[lang])
-        if cnt > 1:
-            subs = str(cnt) if lang=="sl" else chr(ord("a") + cnt-1)
+        subs = subscript(cnt, lang)
+        if subs:
             _generate_text(par, subs, subscript=True)
     _generate_text(par, brace_close[lang])
 
@@ -43,11 +43,9 @@ def _generate_index(par, u: Usage) -> None:
     if u.var:
         _generate_text(par, str(u.var), superscript=True)
     if u.idx.ocnt > 1:
-        subs = subscript(u.idx.ocnt, u.lang)
-        _generate_text(par, subs, subscript=True)
+        _generate_text(par, subscript(u.idx.ocnt, u.lang), subscript=True)
     if u.idx.tcnt > 1:
-        subs = subscript(u.idx.tcnt, other_lang[u.lang])
-        _generate_text(par, subs, subscript=True)
+        _generate_text(par, subscript(u.idx.tcnt, other_lang[u.lang]), subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:

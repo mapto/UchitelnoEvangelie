@@ -9,8 +9,8 @@ from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
 from const import CF_SEP
-from util import main_source
-from model import Index, Usage, Counter, Source
+from util import main_source, subscript
+from model import Alternative, Index, Usage, Counter, Source
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts, brace_open, brace_close
@@ -19,16 +19,20 @@ BULLET_STYLE = "List Bullet"
 LEVEL_OFFSET = 0.4
 
 
-def _generate_usage_alt_vars(par, lang: str, alt_var: Dict[Source, str]) -> None:
+def _generate_usage_alt_vars(par, lang: str, alt_var: Alternative) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
-    for var, lemma in alt_var.items():
+    for lsrc, lemma in alt_var.var_lemmas.items():
+        cnt = max(tpl[1] for wsrc, tpl in alt_var.var_words.items() if wsrc in lsrc)
         if first:
             first = False
         else:
             _generate_text(par, ", ")
         _generate_text(par, lemma, fonts[lang])
-        _generate_text(par, str(var), superscript=True)
+        if lsrc:
+            _generate_text(par, str(lsrc), superscript=True)
+        if cnt > 1:
+            _generate_text(par, subscript(cnt, lang), subscript=True)
     _generate_text(par, brace_close[lang])
 
 
@@ -36,11 +40,15 @@ def _generate_index(par, u: Usage) -> None:
     s = str(u.idx)
     if u.idx.ocnt != 1:
         s = s[:-1]
+    if u.idx.tcnt != 1:
+        s = s[:-1]
     _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
     if u.var:
         _generate_text(par, str(u.var), superscript=True)
     if u.idx.ocnt > 1:
-        _generate_text(par, str(u.idx.ocnt), subscript=True)
+        _generate_text(par, subscript(u.idx.ocnt, u.lang), subscript=True)
+    if u.idx.ocnt > 1:
+        _generate_text(par, subscript(u.idx.ocnt, other_lang[u.lang]), subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:
@@ -55,7 +63,7 @@ def _generate_usage(par, u: Usage) -> None:
         _generate_text(par, f" {main_source(u.lang, u.idx.alt)}")
 
     if u.orig_alt.var_lemmas:
-        _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_lemmas)
+        _generate_usage_alt_vars(par, u.lang, u.orig_alt)
 
     # previous addition certainly finished with GENERIC_FONT
     if u.trans_alt.main_lemma:
@@ -64,7 +72,7 @@ def _generate_usage(par, u: Usage) -> None:
         _generate_text(par, f" {main_source(other_lang[u.lang], u.idx.alt)}")
 
     if u.trans_alt.var_lemmas:
-        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_lemmas)
+        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt)
 
 
 def docx_result(par, usage: SortedSet, src_style: str) -> None:

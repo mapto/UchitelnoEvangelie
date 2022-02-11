@@ -59,4 +59,4 @@ def test_subscript():
     assert subscript(1, "sl") == ""
     assert subscript(1, "gr") == ""
     assert subscript(2, "sl") == "2"
-    assert subscript(2, "gr") == "b"
+    assert subscript(2, "gr") == "β"
