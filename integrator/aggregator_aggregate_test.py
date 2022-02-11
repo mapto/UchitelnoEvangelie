@@ -757,3 +757,238 @@ def test_bozhii():
             }
         }
     }
+
+    rows = [
+        ["оуслышат\ue205 GH", "ѹслꙑшат\ue205"]
+        + [""] * 2
+        + ["05/22b05", "слꙑшат\ue205", "ноу соущоу слꙑ-", "слꙑшат\ue205"]
+        + [""] * 3
+        + ["ἀκοῦσαι", "ἀκούω"]
+        + [""] * 14
+        + ["1"] * 4,
+        ["оуслышат\ue205 GH", "ѹслꙑшат\ue205"]
+        + [""] * 2
+        + ["05/22b05₂", "послꙑшат\ue205", "ноу соущоу слꙑ-", "послꙑшат\ue205"]
+        + [""] * 3
+        + ["ἀκοῦσαι", "ἀκούω"]
+        + [""] * 14
+        + ["1", "2", "2", "1"],
+    ]
+    result = SortedDict()
+    result = aggregate(rows, gr_sem, sl_sem, result)
+    assert result == {
+        "ἀκούω": {
+            "": {
+                "": {
+                    "послꙑшат\ue205": {
+                        ("ἀκοῦσαι", "послꙑшат\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=5,
+                                        alt=False,
+                                        page=22,
+                                        col="b",
+                                        row=5,
+                                        ocnt=2,
+                                        word="ἀκοῦσαι",
+                                    ),
+                                    lang="gr",
+                                    trans_alt=Alternative(
+                                        var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
+                                        var_words={
+                                            Source("GH"): ("оуслышат\ue205 GH", 2)
+                                        },
+                                    ),
+                                )
+                            ]
+                        )
+                    },
+                    "слꙑшат\ue205": {
+                        ("ἀκοῦσαι", "слꙑшат\ue205"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=5,
+                                        alt=False,
+                                        page=22,
+                                        col="b",
+                                        row=5,
+                                        word="ἀκοῦσαι",
+                                    ),
+                                    lang="gr",
+                                    trans_alt=Alternative(
+                                        var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
+                                        var_words={
+                                            Source("GH"): ("оуслышат\ue205 GH", 1)
+                                        },
+                                    ),
+                                )
+                            ]
+                        )
+                    },
+                    "ѹслꙑшат\ue205": {
+                        ("ἀκοῦσαι", "оуслышат\ue205 GH"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=5,
+                                        alt=False,
+                                        page=22,
+                                        col="b",
+                                        row=5,
+                                        word="ἀκοῦσαι",
+                                    ),
+                                    lang="gr",
+                                    var=Source("GH"),
+                                    trans_alt=Alternative(
+                                        main_lemma="слꙑшат\ue205",
+                                        main_word="слꙑшат\ue205",
+                                    ),
+                                ),
+                                Usage(
+                                    idx=Index(
+                                        ch=5,
+                                        alt=False,
+                                        page=22,
+                                        col="b",
+                                        row=5,
+                                        ocnt=2,
+                                        tcnt=2,
+                                        word="ἀκοῦσαι",
+                                    ),
+                                    lang="gr",
+                                    var=Source("GH"),
+                                    trans_alt=Alternative(
+                                        main_lemma="послꙑшат\ue205",
+                                        main_word="послꙑшат\ue205",
+                                    ),
+                                ),
+                            ]
+                        )
+                    },
+                }
+            }
+        }
+    }
+
+    result = SortedDict()
+    result = aggregate(rows, gr_sem.var, sl_sem, result)
+    assert result == {}
+
+    result = SortedDict()
+    result = aggregate(rows, sl_sem.var, gr_sem, result)
+    assert result == {
+        "ѹслꙑшат\ue205": {
+            "": {
+                "": {
+                    "": {
+                        "ἀκούω": {
+                            ("оуслышат\ue205 GH", "ἀκοῦσαι"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=22,
+                                            col="b",
+                                            row=5,
+                                            word="оуслышат\ue205 GH",
+                                        ),
+                                        lang="sl",
+                                        var=Source("GH"),
+                                    ),
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=22,
+                                            col="b",
+                                            row=5,
+                                            ocnt=2,
+                                            tcnt=2,
+                                            word="оуслышат\ue205 GH",
+                                        ),
+                                        lang="sl",
+                                        var=Source("GH"),
+                                        orig_alt=Alternative(
+                                            main_lemma="послꙑшат\ue205",
+                                            main_word="послꙑшат\ue205",
+                                        ),
+                                    ),
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    result = SortedDict()
+    result = aggregate(rows, sl_sem, gr_sem, result)
+    assert result == {
+        "послꙑшат\ue205": {
+            "": {
+                "": {
+                    "": {
+                        "ἀκούω": {
+                            ("послꙑшат\ue205", "ἀκοῦσαι"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=22,
+                                            col="b",
+                                            row=5,
+                                            tcnt=2,
+                                            word="послꙑшат\ue205",
+                                        ),
+                                        lang="sl",
+                                        orig_alt=Alternative(
+                                            var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
+                                            var_words={
+                                                Source("GH"): ("оуслышат\ue205 GH", 2)
+                                            },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        "слꙑшат\ue205": {
+            "": {
+                "": {
+                    "": {
+                        "ἀκούω": {
+                            ("слꙑшат\ue205", "ἀκοῦσαι"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=22,
+                                            col="b",
+                                            row=5,
+                                            word="слꙑшат\ue205",
+                                        ),
+                                        lang="sl",
+                                        orig_alt=Alternative(
+                                            var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
+                                            var_words={
+                                                Source("GH"): ("оуслышат\ue205 GH", 1)
+                                            },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
+    }

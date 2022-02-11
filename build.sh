@@ -11,7 +11,7 @@ docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux
 mv dist/linux/extractor ../dist
 
 rm -rf dist
-cd ../integrator
+cd ..
 
 cd integrator
 

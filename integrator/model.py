@@ -128,7 +128,12 @@ class Source:
         Source('AB')
         >>> Source("A").inside({Source("AB"): 1, Source("C"): 2})
         Source('AB')
-        >>> Source("F").inside([Source("AB"), Source("CD")])
+        >>> Source("F").inside(["ABCDEF"])
+        'ABCDEF'
+        >>> Source("AF").inside(["ABCDEF"])
+        'ABCDEF'
+        >>> Source("A").inside([Source("AB"), Source("C")])
+        Source('AB')
         """
         for i in iterable:
             if Source(str(self)) in Source(str(i)):

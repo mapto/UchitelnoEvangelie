@@ -23,7 +23,9 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Alternative) -> None:
     first = True
     _generate_text(par, f" {brace_open[lang]}")
     for lsrc, lemma in alt_var.var_lemmas.items():
-        cnt = max(tpl[1] for wsrc, tpl in alt_var.var_words.items() if wsrc in lsrc)
+        cnt = max(
+            tpl[1] for wsrc, tpl in alt_var.var_words.items() if wsrc.inside([lsrc])
+        )
         if first:
             first = False
         else:
@@ -47,8 +49,8 @@ def _generate_index(par, u: Usage) -> None:
         _generate_text(par, str(u.var), superscript=True)
     if u.idx.ocnt > 1:
         _generate_text(par, subscript(u.idx.ocnt, u.lang), subscript=True)
-    if u.idx.ocnt > 1:
-        _generate_text(par, subscript(u.idx.ocnt, other_lang[u.lang]), subscript=True)
+    if u.idx.tcnt > 1:
+        _generate_text(par, subscript(u.idx.tcnt, other_lang[u.lang]), subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:
@@ -65,7 +67,6 @@ def _generate_usage(par, u: Usage) -> None:
     if u.orig_alt.var_lemmas:
         _generate_usage_alt_vars(par, u.lang, u.orig_alt)
 
-    # previous addition certainly finished with GENERIC_FONT
     if u.trans_alt.main_lemma:
         _generate_text(par, " ")
         _generate_text(par, u.trans_alt.main_lemma, fonts[other_lang[u.lang]])
