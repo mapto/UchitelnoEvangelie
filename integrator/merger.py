@@ -171,8 +171,8 @@ def _grouped(row: List[str], sem: LangSemantics) -> bool:
 
 def merge(
     corpus: List[List[str]],
-    orig: MainLangSemantics,
-    trans: MainLangSemantics,
+    orig: LangSemantics,
+    trans: LangSemantics,
     incl_hilited: bool = False,
 ) -> List[List[str]]:
     """Merge lines according to color groups. This is an asymmetric operation

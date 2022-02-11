@@ -96,7 +96,7 @@ def _agg_lemma(
 def aggregate(
     corpus: List[List[str]],
     orig: LangSemantics,
-    trans: MainLangSemantics,
+    trans: LangSemantics,
     result: SortedDict,
 ) -> SortedDict:
     """Generate an aggregated index of translations. Recursion ensures that this works with variable depth.

@@ -13,6 +13,8 @@ mv dist/linux/extractor ../dist
 rm -rf dist
 cd ../integrator
 
+cd integrator
+
 printf "\n\n>> Building integrator for windows\n\n"
 docker run -v "$(pwd):/src/" cdrx/pyinstaller-windows "pyinstaller --clean -y --dist ./dist/windows --workpath /tmp integrator.spec && chown -R --reference=. ./dist/windows"
 mv dist/windows/integrator.exe ../dist

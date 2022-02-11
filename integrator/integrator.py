@@ -3,8 +3,8 @@
 Licensed under MIT License, detailed here: https://mit-license.org/
 
 Usage:
-  integrator.py [-p] <xlsx>
-  integrator.py [--no-pause] <xlsx>
+  integrator.py [-p] <xlsx>...
+  integrator.py [--no-pause] <xlsx>...
 
 Options:
   -h --help                This information
@@ -12,7 +12,7 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 from docopt import docopt  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
@@ -30,14 +30,7 @@ if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
     print(f"Integrator v{__version__}")
     # print(args)
-    fname = args["<xlsx>"]
-    print(f"Прочитане: {fname}")
-
-    if len(fname) < 6 or "." not in fname[2:]:
-        fname += ".xlsx"
-    elif not fname.lower().endswith(".xlsx"):
-        print("Файлът трябва да е във формат .xlsx. Моля конвертирайте го")
-        exit()
+    fnames = args["<xlsx>"]
 
     sl_sem = MainLangSemantics(
         "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
@@ -47,75 +40,77 @@ if __name__ == "__main__":
         "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
     )
     assert gr_sem.var  # for mypy
-    sem = TableSemantics(sl_sem, gr_sem)
-
-    print("Импорт...")
-    lines = import_mapping(fname, sem)
-    print(f"{len(lines)} думи")
-
-    # print("Раздуване на индекси...")
-    # lines = expand_idx(lines)
-    # print(f"{len(lines)} реда")
-
-    print(f"Обзор на буквите в славянски...")
-    letters = {}
-    for c in sl_sem.lem1_cols():
-        letters.update(extract_letters(lines, c))
-    print(f"{len(letters)} символа: {letters}")
-
-    print(f"Обзор на буквите в гръцки...")
-    letters = {}
-    for c in gr_sem.lem1_cols():
-        letters.update(extract_letters(lines, c))
-    print(f"{len(letters)} символа: {letters}")
 
     sla = SortedDict(ord_word)
     gre = SortedDict(ord_word)
+
     pairs = [
-        {
-            "orig": sl_sem,
-            "trans": gr_sem,
-            "label": "от славянски основен към гръцки",
-            "agg": sla,
-        },
-        {
-            "orig": sl_sem.var,
-            "trans": gr_sem,
-            "label": "от славянски вариант към гръцки",
-            "agg": sla,
-        },
-        {
-            "orig": gr_sem.var,
-            "trans": sl_sem,
-            "label": "от гръцки вариант към славянски",
-            "agg": gre,
-        },
-        {
-            "orig": gr_sem,
-            "trans": sl_sem,
-            "label": "от гръцки основен към славянски",
-            "agg": gre,
-        },
+        TableSemantics(
+            sl_sem, gr_sem, label="от славянски основен към гръцки", result=sla
+        ),
+        TableSemantics(
+            sl_sem.var, gr_sem, label="от славянски вариант към гръцки", result=sla
+        ),
+        TableSemantics(
+            gr_sem, sl_sem, label="от гръцки основен към славянски", result=gre
+        ),
+        TableSemantics(
+            gr_sem.var, sl_sem, label="от гръцки вариант към славянски", result=gre
+        ),
     ]
+    sem = pairs[0]
 
-    for p in pairs:
-        print(f"Събиране на многоредови преводи {p['label']}...")
-        merged = merge(lines, p["orig"], p["trans"], INCL_HILITED)
-        print(f"{len(merged)} думи")
+    for fname in fnames:
+        print(f"Прочитане: {fname}")
 
-        print(f"Кондензиране {p['label']}...")
-        before = len(p["agg"])
-        p["agg"] = aggregate(merged, p["orig"], p["trans"], p["agg"])
-        after = len(p["agg"])
-        print(f"{after-before} леми")
+        if len(fname) < 6 or "." not in fname[2:]:
+            fname += ".xlsx"
+        elif not fname.lower().endswith(".xlsx"):
+            print("Файлът трябва да е във формат .xlsx. Моля конвертирайте го")
+            exit()
+
+        print("Импорт...")
+        lines = import_mapping(fname, sem)
+        print(f"{len(lines)} думи")
+
+        # print("Раздуване на индекси...")
+        # lines = expand_idx(lines)
+        # print(f"{len(lines)} реда")
+
+        print(f"Обзор на буквите в славянски...")
+        letters = {}
+        for c in sl_sem.lem1_cols():
+            letters.update(extract_letters(lines, c))
+        print(f"{len(letters)} символа: {letters}")
+
+        print(f"Обзор на буквите в гръцки...")
+        letters = {}
+        for c in gr_sem.lem1_cols():
+            letters.update(extract_letters(lines, c))
+        print(f"{len(letters)} символа: {letters}")
+
+        for p in pairs:
+            print(f"Събиране на многоредови преводи {p.label}...")
+            merged = merge(lines, p.orig, p.trans, INCL_HILITED)
+            print(f"{len(merged)} думи")
+
+            print(f"Кондензиране {p.label}...")
+            before = len(p.result)
+            p.result = aggregate(merged, p.orig, p.trans, p.result)
+            after = len(p.result)
+            print(f"{after-before} леми")
 
     print("Експорт слявянски...")
-    export_fname = fname[:-5] + "-sla.docx"
+    export_fname = "list-sla.docx"
+    if len(fnames) == 1:
+        export_fname = f"{fnames[0][:-5]}-{export_fname}"
     export_docx(sla, "sl", export_fname)
     print(f"Записване: {export_fname}")
 
     print("Експорт гръцки...")
-    export_fname = fname[:-5] + "-gre.docx"
+    export_fname = "list-gre.docx"
+    if len(fnames) == 1:
+        export_fname = f"{fnames[0][:-5]}-{export_fname}"
     export_docx(gre, "gr", export_fname)
     print(f"Записване: {export_fname}")
 
