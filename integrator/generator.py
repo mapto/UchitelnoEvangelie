@@ -9,11 +9,13 @@ from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
 from const import CF_SEP
+from const import BRACE_OPEN, BRACE_CLOSE
 from util import main_source, subscript
-from model import Alternative, Index, Usage, Counter, Source
+from address import Index
+from model import Alternative, Usage, Counter, Source
 
 from wordproc import _generate_text, any_grandchild
-from wordproc import GENERIC_FONT, other_lang, fonts, brace_open, brace_close
+from wordproc import GENERIC_FONT, other_lang, fonts
 
 BULLET_STYLE = "List Bullet"
 LEVEL_OFFSET = 0.4
@@ -21,7 +23,7 @@ LEVEL_OFFSET = 0.4
 
 def _generate_usage_alt_vars(par, lang: str, alt_var: Alternative) -> None:
     first = True
-    _generate_text(par, f" {brace_open[lang]}")
+    _generate_text(par, f" {BRACE_OPEN[lang]}")
     for lsrc, lemma in alt_var.var_lemmas.items():
         cnt = max(
             tpl[1] for wsrc, tpl in alt_var.var_words.items() if wsrc.inside([lsrc])
@@ -35,15 +37,15 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Alternative) -> None:
             _generate_text(par, str(lsrc), superscript=True)
         if cnt > 1:
             _generate_text(par, subscript(cnt, lang), subscript=True)
-    _generate_text(par, brace_close[lang])
+    _generate_text(par, BRACE_CLOSE[lang])
 
 
 def _generate_index(par, u: Usage) -> None:
     s = str(u.idx)
     if u.idx.ocnt != 1:
-        s = s[:-1]
+        s = s[:-3]
     if u.idx.tcnt != 1:
-        s = s[:-1]
+        s = s[:-3]
     _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
     if u.var:
         _generate_text(par, str(u.var), superscript=True)

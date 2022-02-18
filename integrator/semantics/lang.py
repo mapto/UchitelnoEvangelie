@@ -8,13 +8,14 @@ import re
 
 from const import IDX_COL, STYLE_COL
 from const import EMPTY_CH, MISSING_CH
-from const import PRIMES, PRIME_MAP
+from const import BRACE_CLOSE, BRACE_OPEN
 from const import VAR_SEP
 from const import default_sources
-from const import multiword_regex, multilemma_regex, word_regex
+from const import multilemma_regex
 
 from util import base_word, collect
-from model import Alternative, Index, Path, Source, Usage
+from address import Index
+from model import Alternative, Path, Source, Usage
 
 
 def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
@@ -298,8 +299,10 @@ class MainLangSemantics(LangSemantics):
             return row_counts
         if row[self.word] in row_counts:
             row_counts[row[self.word]] += 1
-            row[IDX_COL] += PRIMES[row_counts[row[self.word]] - 1]
-            # row[self.word] += PRIMES[row_counts[row[self.word]] - 1]
+            # address is modified so that it is distinct from other occurences
+            # TODO: dirty: we don't know if number comes from original or translation
+            # This information is actually stored in cnt_col
+            row[IDX_COL] += f"{{{row_counts[row[self.word]]}}}"
             row[self.cnt_col] = str(row_counts[row[self.word]])
         else:
             row_counts[row[self.word]] = 1
@@ -375,7 +378,13 @@ class VarLangSemantics(LangSemantics):
             for k, v in multiword.items()
             if k.inside(alt_lemmas)
         }
-        return Alternative(main_lemma, alt_lemmas, main_word, alt_words)
+        return Alternative(
+            main_lemma,
+            alt_lemmas,
+            main_word,
+            alt_words,
+            int(row[self.other().cnt_col]),
+        )
 
     def key(self, text: str) -> str:
         m = re.search(r"^([^A-Z]+)([A-Z]+)$", text.strip())
@@ -473,7 +482,6 @@ class VarLangSemantics(LangSemantics):
             if v in row_counts:
                 row_counts[v] += 1
                 row[self.cnt_col] = str(row_counts[v])
-                # result += [f"{v[0]}{PRIMES[row_counts[v[0]] - 1]}{' ' if k else ''}{k}"]
             else:
                 row_counts[v] = 1
                 # result += [f"{v[0]}{' ' if k else ''}{k}"]

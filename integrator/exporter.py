@@ -9,18 +9,20 @@ from docx import Document  # type: ignore
 from docx.shared import Pt  # type: ignore
 
 from const import CF_SEP
+from const import BRACE_OPEN, BRACE_CLOSE
+
 from util import main_source, subscript
 from model import Usage, Source
 
 from wordproc import _generate_text, any_grandchild
-from wordproc import GENERIC_FONT, other_lang, fonts, colors, brace_open, brace_close
+from wordproc import GENERIC_FONT, other_lang, fonts, colors
 
 
 def _generate_usage_alt_vars(
     par, lang: str, alt_var: Dict[Source, Tuple[str, int]]
 ) -> None:
     first = True
-    _generate_text(par, f" {brace_open[lang]}")
+    _generate_text(par, f" {BRACE_OPEN[lang]}")
     for word, cnt in alt_var.values():
         if first:
             first = False
@@ -30,15 +32,15 @@ def _generate_usage_alt_vars(
         subs = subscript(cnt, lang)
         if subs:
             _generate_text(par, subs, subscript=True)
-    _generate_text(par, brace_close[lang])
+    _generate_text(par, BRACE_CLOSE[lang])
 
 
 def _generate_index(par, u: Usage) -> None:
     s = str(u.idx)
     if u.idx.ocnt != 1:
-        s = s[:-1]
+        s = s[:-3]
     if u.idx.tcnt != 1:
-        s = s[:-1]
+        s = s[:-3]
     _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
     if u.var:
         _generate_text(par, str(u.var), superscript=True)

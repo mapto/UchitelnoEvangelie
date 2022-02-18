@@ -30,7 +30,7 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
     result = []
     blank = False
     for row in ws.iter_rows(max_col=STYLE_COL):
-        line = [cell.value.strip() if cell.value else cell.value for cell in row]
+        line = [str(cell.value).strip() if cell.value else cell.value for cell in row]
         # Two consequent blank lines
         if blank and not [l for l in line if l]:
             break

@@ -1,5 +1,7 @@
 from sortedcontainers import SortedDict, SortedSet, SortedSet  # type: ignore
-from model import Index, Usage, Alternative
+
+from address import Index
+from model import Usage, Alternative
 from generator import _get_dict_counts
 
 

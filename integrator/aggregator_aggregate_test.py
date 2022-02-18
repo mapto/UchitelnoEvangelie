@@ -1,7 +1,8 @@
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from const import STYLE_COL
-from model import Index, Usage, Source, Alternative
+from address import Index
+from model import Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import aggregate
 
@@ -64,8 +65,8 @@ def test_monogenis():
                                     Source("G"): "\ue205но\ue20dѧдъ",
                                 },
                                 var_words={
-                                    Source("H"): "\ue201д\ue205нородоу H",
-                                    Source("G"): "\ue205но\ue20dедаго G",
+                                    Source("H"): ("\ue201д\ue205нородоу H", 1),
+                                    Source("G"): ("\ue205но\ue20dедаго G", 1),
                                 },
                             ),
                         )
@@ -97,7 +98,7 @@ def test_monogenis():
                                 main_lemma="\ue201д\ue205но\ue20dѧдъ",
                                 var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
                                 main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("G"): "\ue205но\ue20dедаго"},
+                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
                             ),
                         )
                     ]
@@ -123,7 +124,7 @@ def test_monogenis():
                                 main_lemma="\ue201д\ue205но\ue20dѧдъ",
                                 var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
                                 main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("H"): "\ue201д\ue205нородоу"},
+                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
                             ),
                         )
                     ]
@@ -245,7 +246,9 @@ def test_monogenis():
                                         main_lemma="\ue201д\ue205но\ue20dѧдъ",
                                         var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
                                         main_word="\ue201д\ue205но\ue20dедоу",
-                                        var_words={Source("G"): "\ue205но\ue20dедаго"},
+                                        var_words={
+                                            Source("G"): ("\ue205но\ue20dедаго G", 1)
+                                        },
                                     ),
                                 )
                             ]
@@ -287,8 +290,8 @@ def test_monogenis():
                                             Source("G"): "\ue205но\ue20dѧдъ",
                                         },
                                         var_words={
-                                            Source("H"): "\ue201д\ue205нородоу H",
-                                            Source("G"): "\ue205но\ue20dедаго G",
+                                            Source("H"): ("\ue201д\ue205нородоу H", 1),
+                                            Source("G"): ("\ue205но\ue20dедаго G", 1),
                                         },
                                     ),
                                 )
@@ -353,9 +356,10 @@ def test_monogenis():
                                             Source("WH"): "\ue201д\ue205но\ue20dѧдъ"
                                         },
                                         var_words={
-                                            Source(
-                                                "WH"
-                                            ): "\ue201д\ue205но\ue20dедѣмь WH"
+                                            Source("WH"): (
+                                                "\ue201д\ue205но\ue20dедѣмь WH",
+                                                1,
+                                            )
                                         },
                                     ),
                                 )
@@ -380,7 +384,9 @@ def test_monogenis():
                                         main_lemma="\ue201д\ue205но\ue20dѧдъ",
                                         var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
                                         main_word="\ue201д\ue205но\ue20dедоу",
-                                        var_words={Source("H"): "\ue201д\ue205нородоу"},
+                                        var_words={
+                                            Source("H"): ("\ue201д\ue205нородоу H", 1)
+                                        },
                                     ),
                                 )
                             ]
@@ -402,7 +408,10 @@ def test_monogenis():
                                             Source("WH"): "\ue201д\ue205но\ue20dѧдъ"
                                         },
                                         var_words={
-                                            Source("WH"): "\ue201д\ue205но\ue20dеды WH"
+                                            Source("WH"): (
+                                                "\ue201д\ue205но\ue20dеды WH",
+                                                1,
+                                            )
                                         },
                                     ),
                                 )
@@ -480,7 +489,7 @@ def test_ipercliso():
                                     lang="gr",
                                     orig_alt=Alternative(
                                         var_lemmas={Source("C"): "ὑπερβλύω"},
-                                        var_words={Source("C"): "ὑπερβλύζων C"},
+                                        var_words={Source("C"): ("ὑπερβλύζων C", 1)},
                                     ),
                                 )
                             ]
@@ -505,7 +514,7 @@ def test_ipercliso():
                                     lang="gr",
                                     orig_alt=Alternative(
                                         var_lemmas={Source("C"): "ὑπερβλύω"},
-                                        var_words={Source("C"): "ὑπερβλύσαι C"},
+                                        var_words={Source("C"): ("ὑπερβλύσαι C", 1)},
                                     ),
                                 )
                             ]
@@ -668,9 +677,10 @@ def test_bozhii():
                                                 Source("WGH"): "бож\ue205\ue205"
                                             },
                                             var_words={
-                                                Source(
-                                                    "WGH"
-                                                ): "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G"
+                                                Source("WGH"): (
+                                                    "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
+                                                    1,
+                                                )
                                             },
                                         ),
                                     )
@@ -897,6 +907,10 @@ def test_bozhii():
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
+                                        orig_alt=Alternative(
+                                            main_lemma="слꙑшат\ue205",
+                                            main_word="слꙑшат\ue205",
+                                        ),
                                     ),
                                     Usage(
                                         idx=Index(
@@ -982,6 +996,206 @@ def test_bozhii():
                                             var_words={
                                                 Source("GH"): ("оуслышат\ue205 GH", 1)
                                             },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
+    }
+
+
+def test_velichanie():
+    sl_sem = MainLangSemantics(
+        "sl",
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics("sl", 0, [1, 2, 3]),
+    )
+    gr_sem = MainLangSemantics(
+        "gr",
+        11,
+        [12, 13, 14],
+        VarLangSemantics("gr", 16, [17, 18, 19]),
+    )
+
+    rows = [
+        ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["1"] * 4,
+        ["невел\ue205\ue20d\ue205\ue201 WGH", "невел\ue205\ue20d\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19₂₂",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["2", "1", "1", "2"],
+    ]
+
+    result = SortedDict()
+    gr_sem.cnt_col = STYLE_COL + 1
+    gr_sem.var.cnt_col = STYLE_COL + 2
+    sl_sem.var.cnt_col = STYLE_COL + 3
+    sl_sem.cnt_col = STYLE_COL + 4
+    result = aggregate(rows, gr_sem, sl_sem.var, result)
+    assert result == {
+        "ἄτυφος": {
+            "": {
+                "": {
+                    "вел\ue205\ue20dан\ue205\ue201": {
+                        ("ἄτυφον", "вел\ue205\ue20dан\ue205е WGH"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=5,
+                                        alt=False,
+                                        page=21,
+                                        col="a",
+                                        row=19,
+                                        word="ἄτυφον",
+                                    ),
+                                    lang="gr",
+                                    var=Source("WGH"),
+                                    trans_alt=Alternative(
+                                        main_lemma="невел\ue205\ue20dан\ue205\ue201",
+                                        main_word="невел\ue205\ue20dан\ue205\ue201",
+                                    ),
+                                )
+                            ]
+                        )
+                    },
+                    "невел\ue205\ue20d\ue205\ue201": {
+                        ("ἄτυφον", "невел\ue205\ue20d\ue205\ue201 WGH"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=5,
+                                        alt=False,
+                                        page=21,
+                                        col="a",
+                                        row=19,
+                                        ocnt=2,
+                                        word="ἄτυφον",
+                                    ),
+                                    lang="gr",
+                                    var=Source("WGH"),
+                                    trans_alt=Alternative(
+                                        main_lemma="невел\ue205\ue20dан\ue205\ue201",
+                                        main_word="невел\ue205\ue20dан\ue205\ue201",
+                                        main_cnt=2,
+                                    ),
+                                )
+                            ]
+                        )
+                    },
+                }
+            }
+        }
+    }
+
+    rows = [
+        ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["1"] * 4,
+        ["невел\ue205\ue20d\ue205\ue201 WGH", "невел\ue205\ue20d\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19₂₂",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["1", "2", "2", "1"],
+    ]
+    result = SortedDict()
+    sl_sem.var.cnt_col = STYLE_COL + 1
+    sl_sem.cnt_col = STYLE_COL + 2
+    gr_sem.cnt_col = STYLE_COL + 3
+    gr_sem.var.cnt_col = STYLE_COL + 4
+    result = aggregate(rows, sl_sem.var, gr_sem, result)
+    assert result == {
+        "вел\ue205\ue20dан\ue205\ue201": {
+            "": {
+                "": {
+                    "": {
+                        "ἄτυφος": {
+                            ("вел\ue205\ue20dан\ue205е WGH", "ἄτυφον"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=21,
+                                            col="a",
+                                            row=19,
+                                            word="вел\ue205\ue20dан\ue205е WGH",
+                                        ),
+                                        lang="sl",
+                                        var=Source("WGH"),
+                                        orig_alt=Alternative(
+                                            main_lemma="невел\ue205\ue20dан\ue205\ue201",
+                                            main_word="невел\ue205\ue20dан\ue205\ue201",
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        "невел\ue205\ue20d\ue205\ue201": {
+            "": {
+                "": {
+                    "": {
+                        "ἄτυφος": {
+                            ("невел\ue205\ue20d\ue205\ue201 WGH", "ἄτυφον"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=21,
+                                            col="a",
+                                            row=19,
+                                            tcnt=2,
+                                            word="невел\ue205\ue20d\ue205\ue201 WGH",
+                                        ),
+                                        lang="sl",
+                                        var=Source("WGH"),
+                                        orig_alt=Alternative(
+                                            main_lemma="невел\ue205\ue20dан\ue205\ue201",
+                                            main_word="невел\ue205\ue20dан\ue205\ue201",
+                                            main_cnt=2,
                                         ),
                                     )
                                 ]

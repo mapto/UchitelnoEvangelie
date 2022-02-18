@@ -11,14 +11,8 @@ from lxml import etree, html  # type: ignore
 
 from const import LINE_CH
 from schema import ns
-from schema import (
-    tag_paragraph,
-    tag_run,
-    tag_commentStart,
-    tag_commentEnd,
-    tag_text,
-    tag_br,
-)
+from schema import tag_paragraph, tag_run, tag_text, tag_br
+from schema import tag_commentStart, tag_commentEnd
 from model import Index, Word, Comment, WordList
 from util import Buffer
 

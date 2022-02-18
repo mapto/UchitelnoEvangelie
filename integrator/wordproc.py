@@ -11,8 +11,6 @@ GENERIC_FONT = "Times New Roman"
 other_lang = {"gr": "sl", "sl": "gr"}
 fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
 colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
-brace_open = {"sl": "[", "gr": "{"}
-brace_close = {"sl": "]", "gr": "}"}
 
 
 def _generate_text(

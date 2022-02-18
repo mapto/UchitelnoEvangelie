@@ -84,7 +84,7 @@ def test_para():
                         var=Source("C"),
                         trans_alt=Alternative(
                             var_lemmas={Source("WGH"): "въ"},
-                            var_words={Source("WGH"): "вь WGH"},
+                            var_words={Source("WGH"): ("вь WGH", 1)},
                         ),
                     )
                 ]
@@ -248,7 +248,7 @@ def test_verovat():
                         lang="sl",
                         orig_alt=Alternative(
                             var_lemmas={Source("GH"): "вѣра"},
-                            var_words={Source("GH"): "вѣроу GH"},
+                            var_words={Source("GH"): ("вѣроу GH", 1)},
                         ),
                     )
                 ]
@@ -273,7 +273,7 @@ def test_verovat():
                         lang="gr",
                         trans_alt=Alternative(
                             var_lemmas={Source("GH"): "вѣра"},
-                            var_words={Source("GH"): "вѣроу GH"},
+                            var_words={Source("GH"): ("вѣроу GH", 1)},
                         ),
                     )
                 ]
@@ -404,7 +404,9 @@ def test_monogenis():
                         lang="sl",
                         orig_alt=Alternative(
                             var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-                            var_words={Source("WH"): "\ue201д\ue205но\ue20dеды WH"},
+                            var_words={
+                                Source("WH"): ("\ue201д\ue205но\ue20dеды WH", 1)
+                            },
                         ),
                     )
                 ]
@@ -433,7 +435,9 @@ def test_monogenis():
                         lang="gr",
                         trans_alt=Alternative(
                             var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-                            var_words={Source("WH"): "\ue201д\ue205но\ue20dеды WH"},
+                            var_words={
+                                Source("WH"): ("\ue201д\ue205но\ue20dеды WH", 1)
+                            },
                         ),
                     )
                 ]
@@ -483,7 +487,7 @@ def test_monogenis():
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
                             var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
                             main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("H"): "\ue201д\ue205нородоу"},
+                            var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
                         ),
                     )
                 ]
@@ -514,7 +518,7 @@ def test_monogenis():
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
                             var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
                             main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("G"): "\ue205но\ue20dедаго"},
+                            var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
                         ),
                     )
                 ]
@@ -562,7 +566,7 @@ def test_monogenis():
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
                             var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
                             main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("H"): "\ue201д\ue205нородоу"},
+                            var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
                         ),
                     )
                 ]
@@ -592,7 +596,7 @@ def test_monogenis():
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
                             var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
                             main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("G"): "\ue205но\ue20dедаго"},
+                            var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
                         ),
                     )
                 ]
@@ -623,8 +627,8 @@ def test_monogenis():
                                 Source("G"): "\ue205но\ue20dѧдъ",
                             },
                             var_words={
-                                Source("H"): "\ue201д\ue205нородоу H",
-                                Source("G"): "\ue205но\ue20dедаго G",
+                                Source("H"): ("\ue201д\ue205нородоу H", 1),
+                                Source("G"): ("\ue205но\ue20dедаго G", 1),
                             },
                         ),
                     )
@@ -655,7 +659,7 @@ def test_monogenis():
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
                             var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
                             main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("G"): "\ue205но\ue20dедаго"},
+                            var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
                         ),
                     )
                 ]
@@ -685,7 +689,7 @@ def test_monogenis():
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
                             var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
                             main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("H"): "\ue201д\ue205нородоу"},
+                            var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
                         ),
                     )
                 ]

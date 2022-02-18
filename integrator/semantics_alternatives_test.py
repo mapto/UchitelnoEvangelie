@@ -4,20 +4,21 @@ from semantics import MainLangSemantics, VarLangSemantics
 
 
 def test_LangSemantics_alternatives():
+    style_col = 24
     # old semantics
     sl_sem = MainLangSemantics(
         "sl",
         4,
         [6, 7, 8, 9],
-        VarLangSemantics("sl", 0, [1, 2], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
+        VarLangSemantics("sl", 0, [1, 2], cnt_col=style_col + 2),
+        cnt_col=style_col + 1,
     )
     gr_sem = MainLangSemantics(
         "gr",
         10,
         [11, 12, 13],
-        VarLangSemantics("gr", 15, [16, 17], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
+        VarLangSemantics("gr", 15, [16, 17], cnt_col=style_col + 4),
+        cnt_col=style_col + 3,
     )
 
     row = (

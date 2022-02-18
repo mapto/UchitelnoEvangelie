@@ -4,8 +4,10 @@
 
 from typing import Dict, List
 
-from const import IDX_COL, MISSING_CH, PRIMES, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
-from model import Index, Source
+from const import IDX_COL, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
+
+from address import Index
+from model import Source
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
 from util import clean_word, collect
 

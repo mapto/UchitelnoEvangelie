@@ -11,18 +11,9 @@ VAR_SEP = "-"  # used to separate the two language in variant source annotation
 MISSING_CH = "ₓ"
 EMPTY_CH = "Ø"  # used when text is original, so no translation
 SPECIAL_CHARS = ["*", "≠", "≈"]
-PRIMES = [
-    "",
-    "\u2082",
-    "\u2083",
-    "\u2084",
-    "\u2085",
-    "\u2086",
-    "\u2087",
-    "\u2088",
-    "\u2089",
-]
-PRIME_MAP = {c: i + 1 for i, c in enumerate(PRIMES)}
+
+BRACE_OPEN = {"sl": "[", "gr": "{"}
+BRACE_CLOSE = {"sl": "]", "gr": "}"}
 
 # first letter is main variant
 MAIN_SL = "S"  # for Synodal
@@ -36,10 +27,12 @@ DEFAULT_GR = "C"  # for Cramer
 # var_sources = {"gr": VAR_GR, "sl": VAR_SL}
 default_sources = {"gr": DEFAULT_GR, "sl": DEFAULT_SL}
 
+# built with regex101.com
+# TODO: remove var from address. This is currently implemented with variant letter
 idx_regex = (
-    r"(\d{1,2})\/(W)?(\d{1,3})([abcd])(\d{1,2})([₂-₉])?(var)?"
-    + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([abcd]))?(\d{1,2})([₂-₉])?(var)?)?"
+    r"(\d{1,2})\/(W)?(\d{1,3})([a-d])(\d{1,2})(\{(\d)\})?(\{(\d)\})?(var)?"
+    + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([a-d]))?(\d{1,2})(\{(\d)\})?(\{(\d)\})?(var)?)?"
 )
-word_regex = r"^([^A-Z]+)([₂-₉])?"
-multiword_regex = r"^([^A-Z₂-₉\s]+)([₂-₉])?\s(([A-Z][a-z]?)+)(.*)$"
+# word_regex = r"^([^A-Z]+)([2-9α-η])?"
+# multiword_regex = r"^([^A-Z2-9α-η\s]+)([2-9α-η])?\s(([A-Z][a-z]?)+)(.*)$"
 multilemma_regex = r"^([^A-Z\+]+)(\+\s\w+\.)?(([A-Z][a-z]?)+)?(\s*[\&\/])?(.*)$"

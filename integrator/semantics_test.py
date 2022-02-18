@@ -528,7 +528,7 @@ def test_add_count():
     for r in rows:
         counts = sem.add_count(r, counts)
     assert counts == {"om.": 2}
-    assert rows == [[""] * 5 + ["om.", "1"], [""] * 4 + ["1/1a1\u2082", "om.", "2"]]
+    assert rows == [[""] * 5 + ["om.", "1"], [""] * 4 + ["1/1a1{2}", "om.", "2"]]
 
     counts = {}
     rows = [["om."], ["om."], ["om."]]
