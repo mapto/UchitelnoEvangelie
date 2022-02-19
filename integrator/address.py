@@ -73,24 +73,23 @@ class Index:
         tcnt = _merge_counts(tcnt, m.group(9))
 
         end = None
-        if m.group(19):
-            e_ocnt = _merge_counts(ocnt, m.group(21))
-            e_tcnt = _merge_counts(tcnt, m.group(23))
+        if m.group(18):
+            e_ocnt = _merge_counts(ocnt, m.group(20))
+            e_tcnt = _merge_counts(tcnt, m.group(22))
 
             e_ch = ch
             e_alt = alt
             e_page = page
             e_col = col
-            e_row = int(m.group(19))
-            # e_var = m.group(18)
-            if m.group(18):
-                e_col = m.group(18)
-                if m.group(17):
-                    e_page = int(m.group(17))
-                    if m.group(15):
-                        e_ch = int(m.group(15))
+            e_row = int(m.group(18))
+            if m.group(17):
+                e_col = m.group(17)
+                if m.group(16):
+                    e_page = int(m.group(16))
+                    if m.group(14):
+                        e_ch = int(m.group(14))
                     e_alt = (
-                        (bool(m.group(16)) if e_ch % 2 else not m.group(16))
+                        (bool(m.group(15)) if e_ch % 2 else not m.group(15))
                         if e_ch < 3
                         else False
                     )

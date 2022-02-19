@@ -204,6 +204,10 @@ def merge(
         if not row[IDX_COL] and any(row):
             row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
 
+        # in lemmas
+        row = _expand_special_char(orig, row)
+        row = _expand_special_char(trans, row)
+
         if cur_idx != row[IDX_COL]:
             cur_idx = row[IDX_COL]
             row_owords = {}
@@ -216,10 +220,6 @@ def merge(
         row_owords_var = orig.other().add_count(row, row_owords_var)
         row_twords = trans.add_count(row, row_twords)
         row_twords_var = trans.other().add_count(row, row_twords_var)
-
-        # in lemmas
-        row = _expand_special_char(orig, row)
-        row = _expand_special_char(trans, row)
 
         if _grouped(row, orig) or _grouped(row, trans):
             group.append(row)

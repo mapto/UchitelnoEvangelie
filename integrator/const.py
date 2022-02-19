@@ -28,11 +28,8 @@ DEFAULT_GR = "C"  # for Cramer
 default_sources = {"gr": DEFAULT_GR, "sl": DEFAULT_SL}
 
 # built with regex101.com
-# TODO: remove var from address. This is currently implemented with variant letter
 idx_regex = (
-    r"(\d{1,2})\/(W)?(\d{1,3})([a-d])(\d{1,2})(\{(\d)\})?(\{(\d)\})?(var)?"
-    + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([a-d]))?(\d{1,2})(\{(\d)\})?(\{(\d)\})?(var)?)?"
+    r"(\d{1,2})\/(W)?(\d{1,3})([a-d])(\d{1,2})(\{(\d)\})?(\{(\d)\})?"
+    + r"(-((((\d{1,2})\/)?(W)?(\d{1,3}))?([a-d]))?(\d{1,2})(\{(\d)\})?(\{(\d)\})?)?"
 )
-# word_regex = r"^([^A-Z]+)([2-9α-η])?"
-# multiword_regex = r"^([^A-Z2-9α-η\s]+)([2-9α-η])?\s(([A-Z][a-z]?)+)(.*)$"
 multilemma_regex = r"^([^A-Z\+]+)(\+\s\w+\.)?(([A-Z][a-z]?)+)?(\s*[\&\/])?(.*)$"
