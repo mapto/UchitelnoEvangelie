@@ -60,8 +60,11 @@ def _generate_index(par, u: Usage) -> None:
         _generate_text(par, str(u.var.by_lang("sl")), superscript=True)
     if sl_cnt > 1:
         _generate_text(par, subscript(sl_cnt, "sl"), subscript=True)
-    if not other_before_own and u.var and u.var.has_lang("gr"):
-        _generate_text(par, str(u.var.by_lang("gr")), superscript=True)
+    elif u.var and u.var.has_lang("sl") and u.var.has_lang("gr"):
+        _generate_text(par, "-", superscript=True)
+    if not other_before_own:
+        if u.var and u.var.has_lang("gr"):
+            _generate_text(par, str(u.var.by_lang("gr")), superscript=True)
         if gr_cnt > 1:
             _generate_text(par, subscript(gr_cnt, "gr"), subscript=True)
 
