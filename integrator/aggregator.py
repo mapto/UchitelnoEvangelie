@@ -100,7 +100,7 @@ def _expand_and_aggregate(
     assert trans  # for mypy
 
     if int(row[orig.cnt_col]) > 1:
-        row[IDX_COL] += f"{{{row[orig.cnt_col]}}}"
+        row[IDX_COL] += f"[{row[orig.cnt_col]}]"
     if int(row[trans.cnt_col]) > 1:
         row[IDX_COL] += f"{{{row[trans.cnt_col]}}}"
 

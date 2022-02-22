@@ -4,20 +4,18 @@ from dataclasses import dataclass
 import re
 
 from const import BRACE_OPEN
-from regex import idx_regex
+from regex import address_regex
 
 
 def _cnt_str(idx: "Index") -> str:
-    # TODO: distinguish between cases when index comes from original or translation
-    # The difficulty in this problem is actually in merger::merge/semantics::add_count
-    p1 = f"{{{idx.ocnt}}}" if idx.ocnt > 1 else ""
-    # p2 =  f"[{idx.tcnt}]" if idx.tcnt > 1 else ""
+    p1 = f"[{idx.ocnt}]" if idx.ocnt > 1 else ""
     p2 = f"{{{idx.tcnt}}}" if idx.tcnt > 1 else ""
     return p1 + p2
 
 
 def _merge_counts(pval: int, reval: Any) -> int:
-    # dirty: we don't know where counters could come from, so make sure they're not messed up
+    # We don't know if counters come from corresponding columns or index postfix.
+    # TODO: Make sure to investigate and fix this, so they're not messed up
     result = int(reval) if reval else None
     assert result == None or pval == 1 or result == pval
     if result:
@@ -60,7 +58,7 @@ class Index:
         Regex using: https://regex101.com/
         """
         # TODO: derive regex from parts
-        m = re.search(idx_regex, value)
+        m = re.search(address_regex, value)
         assert m
         # print(m.groups())
         ch = int(m.group(1)) if m.group(1) else 1

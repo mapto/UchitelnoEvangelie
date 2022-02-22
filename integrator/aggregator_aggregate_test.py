@@ -1268,7 +1268,6 @@ def test_velichanie():
                                             page=21,
                                             col="a",
                                             row=19,
-                                            ocnt=2,
                                             tcnt=2,
                                             word="невел\ue205\ue20d\ue205\ue201 WGH",
                                         ),

@@ -6,12 +6,12 @@ def test_index_unpack():
     assert str(Index.unpack("1/6c4")) == "1/6c4"
     assert (
         str(Index.unpack("1/6c4", ocnt=3))
-        == "1/6c4{3}"
-        == str(Index.unpack("1/6c4{3}"))
+        == "1/6c4[3]"
+        == str(Index.unpack("1/6c4[3]"))
     )
 
     # DIRTY:
-    assert str(Index.unpack("1/6c4", ocnt=3, tcnt=2)) == "1/6c4{3}{2}"
+    assert str(Index.unpack("1/6c4", ocnt=3, tcnt=2)) == "1/6c4[3]{2}"
     assert "1/6c4{3}" == str(Index.unpack("1/6c4", tcnt=3))
 
     assert str(Index.unpack("1/6c4-8")) == "1/6c4-8"
