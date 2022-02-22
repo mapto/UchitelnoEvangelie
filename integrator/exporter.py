@@ -42,12 +42,23 @@ def _generate_index(par, u: Usage) -> None:
     if u.idx.tcnt != 1:
         s = s[:-3]
     _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
-    if u.var:
-        _generate_text(par, str(u.var), superscript=True)
-    if u.idx.ocnt > 1:
-        _generate_text(par, subscript(u.idx.ocnt, u.lang), subscript=True)
-    if u.idx.tcnt > 1:
-        _generate_text(par, subscript(u.idx.tcnt, other_lang[u.lang]), subscript=True)
+
+    sl_cnt = u.idx.ocnt if u.lang == "sl" else u.idx.tcnt
+    gr_cnt = u.idx.tcnt if u.lang == "sl" else u.idx.ocnt
+
+    other_before_own = False
+    if u.var and u.var.has_lang("sl"):
+        if not u.var.has_lang("gr"):
+            if gr_cnt > 1:
+                _generate_text(par, subscript(gr_cnt, "gr"), subscript=True)
+            other_before_own = True
+        _generate_text(par, str(u.var.by_lang("sl")), superscript=True)
+    if sl_cnt > 1:
+        _generate_text(par, subscript(sl_cnt, "sl"), subscript=True)
+    if not other_before_own and u.var and u.var.has_lang("gr"):
+        _generate_text(par, str(u.var.by_lang("gr")), superscript=True)
+        if gr_cnt > 1:
+            _generate_text(par, subscript(gr_cnt, "gr"), subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:
@@ -60,6 +71,8 @@ def _generate_usage(par, u: Usage) -> None:
         _generate_text(par, " ")
         _generate_text(par, u.orig_alt.main_word, fonts[u.lang])
         _generate_text(par, f" {main_source(u.lang, u.idx.alt)}")
+        if u.orig_alt.main_cnt > 1:
+            _generate_text(par, subscript(u.orig_alt.main_cnt, u.lang), subscript=True)
 
     if u.orig_alt.var_words:
         _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_words)
@@ -69,6 +82,10 @@ def _generate_usage(par, u: Usage) -> None:
         _generate_text(par, " ")
         _generate_text(par, u.trans_alt.main_word, fonts[other_lang[u.lang]])
         _generate_text(par, f" {main_source(other_lang[u.lang], u.idx.alt)}")
+        if u.trans_alt.main_cnt > 1:
+            _generate_text(
+                par, subscript(u.trans_alt.main_cnt, other_lang[u.lang]), subscript=True
+            )
 
     if u.trans_alt.var_words:
         _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_words)

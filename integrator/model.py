@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS
+from const import var_sources
 
 from util import base_word
 
@@ -92,6 +93,7 @@ class Source:
         return hash(self._sort_vars())
 
     def __iter__(self):
+        # TODO: Iter by source, not letter: difference is multiletter sources
         return iter(self.src)
 
     def __contains__(self, other) -> bool:
@@ -139,6 +141,39 @@ class Source:
             if Source(str(self)) in Source(str(i)):
                 return i
         return None
+
+    def has_lang(self, lang: str) -> bool:
+        """
+        >>> Source("WPb").has_lang("sl")
+        True
+        >>> Source("WPb").has_lang("gr")
+        True
+        >>> Source("WGH").has_lang("sl")
+        True
+        >>> Source("WGH").has_lang("gr")
+        False
+        >>> Source("MPb").has_lang("sl")
+        False
+        >>> Source("MPb").has_lang("gr")
+        True
+        """
+        for s in self:
+            if Source(s).inside(var_sources[lang]):
+                return True
+        return False
+
+    def by_lang(self, lang: str) -> "Source":
+        """
+        >>> Source("WPb").by_lang("sl")
+        Source('W')
+        >>> Source("MPb").by_lang("gr")
+        Source('MPb')
+        """
+        result = ""
+        for s in self:
+            if Source(s).inside(var_sources[lang]):
+                result += s
+        return Source(result)
 
 
 @dataclass(frozen=True)

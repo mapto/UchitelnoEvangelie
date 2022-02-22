@@ -24,7 +24,7 @@ MAIN_GR = ""  # "C" for Cramer
 VAR_GR = "BCMPaPbPc"  # for Paris x
 DEFAULT_GR = "C"  # for Cramer
 
-# var_sources = {"gr": VAR_GR, "sl": VAR_SL}
+var_sources = {"gr": VAR_GR, "sl": VAR_SL}
 default_sources = {"gr": DEFAULT_GR, "sl": DEFAULT_SL}
 
 # built with regex101.com

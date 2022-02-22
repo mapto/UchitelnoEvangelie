@@ -3,7 +3,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from const import STYLE_COL
 
 from semantics import MainLangSemantics, VarLangSemantics
-from aggregator import present, _agg_lemma
+from aggregator import present, _expand_and_aggregate
 
 
 def test_present():
@@ -92,10 +92,10 @@ def test__agg_lemma():
     dummy_sem = VarLangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20])
     d = SortedDict()
 
-    d = _agg_lemma(row, None, dummy_sem, d)
+    d = _expand_and_aggregate(row, None, dummy_sem, d)
     assert len(d) == 0
 
-    d = _agg_lemma(row, dummy_sem, None, d)
+    d = _expand_and_aggregate(row, dummy_sem, None, d)
     assert len(d) == 0
 
     sl_sem = MainLangSemantics(

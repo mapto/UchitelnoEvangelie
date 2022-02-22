@@ -1,4 +1,5 @@
 from typing import List
+from const import STYLE_COL
 
 from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
@@ -296,6 +297,30 @@ def test_merge_repeated_om():
         + ["om."] * 2
         + [""] * 14,
     ]
+    res = merge(rows, sl_sem, gr_sem)
+    assert res == [
+        ["om. WH", "om."]
+        + [""] * 2
+        + ["1/7c6", "аще", "аще \ue205 не", "аще"]
+        + [""] * 3
+        + ["om."] * 2
+        + [""] * 14
+        + ["1"] * 4,
+        [""] * 4
+        + ["1/7c6", "не", "аще \ue205 не", "не"]
+        + [""] * 3
+        + ["οὐ", "οὐ"]
+        + [""] * 14
+        + ["1"] * 4,
+        ["om. WH", "om."]
+        + [""] * 2
+        + ["1/7c6", "\ue205", "аще \ue205 не", "\ue205 conj."]
+        + [""] * 3
+        + ["om."] * 2
+        + [""] * 14
+        + ["1", "2", "2", "1"],
+    ]
+
     res = merge(rows, sl_sem.var, gr_sem)
     assert res == [
         ["om. WH", "om."]
@@ -318,11 +343,11 @@ def test_merge_repeated_om():
         + ["1"] * 4,
         ["om. WH", "om."]
         + [""] * 2
-        + ["1/7c6{2}", "\ue205", "аще \ue205 не", "\ue205 conj."]
+        + ["1/7c6", "\ue205", "аще \ue205 не", "\ue205 conj."]
         + [""] * 3
         + ["om.", "om."]
         + [""] * 14
-        + ["2", "1"] * 2,
+        + ["1", "2", "2", "1"],
     ]
 
 
@@ -450,7 +475,13 @@ def test_merge_repeated_velichanie():
         + ["ἄτυφον", "ἄτυφος"]
         + [""] * 14,
     ]
-    res = merge([list(rows[0]), list(rows[1])], gr_sem, sl_sem.var)
+
+    r2 = [list(rows[0]), list(rows[1])]
+    res = merge(r2, sl_sem, gr_sem)
+    assert r2 == rows
+    assert sl_sem.cnt_col == STYLE_COL + 1
+    assert sl_sem.other().cnt_col == STYLE_COL + 2
+    assert gr_sem.cnt_col == STYLE_COL + 3
     assert res == [
         ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
         + [""] * 2
@@ -467,7 +498,7 @@ def test_merge_repeated_velichanie():
         ["невел\ue205\ue20d\ue205\ue201 WGH", "невел\ue205\ue20d\ue205\ue201"]
         + [""] * 2
         + [
-            "05/21a19{2}{2}",
+            "05/21a19",
             "невел\ue205\ue20dан\ue205\ue201",
             "тъкмо• нъ \ue205 не-",
             "невел\ue205\ue20dан\ue205\ue201",
@@ -475,33 +506,67 @@ def test_merge_repeated_velichanie():
         + [""] * 3
         + ["ἄτυφον", "ἄτυφος"]
         + [""] * 14
-        + ["2", "1", "1", "2"],
+        + ["2", "1"] * 2,
     ]
 
-    # res = merge([list(rows[0]), list(rows[1])], sl_sem.var, gr_sem)
-    # assert res == [
-    #     ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
-    #     + [""] * 2
-    #     + [
-    #         "05/21a19",
-    #         "невел\ue205\ue20dан\ue205\ue201",
-    #         "тъкмо• нъ \ue205 не-",
-    #         "невел\ue205\ue20dан\ue205\ue201",
-    #     ]
-    #     + [""] * 3
-    #     + ["ἄτυφον", "ἄτυφος"]
-    #     + [""] * 14
-    #     + ["1"] * 4,
-    #     ["невел\ue205\ue20d\ue205\ue201 WGH", "невел\ue205\ue20d\ue205\ue201"]
-    #     + [""] * 2
-    #     + [
-    #         "05/21a19₂₂",
-    #         "невел\ue205\ue20dан\ue205\ue201",
-    #         "тъкмо• нъ \ue205 не-",
-    #         "невел\ue205\ue20dан\ue205\ue201",
-    #     ]
-    #     + [""] * 3
-    #     + ["ἄτυφον", "ἄτυφος"]
-    #     + [""] * 14
-    #     + ["1", "2", "2", "1"],
-    # ]
+    res = merge(rows, gr_sem, sl_sem.var)
+    assert sl_sem.cnt_col == STYLE_COL + 1
+    assert sl_sem.other().cnt_col == STYLE_COL + 2
+    assert gr_sem.cnt_col == STYLE_COL + 3
+    assert res == [
+        ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["1"] * 4,
+        ["невел\ue205\ue20d\ue205\ue201 WGH", "невел\ue205\ue20d\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["2", "1"] * 2,
+    ]
+
+    res = merge([list(rows[0]), list(rows[1])], sl_sem.var, gr_sem)
+    assert sl_sem.cnt_col == STYLE_COL + 1
+    assert sl_sem.other().cnt_col == STYLE_COL + 2
+    assert gr_sem.cnt_col == STYLE_COL + 3
+    assert res == [
+        ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["1"] * 4,
+        ["невел\ue205\ue20d\ue205\ue201 WGH", "невел\ue205\ue20d\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["2", "1"] * 2,
+    ]

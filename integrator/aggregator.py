@@ -24,8 +24,8 @@ def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[Source, st
 
 def _agg_lemma(
     row: List[str],
-    orig: Optional[LangSemantics],
-    trans: Optional[LangSemantics],
+    orig: LangSemantics,
+    trans: LangSemantics,
     d: SortedDict,
     col: int = -1,
     olemma: str = "",
@@ -46,11 +46,6 @@ def _agg_lemma(
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
     """
-    if not present(row, orig) or not present(row, trans):
-        return d
-    assert orig  # for mypy
-    assert trans  # for mypy
-
     omultilemmas = {}
     tmultilemmas = {}
     if col == -1:  # autodetect/first
@@ -93,6 +88,32 @@ def _agg_lemma(
     return d
 
 
+def _expand_and_aggregate(
+    row: List[str],
+    orig: Optional[LangSemantics],
+    trans: Optional[LangSemantics],
+    d: SortedDict,
+) -> SortedDict:
+    if not present(row, orig) or not present(row, trans):
+        return d
+    assert orig  # for mypy
+    assert trans  # for mypy
+
+    if int(row[orig.cnt_col]) > 1:
+        row[IDX_COL] += f"{{{row[orig.cnt_col]}}}"
+    if int(row[trans.cnt_col]) > 1:
+        row[IDX_COL] += f"{{{row[trans.cnt_col]}}}"
+
+    result = _agg_lemma(row, orig, trans, d)
+
+    if int(row[trans.cnt_col]) > 1:
+        row[IDX_COL] = row[IDX_COL][:-3]
+    if int(row[orig.cnt_col]) > 1:
+        row[IDX_COL] = row[IDX_COL][:-3]
+
+    return result
+
+
 def aggregate(
     corpus: List[List[str]],
     orig: LangSemantics,
@@ -118,7 +139,7 @@ def aggregate(
         # if "μονογεν" in row[orig.lemmas[0]]:
         #    print(row)
 
-        result = _agg_lemma(row, orig, trans, result)
-        result = _agg_lemma(row, orig, trans.var, result)
+        _expand_and_aggregate(row, orig, trans, result)
+        _expand_and_aggregate(row, orig, trans.var, result)
 
     return result

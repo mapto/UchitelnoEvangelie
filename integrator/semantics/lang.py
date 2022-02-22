@@ -299,10 +299,6 @@ class MainLangSemantics(LangSemantics):
             return row_counts
         if row[self.word] in row_counts:
             row_counts[row[self.word]] += 1
-            # address is modified so that it is distinct from other occurences
-            # TODO: dirty: we don't know if number comes from original or translation
-            # This information is actually stored in cnt_col
-            row[IDX_COL] += f"{{{row_counts[row[self.word]]}}}"
             row[self.cnt_col] = str(row_counts[row[self.word]])
         else:
             row_counts[row[self.word]] = 1

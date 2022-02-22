@@ -215,7 +215,7 @@ def merge(
             row_twords = {}
             row_twords_var = {}
 
-        # based on word column expand it with count
+        # based on word column expand data with it with count in a column at the end
         row_owords = orig.add_count(row, row_owords)
         row_owords_var = orig.other().add_count(row, row_owords_var)
         row_twords = trans.add_count(row, row_twords)
