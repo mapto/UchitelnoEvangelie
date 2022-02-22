@@ -14,7 +14,7 @@ from alphabet import remap, reduce
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
 
-MAX_LEN = 65
+MAX_LEN = 100
 
 
 def chars(cells: List[List[str]]) -> Set:

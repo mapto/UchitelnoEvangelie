@@ -275,7 +275,15 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
             _generate_counts(par, next_d, False)
             _generate_text(par, ")")
 
-        any_of_any = any_grandchild(next_d)
+        try:
+            any_of_any = any_grandchild(next_d)
+        except NotImplementedError as nie:
+            print("Грешка!")
+            print(nie)
+            print(d)
+            print(lang)
+            input("Натиснете Enter, за да приключите изпълнението.")
+            exit(1)
         if type(any_of_any) is SortedSet:  # bottom of structure
             _generate_usage_line(lang, next_d, doc)
         else:

@@ -87,7 +87,7 @@ def test_present():
     assert present(row, gr_sem.var)
 
 
-def test__agg_lemma():
+def test_expand_and_aggregate():
     row = [""] * STYLE_COL
     dummy_sem = VarLangSemantics(lang="sl_var", word=0, lemmas=[1, 2, 19, 20])
     d = SortedDict()
