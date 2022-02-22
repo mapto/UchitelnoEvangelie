@@ -3,7 +3,8 @@ from dataclasses import dataclass
 
 import re
 
-from const import BRACE_OPEN, idx_regex
+from const import BRACE_OPEN
+from regex import idx_regex
 
 
 def _cnt_str(idx: "Index") -> str:

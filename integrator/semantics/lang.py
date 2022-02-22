@@ -8,11 +8,10 @@ import re
 
 from const import IDX_COL, STYLE_COL
 from const import EMPTY_CH, MISSING_CH
-from const import BRACE_CLOSE, BRACE_OPEN
 from const import VAR_SEP
 from const import default_sources
-from const import multilemma_regex
 
+from regex import multiword_regex, multilemma_regex
 from util import base_word, collect
 from address import Index
 from model import Alternative, Path, Source, Usage
@@ -133,9 +132,6 @@ class LangSemantics:
         self, row: List[str], my_var: Source, lidx: int = 0
     ) -> Alternative:
         """Get alternative lemmas"""
-        raise NotImplementedError("abstract method")
-
-    def key(self, text: str) -> str:
         raise NotImplementedError("abstract method")
 
     def build_keys(self, row: List[str]) -> List[str]:
@@ -265,9 +261,6 @@ class MainLangSemantics(LangSemantics):
         }
         return Alternative("", alt_lemmas, "", alt_words)
 
-    def key(self, text: str) -> str:
-        return text
-
     def build_keys(self, row: List[str]) -> List[str]:
         if present(row, self) and self.word != None and bool(row[self.word]):
             return [base_word(row[self.word])]
@@ -382,25 +375,18 @@ class VarLangSemantics(LangSemantics):
             int(row[self.other().cnt_col]),
         )
 
-    def key(self, text: str) -> str:
-        m = re.search(r"^([^A-Z]+)([A-Z]+)$", text.strip())
-        if m:
-            text = m.group(1).strip()
-        return f" {{{text}}}"
-
     def build_keys(self, row: List[str]) -> List[str]:
         if present(row, self) and self.word != None and bool(row[self.word]):
             return [base_word(w) for w in self.multiword(row).values()]
         return [""]
 
     def multiword(self, row: List[str]) -> Dict[Source, str]:
-        regex = r"^([^A-Z]+)(([A-Z][a-z]?)+)(.*)$"
         result = {}
-        m = re.search(regex, row[self.word].strip())
+        m = re.search(multiword_regex, row[self.word].strip())
         while m:
             result[Source(m.group(2))] = m.group(1).strip()
             rest = m.group(4).strip()
-            m = re.search(regex, rest)
+            m = re.search(multiword_regex, rest)
         if not result:
             return {Source(default_sources[self.lang]): row[self.word].strip()}
             # return {'': row[self.word].strip()}
