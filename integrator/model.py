@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS
-from const import var_sources
+from const import VAR_SOURCES
 
 from util import base_word
 
@@ -158,7 +158,7 @@ class Source:
         True
         """
         for s in self:
-            if Source(s).inside(var_sources[lang]):
+            if Source(s).inside(VAR_SOURCES[lang]):
                 return True
         return False
 
@@ -171,7 +171,7 @@ class Source:
         """
         result = ""
         for s in self:
-            if Source(s).inside(var_sources[lang]):
+            if Source(s).inside(VAR_SOURCES[lang]):
                 result += s
         return Source(result)
 

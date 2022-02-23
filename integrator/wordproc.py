@@ -1,16 +1,17 @@
 """Shared utilities for the word processor export"""
 
 from typing import Optional, Union
-
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from docx.shared import RGBColor, Pt, Cm  # type: ignore
 
+from config import FROM_LANG, TO_LANG
+
 GENERIC_FONT = "Times New Roman"
 
-other_lang = {"gr": "sl", "sl": "gr"}
-fonts = {"gr": GENERIC_FONT, "sl": "CyrillicaOchrid10U"}
-colors = {"gr": RGBColor(0x55, 0x00, 0x00), "sl": RGBColor(0x00, 0x00, 0x55)}
+other_lang = {TO_LANG: FROM_LANG, FROM_LANG: TO_LANG}
+fonts = {TO_LANG: GENERIC_FONT, FROM_LANG: "CyrillicaOchrid10U"}
+colors = {TO_LANG: RGBColor(0x55, 0x00, 0x00), FROM_LANG: RGBColor(0x00, 0x00, 0x55)}
 
 
 def _generate_text(

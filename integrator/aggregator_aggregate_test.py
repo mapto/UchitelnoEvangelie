@@ -1,6 +1,9 @@
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
+from const import FROM_LANG, TO_LANG
+from config import FROM_LANG
 from const import IDX_COL, STYLE_COL
+
 from address import Index
 from model import Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
@@ -10,17 +13,17 @@ from aggregator import aggregate
 def test_monogenis():
     # simplified semantics
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7],
-        VarLangSemantics("sl", 0, [1], cnt_col=STYLE_COL + 2),
+        VarLangSemantics(FROM_LANG, 0, [1], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr",
+        TO_LANG,
         11,
         [12],
-        VarLangSemantics("gr", 16, [17, 18], cnt_col=STYLE_COL + 4),
+        VarLangSemantics(TO_LANG, 16, [17, 18], cnt_col=STYLE_COL + 4),
         cnt_col=STYLE_COL + 3,
     )
 
@@ -58,7 +61,7 @@ def test_monogenis():
                                 row=25,
                                 word="\ue201д\ue205но\ue20dедоу",
                             ),
-                            lang="sl",
+                            lang=FROM_LANG,
                             orig_alt=Alternative(
                                 var_lemmas={
                                     Source("H"): "\ue201д\ue205нородъ",
@@ -92,7 +95,7 @@ def test_monogenis():
                                 row=25,
                                 word="\ue201д\ue205нородоу H",
                             ),
-                            lang="sl",
+                            lang=FROM_LANG,
                             var=Source("H"),
                             orig_alt=Alternative(
                                 main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -118,7 +121,7 @@ def test_monogenis():
                                 row=25,
                                 word="\ue205но\ue20dедаго G",
                             ),
-                            lang="sl",
+                            lang=FROM_LANG,
                             var=Source("G"),
                             orig_alt=Alternative(
                                 main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -135,17 +138,17 @@ def test_monogenis():
 
     # semantics change from September 2021
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7, 8, 9, 10],
-        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr",
+        TO_LANG,
         11,
         [12, 13, 14],
-        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
         cnt_col=STYLE_COL + 3,
     )
 
@@ -240,7 +243,7 @@ def test_monogenis():
                                         italic=True,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("H"),
                                     trans_alt=Alternative(
                                         main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -266,7 +269,7 @@ def test_monogenis():
                                         row=28,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                 )
                             ]
                         ),
@@ -283,7 +286,7 @@ def test_monogenis():
                                         italic=True,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source("H"): "\ue201д\ue205нородъ",
@@ -308,7 +311,7 @@ def test_monogenis():
                                         row=15,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("WH"),
                                     trans_alt=Alternative(
                                         main_lemma="\ue205но\ue20dѧдъ",
@@ -328,7 +331,7 @@ def test_monogenis():
                                         row=4,
                                         word="μονογενὴς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("WH"),
                                     trans_alt=Alternative(
                                         main_lemma="\ue205но\ue20dѧдъ ",
@@ -350,7 +353,7 @@ def test_monogenis():
                                         row=15,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source("WH"): "\ue201д\ue205но\ue20dѧдъ"
@@ -378,7 +381,7 @@ def test_monogenis():
                                         italic=True,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("G"),
                                     trans_alt=Alternative(
                                         main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -402,7 +405,7 @@ def test_monogenis():
                                         row=4,
                                         word="μονογενὴς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source("WH"): "\ue201д\ue205но\ue20dѧдъ"
@@ -426,17 +429,17 @@ def test_monogenis():
 
 def test_ipercliso():
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7, 8, 9, 10],
-        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr",
+        TO_LANG,
         11,
         [12, 13, 14],
-        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
         cnt_col=STYLE_COL + 3,
     )
 
@@ -486,7 +489,7 @@ def test_ipercliso():
                                         row=17,
                                         word="ὑπερκλύζων",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     orig_alt=Alternative(
                                         var_lemmas={Source("C"): "ὑπερβλύω"},
                                         var_words={Source("C"): ("ὑπερβλύζων C", 1)},
@@ -511,7 +514,7 @@ def test_ipercliso():
                                         row=17,
                                         word="ὑπερκλύσαι",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     orig_alt=Alternative(
                                         var_lemmas={Source("C"): "ὑπερβλύω"},
                                         var_words={Source("C"): ("ὑπερβλύσαι C", 1)},
@@ -543,7 +546,7 @@ def test_ipercliso():
                                         row=17,
                                         word="ὑπερβλύζων C",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("C"),
                                     orig_alt=Alternative(
                                         main_lemma="ὑπερκλύζω",
@@ -569,7 +572,7 @@ def test_ipercliso():
                                         row=17,
                                         word="ὑπερβλύσαι C",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("C"),
                                     orig_alt=Alternative(
                                         main_lemma="ὑπερκλύζω",
@@ -587,10 +590,10 @@ def test_ipercliso():
 
 def test_satvoriti():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     r1 = (
@@ -628,17 +631,17 @@ def test_satvoriti():
 
 def test_bozhii():
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7, 8, 9, 10],
-        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr",
+        TO_LANG,
         11,
         [12, 13, 14],
-        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
         cnt_col=STYLE_COL + 3,
     )
 
@@ -671,7 +674,7 @@ def test_bozhii():
                                             row=4,
                                             word="боꙁѣ",
                                         ),
-                                        lang="sl",
+                                        lang=FROM_LANG,
                                         orig_alt=Alternative(
                                             var_lemmas={
                                                 Source("WGH"): "бож\ue205\ue205"
@@ -716,7 +719,7 @@ def test_bozhii():
                                             row=4,
                                             word="б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
                                         ),
-                                        lang="sl",
+                                        lang=FROM_LANG,
                                         var=Source("WGH"),
                                         orig_alt=Alternative(
                                             main_lemma="богъ",
@@ -753,7 +756,7 @@ def test_bozhii():
                                         row=4,
                                         word="Θεοῦ",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="богъ",
@@ -803,7 +806,7 @@ def test_bozhii():
                                         ocnt=2,
                                         word="ἀκοῦσαι",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
                                         var_words={
@@ -826,7 +829,7 @@ def test_bozhii():
                                         row=5,
                                         word="ἀκοῦσαι",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
                                         var_words={
@@ -849,7 +852,7 @@ def test_bozhii():
                                         row=5,
                                         word="ἀκοῦσαι",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("GH"),
                                     trans_alt=Alternative(
                                         main_lemma="слꙑшат\ue205",
@@ -867,7 +870,7 @@ def test_bozhii():
                                         tcnt=2,
                                         word="ἀκοῦσαι",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("GH"),
                                     trans_alt=Alternative(
                                         main_lemma="послꙑшат\ue205",
@@ -905,7 +908,7 @@ def test_bozhii():
                                             row=5,
                                             word="оуслышат\ue205 GH",
                                         ),
-                                        lang="sl",
+                                        lang=FROM_LANG,
                                         var=Source("GH"),
                                         orig_alt=Alternative(
                                             main_lemma="слꙑшат\ue205",
@@ -923,7 +926,7 @@ def test_bozhii():
                                             tcnt=2,
                                             word="оуслышат\ue205 GH",
                                         ),
-                                        lang="sl",
+                                        lang=FROM_LANG,
                                         var=Source("GH"),
                                         orig_alt=Alternative(
                                             main_lemma="послꙑшат\ue205",
@@ -959,7 +962,7 @@ def test_bozhii():
                                             tcnt=2,
                                             word="послꙑшат\ue205",
                                         ),
-                                        lang="sl",
+                                        lang=FROM_LANG,
                                         orig_alt=Alternative(
                                             var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
                                             var_words={
@@ -990,7 +993,7 @@ def test_bozhii():
                                             row=5,
                                             word="слꙑшат\ue205",
                                         ),
-                                        lang="sl",
+                                        lang=FROM_LANG,
                                         orig_alt=Alternative(
                                             var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
                                             var_words={
@@ -1010,17 +1013,17 @@ def test_bozhii():
 
 def test_velichanie():
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7, 8, 9, 10],
-        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr",
+        TO_LANG,
         11,
         [12, 13, 14],
-        VarLangSemantics("gr", 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
         cnt_col=STYLE_COL + 3,
     )
 
@@ -1069,7 +1072,7 @@ def test_velichanie():
                                         row=19,
                                         word="ἄτυφον",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1091,7 +1094,7 @@ def test_velichanie():
                                         row=19,
                                         word="ἄτυφον",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source(
@@ -1117,7 +1120,7 @@ def test_velichanie():
                                         tcnt=2,
                                         word="ἄτυφον",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source(
@@ -1148,7 +1151,7 @@ def test_velichanie():
                                         ocnt=2,
                                         word="ἄτυφον",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1182,7 +1185,7 @@ def test_velichanie():
                                         row=19,
                                         word="ἄτυφον",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1205,7 +1208,7 @@ def test_velichanie():
                                         ocnt=2,
                                         word="ἄτυφον",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1240,7 +1243,7 @@ def test_velichanie():
                                             row=19,
                                             word="вел\ue205\ue20dан\ue205е WGH",
                                         ),
-                                        lang="sl",
+                                        lang=FROM_LANG,
                                         var=Source("WGH"),
                                         orig_alt=Alternative(
                                             main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1271,7 +1274,7 @@ def test_velichanie():
                                             tcnt=2,
                                             word="невел\ue205\ue20d\ue205\ue201 WGH",
                                         ),
-                                        lang="sl",
+                                        lang=FROM_LANG,
                                         var=Source("WGH"),
                                         orig_alt=Alternative(
                                             main_lemma="невел\ue205\ue20dан\ue205\ue201",

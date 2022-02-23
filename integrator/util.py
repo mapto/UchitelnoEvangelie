@@ -5,8 +5,12 @@ so to avoid circular references they cannot use it"""
 
 from typing import Dict, List, Set
 import unicodedata
-from const import EMPTY_CH, MAIN_SL, ALT_SL, MAIN_GR, SPECIAL_CHARS, V_LEMMA_SEP
 from sortedcontainers import SortedSet  # type: ignore
+
+from config import FROM_LANG, TO_LANG
+from config import MAIN_SL, MAIN_GR
+from config import ALT_SL
+from const import SPECIAL_CHARS, V_LEMMA_SEP
 
 from alphabet import remap, reduce
 
@@ -161,9 +165,9 @@ def collect(group: List[List[str]], col: int) -> List[str]:
 
 
 def main_source(lang: str, alt: bool):
-    if lang == "gr":
+    if lang == TO_LANG:
         return MAIN_GR
-    assert lang == "sl"
+    assert lang == FROM_LANG
     if alt:
         return ALT_SL
     return MAIN_SL
@@ -172,6 +176,6 @@ def main_source(lang: str, alt: bool):
 def subscript(cnt: int, lang: str) -> str:
     if cnt == 1:
         return ""
-    if lang == "sl":
+    if lang == FROM_LANG:
         return chr(ord("0") + cnt)
     return chr(ord("α") + cnt - 1)

@@ -1,5 +1,6 @@
 from sortedcontainers import SortedDict, SortedSet, SortedSet  # type: ignore
 
+from config import TO_LANG
 from address import Index
 from model import Usage, Alternative
 from generator import _get_dict_counts
@@ -22,7 +23,7 @@ def test__get_dict_counts_ipercliso():
                                         row=17,
                                         word="ὑπερβλύζων",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var="C",
                                     orig_alt=Alternative("ὑπερκλύζω"),
                                 )
@@ -41,7 +42,7 @@ def test__get_dict_counts_ipercliso():
                                         row=17,
                                         word="ὑπερβλύσαι",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var="C",
                                     orig_alt=Alternative("ὑπερκλύζω"),
                                 )
@@ -64,7 +65,7 @@ def test__get_dict_counts_ipercliso():
                                         row=17,
                                         word="ὑπερκλύζων",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     orig_alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
                                 )
                             ]
@@ -82,7 +83,7 @@ def test__get_dict_counts_ipercliso():
                                         row=17,
                                         word="ὑπερκλύσαι",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     orig_alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
                                 )
                             ]
@@ -114,7 +115,7 @@ def test__get_dict_counts_monogenis():
                                         row=25,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var="H",
                                     trans_alt=Alternative(
                                         "\ue201д\ue205но\ue20dѧдъ",
@@ -136,7 +137,7 @@ def test__get_dict_counts_monogenis():
                                         row=28,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                 )
                             ]
                         ),
@@ -153,7 +154,7 @@ def test__get_dict_counts_monogenis():
                                         italic=True,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             "H": "\ue201д\ue205нородъ",
@@ -174,7 +175,7 @@ def test__get_dict_counts_monogenis():
                                         row=15,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var="WH",
                                     trans_alt=Alternative(
                                         "\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}
@@ -193,7 +194,7 @@ def test__get_dict_counts_monogenis():
                                         row=4,
                                         word="μονογενὴς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var="WH",
                                     trans_alt=Alternative(
                                         "\ue205но\ue20dѧдъ ",
@@ -215,7 +216,7 @@ def test__get_dict_counts_monogenis():
                                         row=15,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var="G",
                                     trans_alt=Alternative(
                                         var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
@@ -234,7 +235,7 @@ def test__get_dict_counts_monogenis():
                                         row=15,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         {"WH": "\ue201д\ue205но\ue20dѧдъ"}
                                     ),
@@ -252,7 +253,7 @@ def test__get_dict_counts_monogenis():
                                         row=25,
                                         word="μονογενοῦς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     var="G",
                                     trans_alt=Alternative(
                                         "\ue201д\ue205но\ue20dѧдъ",
@@ -272,7 +273,7 @@ def test__get_dict_counts_monogenis():
                                         row=4,
                                         word="μονογενὴς",
                                     ),
-                                    lang="gr",
+                                    lang=TO_LANG,
                                     trans_alt=Alternative(
                                         var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
                                     ),

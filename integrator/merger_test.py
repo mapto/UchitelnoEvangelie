@@ -1,6 +1,7 @@
 from typing import List
 from const import STYLE_COL
 
+from config import FROM_LANG, TO_LANG
 from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 from merger import merge, _grouped, _group_variants
@@ -8,10 +9,10 @@ from merger import merge, _grouped, _group_variants
 
 def test_grouped():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     row = (
@@ -69,10 +70,10 @@ def test_grouped():
 
 def test_group_variants():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     g1 = (
@@ -105,10 +106,10 @@ def test_group_variants():
 
 def test_merge():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     r1 = (
@@ -225,10 +226,10 @@ def test_merge():
 
 def test_merge_special():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     row = (
@@ -272,10 +273,10 @@ def test_merge_special():
 
 def test_merge_repeated_om():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     rows = [
@@ -353,10 +354,10 @@ def test_merge_repeated_om():
 
 def test_merge_repeated_kai():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     rows = [
@@ -445,10 +446,10 @@ def test_merge_repeated_kai():
 
 def test_merge_repeated_velichanie():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     rows = [

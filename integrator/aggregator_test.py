@@ -1,5 +1,6 @@
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
+from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 
 from semantics import MainLangSemantics, VarLangSemantics
@@ -7,7 +8,7 @@ from aggregator import present, _expand_and_aggregate
 
 
 def test_present():
-    sem = VarLangSemantics(lang="sl", word=0, lemmas=[1, 2, 20, 21])
+    sem = VarLangSemantics(lang=FROM_LANG, word=0, lemmas=[1, 2, 20, 21])
     row = (
         [
             "вѣроу GH",
@@ -36,7 +37,7 @@ def test_present():
     row = ["\ue205моуть GH"] + ([""] * 3) + ["1/7b19"] + ([""] * 20) + ["hl00"]
     assert not present(row, sem)
 
-    sem = VarLangSemantics(lang="gr", word=16, lemmas=[17, 18, 19])
+    sem = VarLangSemantics(lang=TO_LANG, word=16, lemmas=[17, 18, 19])
     row = (
         [
             "вѣроу GH",
@@ -76,10 +77,10 @@ def test_present():
         + ([""] * 9)
     )
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
     assert not present(row, sl_sem.var)
     assert present(row, sl_sem)
@@ -99,8 +100,8 @@ def test_expand_and_aggregate():
     assert len(d) == 0
 
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )

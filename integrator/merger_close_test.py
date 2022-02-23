@@ -1,15 +1,16 @@
 from typing import List
 
+from config import FROM_LANG, TO_LANG
 from semantics import MainLangSemantics, VarLangSemantics
 from merger import _close, _grouped, _group_variants
 
 
 def test_close():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
     group = [
         ["все WH", "вьсь"]
@@ -372,10 +373,10 @@ def test_close():
 
 def test_tyam_li():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     group = [
@@ -541,10 +542,10 @@ def test_tyam_li():
 
 def test_biti():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     g1 = (
@@ -658,10 +659,10 @@ def test_biti():
 
 def test_vetuhu():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     r1 = (
@@ -709,10 +710,10 @@ def test_vetuhu():
 
 def test_vidit():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     r1 = (

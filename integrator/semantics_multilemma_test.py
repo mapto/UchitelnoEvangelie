@@ -2,11 +2,16 @@ from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 
 
+from config import FROM_LANG, TO_LANG
+
+
 def test_LangSemantics_multilemma():
     # old semantics
-    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    sl_sem = MainLangSemantics(
+        FROM_LANG, 4, [6, 7, 8, 9], VarLangSemantics(FROM_LANG, 0, [1, 2])
+    )
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+        TO_LANG, 10, [11, 12, 13], VarLangSemantics(TO_LANG, 15, [16, 17])
     )
 
     row = (
@@ -45,7 +50,9 @@ def test_LangSemantics_multilemma():
     result = gr_sem.var.multilemma(row)
     assert result == {"C": "ἐγώ"}
 
-    dummy_sem = MainLangSemantics("sl", 2, [3], VarLangSemantics("sl", 0, [1]))
+    dummy_sem = MainLangSemantics(
+        FROM_LANG, 2, [3], VarLangSemantics(FROM_LANG, 0, [1])
+    )
 
     result = dummy_sem.var.multilemma(
         ["ноедаго G  днородоу H", "днородъ H & ноѧдъ G", "", ""]
@@ -67,13 +74,13 @@ def test_LangSemantics_multilemma():
     )
     assert result == {Source("WH"): "дноѧдъ"}
 
-    dummy_sem2 = VarLangSemantics("gr", 0, [1])
+    dummy_sem2 = VarLangSemantics(TO_LANG, 0, [1])
     result = dummy_sem2.multilemma(["με C", "ἐγώ"])
     assert result == {"C": "ἐγώ"}
 
     # semantics update from September 2021
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
 
     row = (
@@ -116,9 +123,11 @@ def test_LangSemantics_multilemma():
 
 def test_sub():
     # old semantics
-    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    sl_sem = MainLangSemantics(
+        FROM_LANG, 4, [6, 7, 8, 9], VarLangSemantics(FROM_LANG, 0, [1, 2])
+    )
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+        TO_LANG, 10, [11, 12, 13], VarLangSemantics(TO_LANG, 15, [16, 17])
     )
     row = (
         ["вь WGH", "въ", "въ + Loc.", "1/7d1", "оу", "оу насъ", "ѹ"]
@@ -135,10 +144,10 @@ def test_sub():
     assert result == {Source("WGH"): "въ + Loc."}
 
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     row = (
@@ -168,7 +177,7 @@ def test_paris():
     """Greek opies held in Paris library are indicated by P?"""
     # old semantics, so that variants are in word, not lemma
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+        TO_LANG, 10, [11, 12, 13], VarLangSemantics(TO_LANG, 15, [16, 17])
     )
 
     row = (
@@ -203,7 +212,7 @@ def test_paris():
 
 def test_bozhii():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
 
     row = (

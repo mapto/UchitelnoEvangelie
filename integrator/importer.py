@@ -5,6 +5,7 @@ from typing import List, Dict, Optional
 from openpyxl import load_workbook  # type: ignore
 from openpyxl.styles import Font  # type: ignore
 
+from config import FROM_LANG, TO_LANG
 from const import IDX_COL, STYLE_COL
 
 from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
@@ -43,9 +44,11 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
 
 
 if __name__ == "__main__":
-    sl_sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    sl_sem = MainLangSemantics(
+        FROM_LANG, 4, [6, 7, 8, 9], VarLangSemantics(FROM_LANG, 0, [1, 2])
+    )
     gr_sem = MainLangSemantics(
-        "gr", 10, [11, 12, 13], VarLangSemantics("gr", 15, [16, 17])
+        TO_LANG, 10, [11, 12, 13], VarLangSemantics(TO_LANG, 15, [16, 17])
     )
     sem = TableSemantics(sl_sem, gr_sem)
 

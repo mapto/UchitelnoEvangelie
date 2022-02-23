@@ -1,13 +1,14 @@
+from config import FROM_LANG, TO_LANG
 from util import collect, ord_word, subscript
 from semantics import MainLangSemantics, VarLangSemantics
 
 
 def test_collect_words():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     r1 = (
@@ -56,7 +57,7 @@ def test_ord_word():
 
 
 def test_subscript():
-    assert subscript(1, "sl") == ""
-    assert subscript(1, "gr") == ""
-    assert subscript(2, "sl") == "2"
-    assert subscript(2, "gr") == "β"
+    assert subscript(1, FROM_LANG) == ""
+    assert subscript(1, TO_LANG) == ""
+    assert subscript(2, FROM_LANG) == "2"
+    assert subscript(2, TO_LANG) == "β"

@@ -1,5 +1,6 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
+from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 from model import Alternative, Index, Path, Source, Usage
 from semantics import MainLangSemantics, VarLangSemantics
@@ -7,18 +8,22 @@ from semantics import _is_variant_lemma, _add_usage
 
 
 def test_post_init():
-    sem = MainLangSemantics("sl", 4, [6, 7, 8, 9], VarLangSemantics("sl", 0, [1, 2]))
+    sem = MainLangSemantics(
+        FROM_LANG, 4, [6, 7, 8, 9], VarLangSemantics(FROM_LANG, 0, [1, 2])
+    )
     assert len(sem.lemmas) == len(sem.var.lemmas) == 4
-    sem = MainLangSemantics("sl", 4, [6, 7], VarLangSemantics("sl", 0, [1, 2, 8, 9]))
+    sem = MainLangSemantics(
+        FROM_LANG, 4, [6, 7], VarLangSemantics(FROM_LANG, 0, [1, 2, 8, 9])
+    )
     assert len(sem.lemmas) == len(sem.var.lemmas) == 4
 
 
 def test__is_variant_lemma():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     row = (
@@ -72,10 +77,10 @@ def test__is_variant_lemma():
 
 def test_is_variant_lemma_bozhii():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
     row = (
         ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
@@ -90,10 +95,10 @@ def test_is_variant_lemma_bozhii():
 
 def test_build_paths():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     res = sl_sem.build_paths([""] * 7 + ["боудеть", "бꙑт\ue205 ", "", "gram."])
@@ -187,10 +192,10 @@ def test_build_paths():
 
 def test_build_paths_special():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     row = (
@@ -234,7 +239,7 @@ def test_add_usage():
                 row=25,
                 word="μονογενοῦς",
             ),
-            lang="gr",
+            lang=TO_LANG,
             var="G",
             trans_alt=Alternative(
                 main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -250,7 +255,7 @@ def test_add_usage():
                 row=4,
                 word="μονογενὴς",
             ),
-            lang="gr",
+            lang=TO_LANG,
             trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
         ),
         Usage(
@@ -262,7 +267,7 @@ def test_add_usage():
                 row=15,
                 word="μονογενοῦς",
             ),
-            lang="gr",
+            lang=TO_LANG,
             trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
         ),
         Usage(
@@ -274,7 +279,7 @@ def test_add_usage():
                 row=25,
                 word="μονογενοῦς",
             ),
-            lang="gr",
+            lang=TO_LANG,
             var="H",
             trans_alt=Alternative(
                 main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -290,7 +295,7 @@ def test_add_usage():
                 row=28,
                 word="μονογενοῦς",
             ),
-            lang="gr",
+            lang=TO_LANG,
         ),
         Usage(
             idx=Index(
@@ -301,7 +306,7 @@ def test_add_usage():
                 row=25,
                 word="μονογενοῦς",
             ),
-            lang="gr",
+            lang=TO_LANG,
             trans_alt=Alternative(
                 var_lemmas={
                     "H": "\ue201д\ue205нородъ",
@@ -318,7 +323,7 @@ def test_add_usage():
                 row=4,
                 word="μονογενὴς",
             ),
-            lang="gr",
+            lang=TO_LANG,
             var="WH",
             trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
         ),
@@ -331,7 +336,7 @@ def test_add_usage():
                 row=15,
                 word="μονογενοῦς",
             ),
-            lang="gr",
+            lang=TO_LANG,
             var="WH",
             trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
         ),
@@ -354,7 +359,7 @@ def test_add_usage():
                                 row=15,
                                 word="μονογενοῦς",
                             ),
-                            lang="gr",
+                            lang=TO_LANG,
                             trans_alt=Alternative(
                                 var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
                             ),
@@ -368,7 +373,7 @@ def test_add_usage():
                                 row=15,
                                 word="μονογενοῦς",
                             ),
-                            lang="gr",
+                            lang=TO_LANG,
                             var="WH",
                             trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
                         ),
@@ -381,7 +386,7 @@ def test_add_usage():
                                 row=4,
                                 word="μονογενὴς",
                             ),
-                            lang="gr",
+                            lang=TO_LANG,
                             trans_alt=Alternative(
                                 var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
                             ),
@@ -395,7 +400,7 @@ def test_add_usage():
                                 row=4,
                                 word="μονογενὴς",
                             ),
-                            lang="gr",
+                            lang=TO_LANG,
                             var="WH",
                             trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
                         ),
@@ -408,7 +413,7 @@ def test_add_usage():
                                 row=25,
                                 word="μονογενοῦς",
                             ),
-                            lang="gr",
+                            lang=TO_LANG,
                             trans_alt=Alternative(
                                 var_lemmas={
                                     "H": "\ue201д\ue205нородъ",
@@ -425,7 +430,7 @@ def test_add_usage():
                                 row=28,
                                 word="μονογενοῦς",
                             ),
-                            lang="gr",
+                            lang=TO_LANG,
                         ),
                         Usage(
                             idx=Index(
@@ -436,7 +441,7 @@ def test_add_usage():
                                 row=25,
                                 word="μονογενοῦς",
                             ),
-                            lang="gr",
+                            lang=TO_LANG,
                             var="G",
                             trans_alt=Alternative(
                                 "\ue201д\ue205но\ue20dѧдъ",
@@ -452,7 +457,7 @@ def test_add_usage():
                                 row=25,
                                 word="μονογενοῦς",
                             ),
-                            lang="gr",
+                            lang=TO_LANG,
                             var="H",
                             trans_alt=Alternative(
                                 "\ue201д\ue205но\ue20dѧдъ",
@@ -468,10 +473,10 @@ def test_add_usage():
 
 def test_LangSemantics_compile_words_by_lemma():
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7, 8, 9, 10],
-        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 1),
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 1),
     )
     row = (
         ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
@@ -522,7 +527,7 @@ def test_LangSemantics_compile_words_by_lemma():
 
 
 def test_add_count():
-    sem = MainLangSemantics("sl", 5, [], VarLangSemantics("sl", 0, []))
+    sem = MainLangSemantics(FROM_LANG, 5, [], VarLangSemantics(FROM_LANG, 0, []))
     counts = {}
     rows = [[""] * 5 + ["om."], [""] * 4 + ["1/1a1", "om."]]
     for r in rows:

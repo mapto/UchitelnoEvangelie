@@ -1,3 +1,7 @@
+from config import FROM_LANG, TO_LANG
+from config import VAR_SL, VAR_GR
+from config import DEFAULT_SL, DEFAULT_GR
+
 IDX_COL = 4
 EXAMPLE_COL = 6
 STYLE_COL = 26  # at end of content columns
@@ -12,17 +16,8 @@ MISSING_CH = "ₓ"
 EMPTY_CH = "Ø"  # used when text is original, so no translation
 SPECIAL_CHARS = ["*", "≠", "≈"]
 
-BRACE_OPEN = {"sl": "[", "gr": "{"}
-BRACE_CLOSE = {"sl": "]", "gr": "}"}
+BRACE_OPEN = {FROM_LANG: "[", TO_LANG: "{"}
+BRACE_CLOSE = {FROM_LANG: "]", TO_LANG: "}"}
 
-# first letter is main variant
-MAIN_SL = "S"  # for Synodal
-ALT_SL = "W"  # for Wiener
-VAR_SL = "WGH"
-DEFAULT_SL = VAR_SL
-MAIN_GR = ""  # "C" for Cramer
-VAR_GR = "BCMPaPbPc"  # for Paris x
-DEFAULT_GR = "C"  # for Cramer
-
-var_sources = {"gr": VAR_GR, "sl": VAR_SL}
-default_sources = {"gr": DEFAULT_GR, "sl": DEFAULT_SL}
+VAR_SOURCES = {TO_LANG: VAR_GR, FROM_LANG: VAR_SL}
+DEFAULT_SOURCES = {TO_LANG: DEFAULT_GR, FROM_LANG: DEFAULT_SL}

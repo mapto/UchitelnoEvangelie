@@ -17,7 +17,9 @@ __version__ = "1.1.0"
 from docopt import docopt  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
 
-from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
+from config import FROM_LANG, TO_LANG
+from semantics import TableSemantics
+from setup import sl_sem, gr_sem
 from importer import import_mapping
 from util import ord_word, extract_letters
 from merger import merge
@@ -32,13 +34,7 @@ if __name__ == "__main__":
     # print(args)
     fnames = args["<xlsx>"]
 
-    sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
-    )
     assert sl_sem.var  # for mypy
-    gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
-    )
     assert gr_sem.var  # for mypy
 
     sla = SortedDict(ord_word)
@@ -109,12 +105,12 @@ if __name__ == "__main__":
 
     print("Експорт слявянски...")
     export_fname = f"{fname_prefix}list-sla.docx"
-    export_docx(sla, "sl", export_fname)
+    export_docx(sla, FROM_LANG, export_fname)
     print(f"Записване: {export_fname}")
 
     print("Експорт гръцки...")
     export_fname = f"{fname_prefix}list-gre.docx"
-    export_docx(gre, "gr", export_fname)
+    export_docx(gre, TO_LANG, export_fname)
     print(f"Записване: {export_fname}")
 
     if not args["--no-pause"]:

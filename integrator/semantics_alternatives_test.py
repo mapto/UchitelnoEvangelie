@@ -1,3 +1,4 @@
+from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 from model import Alternative, Source
 from semantics import MainLangSemantics, VarLangSemantics
@@ -7,17 +8,17 @@ def test_LangSemantics_alternatives():
     style_col = 24
     # old semantics
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         4,
         [6, 7, 8, 9],
-        VarLangSemantics("sl", 0, [1, 2], cnt_col=style_col + 2),
+        VarLangSemantics(FROM_LANG, 0, [1, 2], cnt_col=style_col + 2),
         cnt_col=style_col + 1,
     )
     gr_sem = MainLangSemantics(
-        "gr",
+        TO_LANG,
         10,
         [11, 12, 13],
-        VarLangSemantics("gr", 15, [16, 17], cnt_col=style_col + 4),
+        VarLangSemantics(TO_LANG, 15, [16, 17], cnt_col=style_col + 4),
         cnt_col=style_col + 3,
     )
 
@@ -93,10 +94,10 @@ def test_LangSemantics_alternatives():
 
     # semantics update from September 2021
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7, 8, 9, 10],
-        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
 
@@ -127,10 +128,10 @@ def test_LangSemantics_alternatives():
 
 def test_bozhii():
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7, 8, 9, 10],
-        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
 
@@ -163,10 +164,10 @@ def test_bozhii():
 
 def test_MainLangSemantics_ot():
     sl_sem = MainLangSemantics(
-        "sl",
+        FROM_LANG,
         5,
         [7, 8, 9, 10],
-        VarLangSemantics("sl", 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
     row = (

@@ -1,6 +1,4 @@
 """The exporter specific to the indexgenerator"""
-
-from const import VAR_GR, VAR_SL, SPECIAL_CHARS
 from typing import Dict, Union
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
@@ -8,6 +6,9 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
+from config import FROM_LANG, TO_LANG
+from config import VAR_GR, VAR_SL
+from const import SPECIAL_CHARS
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 from util import main_source, subscript
@@ -48,25 +49,25 @@ def _generate_index(par, u: Usage) -> None:
         s = s[:-3]
     _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
 
-    sl_cnt = u.idx.ocnt if u.lang == "sl" else u.idx.tcnt
-    gr_cnt = u.idx.tcnt if u.lang == "sl" else u.idx.ocnt
+    sl_cnt = u.idx.ocnt if u.lang == FROM_LANG else u.idx.tcnt
+    gr_cnt = u.idx.tcnt if u.lang == FROM_LANG else u.idx.ocnt
 
     other_before_own = False
-    if u.var and u.var.has_lang("sl"):
-        if not u.var.has_lang("gr"):
+    if u.var and u.var.has_lang(FROM_LANG):
+        if not u.var.has_lang(TO_LANG):
             if gr_cnt > 1:
-                _generate_text(par, subscript(gr_cnt, "gr"), subscript=True)
+                _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
             other_before_own = True
-        _generate_text(par, str(u.var.by_lang("sl")), superscript=True)
+        _generate_text(par, str(u.var.by_lang(FROM_LANG)), superscript=True)
     if sl_cnt > 1:
-        _generate_text(par, subscript(sl_cnt, "sl"), subscript=True)
-    elif u.var and u.var.has_lang("sl") and u.var.has_lang("gr"):
+        _generate_text(par, subscript(sl_cnt, FROM_LANG), subscript=True)
+    elif u.var and u.var.has_lang(FROM_LANG) and u.var.has_lang(TO_LANG):
         _generate_text(par, "-", superscript=True)
     if not other_before_own:
-        if u.var and u.var.has_lang("gr"):
-            _generate_text(par, str(u.var.by_lang("gr")), superscript=True)
+        if u.var and u.var.has_lang(TO_LANG):
+            _generate_text(par, str(u.var.by_lang(TO_LANG)), superscript=True)
         if gr_cnt > 1:
-            _generate_text(par, subscript(gr_cnt, "gr"), subscript=True)
+            _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:
@@ -114,7 +115,7 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
 def _get_set_counts(s: SortedSet) -> Counter:
     """
     >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)]
-    >>> s = SortedSet([Usage(n, "sl") for n in i])
+    >>> s = SortedSet([Usage(n, FROM_LANG) for n in i])
     >>> c = _get_set_counts(s)
     >>> c.get_counts(True)
     (2, 0)
@@ -122,7 +123,7 @@ def _get_set_counts(s: SortedSet) -> Counter:
     (2, 0)
 
     >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=168, col='c', row=7, ocnt=2)]
-    >>> s = SortedSet([Usage(n, "sl", "W" if x == 0 else "") for x, n in enumerate(i)])
+    >>> s = SortedSet([Usage(n, FROM_LANG, "W" if x == 0 else "") for x, n in enumerate(i)])
     >>> c = _get_set_counts(s)
     >>> c.get_counts(False)
     (1, 1)
@@ -130,8 +131,8 @@ def _get_set_counts(s: SortedSet) -> Counter:
     (2, 0)
     """
     lang = next(iter(s)).lang
-    orig_var = VAR_SL if lang == "sl" else VAR_GR
-    trans_var = VAR_GR if lang == "sl" else VAR_SL
+    orig_var = VAR_SL if lang == FROM_LANG else VAR_GR
+    trans_var = VAR_GR if lang == FROM_LANG else VAR_SL
     r = Counter()
     for nxt in s:
         assert nxt.lang == lang
@@ -165,7 +166,7 @@ def _get_dict_counts(d: Union[SortedDict, dict]) -> Counter:
     >> c.get_counts(False)
     (0, 0)
 
-    >>> u = Usage(Index(ch=1, alt=False, page=5, col='a', row=5), "sl")
+    >>> u = Usage(Index(ch=1, alt=False, page=5, col='a', row=5), FROM_LANG)
     >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([u])}})
     >>> c = _get_dict_counts(d)
     >>> c.get_counts(True)
@@ -173,8 +174,8 @@ def _get_dict_counts(d: Union[SortedDict, dict]) -> Counter:
     >>> c.get_counts(False)
     (1, 0)
 
-    >>> u1 = Usage(Index(ch=1, alt=False, page=8, col='a', row=3), "sl")
-    >>> u2 = Usage(Index(ch=1, alt=False, page=6, col='b', row=7), "sl")
+    >>> u1 = Usage(Index(ch=1, alt=False, page=8, col='a', row=3), FROM_LANG)
+    >>> u2 = Usage(Index(ch=1, alt=False, page=6, col='b', row=7), FROM_LANG)
     >>> d = SortedDict({'lem2': SortedDict({'lem1': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
     >>> c = _get_dict_counts(d)
     >>> c.get_counts(True)
@@ -211,7 +212,7 @@ def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> No
 
 def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
     """Merges together all occurences for the purposes of ordering, because usage pairs are not shown"""
-    trans_lang = "gr" if lang == "sl" else "sl"
+    trans_lang = TO_LANG if lang == FROM_LANG else FROM_LANG
     for t, bottom_d in d.items():
         # c = _get_dict_counts(d).get_counts(True)
         # if not c[0] and not c[1]:

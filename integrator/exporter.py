@@ -8,6 +8,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import Pt  # type: ignore
 
+from config import FROM_LANG, TO_LANG
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 
@@ -43,25 +44,25 @@ def _generate_index(par, u: Usage) -> None:
         s = s[:-3]
     _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
 
-    sl_cnt = u.idx.ocnt if u.lang == "sl" else u.idx.tcnt
-    gr_cnt = u.idx.tcnt if u.lang == "sl" else u.idx.ocnt
+    sl_cnt = u.idx.ocnt if u.lang == FROM_LANG else u.idx.tcnt
+    gr_cnt = u.idx.tcnt if u.lang == FROM_LANG else u.idx.ocnt
 
     other_before_own = False
-    if u.var and u.var.has_lang("sl"):
-        if not u.var.has_lang("gr"):
+    if u.var and u.var.has_lang(FROM_LANG):
+        if not u.var.has_lang(TO_LANG):
             if gr_cnt > 1:
-                _generate_text(par, subscript(gr_cnt, "gr"), subscript=True)
+                _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
             other_before_own = True
-        _generate_text(par, str(u.var.by_lang("sl")), superscript=True)
+        _generate_text(par, str(u.var.by_lang(FROM_LANG)), superscript=True)
     if sl_cnt > 1:
-        _generate_text(par, subscript(sl_cnt, "sl"), subscript=True)
-    elif u.var and u.var.has_lang("sl") and u.var.has_lang("gr"):
+        _generate_text(par, subscript(sl_cnt, FROM_LANG), subscript=True)
+    elif u.var and u.var.has_lang(FROM_LANG) and u.var.has_lang(TO_LANG):
         _generate_text(par, "-", superscript=True)
     if not other_before_own:
-        if u.var and u.var.has_lang("gr"):
-            _generate_text(par, str(u.var.by_lang("gr")), superscript=True)
+        if u.var and u.var.has_lang(TO_LANG):
+            _generate_text(par, str(u.var.by_lang(TO_LANG)), superscript=True)
         if gr_cnt > 1:
-            _generate_text(par, subscript(gr_cnt, "gr"), subscript=True)
+            _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:
@@ -118,7 +119,7 @@ def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> N
 
 def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
     """Lists ordered occurences for each word usage pair"""
-    trans_lang = "gr" if lang == "sl" else "sl"
+    trans_lang = TO_LANG if lang == FROM_LANG else FROM_LANG
     for t, bottom_d in d.items():
         par = doc.add_paragraph()
         par.style.font.name = GENERIC_FONT

@@ -28,30 +28,6 @@ def _hilited(row: List[str], col: int) -> bool:
 
 
 def _hilited_lemma(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
-    """
-    >>> sl_sem = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
-    >>> gr_sem = MainLangSemantics("gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19]))
-    >>> r = ['', '', '', '', '1/W168a15', 'б\ue205хомь', 'б\ue205хомь стрьпѣтї• ', 'бꙑт\ue205 ', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']
-    >>> _hilited_lemma(sl_sem, gr_sem, r)
-    True
-    >>> _hilited_lemma(gr_sem, sl_sem, r)
-    True
-    >>> r = ['', '', '', '', '1/W168a14', 'вьꙁмогл\ue205', 'мы брьньн\ue205 \ue205 ꙁемⷧ҇ьн\ue205\ue205• вьꙁмогл\ue205', 'въꙁмощ\ue205', '', '', '', 'ἠδυνήθημεν', 'δύναμαι', 'pass.', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05']
-    >>> _hilited_lemma(sl_sem, gr_sem, r)
-    False
-    >>> _hilited_lemma(gr_sem, sl_sem, r)
-    False
-    >>> r = ['+ \ue201сть GH', 'бꙑт\ue205', 'gramm.', '', '07/47a06', 'om.', 'сътвор\ue205лъ', 'om.', '', '', '', 'Ø', 'Ø', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl02']
-    >>> _hilited_lemma(sl_sem, gr_sem, r)
-    True
-    >>> _hilited_lemma(sl_sem.var, gr_sem.var, r)
-    True
-    >>> r = ['', '', '', '', '12/67c10', 'бꙑхомъ•', 'в\ue205дѣл\ue205 бꙑхо-', 'бꙑт\ue205', '', 'gramm.', '', '', 'gramm.', '', '', '', '', '', '', '', '', '', '', '', '', '', 'hl05|hl09']
-    >>> _hilited_lemma(sl_sem, gr_sem, r)
-    True
-    >>> _hilited_lemma(sl_sem.var, gr_sem, r)
-    True
-    """
     cols = osem.lem1_cols() + osem.lemn_cols() + tsem.lem1_cols() + tsem.lemn_cols()
     return any(_hilited(row, c) for c in cols)
 
@@ -69,16 +45,7 @@ def _merge_indices(group: List[List[str]]) -> Index:
 
 
 def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
-    """
-    *IN_PLACE*
-
-    >> sl_sem = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
-    >>> sl_sem = VarLangSemantics("sl", 0, [1, 2, 3], None)
-    >>> _expand_special_char(sl_sem, ["word", "lemma", "*", ""])
-    ['word', 'lemma', '* lemma', '']
-    >>> _expand_special_char(sl_sem, ["word", "lemma", "* l2", ""])
-    ['word', 'lemma', '* l2', '']
-    """
+    """    *IN_PLACE*    """
     if row[sem.lemmas[1]].strip() in SPECIAL_CHARS:
         row[sem.lemmas[1]] = f"{row[sem.lemmas[1]]} {row[sem.lemmas[0]]}"
     return row

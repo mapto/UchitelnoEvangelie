@@ -1,9 +1,10 @@
+from config import FROM_LANG, TO_LANG
 from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 
 
 def test_VarLangSemantics_multiword():
-    sem = VarLangSemantics("sl", 0, [1])
+    sem = VarLangSemantics(FROM_LANG, 0, [1])
     result = sem.multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"])
     assert len(result) == 2
     assert result["G"] == ("\ue205но\ue20dедаго")
@@ -21,13 +22,13 @@ def test_VarLangSemantics_multiword():
     result = sem.multiword(["дноеды", "дноѧдъ"])
     assert result == {Source("WGH"): "дноеды"}
 
-    gr_sem = VarLangSemantics("gr", 0, [1])
+    gr_sem = VarLangSemantics(TO_LANG, 0, [1])
     result = gr_sem.multiword(["με C", "ἐγώ"])
     assert result == {"C": "με"}
 
 
 def test_repeated():
-    sem = VarLangSemantics("sl", 0, [1])
+    sem = VarLangSemantics(FROM_LANG, 0, [1])
     result = sem.multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"])
     assert len(result) == 2
     assert result["G"] == "\ue205но\ue20dедаго"
@@ -36,7 +37,7 @@ def test_repeated():
 
 def test_greek_paris():
     gr_sem = MainLangSemantics(
-        "gr", 11, [12, 13, 14], VarLangSemantics("gr", 16, [17, 18, 19])
+        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
     )
 
     row = (
@@ -71,7 +72,7 @@ def test_greek_paris():
 
 def test_bozhii():
     sl_sem = MainLangSemantics(
-        "sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3])
+        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
     )
 
     r = (

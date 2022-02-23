@@ -9,7 +9,7 @@ import re
 from const import IDX_COL, STYLE_COL
 from const import EMPTY_CH, MISSING_CH
 from const import VAR_SEP
-from const import default_sources
+from const import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
 from util import base_word, collect
@@ -388,7 +388,7 @@ class VarLangSemantics(LangSemantics):
             rest = m.group(4).strip()
             m = re.search(multiword_regex, rest)
         if not result:
-            return {Source(default_sources[self.lang]): row[self.word].strip()}
+            return {Source(DEFAULT_SOURCES[self.lang]): row[self.word].strip()}
             # return {'': row[self.word].strip()}
         return result
 
@@ -430,7 +430,7 @@ class VarLangSemantics(LangSemantics):
         multiword = self.multiword(row)
         for v in var:
             for kw in multiword.keys():
-                if not kw and v in Source(default_sources[self.lang]):
+                if not kw and v in Source(DEFAULT_SOURCES[self.lang]):
                     vars.add(f"{multiword[Source()]} {kw}")
                 elif v in kw and kw in multiword:
                     vars.add(f"{multiword[kw]} {kw}")
