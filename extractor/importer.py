@@ -7,7 +7,7 @@ import re
 
 from docx import Document  # type: ignore
 from docx.table import _Cell  # type: ignore
-from lxml import etree, html  # type: ignore
+from lxml import etree  # type: ignore
 
 from const import LINE_CH
 from schema import ns

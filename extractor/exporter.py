@@ -8,7 +8,7 @@ from openpyxl.styles import Font, PatternFill, Side, Border  # type: ignore
 from openpyxl.styles.borders import BORDER_HAIR as BORDER_WIDTH  # type: ignore
 from openpyxl.styles.fills import FILL_SOLID as FILL  # type: ignore
 
-from model import Word, WordList
+from model import WordList
 
 # LIGHT_YELLOW = "FFFFE0"
 DARK_GRAY = "A9A9A9"
@@ -19,12 +19,13 @@ BG_RESERVED = PatternFill(start_color=DARK_GRAY, fill_type=FILL)
 
 _SIDE = Side(border_style=BORDER_WIDTH, color=LIGHT_GRAY)
 BORDER = Border(left=_SIDE, right=_SIDE, top=_SIDE, bottom=_SIDE)
-COLUMN_BOUND = 30
-LETTERS = 26
-
+LETTERS = ord("Z") - ord("A") + 1
+CYRILLIC_FONT = "CyrillicaOchrid10U"
+MAIN_LEMMAS = 4
+VAR_LEMMAS = 3
 
 def row(row: Dict[int, str]) -> List[str]:
-    result = [""] * 35
+    result = [""] * (LETTERS + (3 * 4) * 2)
     for k, v in row.items():
         result[k] = v
     return result
@@ -93,6 +94,7 @@ def semantics(
     >>> semantics(4, 15, 16, 29, 1, 10)
     {16: '=_xlfn.IFNA(VLOOKUP(P1,P1:AD10,15,FALSE),"")', 29: '=IF(_xlfn.ISFORMULA(Q1),"",Q1)', 17: '=_xlfn.IFNA(VLOOKUP(P1,P1:AE10,16,FALSE),"")', 30: '=IF(_xlfn.ISFORMULA(R1),"",R1)', 18: '=_xlfn.IFNA(VLOOKUP(P1,P1:AF10,17,FALSE),"")', 31: '=IF(_xlfn.ISFORMULA(S1),"",S1)', 19: '=_xlfn.IFNA(VLOOKUP(P1,P1:AG10,18,FALSE),"")', 32: '=IF(_xlfn.ISFORMULA(T1),"",T1)'}
     """
+    assert aux_start > lem_start + count
     result = {}
     for i in range(count):
         # ref = word + i
@@ -117,19 +119,19 @@ def export_sheet(data: WordList, fname: str) -> None:
             6: next.line_context,
         }
         # slavic variants
-        content.update(semantics(3, 0, 1, 20, i + 1, total))
+        content.update(semantics(VAR_LEMMAS, 0, 1, LETTERS, i + 1, total))
         # slavic main
-        content.update(semantics(4, 5, 7, 23, i + 1, total))
+        content.update(semantics(MAIN_LEMMAS, 5, 7, LETTERS + 4, i + 1, total))
         # greek main
-        content.update(semantics(4, 11, 12, 27, i + 1, total))
+        content.update(semantics(MAIN_LEMMAS, 11, 12, LETTERS + 8, i + 1, total))
         # greek variants
-        content.update(semantics(3, 16, 17, 31, i + 1, total))
+        content.update(semantics(VAR_LEMMAS, 16, 17, LETTERS + 12, i + 1, total))
 
         line = []
         for v in row(content):
             cell = WriteOnlyCell(ws, value=v)
             if cell.value:
-                cell.font = Font("CyrillicaOchrid10U")
+                cell.font = Font(CYRILLIC_FONT)
                 cell.border = BORDER
                 if cell.value.startswith("=IF"):
                     cell.fill = BG_RESERVED
