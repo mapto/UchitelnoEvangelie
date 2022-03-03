@@ -24,6 +24,7 @@ CYRILLIC_FONT = "CyrillicaOchrid10U"
 MAIN_LEMMAS = 4
 VAR_LEMMAS = 3
 
+
 def row(row: Dict[int, str]) -> List[str]:
     result = [""] * (LETTERS + (3 * 4) * 2)
     for k, v in row.items():
