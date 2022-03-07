@@ -26,9 +26,10 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Alternative) -> None:
     first = True
     _generate_text(par, f" {BRACE_OPEN[lang]}")
     for lsrc, lemma in alt_var.var_lemmas.items():
-        cnt = max(
+        args = [
             tpl[1] for wsrc, tpl in alt_var.var_words.items() if wsrc.inside([lsrc])
-        )
+        ]
+        cnt = max(args)
         if first:
             first = False
         else:
@@ -109,7 +110,13 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
             first = False
         else:
             _generate_text(par, "; ")
-        _generate_usage(par, next)
+        try:
+            _generate_usage(par, next)
+        except Exception as e:
+            print(
+                f"ГРЕШКА: При генериране възникна проблем в ред {next.idx} или групата му"
+            )
+            print(e)
 
 
 def _get_set_counts(s: SortedSet) -> Counter:

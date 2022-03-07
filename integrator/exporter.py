@@ -136,7 +136,13 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
             usage = bottom_d[key]
             if not first:
                 par.add_run().add_text("; ")
-            docx_usage(par, key, usage, lang)
+            try:
+                docx_usage(par, key, usage, lang)
+            except Exception as e:
+                print(
+                    f"ГРЕШКА: При експортиране възникна проблем в ред {usage.idx} ({key}) или групата му"
+                )
+                print(e)
             first = False
 
 
@@ -166,13 +172,13 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
 
         try:
             any_of_any = any_grandchild(next_d)
-        except NotImplementedError as nie:
-            print("Грешка!")
+        except AssertionError as nie:
+            key = next(iter(d))
+            while d[key]:
+                d = d[key]
+                key = next(iter(d))
+            print(f"ГРЕШКА: При експортиране възникна проблем с {key}")
             print(nie)
-            print(d)
-            print(lang)
-            input("Натиснете Enter, за да приключите изпълнението.")
-            exit(1)
         if type(any_of_any) is SortedSet:  # bottom of structure
             _generate_usage_line(lang, next_d, doc)
         else:

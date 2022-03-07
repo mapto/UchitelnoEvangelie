@@ -52,4 +52,4 @@ def any_grandchild(d: SortedDict) -> Union[SortedDict, SortedSet]:
         for grandchild in child.values():
             return grandchild
     print(d)
-    raise NotImplementedError("Completely empty collections tree not allowed")
+    raise AssertionError("Collections tree should not be empty")

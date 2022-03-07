@@ -45,7 +45,7 @@ def _merge_indices(group: List[List[str]]) -> Index:
 
 
 def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
-    """    *IN_PLACE*    """
+    """*IN_PLACE*"""
     if row[sem.lemmas[1]].strip() in SPECIAL_CHARS:
         row[sem.lemmas[1]] = f"{row[sem.lemmas[1]]} {row[sem.lemmas[0]]}"
     return row
@@ -163,40 +163,45 @@ def merge(
     row_twords_var: Dict[str, int] = {}
     cur_idx = ""
     for raw in corpus:
-        row = [clean_word(v) if v else "" for v in raw]
+        try:
+            row = [clean_word(v) if v else "" for v in raw]
 
-        # if "1/6a10" in row[IDX_COL]:
-        #     print(row)
+            # if "1/6a10" in row[IDX_COL]:
+            #     print(row)
 
-        if not row[IDX_COL] and any(row):
-            row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
+            if not row[IDX_COL] and any(row):
+                row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
 
-        # in lemmas
-        row = _expand_special_char(orig, row)
-        row = _expand_special_char(trans, row)
+            # in lemmas
+            row = _expand_special_char(orig, row)
+            row = _expand_special_char(trans, row)
 
-        if cur_idx != row[IDX_COL]:
-            cur_idx = row[IDX_COL]
-            row_owords = {}
-            row_owords_var = {}
-            row_twords = {}
-            row_twords_var = {}
+            if cur_idx != row[IDX_COL]:
+                cur_idx = row[IDX_COL]
+                row_owords = {}
+                row_owords_var = {}
+                row_twords = {}
+                row_twords_var = {}
 
-        # based on word column expand data with it with count in a column at the end
-        row_owords = orig.add_count(row, row_owords)
-        row_owords_var = orig.other().add_count(row, row_owords_var)
-        row_twords = trans.add_count(row, row_twords)
-        row_twords_var = trans.other().add_count(row, row_twords_var)
+            # based on word column expand data with it with count in a column at the end
+            row_owords = orig.add_count(row, row_owords)
+            row_owords_var = orig.other().add_count(row, row_owords_var)
+            row_twords = trans.add_count(row, row_twords)
+            row_twords_var = trans.other().add_count(row, row_twords_var)
 
-        if _grouped(row, orig) or _grouped(row, trans):
-            group.append(row)
-        else:
-            if group:
-                group = _close(group, orig, trans, incl_hilited)
-                result += group
-                group = []
-            result.append(row)
-
+            if _grouped(row, orig) or _grouped(row, trans):
+                group.append(row)
+            else:
+                if group:
+                    group = _close(group, orig, trans, incl_hilited)
+                    result += group
+                    group = []
+                result.append(row)
+        except Exception as e:
+            print(
+                f"ГРЕШКА: При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"
+            )
+            print(e)
     if group:
         group = _close(group, orig, trans, incl_hilited)
         result += group

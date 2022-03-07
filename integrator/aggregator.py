@@ -139,7 +139,13 @@ def aggregate(
         # if "μονογεν" in row[orig.lemmas[0]]:
         #    print(row)
 
-        _expand_and_aggregate(row, orig, trans, result)
-        _expand_and_aggregate(row, orig, trans.var, result)
+        try:
+            _expand_and_aggregate(row, orig, trans, result)
+            _expand_and_aggregate(row, orig, trans.var, result)
+        except Exception as e:
+            print(
+                f"ГРЕШКА: При кондензиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]})"
+            )
+            print(e)
 
     return result
