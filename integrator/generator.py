@@ -117,6 +117,7 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
                 f"ГРЕШКА: При генериране възникна проблем в ред {next.idx} или групата му"
             )
             print(e)
+            break
 
 
 def _get_set_counts(s: SortedSet) -> Counter:
@@ -301,5 +302,22 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
 def generate_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
     doc.styles["Normal"].font.name = GENERIC_FONT
-    _generate_line(0, lang, d, doc)
+    try:
+        _generate_line(0, lang, d, doc)
+    except StopIteration as si:
+        # print(d)
+        keys = []
+        key = next(iter(d))
+        if key:
+            keys += [key]
+        while key and key in d and bool(d[key]):
+            d = d[key]
+            key = next(iter(d))
+            if key:
+                keys += [key]
+        if keys:
+            print(f"ГРЕШКА: При генериране възникна проблем с {'|'.join(keys)}")
+        else:
+            print(f"ГРЕШКА: При генериране възникна неидентифициран проблем")
+        print(si)
     doc.save(fname)

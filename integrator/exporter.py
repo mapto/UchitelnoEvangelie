@@ -143,6 +143,7 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
                     f"ГРЕШКА: При експортиране възникна проблем в ред {usage.idx} ({key}) или групата му"
                 )
                 print(e)
+                break
             first = False
 
 
@@ -170,15 +171,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
                 par, f"{prefix} {li}", fonts[lang], size=Pt(14 if level == 0 else 12)
             )
 
-        try:
-            any_of_any = any_grandchild(next_d)
-        except AssertionError as nie:
-            key = next(iter(d))
-            while d[key]:
-                d = d[key]
-                key = next(iter(d))
-            print(f"ГРЕШКА: При експортиране възникна проблем с {key}")
-            print(nie)
+        any_of_any = any_grandchild(next_d)
         if type(any_of_any) is SortedSet:  # bottom of structure
             _generate_usage_line(lang, next_d, doc)
         else:
@@ -188,5 +181,23 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
 def export_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
     doc.styles["Normal"].font.name = GENERIC_FONT
-    _export_line(0, lang, d, doc)
+    try:
+        _export_line(0, lang, d, doc)
+    except AssertionError as ae:
+        # print(d)
+        keys = []
+        key = next(iter(d))
+        if key:
+            keys += [key]
+        while key and key in d and bool(d[key]):
+            d = d[key]
+            key = next(iter(d))
+            if key:
+                keys += [key]
+        if keys:
+            print(f"ГРЕШКА: При експортиране възникна проблем с {'|'.join(keys)}")
+        else:
+            print(f"ГРЕШКА: При експортиране възникна неидентифициран проблем")
+        print(ae)
+
     doc.save(fname)

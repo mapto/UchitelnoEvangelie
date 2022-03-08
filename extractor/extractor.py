@@ -15,7 +15,7 @@ Options:
   -p --no-pause         Disable pause at end of execution
 
 """
-__version__ = "1.1.0"
+__version__ = "1.1.0"  # used also by build.sh script
 
 from docopt import docopt  # type: ignore
 

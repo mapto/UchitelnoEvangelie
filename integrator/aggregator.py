@@ -147,5 +147,6 @@ def aggregate(
                 f"ГРЕШКА: При кондензиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]})"
             )
             print(e)
+            break
 
     return result

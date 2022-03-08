@@ -23,6 +23,8 @@
 
 В <a href="https://github.com/mapto/UchitelnoEvangelie">GitHub</a> се намира актуалната версия на изходния код.
 
+Изпълними файлове за Linux и Windows могат да бъдат изтеглени от <a href="https://www.dropbox.com/scl/fo/i8e2nl7dbgbprul4fwhr3/h?dl=0&rlkey=gybrbjvxcedeml98g6flv076y">Dropbox</a>.
+
 # Компилиране
 
 За да бъде използвана програмата, тя не е задължително да бъде компилирана. Изпълними файлове могат да бъдат създадени под Linux, MacOSX или Windows Subsystem for Linux.
@@ -31,7 +33,12 @@
 
     ./build.sh
 
-Тази команда ще създаде изпълними файлове за Linux и Windows в поддиректорията `dist`
+Тази команда ще създаде изпълними файлове за Linux и Windows в поддиректорията `dist`.
+
+Алтернативен подход (генериращ изпълними файлове и за Mac) е инсталирането и използването на pyinstaller, например за integrator:
+
+    pip install pyinstaller
+    pyinstaller --clean -y --dist ./dist/linux --workpath /tmp integrator.spec
 
 # Използване
 

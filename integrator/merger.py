@@ -28,7 +28,7 @@ def _hilited(row: List[str], col: int) -> bool:
 
 
 def _hilited_lemma(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
-    cols = osem.lem1_cols() + osem.lemn_cols() + tsem.lem1_cols() + tsem.lemn_cols()
+    cols = osem.lemn_cols() + tsem.lemn_cols()
     return any(_hilited(row, c) for c in cols)
 
 
@@ -202,6 +202,7 @@ def merge(
                 f"ГРЕШКА: При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"
             )
             print(e)
+            break
     if group:
         group = _close(group, orig, trans, incl_hilited)
         result += group
