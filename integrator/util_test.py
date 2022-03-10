@@ -1,5 +1,8 @@
+import re
+
+import alphabet
 from config import FROM_LANG, TO_LANG
-from util import collect, ord_word, subscript
+from util import collect, ord_word, subscript, _ord
 from semantics import MainLangSemantics, VarLangSemantics
 
 
@@ -33,6 +36,29 @@ def test_collect_words():
 
     result = collect(group, sl_sem.word)
     assert result == ["не", "бѣ", "ꙗвленъ•"]
+
+
+def test_ord_letters():
+    lines = alphabet.__doc__.split("\n")
+    for l in lines:
+        line = l.strip()
+        if len(line) == 0 or (line[0] != "а" and line[0] != "α"):
+            continue
+        chars = line.split(" ")
+        for i in range(1, len(chars)):
+            a = chars[i - 1]
+            b = chars[i]
+            if len(chars[i - 1]) > 1:
+                chars2 = [x for x in re.split("\W", a) if x]
+                for j in range(1, len(chars2)):
+                    assert abs(_ord(chars2[j - 1]) - _ord(chars2[j])) <= 0.5
+                a = chars2[0]
+            if len(b) > 1:
+                chars2 = [x for x in re.split("\W", b) if x]
+                for j in range(1, len(chars2)):
+                    assert abs(_ord(chars2[j - 1]) - _ord(chars2[j])) <= 0.5
+                b = chars2[0]
+            assert _ord(a) < _ord(b)
 
 
 def test_ord_word():
