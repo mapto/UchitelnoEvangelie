@@ -49,12 +49,12 @@ def test_ord_letters():
             a = chars[i - 1]
             b = chars[i]
             if len(chars[i - 1]) > 1:
-                chars2 = [x for x in re.split("\W", a) if x]
+                chars2 = [x for x in re.split(r"\W", a) if x]
                 for j in range(1, len(chars2)):
                     assert abs(_ord(chars2[j - 1]) - _ord(chars2[j])) <= 0.5
                 a = chars2[0]
             if len(b) > 1:
-                chars2 = [x for x in re.split("\W", b) if x]
+                chars2 = [x for x in re.split(r"\W", b) if x]
                 for j in range(1, len(chars2)):
                     assert abs(_ord(chars2[j - 1]) - _ord(chars2[j])) <= 0.5
                 b = chars2[0]

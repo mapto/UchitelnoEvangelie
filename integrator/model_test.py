@@ -12,7 +12,7 @@ def test_order_usage():
     assert Usage(Index.unpack("1/6a8"), FROM_LANG) < Usage(
         Index.unpack("1/W167c4"), FROM_LANG
     )
-    assert not Usage(Index.unpack("2/6a8"), FROM_LANG) < Usage(
+    assert Usage(Index.unpack("2/6a8"), FROM_LANG) > Usage(
         Index.unpack("2/W167c4"), FROM_LANG
     )
 

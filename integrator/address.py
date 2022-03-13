@@ -176,14 +176,38 @@ class Index:
     def __lt__(self, other) -> bool:
         if not other:
             return False
-        result = self.ch < other.ch
-        result = result or self.alt < other.alt
-        result = result or self.page < other.page
-        result = result or self.col < other.col
-        result = result or self.row < other.row
-        result = result or (other.end and self.end < other.end)
-        result = result or self.word < other.word
-        return result
+
+        if self.ch < other.ch:
+            return True
+        if self.ch > other.ch:
+            return False
+        
+        if self.alt < other.alt:
+            return True
+        if self.alt > other.alt:
+            return False
+        
+        if self.page < other.page:
+            return True
+        if self.page > other.page:
+            return False
+
+        if self.col < other.col:
+            return True
+        if self.col > other.col:
+            return False
+
+        if self.row < other.row:
+            return True
+        if self.row > other.row:
+            return False
+
+        if other.end and self.end < other.end:
+            return True
+        if not other.end or self.end > other.end:
+            return False
+        
+        return self.word < other.word
 
     def __le__(self, other) -> bool:
         return self < other or self == other
