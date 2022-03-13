@@ -14,12 +14,17 @@ from model import Source
 from semantics import present
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
 
+FIRST_LEMMA = -1
+LAST_LEMMA = -2
 
-def _multilemma(row: List[str], sem: Optional[LangSemantics]) -> Dict[Source, str]:
+
+def _multilemma(
+    row: List[str], sem: Optional[LangSemantics], lidx: int = 0
+) -> Dict[Source, str]:
     if not present(row, sem):
         return {}
     assert sem
-    return sem.multilemma(row)
+    return sem.multilemma(row, lidx)
 
 
 def _agg_lemma(
@@ -27,7 +32,7 @@ def _agg_lemma(
     orig: LangSemantics,
     trans: LangSemantics,
     d: SortedDict,
-    col: int = -1,
+    col: int = FIRST_LEMMA,
     olemma: str = "",
     tlemma: str = "",
 ) -> SortedDict:
@@ -46,13 +51,14 @@ def _agg_lemma(
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
     """
+
     omultilemmas = {}
     tmultilemmas = {}
-    if col == -1:  # autodetect/first
+    if col == FIRST_LEMMA:  # autodetect
         col = orig.lemmas[0]
         omultilemmas = _multilemma(row, orig)
         tmultilemmas = _multilemma(row, trans)
-    elif col == -2:  # exhausted/last
+    elif col == LAST_LEMMA:  # exhausted
         assert row[IDX_COL]
         return orig.compile_usages(trans, row, d, olemma, tlemma)
 
@@ -73,7 +79,7 @@ def _agg_lemma(
             if nxt not in d:
                 d[nxt] = SortedDict(ord_word)
             next_idx = lem_col.index(col) + 1
-            next_c = lem_col[next_idx] if next_idx < len(lem_col) else -2
+            next_c = lem_col[next_idx] if next_idx < len(lem_col) else LAST_LEMMA
             ol = olemma if olemma else oli
             tl = tlemma if tlemma else tli
             d[nxt] = _agg_lemma(
@@ -135,8 +141,8 @@ def aggregate(
         if not row[IDX_COL]:
             continue
 
-        # if "01/005a05" in row[IDX_COL]:
-        # if "μονογεν" in row[orig.lemmas[0]]:
+        # if "05/028d18" in row[IDX_COL]:
+            # if "μονογεν" in row[orig.lemmas[0]]:
         #    print(row)
 
         try:

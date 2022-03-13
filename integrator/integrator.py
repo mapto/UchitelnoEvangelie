@@ -12,7 +12,7 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "1.2.1"  # used also by build.sh script
+__version__ = "1.2.2"  # used also by build.sh script
 
 from docopt import docopt  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
