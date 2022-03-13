@@ -239,12 +239,12 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         run = par.add_run()
         # run.font.name = GENERIC_FONT
         run.add_text("): ")
-        all = SortedSet()
+        total = SortedSet()
         # TODO: also merge different variants with same index and lemma
         # TODO: do it before counting
         for nxt in bottom_d.values():
-            all.update(nxt)
-        docx_result(par, all, lang)
+            total.update(nxt)
+        docx_result(par, total, lang)
 
 
 def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:

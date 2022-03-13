@@ -23,7 +23,7 @@ def _merge_counts(pval: int, reval: Any) -> int:
     return pval
 
 
-@dataclass(order=True, frozen=True)
+@dataclass(frozen=True)
 class Index:
     """Index only indicates if it is from a variant.
     Alternative variable (alt) means alternative indexing (as in Vienna scroll).
@@ -172,3 +172,24 @@ class Index:
             if self.end.row != self.row:
                 return f"{start}-{self.end.row:02d}{ecnt}"
         return start
+
+    def __lt__(self, other) -> bool:
+        if not other:
+            return False
+        result = self.ch < other.ch
+        result = result or self.alt < other.alt
+        result = result or self.page < other.page
+        result = result or self.col < other.col
+        result = result or self.row < other.row
+        result = result or (other.end and self.end < other.end)
+        result = result or self.word < other.word
+        return result
+
+    def __le__(self, other) -> bool:
+        return self < other or self == other
+
+    def __gt__(self, other) -> bool:
+        return not self <= other
+
+    def __ge__(self, other) -> bool:
+        return not self < other
