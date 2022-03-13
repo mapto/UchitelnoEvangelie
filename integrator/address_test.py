@@ -20,6 +20,7 @@ def test_index_unpack():
     assert str(Index.unpack("1/6c4-7d4")) == "1/6c4-7d4"
     assert str(Index.unpack("1/6c4-2/6d4")) == "1/6c4-2/6d4"
 
+
 def test_index_unpack_parts():
     assert Index.unpack("2/6a8").ch == 2
     assert Index.unpack("1/W167c4").alt

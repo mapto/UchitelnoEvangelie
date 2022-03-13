@@ -181,12 +181,12 @@ class Index:
             return True
         if self.ch > other.ch:
             return False
-        
+
         if self.alt < other.alt:
             return True
         if self.alt > other.alt:
             return False
-        
+
         if self.page < other.page:
             return True
         if self.page > other.page:
@@ -206,7 +206,7 @@ class Index:
             return True
         if not other.end or self.end > other.end:
             return False
-        
+
         return self.word < other.word
 
     def __le__(self, other) -> bool:
