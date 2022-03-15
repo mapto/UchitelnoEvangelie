@@ -12,8 +12,10 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "0.2.2"  # used also by build.sh script
+__version__ = "0.2.3"  # used also by build.sh script
 
+from os.path import isdir
+from glob import glob
 from docopt import docopt  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
 
@@ -55,15 +57,23 @@ if __name__ == "__main__":
     ]
     sem = pairs[0]
 
+    expanded_fnames = []
     for fname in fnames:
-        print(f"Прочитане: {fname}")
+        print(f"Преглеждане: {fname}")
 
-        if len(fname) < 6 or "." not in fname[2:]:
-            fname += ".xlsx"
+        if isdir(fname):
+            expanded_fnames += glob(fname + "/*.xlsx")
+        elif len(fname) < 6 or "." not in fname[2:]:
+            expanded_fnames += [fname + ".xlsx"]
         elif not fname.lower().endswith(".xlsx"):
             print("Файлът трябва да е във формат .xlsx. Моля конвертирайте го")
             exit()
+        else:
+            expanded_fnames += [fname]
+    expanded_fnames.sort()
 
+    for fname in expanded_fnames:
+        print(f"Прочитане: {fname}")
         print("Импорт...")
         lines = import_mapping(fname, sem)
         print(f"{len(lines)} думи")
@@ -86,7 +96,7 @@ if __name__ == "__main__":
         else:
             fname_prefix = fnames[0] + "-"
 
-    print("Генериране слявянски...")
+    print("Генериране славянски...")
     export_fname = f"{fname_prefix}index-sla.docx"
     generate_docx(sla, FROM_LANG, export_fname)
     print(f"Записване: {export_fname}")

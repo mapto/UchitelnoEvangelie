@@ -200,13 +200,35 @@ def _get_dict_counts(d: Union[SortedDict, dict]) -> Counter:
         for n in d.values():
             r += _get_set_counts(n)
     else:  # type(any) is SortedDict or type(any) is dict:
-        for n in d.values():
-            r += _get_dict_counts(n)
+        for k, n in d.items():
+            try:
+                r += _get_dict_counts(n)
+            except StopIteration as si:
+                print(f"ГРЕШКА: При генериране неуспешно преброяване на {k}")
+                raise si
     return r
 
 
 def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> None:
-    c = _get_dict_counts(d).get_counts(trans)
+    try:
+        c = _get_dict_counts(d).get_counts(trans)
+    except StopIteration as si:
+        keys = []
+        key = next(iter(d))
+        if key:
+            keys += [key]
+        while key and key in d and bool(d[key]):
+            d = d[key]
+            key = next(iter(d))
+            if key:
+                keys += [key]
+        # TODO: Better reporting
+        if keys:
+            print(f"ГРЕШКА: При генериране възникна проблем с {'|'.join(keys)}")
+        else:
+            print(f"ГРЕШКА: При генериране възникна неидентифициран проблем")
+        print(f"ГРЕШКА: При генериране неуспешно преброяване в {d}")
+        return
     run = par.add_run()
     run.add_text(" (")
     if c[0]:
@@ -286,38 +308,25 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
 
         try:
             any_of_any = any_grandchild(next_d)
-        except NotImplementedError as nie:
-            print("Грешка!")
-            print(nie)
-            print(d)
-            print(lang)
-            input("Натиснете Enter, за да приключите изпълнението.")
-            exit(1)
+        except AssertionError as ae:
+            print(
+                f"ГРЕШКА: При генериране възникна проблем с една от {len(next_d)} употреби на {li}"
+            )
+            raise ae
         if type(any_of_any) is SortedSet:  # bottom of structure
             _generate_usage_line(lang, next_d, doc)
         else:
-            _generate_line(level + 1, lang, next_d, doc)
+            try:
+                _generate_line(level + 1, lang, next_d, doc)
+            except AssertionError as ae:
+                print(
+                    f"ГРЕШКА: При генериране възникна проблем с една от {len(next_d)} употреби на {li}"
+                )
 
 
 def generate_docx(d: SortedDict, lang: str, fname: str) -> None:
     doc = Document()
     doc.styles["Normal"].font.name = GENERIC_FONT
-    try:
-        _generate_line(0, lang, d, doc)
-    except StopIteration as si:
-        # print(d)
-        keys = []
-        key = next(iter(d))
-        if key:
-            keys += [key]
-        while key and key in d and bool(d[key]):
-            d = d[key]
-            key = next(iter(d))
-            if key:
-                keys += [key]
-        if keys:
-            print(f"ГРЕШКА: При генериране възникна проблем с {'|'.join(keys)}")
-        else:
-            print(f"ГРЕШКА: При генериране възникна неидентифициран проблем")
-        print(si)
+    _generate_line(0, lang, d, doc)
+
     doc.save(fname)
