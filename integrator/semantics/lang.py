@@ -393,7 +393,6 @@ class VarLangSemantics(LangSemantics):
         return result
 
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
-        # TODO: accepting both & and / as separators is not neccessary
         result = {}
         m = re.search(multilemma_regex, row[self.lemmas[lidx]].strip())
         while m:

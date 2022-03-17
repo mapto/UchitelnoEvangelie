@@ -123,7 +123,6 @@ class Index:
         '2/W6c4'
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        # TODO: distinguish between symbols for ocnt and tcnt
         cnt = _cnt_str(self)
         start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{cnt}"
         if self.end:

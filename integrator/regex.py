@@ -1,3 +1,6 @@
+from audioop import mul
+from const import V_LEMMA_SEP, H_LEMMA_SEP
+
 # built with regex101.com
 
 # two numbers encoding repetition index: in original and in translation
@@ -14,4 +17,13 @@ address_regex = (
 source_regex = r"([A-Z]\w*)"
 
 multiword_regex = r"^([^A-Z]+)(" + source_regex + r"+)(.*)$"
-multilemma_regex = r"^([^A-Z\+]+)(\+\s\w+\.)?(" + source_regex + r"+)?(\s*[\&\/])?(.*)$"
+
+# TODO: accepting both & and / as separators is not neccessary
+# TODO: & is not expected to be used
+multilemma_regex = (
+    r"^([^A-Z\+]+)(\+\s\w+\.)?("
+    + source_regex
+    + r"+)?(\s*["
+    + f"\\{V_LEMMA_SEP}\\{H_LEMMA_SEP}"
+    + r"])?(.*)$"
+)
