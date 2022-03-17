@@ -12,7 +12,7 @@ from const import VAR_SEP
 from const import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
-from util import base_word, collect
+from util import base_word, collect, remove_repetitions
 from address import Index
 from model import Alternative, Path, Source, Usage
 
@@ -410,9 +410,9 @@ class VarLangSemantics(LangSemantics):
         # When in some variants word is missing, get lemma for this variant from main
         # When different variants have same lemma, unite. Case present only when deduced from different multiwords
         if len(result) == 1 and next(iter(result.keys())) == "":
-            keys = Source(
-                "".join(str(k) for k, v in self.multiword(row).items() if v != EMPTY_CH)
-            )
+
+            s = {str(k) for k, v in self.multiword(row).items() if v != EMPTY_CH}
+            keys = Source(remove_repetitions("".join(s)))
             # keys = ""
             # for k, v in self.multiword(row).items():
             #     if v != EMPTY_CH:

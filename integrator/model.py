@@ -29,8 +29,6 @@ class Source:
         'HW'
         >>> Source('HW')._sort_vars()
         'HW'
-        >>> Source('MPaPbPcPd')._sort_vars()
-        'MPaPbPcPd'
         """
         return "".join(sorted(self.values()))
 

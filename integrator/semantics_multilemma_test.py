@@ -225,3 +225,105 @@ def test_bozhii():
     )
     result = sl_sem.var.multilemma(row)
     assert result == {Source("GHW"): "бож\ue205\ue205"}
+
+
+def test_puteshestive():
+    sl_sem = MainLangSemantics(
+        FROM_LANG,
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3]),
+    )
+
+    rows = [
+        [
+            "шьст\ue205ꙗ G шьств\ue205ꙗ H пꙋт\ue205 GH",
+            "шьст\ue205\ue201 G / шьств\ue205\ue201 H",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "поутошьств\ue205-",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+        [
+            "шьст\ue205ꙗ G шьств\ue205ꙗ H пꙋт\ue205 GH",
+            "пѫть",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+    ]
+
+    result = sl_sem.var.multilemma(rows[0])
+    assert result == {Source("G"): "шьст\ue205\ue201", Source("H"): "шьств\ue205\ue201"}
+
+    result = sl_sem.var.multilemma(rows[0], 1)
+    assert result == {
+        Source("G"): "шьст\ue205\ue201 пѫт\ue205",
+        Source("H"): "шьств\ue205\ue201 пѫт\ue205",
+    }
+
+    result = sl_sem.var.multilemma(rows[1])
+    assert result == {Source("GH"): "пѫть"}
+
+    result = sl_sem.var.multilemma(rows[1], 1)
+    assert result == {
+        Source("G"): "шьст\ue205\ue201 пѫт\ue205",
+        Source("H"): "шьств\ue205\ue201 пѫт\ue205",
+    }
+
+
+def test_velichanie():
+    sl_sem = MainLangSemantics(
+        FROM_LANG,
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3]),
+    )
+
+    rows = [
+        ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["1"] * 4,
+        ["невел\ue205\ue20d\ue205\ue201 WGH", "невел\ue205\ue20d\ue205\ue201"]
+        + [""] * 2
+        + [
+            "05/21a19",
+            "невел\ue205\ue20dан\ue205\ue201",
+            "тъкмо• нъ \ue205 не-",
+            "невел\ue205\ue20dан\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ἄτυφον", "ἄτυφος"]
+        + [""] * 14
+        + ["2", "1"] * 2,
+    ]
+
+    result = sl_sem.var.multilemma(rows[0])
+    assert result == {Source("GHW"): "вел\ue205\ue20dан\ue205\ue201"}
+
+    result = sl_sem.var.multilemma(rows[1])
+    assert result == {Source("WHG"): "невел\ue205\ue20d\ue205\ue201"}

@@ -179,3 +179,18 @@ def subscript(cnt: int, lang: str) -> str:
     if lang == FROM_LANG:
         return chr(ord("0") + cnt)
     return chr(ord("α") + cnt - 1)
+
+
+def remove_repetitions(src: str = "") -> str:
+    split = set()
+    prev = ""
+    for c in src:
+        if c == c.lower():
+            split.add(prev + c)
+            prev = ""
+        else:
+            split.add(prev)
+            prev = c
+    if prev:
+        split.add(prev)
+    return "".join(split)

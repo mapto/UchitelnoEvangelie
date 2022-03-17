@@ -56,14 +56,15 @@ def _agg_lemma(
     tmultilemmas = {}
     if col == FIRST_LEMMA:  # autodetect
         col = orig.lemmas[0]
-        omultilemmas = _multilemma(row, orig)
         tmultilemmas = _multilemma(row, trans)
     elif col == LAST_LEMMA:  # exhausted
         assert row[IDX_COL]
         return orig.compile_usages(trans, row, d, olemma, tlemma)
+    lidx = orig.lemmas.index(col)
+    omultilemmas = _multilemma(row, orig, lidx)
 
-    if orig.is_variant() and row[col]:
-        row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
+    # if orig.is_variant() and row[col]:
+    #     row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
     # lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
     if not omultilemmas:
         omultilemmas[Source("")] = row[col]
@@ -142,7 +143,7 @@ def aggregate(
             continue
 
         # if "05/028d18" in row[IDX_COL]:
-            # if "μονογεν" in row[orig.lemmas[0]]:
+        # if "μονογεν" in row[orig.lemmas[0]]:
         #    print(row)
 
         try:
