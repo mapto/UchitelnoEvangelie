@@ -318,3 +318,16 @@ def test_alternative():
             main_cnt=2,
         ),
     )
+
+
+def test_inside():
+    assert Source("HGW").inside([Source("WGH")]) == Source("WGH")
+    try:
+        Source("A").inside(Source("A"))
+    except NotImplementedError:
+        pass
+    else:
+        raise AssertionError("Should raise an exception")
+
+    assert Source("").inside([Source("")]) == Source("")
+    assert Source("").inside([Source("A")]) == None

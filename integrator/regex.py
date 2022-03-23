@@ -14,15 +14,16 @@ address_regex = (
     + r")?"
 )
 
-source_regex = r"([A-Z]\w*)"
+source_regex = r"^([A-Z][a-z]?)(.*)$"
+sources_regex = r"([A-Z]\w*)"
 
-multiword_regex = r"^([^A-Z]+)(" + source_regex + r"+)(.*)$"
+multiword_regex = r"^([^A-Z]+)(" + sources_regex + r"+)(.*)$"
 
 # TODO: accepting both & and / as separators is not neccessary
 # TODO: & is not expected to be used
 multilemma_regex = (
     r"^([^A-Z\+]+)(\+\s\w+\.)?("
-    + source_regex
+    + sources_regex
     + r"+)?(\s*["
     + f"\\{V_LEMMA_SEP}\\{H_LEMMA_SEP}"
     + r"])?(.*)$"

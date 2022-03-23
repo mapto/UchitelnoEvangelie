@@ -228,6 +228,62 @@ def test_build_paths_special():
     assert res == [Path(parts=["на\ue20dѧт\ue205", "≠ на\ue20dѧт\ue205"])]
 
 
+def test_build_paths_puteshestive():
+    sl_sem = MainLangSemantics(
+        FROM_LANG,
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
+    )
+    gr_sem = MainLangSemantics(
+        TO_LANG,
+        11,
+        [12, 13, 14],
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
+    )
+
+    rows = [
+        [
+            "шьст\ue205ꙗ G шьств\ue205ꙗ H пꙋт\ue205 GH",
+            "шьст\ue205\ue201 G / шьств\ue205\ue201 H",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "поутошьств\ue205-",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+        [
+            "шьст\ue205ꙗ G шьств\ue205ꙗ H пꙋт\ue205 GH",
+            "пѫть",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+    ]
+
+    res = sl_sem.var.build_paths(rows[0])
+    assert res == [
+        Path(parts=["шьст\ue205\ue201", "шьст\ue205\ue201 пѫт\ue205"]),
+        Path(parts=["шьств\ue205\ue201", "шьств\ue205\ue201 пѫт\ue205"]),
+    ]
+
+
 def test_add_usage():
     usages = [
         Usage(

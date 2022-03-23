@@ -1,8 +1,9 @@
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Iterable, Union
 from dataclasses import dataclass, field
 
 import re
 
+from regex import source_regex
 from const import PATH_SEP, SPECIAL_CHARS
 from const import VAR_SOURCES
 
@@ -93,8 +94,13 @@ class Source:
         return hash(self._sort_vars())
 
     def __iter__(self):
-        # TODO: Iter by source, not letter: difference is multiletter sources
-        return iter(self.src)
+        parts = []
+        rest = self.src
+        while rest:
+            m = re.search(source_regex, rest)
+            parts += [m.group(1)]
+            rest = m.group(2)
+        return iter(parts)
 
     def __contains__(self, other) -> bool:
         """
@@ -113,33 +119,46 @@ class Source:
         """
         return all(c in self.values() for c in Source(str(other)).values())
 
-    def __bool__(self) -> bool:
-        """
-        >>> True if Source() else False
-        False
-        >>> True if Source("") else False
-        False
-        >>> True if Source("A") else False
-        True
-        """
-        return bool(self.src)
+    # def __bool__(self) -> bool:
+    #     """
+    #     >>> True if Source() else False
+    #     False
+    #     >>> True if Source("") else False
+    #     False
+    #     >>> True if Source("A") else False
+    #     True
+    #     """
+    #     return bool(self.src)
 
-    def inside(self, iterable) -> Optional["Source"]:
-        """
+    def inside(self, iterable: Iterable[Union[str, "Source"]]) -> Optional["Source"]:
+        """Takes iterable of sources. Even though Source itself is an iterable of strings, not valid input.
+        Returns the source overlap or None
+
         >>> Source("A").inside([Source("AB"), Source("C")])
         Source('AB')
         >>> Source("A").inside({Source("AB"): 1, Source("C"): 2})
         Source('AB')
         >>> Source("F").inside(["ABCDEF"])
-        'ABCDEF'
+        Source('ABCDEF')
         >>> Source("AF").inside(["ABCDEF"])
-        'ABCDEF'
+        Source('ABCDEF')
         >>> Source("A").inside([Source("AB"), Source("C")])
         Source('AB')
+
+        >>> Source("").inside([Source("")])
+        Source('')
+        >>> Source("").inside([Source("A")])
         """
+        if type(iterable) == Source:
+            raise NotImplementedError
+        if not self.src:
+            for i in iterable:
+                if not i:
+                    return Source("")
+            return None
         for i in iterable:
             if Source(str(self)) in Source(str(i)):
-                return i
+                return Source(str(i))
         return None
 
     def has_lang(self, lang: str) -> bool:

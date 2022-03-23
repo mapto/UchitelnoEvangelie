@@ -146,23 +146,45 @@ class LangSemantics:
     def build_paths(self, row: List[str]) -> List[Path]:
         """Build the multipaths (due to multilemma) relevant to the current row"""
         # first lemma in variant could contain multilemma
-        multilemmas = self.multilemma(row).values()
+        multilemmas = self.multilemma(row)
         if not multilemmas:
             return [Path()]
-        paths = [Path([w.strip()]) for w in multilemmas]
+        paths = {k: Path([v.strip()]) for k, v in multilemmas.items()}
+        if self.is_variant() and len(paths) == 1 and next(iter(paths.keys())) == "":
+            keys = Source(DEFAULT_SOURCES[self.lang])
+            paths = {keys: next(iter(paths.values()))}
 
-        # other lemmas could contain annotations that share symbols with variant annotations
+        print(paths)
+
+        # other lemmas could contain multilemmas with less sources
         for c in range(1, len(self.lemmas)):
             w = row[self.lemmas[c]].strip()
+            print(w)
             if not w:
                 continue
-            for path in paths:
-                path += w.strip()
+            multilemmas = self.multilemma(row, c)
+            print(multilemmas)
+            if (
+                self.is_variant()
+                and len(multilemmas) == 1
+                and next(iter(multilemmas.keys())) == ""
+            ):
+                s = {str(k) for k in paths.keys()}
+                keys = Source(remove_repetitions("".join(s)))
+                multilemmas = {keys: next(iter(multilemmas.values()))}
 
-        for path in paths:
+            for k, v in multilemmas.items():
+                for pk, path in paths.items():
+                    print(f"{pk}.inside([{k}]): {pk.inside([k])}")
+                    if pk.inside([k]) is not None:
+                        path += v.strip()
+
+        print(paths)
+
+        for k, path in paths.items():
             path.compile()
 
-        return paths
+        return list(paths.values())
 
     def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, int]:
         raise NotImplementedError("abstract method")
@@ -405,12 +427,12 @@ class VarLangSemantics(LangSemantics):
             rest = m.group(6) if len(m.groups()) == 6 else ""
             m = re.search(multilemma_regex, rest.strip())
 
-        # When lemma in variant does not have source, read source from word
+        # When lemma in variant does not have source, read source from word or previous lemma
         # When in some variants word is missing, get lemma for this variant from main
         # When different variants have same lemma, unite. Case present only when deduced from different multiwords
         if len(result) == 1 and next(iter(result.keys())) == "":
-
-            s = {str(k) for k, v in self.multiword(row).items() if v != EMPTY_CH}
+            prev_multi = self.multilemma(row, lidx - 1) if lidx else self.multiword(row)
+            s = {str(k) for k, v in prev_multi.items() if v != EMPTY_CH}
             keys = Source(remove_repetitions("".join(s)))
             # keys = ""
             # for k, v in self.multiword(row).items():
