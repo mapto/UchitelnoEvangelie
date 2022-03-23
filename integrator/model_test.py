@@ -1,6 +1,7 @@
 from sortedcontainers import SortedSet  # type: ignore
 
 from config import FROM_LANG, TO_LANG
+from const import VAR_SOURCES
 from address import Index
 from model import Alternative, Source, Usage
 
@@ -322,12 +323,10 @@ def test_alternative():
 
 def test_inside():
     assert Source("HGW").inside([Source("WGH")]) == Source("WGH")
-    try:
-        Source("A").inside(Source("A"))
-    except NotImplementedError:
-        pass
-    else:
-        raise AssertionError("Should raise an exception")
+    assert Source("A").inside(Source("A"))
 
     assert Source("").inside([Source("")]) == Source("")
     assert Source("").inside([Source("A")]) == None
+
+    assert Source("Pz").inside(Source(VAR_SOURCES["gr"])) == Source("Pz")
+

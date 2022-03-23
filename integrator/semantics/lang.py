@@ -16,6 +16,8 @@ from util import base_word, collect, remove_repetitions
 from address import Index
 from model import Alternative, Path, Source, Usage
 
+LAST_LEMMA = -1
+
 
 def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
     """Not present if not semantics specified or if row misses first lemma according to semantics"""
@@ -154,16 +156,12 @@ class LangSemantics:
             keys = Source(DEFAULT_SOURCES[self.lang])
             paths = {keys: next(iter(paths.values()))}
 
-        print(paths)
-
         # other lemmas could contain multilemmas with less sources
         for c in range(1, len(self.lemmas)):
             w = row[self.lemmas[c]].strip()
-            print(w)
             if not w:
                 continue
             multilemmas = self.multilemma(row, c)
-            print(multilemmas)
             if (
                 self.is_variant()
                 and len(multilemmas) == 1
@@ -175,11 +173,8 @@ class LangSemantics:
 
             for k, v in multilemmas.items():
                 for pk, path in paths.items():
-                    print(f"{pk}.inside([{k}]): {pk.inside([k])}")
                     if pk.inside([k]) is not None:
                         path += v.strip()
-
-        print(paths)
 
         for k, path in paths.items():
             path.compile()
@@ -200,7 +195,7 @@ class LangSemantics:
         # print(self.multiword(row))
         # print(trans.multiword(row))
         for ovar in self.multilemma(row).keys():
-            for tvar in trans.multilemma(row).keys():
+            for tvar in trans.multilemma(row, LAST_LEMMA).keys():
                 (oword, ocnt) = self.compile_words_by_lemma(row, ovar)
                 (tword, tcnt) = trans.compile_words_by_lemma(row, tvar)
                 val = _build_usage(row, self, trans, ovar, tvar, oword, ocnt, tcnt)
@@ -294,6 +289,11 @@ class MainLangSemantics(LangSemantics):
 
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
         """Main variant does not have multiple words in a cell"""
+        if lidx == LAST_LEMMA:
+            lidx = len(self.lemmas) - 1
+            while not row[self.lemmas[lidx]]:
+                lidx -= 1
+            return self.multilemma(row, lidx)
         return {Source(""): row[self.lemmas[lidx]].strip()}
 
     def compile_words_by_lemma(
@@ -415,6 +415,11 @@ class VarLangSemantics(LangSemantics):
         return result
 
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
+        if lidx == LAST_LEMMA:
+            lidx = len(self.lemmas) - 1
+            while not row[self.lemmas[lidx]]:
+                lidx -= 1
+            return self.multilemma(row, lidx)
         result = {}
         m = re.search(multilemma_regex, row[self.lemmas[lidx]].strip())
         while m:

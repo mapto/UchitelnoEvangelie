@@ -527,6 +527,90 @@ def test_add_usage():
     )
 
 
+def test_add_usage_puteshestvie():
+    usages = [
+        Usage(
+            idx=Index(
+                ch=5,
+                alt=False,
+                page=28,
+                col="d",
+                row=18,
+                word="пꙋт\ue205 GH шьст\ue205ꙗ G",
+            ),
+            lang="sl",
+            var=Source("G"),
+            orig_alt=Alternative(
+                var_lemmas={Source("H"): "шьств\ue205\ue201 пѫт\ue205"},
+                main_word="поутошьств\ue205ꙗ",
+                var_words={Source("H"): ("пꙋт\ue205 GH шьств\ue205ꙗ H", 1)},
+            ),
+        ),
+        Usage(
+            idx=Index(
+                ch=5,
+                alt=False,
+                page=28,
+                col="d",
+                row=18,
+                word="пꙋт\ue205 GH шьств\ue205ꙗ H",
+            ),
+            lang="sl",
+            var=Source("H"),
+            orig_alt=Alternative(
+                var_lemmas={Source("G"): "шьст\ue205\ue201 пѫт\ue205"},
+                main_word="поутошьств\ue205ꙗ",
+                var_words={Source("G"): ("пꙋт\ue205 GH шьст\ue205ꙗ G", 1)},
+            ),
+        ),
+    ]
+    d = SortedDict()
+    for u in usages:
+        _add_usage(u, "ὁδοιπορία", ("пꙋт\ue205 GH шьст\ue205ꙗ G", "ὁδοιπορίας"), d)
+    assert d == {
+        "ὁδοιπορία": {
+            ("пꙋт\ue205 GH шьст\ue205ꙗ G", "ὁδοιπορίας"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=5,
+                            alt=False,
+                            page=28,
+                            col="d",
+                            row=18,
+                            word="пꙋт\ue205 GH шьст\ue205ꙗ G",
+                        ),
+                        lang="sl",
+                        var=Source("G"),
+                        orig_alt=Alternative(
+                            var_lemmas={Source("H"): "шьств\ue205\ue201 пѫт\ue205"},
+                            main_word="поутошьств\ue205ꙗ",
+                            var_words={Source("H"): ("пꙋт\ue205 GH шьств\ue205ꙗ H", 1)},
+                        ),
+                    ),
+                    Usage(
+                        idx=Index(
+                            ch=5,
+                            alt=False,
+                            page=28,
+                            col="d",
+                            row=18,
+                            word="пꙋт\ue205 GH шьств\ue205ꙗ H",
+                        ),
+                        lang="sl",
+                        var=Source("H"),
+                        orig_alt=Alternative(
+                            var_lemmas={Source("G"): "шьст\ue205\ue201 пѫт\ue205"},
+                            main_word="поутошьств\ue205ꙗ",
+                            var_words={Source("G"): ("пꙋт\ue205 GH шьст\ue205ꙗ G", 1)},
+                        ),
+                    ),
+                ]
+            )
+        }
+    }
+
+
 def test_LangSemantics_compile_words_by_lemma():
     sl_sem = MainLangSemantics(
         FROM_LANG,

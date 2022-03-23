@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 import re
 
 from regex import source_regex
-from const import PATH_SEP, SPECIAL_CHARS
+from const import PATH_SEP, VAR_SEP, SPECIAL_CHARS
 from const import VAR_SOURCES
 
 from util import base_word
@@ -95,7 +95,7 @@ class Source:
 
     def __iter__(self):
         parts = []
-        rest = self.src
+        rest = self.src.replace(VAR_SEP, "")
         while rest:
             m = re.search(source_regex, rest)
             parts += [m.group(1)]
@@ -119,17 +119,6 @@ class Source:
         """
         return all(c in self.values() for c in Source(str(other)).values())
 
-    # def __bool__(self) -> bool:
-    #     """
-    #     >>> True if Source() else False
-    #     False
-    #     >>> True if Source("") else False
-    #     False
-    #     >>> True if Source("A") else False
-    #     True
-    #     """
-    #     return bool(self.src)
-
     def inside(self, iterable: Iterable[Union[str, "Source"]]) -> Optional["Source"]:
         """Takes iterable of sources. Even though Source itself is an iterable of strings, not valid input.
         Returns the source overlap or None
@@ -149,8 +138,8 @@ class Source:
         Source('')
         >>> Source("").inside([Source("A")])
         """
-        if type(iterable) == Source:
-            raise NotImplementedError
+        if type(iterable) == str:
+            iterable = Source(iterable)
         if not self.src:
             for i in iterable:
                 if not i:
@@ -177,7 +166,7 @@ class Source:
         True
         """
         for s in self:
-            if Source(s).inside(VAR_SOURCES[lang]):
+            if Source(s).inside(Source(VAR_SOURCES[lang])):
                 return True
         return False
 
@@ -192,7 +181,7 @@ class Source:
         """
         result = ""
         for s in self:
-            if Source(s).inside(VAR_SOURCES[lang]):
+            if Source(s).inside(Source(VAR_SOURCES[lang])):
                 result += s
         return Source(result)
 
