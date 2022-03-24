@@ -329,4 +329,3 @@ def test_inside():
     assert Source("").inside([Source("A")]) == None
 
     assert Source("Pz").inside(Source(VAR_SOURCES["gr"])) == Source("Pz")
-

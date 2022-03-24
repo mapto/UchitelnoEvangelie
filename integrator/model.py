@@ -178,10 +178,14 @@ class Source:
         Source('W')
         >>> Source("MPb").by_lang("gr")
         Source('MPb')
+        >>> Source("WGH").by_lang("sl")
+        Source('WGH')
+        >>> Source("GHW").by_lang("sl")
+        Source('WGH')
         """
         result = ""
-        for s in self:
-            if Source(s).inside(Source(VAR_SOURCES[lang])):
+        for s in Source(VAR_SOURCES[lang]):
+            if Source(s).inside(self):
                 result += s
         return Source(result)
 

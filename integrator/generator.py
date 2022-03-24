@@ -27,9 +27,12 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Alternative) -> None:
     _generate_text(par, f" {BRACE_OPEN[lang]}")
     for lsrc, lemma in alt_var.var_lemmas.items():
         args = [
-            tpl[1] for wsrc, tpl in alt_var.var_words.items() if wsrc.inside([lsrc])
+            # tpl[1] for wsrc, tpl in alt_var.var_words.items() if wsrc and tpl[0] and wsrc.inside([lsrc])
+            tpl[1]
+            for wsrc, tpl in alt_var.var_words.items()
+            if wsrc.inside([lsrc])
         ]
-        cnt = max(args)
+        cnt = max(args) if args else 1
         if first:
             first = False
         else:
