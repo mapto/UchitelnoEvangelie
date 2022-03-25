@@ -139,7 +139,7 @@ class Source:
         >>> Source("").inside([Source("A")])
         """
         if type(iterable) == str:
-            iterable = Source(iterable)
+            iterable = Source(str(iterable))
         if not self.src:
             for i in iterable:
                 if not i:

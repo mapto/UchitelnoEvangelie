@@ -268,13 +268,17 @@ class MainLangSemantics(LangSemantics):
         alt_lemmas = {
             k: v
             for k, v in self.var.multilemma(row, lidx).items()
-            # TODO: what do we do for the case {"": "пѫть"} in 05/28d18
-            # if (k or v) and v != row[self.lemmas[lidx]]
             if v != row[self.lemmas[lidx]]
         }
         alt_words = {
             l: self.var.compile_words_by_lemma(row, l) for l in alt_lemmas.keys()
         }
+        if Source() in alt_lemmas:
+            alt_lemmas[Source("".join(str(s) for s in alt_words.keys()))] = alt_lemmas[
+                Source()
+            ]
+            alt_lemmas.pop(Source())
+            alt_words.pop(Source())
         return Alternative("", alt_lemmas, "", alt_words)
 
     def build_keys(self, row: List[str]) -> List[str]:
