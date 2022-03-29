@@ -33,9 +33,13 @@ def _hilited_gram(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> b
     return any(_hilited(row, c) for c in cols)
 
 
-def _hilited_union(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
-    """highlighting in second lemma"""
+def _hilited_union(
+    osem: LangSemantics, tsem: LangSemantics, row: List[str], col: int = -1
+) -> bool:
+    """highlighting in second lemma. Also checks if passed column is in second lemma, if passed at all"""
     cols = [osem.lemn_cols()[0], tsem.lemn_cols()[0]]
+    if col != -1 and col not in cols:
+        return False
     return any(_hilited(row, c) for c in cols)
 
 
@@ -98,9 +102,10 @@ def _close(
             if present(row, orig.var) and row[orig.word] and not row[orig.var.word]:
                 row[orig.var.word] = f"{row[orig.word]} {variants}"
 
-    # only lines without highlited lemmas, i.e. gramm. annotation
+    # only lines without highlited lemmas, i.e. gramm. annotation or union annotation
     merge_rows = [i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)]
     non_gram_group = [group[i] for i in merge_rows]
+    non_union_group = [r for r in non_gram_group if not _hilited_union(orig, trans, r)]
 
     # collect content
     line = [""] * STYLE_COL
@@ -117,14 +122,10 @@ def _close(
 
     for c in trans.lem1_cols():
         line[c] = trans.collect_lemma(non_gram_group, c, V_LEMMA_SEP)
-    for c in orig.lemn_cols() + trans.lemn_cols()[1:]:
+    for c in orig.lemn_cols()[1:] + trans.lemn_cols()[1:]:
         line[c] = trans.collect_lemma(non_gram_group, c)
-    # second lemma of translation (where union highlighting takes place)
-    c = trans.lemn_cols()[0]
-    # do not add lines that have union highlighting in translation
-    line[c] = trans.collect_lemma(
-        [r for r in non_gram_group if not _hilited_union(orig, trans, r)], c
-    )
+    for c in [orig.lemn_cols()[0], trans.lemn_cols()[0]]:
+        line[c] = trans.collect_lemma(non_union_group, c)
 
     # update content
     for i in range(len(group)):
@@ -133,14 +134,13 @@ def _close(
         if incl_hilited or not _hilited_gram(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
             for c in orig.lemn_cols():
-                group[i][c] = line[c]
+                if not _hilited_union(orig, trans, group[i], c):
+                    group[i][c] = line[c]
             group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
         for c in trans.cols():
             if i in merge_rows or c in trans.word_cols():
                 # do not update lines that have union highlighting in translation
-                if c != trans.lemn_cols()[0] or not _hilited_union(
-                    orig, trans, group[i]
-                ):
+                if not _hilited_union(orig, trans, group[i], c):
                     group[i][c] = line[c]
 
     return group.copy()
