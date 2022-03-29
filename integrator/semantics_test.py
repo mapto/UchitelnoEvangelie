@@ -532,19 +532,19 @@ def test_add_count():
     rows = [[""] * 5 + ["om."], [""] * 4 + ["1/1a1", "om."]]
     for r in rows:
         counts = sem.add_count(r, counts)
-    assert counts == {"om.": 2}
-    assert rows == [[""] * 5 + ["om.", "1"], [""] * 4 + ["1/1a1", "om.", "2"]]
+    assert not counts
+    assert rows == [[""] * 5 + ["om.", "1"], [""] * 4 + ["1/1a1", "om.", "1"]]
 
     counts = {}
     rows = [["om."], ["om."], ["om."]]
     for r in rows:
         counts = sem.var.add_count(r, counts)
-    assert counts == {"om.": 3}
-    assert rows == [["om.", "1"], ["om.", "2"], ["om.", "3"]]
+    assert not counts
+    assert rows == [["om.", "1"], ["om.", "1"], ["om.", "1"]]
 
     counts = {}
     rows = [["om. WH"], ["om. WH"], ["om. WH"]]
     for r in rows:
         counts = sem.var.add_count(r, counts)
-    assert counts == {"om.": 3}
-    assert rows == [["om. WH", "1"], ["om. WH", "2"], ["om. WH", "3"]]
+    assert not counts
+    assert rows == [["om. WH", "1"], ["om. WH", "1"], ["om. WH", "1"]]
