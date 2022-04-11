@@ -4,7 +4,7 @@
 
 from typing import Dict, List
 
-from const import IDX_COL, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
+from const import IDX_COL, SAME_CH, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
 
 from address import Index
 from model import Source
@@ -62,35 +62,21 @@ def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
     return row
 
 
-def _close(
+def _close_same(
+    group: List[List[str]],
+    trans: LangSemantics,
+) -> List[List[str]]:
+    assert group[1][trans.word] == SAME_CH
+    group[1][trans.word] = group[0][trans.word]
+    return [group[1]]
+
+
+def _close_group(
     group: List[List[str]],
     orig: LangSemantics,
     trans: LangSemantics,
     incl_hilited: bool = False,
 ) -> List[List[str]]:
-    """Wraps up a group that is currently being read.
-    Redistributes content according to desired (complex) logic
-    """
-    if not group:
-        return []
-
-    # locate index
-    if not group[0][IDX_COL]:
-        idxline = 0
-        for i, row in enumerate(group):
-            if row[IDX_COL]:
-                group[0][IDX_COL] = row[IDX_COL]
-                idxline = i + 1
-                break
-        if idxline:
-            print(
-                f"WARNING: липсва индекс в първия ред от групата. Намерен в {idxline} ред"
-            )
-        else:
-            for row in group:
-                print(row)
-            print(f"ГРЕШКА: липсва индекс в групата.")
-
     idx = _merge_indices(group)
 
     # populate variants equal to main
@@ -146,11 +132,53 @@ def _close(
     return group.copy()
 
 
+def _close(
+    group: List[List[str]],
+    orig: LangSemantics,
+    trans: LangSemantics,
+    incl_hilited: bool = False,
+) -> List[List[str]]:
+    """Wraps up a group that is currently being read.
+    Redistributes content according to desired (complex) logic
+    """
+    if not group:
+        return []
+
+    # locate index
+    if not group[0][IDX_COL]:
+        idxline = 0
+        for i, row in enumerate(group):
+            if row[IDX_COL]:
+                group[0][IDX_COL] = row[IDX_COL]
+                idxline = i + 1
+                break
+        if idxline:
+            print(
+                f"WARNING: липсва индекс в първия ред от групата. Намерен в {idxline} ред"
+            )
+        else:
+            for row in group:
+                print(row)
+            print(f"ГРЕШКА: липсва индекс в групата.")
+
+    if _same(group[-1], trans):
+        assert len(group) == 2
+        return _close_same(group, trans)
+    return _close_group(group, orig, trans, incl_hilited)
+
+
 def _grouped(row: List[str], sem: LangSemantics) -> bool:
     """Returns if the row takes part of a group with respect to this language (and its variants)"""
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
     if f"hl{sem.other().word:02d}" in row[STYLE_COL]:
+        return True
+    return False
+
+
+def _same(row: List[str], sem: LangSemantics) -> bool:
+    """Returns if the word is "=", meaning that it is the same as the previous row (for this direction of translation)"""
+    if row[sem.word].strip() == SAME_CH:
         return True
     return False
 
@@ -179,12 +207,13 @@ def merge(
     row_twords: Dict[str, int] = {}
     row_twords_var: Dict[str, int] = {}
     cur_idx = ""
+    prev_row: List[str] = []
     for raw in corpus:
         try:
             row = [clean_word(v) if v else "" for v in raw]
 
-            # if "1/6a10" in row[IDX_COL]:
-            #     print(row)
+            if "19/97d20" in row[IDX_COL]:
+                print(row)
 
             if not row[IDX_COL] and any(row):
                 row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
@@ -206,14 +235,17 @@ def merge(
             row_twords = trans.add_count(row, row_twords)
             row_twords_var = trans.other().add_count(row, row_twords_var)
 
-            if _grouped(row, orig) or _grouped(row, trans):
-                group.append(row)
+            if _same(row, orig) or _same(row, trans):
+                group = [prev_row]
+            if _grouped(row, orig) or _grouped(row, trans) or _same(row, orig) or _same(row, trans):
+                group += [row]
             else:
                 if group:
                     group = _close(group, orig, trans, incl_hilited)
                     result += group
                     group = []
-                result.append(row)
+                result += [row]
+            prev_row = row
         except Exception as e:
             print(
                 f"ГРЕШКА: При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"
