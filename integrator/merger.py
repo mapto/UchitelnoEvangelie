@@ -212,8 +212,8 @@ def merge(
         try:
             row = [clean_word(v) if v else "" for v in raw]
 
-            if "19/97d20" in row[IDX_COL]:
-                print(row)
+            # if "19/97d20" in row[IDX_COL]:
+            #     print(row)
 
             if not row[IDX_COL] and any(row):
                 row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
