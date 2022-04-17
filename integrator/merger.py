@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-"""A processor merging multiple lines when they are related"""
+"""A processor merging multiple lines when they are related.
+Takes care of construct grouping and repeated words counting"""
 
 from typing import Dict, List
 
@@ -64,10 +65,13 @@ def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
 
 def _close_same(
     group: List[List[str]],
+    orig: LangSemantics,
     trans: LangSemantics,
 ) -> List[List[str]]:
-    assert group[1][trans.word] == SAME_CH
-    group[1][trans.word] = group[0][trans.word]
+    if group[1][trans.word] == SAME_CH:
+        group[1][trans.word] = group[0][trans.word]
+    if group[1][orig.word] == SAME_CH:
+        group[1][orig.word] = group[0][orig.word]
     return [group[1]]
 
 
@@ -161,9 +165,9 @@ def _close(
                 print(row)
             print(f"ГРЕШКА: липсва индекс в групата.")
 
-    if _same(group[-1], trans):
+    if _same(group[-1], trans) or _same(group[-1], orig):
         assert len(group) == 2
-        return _close_same(group, trans)
+        return _close_same(group, orig, trans)
     return _close_group(group, orig, trans, incl_hilited)
 
 
@@ -237,7 +241,12 @@ def merge(
 
             if _same(row, orig) or _same(row, trans):
                 group = [prev_row]
-            if _grouped(row, orig) or _grouped(row, trans) or _same(row, orig) or _same(row, trans):
+            if (
+                _grouped(row, orig)
+                or _grouped(row, trans)
+                or _same(row, orig)
+                or _same(row, trans)
+            ):
                 group += [row]
             else:
                 if group:
