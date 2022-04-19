@@ -5,6 +5,7 @@ import re
 
 from const import PATH_SEP, SPECIAL_CHARS
 from const import VAR_SOURCES
+from regex import source_regex
 
 from util import base_word
 
@@ -93,8 +94,18 @@ class Source:
         return hash(self._sort_vars())
 
     def __iter__(self):
-        # TODO: Iter by source, not letter: difference is multiletter sources
-        return iter(self.src)
+        """
+        >>> [x for x in Source('BCMAsCh')]
+        ['B', 'C', 'M', 'As', 'Ch']
+        """
+        result = []
+        iter_regex = r"^([A-Z][a-z0-9]?)(.*)$"
+        found = re.match(iter_regex, self.src)
+        while found and found.group(1):
+            result += [found.group(1)]
+            rest = found.group(2)
+            found = re.match(iter_regex, rest)
+        return iter(result)
 
     def __contains__(self, other) -> bool:
         """
@@ -130,13 +141,19 @@ class Source:
         Source('AB')
         >>> Source("A").inside({Source("AB"): 1, Source("C"): 2})
         Source('AB')
-        >>> Source("F").inside(["ABCDEF"])
-        'ABCDEF'
+        >>> Source("F").inside("ABCDEF")
+        Source('ABCDEF')
         >>> Source("AF").inside(["ABCDEF"])
         'ABCDEF'
         >>> Source("A").inside([Source("AB"), Source("C")])
         Source('AB')
+        >>> Source("Pz").inside(Source("PwPxPyPz"))
+        Source('PwPxPyPz')
         """
+        if type(iterable) == str:
+            iterable = Source(iterable)
+        if type(iterable) == Source:
+            iterable = [iterable]
         for i in iterable:
             if Source(str(self)) in Source(str(i)):
                 return i
