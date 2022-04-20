@@ -32,7 +32,8 @@ from merger import merge
 from aggregator import aggregate
 from exporter import export_docx
 
-INCL_HILITED = True
+# INCL_HILITED = True
+INCL_HILITED = False
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)

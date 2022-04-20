@@ -6,6 +6,7 @@ import re
 from const import PATH_SEP, SPECIAL_CHARS
 from const import VAR_SOURCES
 from regex import source_regex
+from config import FROM_LANG, TO_LANG
 
 from util import base_word
 
@@ -20,18 +21,23 @@ class Source:
 
     def _sort_vars(self) -> str:
         """
-        >>> Source('WGH')._sort_vars()
-        'GHW'
+        >>> Source('GHW')._sort_vars()
+        'WGH'
         >>> Source('PbPa')._sort_vars()
         'PaPb'
-        >>> Source('CMB')._sort_vars()
-        'BCM'
+        >>> Source('CMBAsCh')._sort_vars()
+        'BCMAsCh'
         >>> Source('WH')._sort_vars()
-        'HW'
-        >>> Source('HW')._sort_vars()
-        'HW'
+        'WH'
+        >>> Source('CMBAsChHW')._sort_vars()
+        'WHBCMAsCh'
         """
-        return "".join(sorted(self.values()))
+        res = ""
+        for lang in [FROM_LANG, TO_LANG]:
+            for s in Source(VAR_SOURCES[lang]):
+                if s in self:
+                    res += str(s)
+        return res
 
     def values(self) -> Set[str]:
         split = set()
@@ -187,12 +193,18 @@ class Source:
         Source('W')
         >>> Source("MPb").by_lang("gr")
         Source('MPb')
+        >>> Source("HG").by_lang("sl")
+        Source('GH')
+        >>> Source("CMBAsChHW").by_lang("sl")
+        Source('WH')
+        >>> Source("CMBAsChHW").by_lang("gr")
+        Source('BCMAsCh')
         """
-        result = ""
-        for s in self:
-            if Source(s).inside(VAR_SOURCES[lang]):
-                result += s
-        return Source(result)
+        res = ""
+        for s in Source(VAR_SOURCES[lang]):
+            if s in self:
+                res += str(s)
+        return Source(res)
 
 
 @dataclass(frozen=True)
