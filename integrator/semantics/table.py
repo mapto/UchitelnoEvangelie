@@ -15,7 +15,7 @@ class TableSemantics:
     orig: LangSemantics
     trans: LangSemantics
     idx: int = IDX_COL
-    example: int = EXAMPLE_COL
+    example: int = EXAMPLE_COL  # actually not used
     style: int = STYLE_COL
     label: str = ""
     result: SortedDict = field(default_factory=lambda: SortedDict(ord_word))

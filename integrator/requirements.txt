@@ -1,5 +1,4 @@
 docopt==0.6.2
 openpyxl==3.0.9
-Pillow==9.0.1
 python-docx==0.8.11
 sortedcontainers==2.4.0
