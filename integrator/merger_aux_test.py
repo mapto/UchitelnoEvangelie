@@ -1,9 +1,9 @@
 from setup import sl_sem, gr_sem
 from semantics import VarLangSemantics
-from merger import _hilited_lemma, _expand_special_char
+from merger import _hilited_gram, _expand_special_char
 
 
-def test_hilited_lemma():
+def test_hilited_gram():
     r = (
         [""] * 4
         + [
@@ -17,8 +17,8 @@ def test_hilited_lemma():
         + [""] * 16
         + ["hl05|hl09"]
     )
-    assert _hilited_lemma(sl_sem, gr_sem, r)
-    assert _hilited_lemma(gr_sem, sl_sem, r)
+    assert _hilited_gram(sl_sem, gr_sem, r)
+    assert _hilited_gram(gr_sem, sl_sem, r)
     r = (
         [""] * 4
         + [
@@ -32,8 +32,8 @@ def test_hilited_lemma():
         + [""] * 12
         + ["hl05"]
     )
-    assert not _hilited_lemma(sl_sem, gr_sem, r)
-    assert not _hilited_lemma(gr_sem, sl_sem, r)
+    assert not _hilited_gram(sl_sem, gr_sem, r)
+    assert not _hilited_gram(gr_sem, sl_sem, r)
     r = (
         [
             "+ \ue201сть GH",
@@ -48,10 +48,10 @@ def test_hilited_lemma():
         + [""] * 3
         + ["Ø"] * 2
         + [""] * 13
-        + ["hl05|hl02"]
+        + ["hl05|hl03"]
     )
-    assert _hilited_lemma(sl_sem, gr_sem, r)
-    assert _hilited_lemma(sl_sem.var, gr_sem.var, r)
+    assert _hilited_gram(sl_sem, gr_sem, r)
+    assert _hilited_gram(sl_sem.var, gr_sem.var, r)
     r = (
         [""] * 4
         + ["12/67c10", "бꙑхомъ•", "в\ue205дѣл\ue205 бꙑхо-", "бꙑт\ue205"]
@@ -59,8 +59,8 @@ def test_hilited_lemma():
         + [""] * 12
         + ["hl05|hl09"]
     )
-    assert _hilited_lemma(sl_sem, gr_sem, r)
-    assert _hilited_lemma(sl_sem.var, gr_sem, r)
+    assert _hilited_gram(sl_sem, gr_sem, r)
+    assert _hilited_gram(sl_sem.var, gr_sem, r)
 
 
 def test_expand_special_char():

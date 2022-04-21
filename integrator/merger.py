@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-"""A processor merging multiple lines when they are related"""
+"""A processor merging multiple lines when they are related.
+Takes care of construct grouping and repeated words counting"""
 
 from typing import Dict, List
 
-from const import IDX_COL, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
+from const import IDX_COL, SAME_CH, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
 
 from address import Index
 from model import Source
@@ -27,8 +28,19 @@ def _hilited(row: List[str], col: int) -> bool:
     return f"hl{col:02d}" in row[STYLE_COL]
 
 
-def _hilited_lemma(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
-    cols = osem.lemn_cols() + tsem.lemn_cols()
+def _hilited_gram(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
+    """highlighting in third lemma and further"""
+    cols = osem.lemn_cols()[1:] + tsem.lemn_cols()[1:]
+    return any(_hilited(row, c) for c in cols)
+
+
+def _hilited_union(
+    osem: LangSemantics, tsem: LangSemantics, row: List[str], col: int = -1
+) -> bool:
+    """highlighting in second lemma. Also checks if passed column is in second lemma, if passed at all"""
+    cols = [osem.lemn_cols()[0], tsem.lemn_cols()[0]]
+    if col != -1 and col not in cols:
+        return False
     return any(_hilited(row, c) for c in cols)
 
 
@@ -49,6 +61,79 @@ def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
     if row[sem.lemmas[1]].strip() in SPECIAL_CHARS:
         row[sem.lemmas[1]] = f"{row[sem.lemmas[1]]} {row[sem.lemmas[0]]}"
     return row
+
+
+def _close_same(
+    group: List[List[str]],
+    orig: LangSemantics,
+    trans: LangSemantics,
+) -> List[List[str]]:
+    if group[1][trans.word] == SAME_CH:
+        group[1][trans.word] = group[0][trans.word]
+    if group[1][orig.word] == SAME_CH:
+        group[1][orig.word] = group[0][orig.word]
+    return [group[1]]
+
+
+def _close_group(
+    group: List[List[str]],
+    orig: LangSemantics,
+    trans: LangSemantics,
+    incl_hilited: bool = False,
+) -> List[List[str]]:
+    idx = _merge_indices(group)
+
+    # populate variants equal to main
+    assert orig.main  # for mypy
+    variants = _group_variants(group, orig.main)
+    assert orig.var  # for mypy
+    if variants:
+        for row in group:
+            if present(row, orig.var) and row[orig.word] and not row[orig.var.word]:
+                row[orig.var.word] = f"{row[orig.word]} {variants}"
+
+    # only lines without highlited lemmas, i.e. gramm. annotation or union annotation
+    merge_rows = [i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)]
+    non_gram_group = [group[i] for i in merge_rows]
+    non_union_group = [r for r in non_gram_group if not _hilited_union(orig, trans, r)]
+
+    # collect content
+    line = [""] * STYLE_COL
+
+    line[orig.word] = orig.collect_word(group)
+    line[trans.word] = trans.collect_word(group)
+
+    line[orig.other().word] = orig.other().collect_word(group)
+    line[trans.other().word] = trans.other().collect_word(group)
+
+    line[orig.other().lemmas[0]] = orig.other().collect_lemma(
+        non_gram_group, orig.other().lemmas[0]
+    )
+
+    for c in trans.lem1_cols():
+        line[c] = trans.collect_lemma(non_gram_group, c, V_LEMMA_SEP)
+    for c in orig.lemn_cols()[1:] + trans.lemn_cols()[1:]:
+        line[c] = trans.collect_lemma(non_gram_group, c)
+    for c in [orig.lemn_cols()[0], trans.lemn_cols()[0]]:
+        line[c] = trans.collect_lemma(non_union_group, c)
+
+    # update content
+    for i in range(len(group)):
+        for c in orig.word_cols():
+            group[i][c] = line[c]
+        if incl_hilited or not _hilited_gram(orig, trans, group[i]):
+            group[i][IDX_COL] = idx.longstr()
+            for c in orig.lemn_cols():
+                if not _hilited_union(orig, trans, group[i], c):
+                    group[i][c] = line[c]
+            group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
+        for c in trans.cols():
+            if i in merge_rows or c in trans.word_cols():
+                # do not update lines that have union highlighting in translation
+                if not _hilited_union(orig, trans, group[i], c):
+                    group[i][c] = line[c]
+
+    return group.copy()
 
 
 def _close(
@@ -80,53 +165,10 @@ def _close(
                 print(row)
             print(f"ГРЕШКА: липсва индекс в групата.")
 
-    idx = _merge_indices(group)
-
-    # populate variants equal to main
-    assert orig.main  # for mypy
-    variants = _group_variants(group, orig.main)
-    assert orig.var  # for mypy
-    if variants:
-        for row in group:
-            if present(row, orig.var) and row[orig.word] and not row[orig.var.word]:
-                row[orig.var.word] = f"{row[orig.word]} {variants}"
-
-    # only lines without highlited lemmas, i.e. gramm. annotation
-    merge_rows = [i for i, r in enumerate(group) if not _hilited_lemma(orig, trans, r)]
-    merge_group = [group[i] for i in merge_rows]
-
-    # collect content
-    line = [""] * STYLE_COL
-
-    line[orig.word] = orig.collect_word(group)
-    line[trans.word] = trans.collect_word(group)
-
-    line[orig.other().word] = orig.other().collect_word(group)
-    line[trans.other().word] = trans.other().collect_word(group)
-
-    line[orig.other().lemmas[0]] = orig.other().collect_lemma(
-        merge_group, orig.other().lemmas[0]
-    )
-
-    for c in trans.lem1_cols():
-        line[c] = trans.collect_lemma(merge_group, c, V_LEMMA_SEP)
-    for c in orig.lemn_cols() + trans.lemn_cols():
-        line[c] = trans.collect_lemma(merge_group, c)
-
-    # update content
-    for i in range(len(group)):
-        for c in orig.word_cols():
-            group[i][c] = line[c]
-        if incl_hilited or not _hilited_lemma(orig, trans, group[i]):
-            group[i][IDX_COL] = idx.longstr()
-            for c in orig.lemn_cols():
-                group[i][c] = line[c]
-            group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
-        for c in trans.cols():
-            if i in merge_rows or c in trans.word_cols():
-                group[i][c] = line[c]
-
-    return group.copy()
+    if _same(group[-1], trans) or _same(group[-1], orig):
+        assert len(group) == 2
+        return _close_same(group, orig, trans)
+    return _close_group(group, orig, trans, incl_hilited)
 
 
 def _grouped(row: List[str], sem: LangSemantics) -> bool:
@@ -134,6 +176,13 @@ def _grouped(row: List[str], sem: LangSemantics) -> bool:
     if f"hl{sem.word:02d}" in row[STYLE_COL]:
         return True
     if f"hl{sem.other().word:02d}" in row[STYLE_COL]:
+        return True
+    return False
+
+
+def _same(row: List[str], sem: LangSemantics) -> bool:
+    """Returns if the word is "=", meaning that it is the same as the previous row (for this direction of translation)"""
+    if row[sem.word].strip() == SAME_CH:
         return True
     return False
 
@@ -162,11 +211,12 @@ def merge(
     row_twords: Dict[str, int] = {}
     row_twords_var: Dict[str, int] = {}
     cur_idx = ""
+    prev_row: List[str] = []
     for raw in corpus:
         try:
             row = [clean_word(v) if v else "" for v in raw]
 
-            # if "1/6a10" in row[IDX_COL]:
+            # if "19/97d20" in row[IDX_COL]:
             #     print(row)
 
             if not row[IDX_COL] and any(row):
@@ -189,14 +239,22 @@ def merge(
             row_twords = trans.add_count(row, row_twords)
             row_twords_var = trans.other().add_count(row, row_twords_var)
 
-            if _grouped(row, orig) or _grouped(row, trans):
-                group.append(row)
+            if _same(row, orig) or _same(row, trans):
+                group = [prev_row]
+            if (
+                _grouped(row, orig)
+                or _grouped(row, trans)
+                or _same(row, orig)
+                or _same(row, trans)
+            ):
+                group += [row]
             else:
                 if group:
                     group = _close(group, orig, trans, incl_hilited)
                     result += group
                     group = []
-                result.append(row)
+                result += [row]
+            prev_row = row
         except Exception as e:
             print(
                 f"ГРЕШКА: При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"

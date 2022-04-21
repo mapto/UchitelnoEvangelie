@@ -6,7 +6,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import IDX_COL, STYLE_COL
+from const import IDX_COL, NON_COUNTABLE, STYLE_COL
 from const import EMPTY_CH, MISSING_CH
 from const import VAR_SEP
 from const import DEFAULT_SOURCES
@@ -313,7 +313,7 @@ class MainLangSemantics(LangSemantics):
         while len(row) < self.cnt_col + 1:
             row += ["1"]
 
-        if not row[self.word] or row[self.word] == EMPTY_CH:
+        if not row[self.word] or row[self.word] in NON_COUNTABLE:
             return row_counts
         if row[self.word] in row_counts:
             row_counts[row[self.word]] += 1
@@ -488,7 +488,7 @@ class VarLangSemantics(LangSemantics):
             return row_counts
         multiword = self.multiword(row)
         for k, v in multiword.items():
-            if v == EMPTY_CH:
+            if v in NON_COUNTABLE:
                 continue
             if v in row_counts:
                 row_counts[v] += 1

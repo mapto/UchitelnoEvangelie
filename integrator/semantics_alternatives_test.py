@@ -4,6 +4,17 @@ from model import Alternative, Source
 from semantics import MainLangSemantics, VarLangSemantics
 
 
+# semantics update from September 2021
+# with repetitions added (as if after merge)
+sl_sem = MainLangSemantics(
+    FROM_LANG,
+    5,
+    [7, 8, 9, 10],
+    VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+    cnt_col=STYLE_COL + 1,
+)
+
+
 def test_LangSemantics_alternatives():
     style_col = 24
     # old semantics
@@ -92,15 +103,8 @@ def test_LangSemantics_alternatives():
         var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
     )
 
-    # semantics update from September 2021
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
 
+def test_LangSemantics_alternatives_std_sem():
     row = (
         ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"]
         + [""] * 2
@@ -127,14 +131,6 @@ def test_LangSemantics_alternatives():
 
 
 def test_bozhii():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-
     row = (
         ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
         + [""] * 2
@@ -163,13 +159,6 @@ def test_bozhii():
 
 
 def test_MainLangSemantics_ot():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
     row = (
         ["ѿ WG  ѡ H", "отъ"]
         + [""] * 2

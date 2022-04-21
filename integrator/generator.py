@@ -39,7 +39,7 @@ def _generate_usage_alt_vars(par, lang: str, alt_var: Alternative) -> None:
             _generate_text(par, ", ")
         _generate_text(par, lemma, fonts[lang])
         if lsrc:
-            _generate_text(par, str(lsrc), superscript=True)
+            _generate_text(par, str(lsrc._sort_vars()), superscript=True)
         if cnt > 1:
             _generate_text(par, subscript(cnt, lang), subscript=True)
     _generate_text(par, BRACE_CLOSE[lang])

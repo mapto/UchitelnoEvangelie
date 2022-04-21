@@ -3,9 +3,10 @@ from dataclasses import dataclass, field
 
 import re
 
-from regex import source_regex
 from const import PATH_SEP, VAR_SEP, SPECIAL_CHARS
 from const import VAR_SOURCES
+from regex import source_regex
+from config import FROM_LANG, TO_LANG
 
 from util import base_word
 
@@ -20,18 +21,23 @@ class Source:
 
     def _sort_vars(self) -> str:
         """
-        >>> Source('WGH')._sort_vars()
-        'GHW'
+        >>> Source('GHW')._sort_vars()
+        'WGH'
         >>> Source('PbPa')._sort_vars()
         'PaPb'
-        >>> Source('CMB')._sort_vars()
-        'BCM'
+        >>> Source('CMBAsCh')._sort_vars()
+        'BCMAsCh'
         >>> Source('WH')._sort_vars()
-        'HW'
-        >>> Source('HW')._sort_vars()
-        'HW'
+        'WH'
+        >>> Source('CMBAsChHW')._sort_vars()
+        'WHBCMAsCh'
         """
-        return "".join(sorted(self.values()))
+        res = ""
+        for lang in [FROM_LANG, TO_LANG]:
+            for s in Source(VAR_SOURCES[lang]):
+                if s in self:
+                    res += str(s)
+        return res
 
     def values(self) -> Set[str]:
         split = set()
@@ -64,6 +70,7 @@ class Source:
         >>> Source('HW') in {Source('WH'): '\ue201д\ue205но\ue20dѧдъ'}
         True
         """
+        # print(other, type(other))
         return self._sort_vars() == Source(str(other))._sort_vars()
 
     def __ne__(self, other) -> bool:
@@ -94,13 +101,21 @@ class Source:
         return hash(self._sort_vars())
 
     def __iter__(self):
-        parts = []
+        """
+        >>> [x for x in Source('BCMAsCh')]
+        ['B', 'C', 'M', 'As', 'Ch']
+        >>> [x for x in Source('WGH-BCMAsCh')]
+        ['W', 'G', 'H', 'B', 'C', 'M', 'As', 'Ch']
+        """
+        result = []
         rest = self.src.replace(VAR_SEP, "")
-        while rest:
-            m = re.search(source_regex, rest)
-            parts += [m.group(1)]
-            rest = m.group(2)
-        return iter(parts)
+        iter_regex = r"^([A-Z][a-z0-9]?)(.*)$"
+        found = re.match(iter_regex, rest)
+        while found and found.group(1):
+            result += [found.group(1)]
+            rest = found.group(2)
+            found = re.match(iter_regex, rest)
+        return iter(result)
 
     def __contains__(self, other) -> bool:
         """
@@ -119,27 +134,39 @@ class Source:
         """
         return all(c in self.values() for c in Source(str(other)).values())
 
-    def inside(self, iterable: Iterable[Union[str, "Source"]]) -> Optional["Source"]:
-        """Takes iterable of sources. Even though Source itself is an iterable of strings, not valid input.
-        Returns the source overlap or None
+    def __bool__(self) -> bool:
+        """
+        >>> True if Source() else False
+        False
+        >>> True if Source("") else False
+        False
+        >>> True if Source("A") else False
+        True
+        """
+        return bool(self.src)
 
+    def inside(self, iterable) -> Optional["Source"]:
+        """
         >>> Source("A").inside([Source("AB"), Source("C")])
         Source('AB')
         >>> Source("A").inside({Source("AB"): 1, Source("C"): 2})
         Source('AB')
-        >>> Source("F").inside(["ABCDEF"])
+        >>> Source("F").inside("ABCDEF")
         Source('ABCDEF')
         >>> Source("AF").inside(["ABCDEF"])
         Source('ABCDEF')
         >>> Source("A").inside([Source("AB"), Source("C")])
         Source('AB')
-
+        >>> Source("Pz").inside(Source("PwPxPyPz"))
+        Source('PwPxPyPz')
         >>> Source("").inside([Source("")])
         Source('')
         >>> Source("").inside([Source("A")])
         """
         if type(iterable) == str:
-            iterable = Source(str(iterable))
+            iterable = Source(iterable)
+        if type(iterable) == Source:
+            iterable = [iterable]
         if not self.src:
             for i in iterable:
                 if not i:
@@ -178,16 +205,22 @@ class Source:
         Source('W')
         >>> Source("MPb").by_lang("gr")
         Source('MPb')
+        >>> Source("HG").by_lang("sl")
+        Source('GH')
+        >>> Source("CMBAsChHW").by_lang("sl")
+        Source('WH')
+        >>> Source("CMBAsChHW").by_lang("gr")
+        Source('BCMAsCh')
         >>> Source("WGH").by_lang("sl")
         Source('WGH')
         >>> Source("GHW").by_lang("sl")
         Source('WGH')
         """
-        result = ""
+        res = ""
         for s in Source(VAR_SOURCES[lang]):
-            if Source(s).inside(self):
-                result += s
-        return Source(result)
+            if s in self:
+                res += str(s)
+        return Source(res)
 
 
 @dataclass(frozen=True)

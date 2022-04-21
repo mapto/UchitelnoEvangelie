@@ -5,6 +5,7 @@ from const import STYLE_COL
 from model import Alternative, Index, Path, Source, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 from semantics import _is_variant_lemma, _add_usage
+from setup import sl_sem, gr_sem
 
 
 def test_post_init():
@@ -19,13 +20,6 @@ def test_post_init():
 
 
 def test__is_variant_lemma():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     row = (
         [""] * 4
         + [
@@ -76,12 +70,6 @@ def test__is_variant_lemma():
 
 
 def test_is_variant_lemma_bozhii():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
     row = (
         ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
         + [""] * 2
@@ -94,13 +82,6 @@ def test_is_variant_lemma_bozhii():
 
 
 def test_build_paths():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     res = sl_sem.build_paths([""] * 7 + ["боудеть", "бꙑт\ue205 ", "", "gram."])
     res = [str(r) for r in res]
     assert res == ["бꙑт\ue205 → боудеть gram."]
@@ -191,13 +172,6 @@ def test_build_paths():
 
 
 def test_build_paths_special():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     row = (
         ["свѣть WH"]
         + [""] * 3
@@ -672,19 +646,40 @@ def test_add_count():
     rows = [[""] * 5 + ["om."], [""] * 4 + ["1/1a1", "om."]]
     for r in rows:
         counts = sem.add_count(r, counts)
-    assert counts == {"om.": 2}
-    assert rows == [[""] * 5 + ["om.", "1"], [""] * 4 + ["1/1a1", "om.", "2"]]
+    assert not counts
+    assert rows == [[""] * 5 + ["om.", "1"], [""] * 4 + ["1/1a1", "om.", "1"]]
 
     counts = {}
     rows = [["om."], ["om."], ["om."]]
     for r in rows:
         counts = sem.var.add_count(r, counts)
-    assert counts == {"om.": 3}
-    assert rows == [["om.", "1"], ["om.", "2"], ["om.", "3"]]
+    assert not counts
+    assert rows == [["om.", "1"], ["om.", "1"], ["om.", "1"]]
 
     counts = {}
     rows = [["om. WH"], ["om. WH"], ["om. WH"]]
     for r in rows:
         counts = sem.var.add_count(r, counts)
-    assert counts == {"om.": 3}
-    assert rows == [["om. WH", "1"], ["om. WH", "2"], ["om. WH", "3"]]
+    assert not counts
+    assert rows == [["om. WH", "1"], ["om. WH", "1"], ["om. WH", "1"]]
+
+
+def test_compile_words_by_lemma_artos():
+    gr_sem = MainLangSemantics(
+        TO_LANG,
+        11,
+        [12, 13, 14],
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 1),
+    )
+    row = (
+        [""] * 4
+        + ["16/80a08", "хлѣбꙑ•", "ре\ue20dе хлѣбꙑ• не", "хлѣбъ"]
+        + [""] * 3
+        + ["om."] * 2
+        + [""] * 3
+        + ["ἄρτους Ch", "ἄρτος"]
+        + [""] * 9
+        + ["1"] * 4
+    )
+    res = gr_sem.var.compile_words_by_lemma(row, Source("Ch"))
+    assert res == ("ἄρτους Ch", 1)

@@ -7,23 +7,25 @@ from const import STYLE_COL
 from model import Index, Usage, Source, Alternative
 from semantics import MainLangSemantics, VarLangSemantics
 
+# semantics update from September 2021
+# with repetitions added (as if after merge)
+sl_sem = MainLangSemantics(
+    FROM_LANG,
+    5,
+    [7, 8, 9, 10],
+    VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+    cnt_col=STYLE_COL + 1,
+)
+gr_sem = MainLangSemantics(
+    TO_LANG,
+    11,
+    [12, 13, 14],
+    VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+    cnt_col=STYLE_COL + 3,
+)
+
 
 def test_para():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
-
     row = (
         [""] * 4
         + ["1/W168a19"]
@@ -95,21 +97,6 @@ def test_para():
 
 
 def test_ipercliso():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
-
     rows = [
         [""] * 4
         + [
@@ -195,21 +182,6 @@ def test_ipercliso():
 
 
 def test_verovat():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
-
     row = (
         [
             "вѣроу GH",
@@ -284,21 +256,6 @@ def test_verovat():
 
 
 def test_mene():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
-
     row = (
         [""] * 4
         + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
@@ -357,21 +314,6 @@ def test_mene():
 
 
 def test_monogenis():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
-
     row = (
         ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"]
         + [""] * 2
@@ -701,21 +643,6 @@ def test_monogenis():
 
 
 def test_bozhii():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
-
     r = (
         ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
         + [""] * 2
@@ -749,6 +676,45 @@ def test_bozhii():
                         orig_alt=Alternative(
                             main_lemma="богъ",
                             main_word="боꙁѣ",
+                        ),
+                    )
+                ]
+            )
+        }
+    }
+
+
+def test_artos():
+    row = (
+        [""] * 4
+        + ["16/80a08", "хлѣбꙑ•", "ре\ue20dе хлѣбꙑ• не", "хлѣбъ"]
+        + [""] * 3
+        + ["om."] * 2
+        + [""] * 3
+        + ["ἄρτους Ch", "ἄρτος"]
+        + [""] * 9
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = gr_sem.var.compile_usages(sl_sem, row, result, "ἄρτος", "хлѣбъ")
+    assert result == {
+        "хлѣбъ": {
+            ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=16,
+                            alt=False,
+                            page=80,
+                            col="a",
+                            row=8,
+                            word="ἄρτους Ch",
+                        ),
+                        lang="gr",
+                        var=Source("Ch"),
+                        orig_alt=Alternative(
+                            main_lemma="om.",
+                            main_word="om.",
                         ),
                     )
                 ]

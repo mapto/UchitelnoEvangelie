@@ -1,4 +1,7 @@
 docopt==0.6.2
 openpyxl==3.0.7
+<<<<<<< HEAD
 Pillow==9.0.1  # not used, introduced just because is dependency of openpyxl and github raised a security alert
+=======
+>>>>>>> master
 python-docx==0.8.11

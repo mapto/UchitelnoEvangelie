@@ -6,15 +6,15 @@ from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 from merger import merge, _grouped, _group_variants
 
+sl_sem = MainLangSemantics(
+    FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
+)
+gr_sem = MainLangSemantics(
+    TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
+)
+
 
 def test_grouped():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     row = (
         [
             "\ue201л\ue205ко WH",
@@ -69,13 +69,6 @@ def test_grouped():
 
 
 def test_group_variants():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     g1 = (
         [""] * 2
         + [
@@ -105,13 +98,6 @@ def test_group_variants():
 
 
 def test_merge():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     r1 = (
         [""] * 4
         + ["1/5a5", "не", "не бѣ ꙗвленъ•", "не", "не бꙑт\ue205 ꙗвл\ue201нъ"]
@@ -225,13 +211,6 @@ def test_merge():
 
 
 def test_merge_special():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     row = (
         [""] * 4
         + ["1/4b16", "на\ue20dатъ", "семоу на\ue20dатъ", "на\ue20dѧт\ue205", "≠"]
@@ -272,13 +251,6 @@ def test_merge_special():
 
 
 def test_merge_repeated_om():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     rows = [
         ["om. WH", "om."]
         + [""] * 2
@@ -319,7 +291,7 @@ def test_merge_repeated_om():
         + [""] * 3
         + ["om."] * 2
         + [""] * 14
-        + ["1", "2", "2", "1"],
+        + ["1", "1", "1", "1"],
     ]
 
     res = merge(rows, sl_sem.var, gr_sem)
@@ -348,18 +320,11 @@ def test_merge_repeated_om():
         + [""] * 3
         + ["om.", "om."]
         + [""] * 14
-        + ["1", "2", "2", "1"],
+        + ["1", "1", "1", "1"],
     ]
 
 
 def test_merge_repeated_kai():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     rows = [
         [""] * 4
         + ["1/5d9", "него•", "се \ue205 ѿ него• \ue205 не", "\ue205 pron."]
@@ -445,13 +410,6 @@ def test_merge_repeated_kai():
 
 
 def test_merge_repeated_velichanie():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     rows = [
         ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
         + [""] * 2
@@ -570,4 +528,182 @@ def test_merge_repeated_velichanie():
         + ["ἄτυφον", "ἄτυφος"]
         + [""] * 14
         + ["2", "1"] * 2,
+    ]
+
+
+def test_merge_na():
+
+    rows = [
+        [""] * 4
+        + [
+            "02/W169b26",
+            "ѡбою",
+            "ма же \ue201д\ue205нь ѿ ѡбою на де-",
+            "оба",
+            "",
+            "оба на десѧте",
+            "",
+        ]
+        + ["ιβʹ"] * 2
+        + [""] * 3
+        + ["δώδεκα MPaPh", "δώδεκα"]
+        + [""] * 8
+        + ["hl05|bold|italic"],
+        [""] * 4
+        + ["02/W169b26", "на", "ма же \ue201д\ue205нь ѿ ѡбою на де-", "на", "на + Loc."]
+        + [""] * 17
+        + ["hl05|hl08|bold|italic"],
+        [""] * 4
+        + ["02/W169b26", "десете•", "ма же \ue201д\ue205нь ѿ ѡбою на де-", "десѧть"]
+        + [""] * 18
+        + ["hl05|bold|italic"],
+    ]
+
+    res = merge([rows[0].copy(), rows[1].copy(), rows[2].copy()], sl_sem, gr_sem)
+    assert res == [
+        [""] * 4
+        + [
+            "02/W169b26",
+            "ѡбою на десете•",
+            "ма же \ue201д\ue205нь ѿ ѡбою на де-",
+            "оба",
+            "",
+            "оба на десѧте",
+            "",
+        ]
+        + ["ιβʹ"] * 2
+        + [""] * 3
+        + ["δώδεκα MPaPh", "δώδεκα"]
+        + [""] * 8
+        + ["hl05|bold|italic"]
+        + ["1"] * 4,
+        [""] * 4
+        + [
+            "02/W169b26",
+            "ѡбою на десете•",
+            "ма же \ue201д\ue205нь ѿ ѡбою на де-",
+            "на",
+            "на + Loc.",
+            "оба на десѧте",
+            "",
+        ]
+        + ["ιβʹ"] * 2
+        + [""] * 3
+        + ["δώδεκα MPaPh", "δώδεκα"]
+        + [""] * 8
+        + ["hl05|hl08|bold|italic"]
+        + ["1"] * 4,
+        [""] * 4
+        + [
+            "02/W169b26",
+            "ѡбою на десете•",
+            "ма же \ue201д\ue205нь ѿ ѡбою на де-",
+            "десѧть",
+            "",
+            "оба на десѧте",
+            "",
+        ]
+        + ["ιβʹ"] * 2
+        + [""] * 3
+        + ["δώδεκα MPaPh", "δώδεκα"]
+        + [""] * 8
+        + ["hl05|bold|italic"]
+        + ["1"] * 4,
+    ]
+
+    res = merge([rows[0].copy(), rows[1].copy(), rows[2].copy()], gr_sem, sl_sem)
+    assert res == [
+        [""] * 4
+        + [
+            "02/W169b26",
+            "ѡбою на десете•",
+            "ма же \ue201д\ue205нь ѿ ѡбою на де-",
+            "оба & на & десѧть",
+            "",
+            "оба на десѧте",
+            "",
+        ]
+        + ["ιβʹ"] * 2
+        + [""] * 3
+        + ["δώδεκα MPaPh", "δώδεκα"]
+        + [""] * 8
+        + ["hl05|bold|italic"]
+        + ["1"] * 4,
+        [""] * 4
+        + [
+            "02/W169b26",
+            "ѡбою на десете•",
+            "ма же \ue201д\ue205нь ѿ ѡбою на де-",
+            "оба & на & десѧть",
+            "на + Loc.",
+            "оба на десѧте",
+            "",
+            "ιβʹ",
+        ]
+        + [""] * 4
+        + ["δώδεκα MPaPh", "δώδεκα"]
+        + [""] * 8
+        + ["hl05|hl08|bold|italic"]
+        + ["1"] * 4,
+        [""] * 4
+        + [
+            "02/W169b26",
+            "ѡбою на десете•",
+            "ма же \ue201д\ue205нь ѿ ѡбою на де-",
+            "оба & на & десѧть",
+            "",
+            "оба на десѧте",
+            "",
+            "ιβʹ",
+        ]
+        + [""] * 4
+        + ["δώδεκα MPaPh", "δώδεκα"]
+        + [""] * 8
+        + ["hl05|bold|italic"]
+        + ["1"] * 4,
+    ]
+
+
+def test_merge_same():
+    rows = [
+        [""] * 4
+        + ["19/97d20", "нѣсть", "", "не"]
+        + [""] * 3
+        + ["οὐκ", "οὐ"]
+        + [""] * 14,
+        [""] * 5 + ["=", "", "бꙑт"] + [""] * 3 + ["εἰμί", "εἰμί"] + [""] * 14,
+    ]
+
+    res = merge([rows[0].copy(), rows[1].copy()], gr_sem, sl_sem)
+
+    assert res == [
+        [""] * 4
+        + ["19/97d20", "нѣсть", "", "не"]
+        + [""] * 3
+        + ["οὐκ", "οὐ"]
+        + [""] * 14
+        + ["1"] * 4,
+        [""] * 4
+        + ["19/97d20", "нѣсть", "", "бꙑт"]
+        + [""] * 3
+        + ["εἰμί", "εἰμί"]
+        + [""] * 14
+        + ["1"] * 4,
+    ]
+
+    res = merge([rows[0].copy(), rows[1].copy()], sl_sem, gr_sem)
+
+    assert res == [
+        [""] * 4
+        + ["19/97d20", "нѣсть", "", "не"]
+        + [""] * 3
+        + ["οὐκ", "οὐ"]
+        + [""] * 14
+        + ["1"] * 4,
+        [""] * 4
+        + ["19/97d20", "нѣсть", "", "бꙑт"]
+        + [""] * 3
+        + ["εἰμί", "εἰμί"]
+        + [""] * 14
+        + ["1"] * 4,
     ]

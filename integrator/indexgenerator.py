@@ -12,10 +12,14 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "0.2.3"  # used also by build.sh script
+__version__ = "0.2.5"  # used also by build.sh script
 
-from os.path import isdir
+from os import path
 from glob import glob
+import shutil
+import tempfile
+from datetime import datetime
+
 from docopt import docopt  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
 
@@ -58,16 +62,27 @@ if __name__ == "__main__":
     sem = pairs[0]
 
     expanded_fnames = []
+    to_clean = []
     for fname in fnames:
         print(f"Преглеждане: {fname}")
 
-        if isdir(fname):
-            expanded_fnames += glob(fname + "/*.xlsx")
+        if path.isdir(fname):
+            expanded_fnames += glob(path.join(fname, "*.xlsx"))
         elif len(fname) < 6 or "." not in fname[2:]:
             expanded_fnames += [fname + ".xlsx"]
         elif not fname.lower().endswith(".xlsx"):
-            print("Файлът трябва да е във формат .xlsx. Моля конвертирайте го")
-            exit()
+            dest_dir = path.join(tempfile.gettempdir(), fname)
+            if path.exists(dest_dir):
+                shutil.rmtree(dest_dir)
+            try:
+                shutil.unpack_archive(fname, dest_dir)
+                to_clean += [dest_dir]
+            except ValueError as ve:
+                print(
+                    f"Файлът {fname} трябва да е във формат .xlsx. Като алтернатива, може да е директория или архив. Моля конвертирайте го"
+                )
+                exit()
+            expanded_fnames += glob(path.join(dest_dir, "*.xlsx"))
         else:
             expanded_fnames += [fname]
     expanded_fnames.sort()
@@ -105,6 +120,9 @@ if __name__ == "__main__":
     export_fname = f"{fname_prefix}index-gre.docx"
     generate_docx(gre, TO_LANG, export_fname)
     print(f"Записване: {export_fname}")
+
+    for d in to_clean:
+        shutil.rmtree(d)
 
     if not args["--no-pause"]:
         input("Натиснете Enter, за да приключите изпълнението.")

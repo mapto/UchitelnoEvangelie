@@ -12,9 +12,15 @@ H_LEMMA_SEP = "/"  # indicates multiple variants provided together
 V_LEMMA_SEP = "&"  # indicates lemmas merged from several rows
 VAR_SEP = "-"  # used to separate the two language in variant source annotation
 
+SAME_CH = "="
 MISSING_CH = "ₓ"
 EMPTY_CH = "Ø"  # used when text is original, so no translation
-SPECIAL_CHARS = ["*", "≠", "≈"]
+SPECIAL_CHARS = ["*", "≠", "≈", "#"]  # # - for contextual translation
+
+ERR_SUBLEMMA = "err. pro"
+OMMIT_SUBLEMMA = "om."
+
+NON_COUNTABLE = [EMPTY_CH, MISSING_CH, OMMIT_SUBLEMMA]
 
 BRACE_OPEN = {FROM_LANG: "[", TO_LANG: "{"}
 BRACE_CLOSE = {FROM_LANG: "]", TO_LANG: "}"}
