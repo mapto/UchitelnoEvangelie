@@ -13,11 +13,16 @@ from util import base_word
 from address import Index
 
 
-@dataclass(frozen=True)
 class Source:
     """Represents a list of sources, could be one or two letter symbols"""
 
     src: str = ""
+
+    def __init__(self, other=None) -> None:
+        if type(other) == str:
+            self.src = other
+        elif type(other) == Source:
+            self.src = other.src
 
     def _sort_vars(self) -> str:
         """
@@ -40,6 +45,12 @@ class Source:
         return res
 
     def values(self) -> Set[str]:
+        """
+        >>> Source('MP').values() == {'P', 'M'}
+        True
+        >>> Source('MPaPb').values() == {'Pb', 'Pa', 'M'}
+        True
+        """
         split = set()
         prev = ""
         for c in self.src:
@@ -47,7 +58,8 @@ class Source:
                 split.add(prev + c)
                 prev = ""
             else:
-                split.add(prev)
+                if prev:
+                    split.add(prev)
                 prev = c
         if prev:
             split.add(prev)
@@ -70,13 +82,13 @@ class Source:
         >>> Source('HW') in {Source('WH'): '\ue201д\ue205но\ue20dѧдъ'}
         True
         """
-        return self._sort_vars() == Source(str(other))._sort_vars()
+        return self._sort_vars() == Source(other)._sort_vars()
 
     def __ne__(self, other) -> bool:
         return not (self == other)
 
     def __str__(self) -> str:
-        return self.src
+        return self._sort_vars()
 
     def __repr__(self) -> str:
         return f"Source('{self.src}')"
@@ -93,10 +105,6 @@ class Source:
         >>> hash(Source('WH')) == hash(Source('HW'))
         True
         """
-        # print("-"*8)
-        # print(self._sort_vars())
-        # print((self._sort_vars()).__hash__())
-        # print(hash((self._sort_vars())))
         return hash(self._sort_vars())
 
     def __iter__(self):
@@ -128,7 +136,7 @@ class Source:
         >>> Source('D') in Source('GWH')
         False
         """
-        return all(c in self.values() for c in Source(str(other)).values())
+        return all(c in self.values() for c in Source(other).values())
 
     def __bool__(self) -> bool:
         """
@@ -161,7 +169,7 @@ class Source:
         if type(iterable) == Source:
             iterable = [iterable]
         for i in iterable:
-            if Source(str(self)) in Source(str(i)):
+            if Source(self) in Source(i):
                 return i
         return None
 

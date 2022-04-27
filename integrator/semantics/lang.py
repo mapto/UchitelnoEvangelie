@@ -38,8 +38,7 @@ def _build_usage(
     idx = Index.unpack(row[IDX_COL], b, i, word, ocnt, tcnt)
     oalt = osem.alternatives(row, ovar)
     talt = tsem.alternatives(row, tvar)
-    var = ovar + VAR_SEP + tvar if ovar and tvar else ovar + tvar
-    return Usage(idx, osem.lang, var, oalt, talt)
+    return Usage(idx, osem.lang, ovar + tvar, oalt, talt)
 
 
 def _is_variant_lemma(
