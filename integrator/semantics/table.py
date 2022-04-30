@@ -5,7 +5,7 @@ from sortedcontainers import SortedDict  # type: ignore
 from const import IDX_COL, EXAMPLE_COL, STYLE_COL
 from util import ord_word
 
-from .lang import LangSemantics
+from .lang import LangSemantics, MainLangSemantics
 
 
 @dataclass
@@ -13,7 +13,7 @@ class TableSemantics:
     """Overall table column mapping"""
 
     orig: LangSemantics
-    trans: LangSemantics
+    trans: MainLangSemantics
     idx: int = IDX_COL
     example: int = EXAMPLE_COL  # actually not used
     style: int = STYLE_COL

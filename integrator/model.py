@@ -147,7 +147,7 @@ class Source:
         >>> True if Source("A") else False
         True
         """
-        return bool(self.src)
+        return bool(self.src.strip())
 
     def inside(self, iterable) -> Optional["Source"]:
         """
@@ -239,8 +239,10 @@ class Alternative:
         elif self.main_word > other.main_word:
             return False
 
-        self_var_word_keys = str(Source(sum(self.var_words.keys())))
-        other_var_word_keys = str(Source(sum(other.var_words.keys())))
+        self_var_word_keys = str(Source("".join(str(k) for k in self.var_words.keys())))
+        other_var_word_keys = str(
+            Source("".join(str(k) for k in other.var_words.keys()))
+        )
         if self_var_word_keys < other_var_word_keys:
             return True
         elif self_var_word_keys > other_var_word_keys:

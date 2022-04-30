@@ -13,6 +13,12 @@ from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, presen
 from util import clean_word, collect
 
 
+def _has_real_var(row: List[str], sem: MainLangSemantics) -> bool:
+    if not sem.var:
+        return False
+    return bool(row[sem.var.word])
+
+
 def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
     """Returns a list of variants (excluding main) that are present in this group"""
     variants = set()
@@ -30,7 +36,7 @@ def _hilited(row: List[str], col: int) -> bool:
 
 def _hilited_gram(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
     """highlighting in third lemma and further"""
-    cols = osem.lemn_cols()[1:] + tsem.lemn_cols()[1:]
+    cols = [osem.lemmas[2], tsem.lemmas[2]]
     return any(_hilited(row, c) for c in cols)
 
 
@@ -38,7 +44,7 @@ def _hilited_union(
     osem: LangSemantics, tsem: LangSemantics, row: List[str], col: int = -1
 ) -> bool:
     """highlighting in second lemma. Also checks if passed column is in second lemma, if passed at all"""
-    cols = [osem.lemn_cols()[0], tsem.lemn_cols()[0]]
+    cols = [osem.lemmas[1], tsem.lemmas[1]]
     if col != -1 and col not in cols:
         return False
     return any(_hilited(row, c) for c in cols)
@@ -75,14 +81,110 @@ def _close_same(
     return [group[1]]
 
 
+def _collect_group(
+    group: List[List[str]],
+    orig: LangSemantics,
+    trans: MainLangSemantics,
+    merge_rows_main: List[int],
+    merge_rows_var: List[int],
+) -> List[str]:
+    """Creates an combined line, based on lemma highlighting in group"""
+    non_gram_group_main = [group[i] for i in merge_rows_main]
+    non_gram_group_var = [group[i] for i in merge_rows_var]
+    non_union_group_main = [
+        r for r in non_gram_group_main if not _hilited_union(orig, trans, r)
+    ]
+    non_union_group_var = (
+        [r for r in non_gram_group_var if not _hilited_union(orig, trans.var, r)]
+        if trans.var
+        else []
+    )
+
+    line = [""] * STYLE_COL
+
+    line[orig.word] = orig.collect_word(group)
+    line[trans.word] = trans.collect_word(group)
+
+    line[orig.other().word] = orig.other().collect_word(group)
+    line[trans.other().word] = trans.other().collect_word(group)
+
+    # TODO: which trans should orig other depend on?
+    line[orig.other().lemmas[0]] = orig.other().collect_lemma(
+        non_gram_group_main, orig.other().lemmas[0]
+    )
+
+    line[trans.lemmas[0]] = trans.collect_lemma(
+        non_gram_group_main, trans.lemmas[0], V_LEMMA_SEP
+    )
+    if trans.var:
+        line[trans.var.lemmas[0]] = trans.collect_lemma(
+            non_gram_group_var, trans.var.lemmas[0], V_LEMMA_SEP
+        )
+
+    for c in orig.lemn_cols()[1:] + trans.lemmas[1:]:
+        line[c] = trans.collect_lemma(non_gram_group_main, c)
+    if trans.var:
+        for c in trans.var.lemmas[1:]:
+            line[c] = trans.collect_lemma(non_gram_group_var, c)
+
+    for c in [orig.lemmas[1], trans.lemmas[1]]:
+        line[c] = trans.collect_lemma(non_union_group_main, c)
+    if trans.var:
+        line[trans.var.lemmas[1]] = trans.collect_lemma(
+            non_union_group_var, trans.var.lemmas[1]
+        )
+    return line
+
+
+def _update_group(
+    g: List[List[str]],
+    orig: LangSemantics,
+    trans: MainLangSemantics,
+    line: List[str],
+    merge_rows_main: List[int],
+    merge_rows_var: List[int],
+) -> List[List[str]]:
+    idx = _merge_indices(g)
+
+    group = g.copy()
+    for i in range(len(group)):
+        if not _hilited_gram(orig, trans, group[i]):
+            group[i][IDX_COL] = idx.longstr()
+
+        for c in orig.word_cols():
+            group[i][c] = line[c]
+        if not _hilited_gram(orig, trans, group[i]):
+            for c in orig.lemn_cols():
+                if not _hilited_union(orig, trans, group[i], c):
+                    group[i][c] = line[c]
+            group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
+
+        for c in trans.cols():
+            # do not update lines that have union highlighting in translation
+            update = True
+            if c in trans.lemmas and _hilited_gram(orig, trans, group[i]):
+                update = False
+            if i in merge_rows_main or c == trans.word:
+                if _hilited_union(orig, trans, group[i], c):
+                    update = False
+            # print(trans.var, merge_rows_var)
+            if trans.var and group[i][trans.var.word]:
+                if c in trans.var.lemmas and _hilited_gram(orig, trans.var, group[i]):
+                    update = False
+                if i in merge_rows_var or c == trans.var.word:
+                    if _hilited_union(orig, trans.var, group[i], c):
+                        update = False
+            if update:
+                group[i][c] = line[c]
+
+    return group
+
+
 def _close_group(
     group: List[List[str]],
     orig: LangSemantics,
-    trans: LangSemantics,
-    incl_hilited: bool = False,
+    trans: MainLangSemantics,
 ) -> List[List[str]]:
-    idx = _merge_indices(group)
-
     # populate variants equal to main
     assert orig.main  # for mypy
     variants = _group_variants(group, orig.main)
@@ -93,54 +195,26 @@ def _close_group(
                 row[orig.var.word] = f"{row[orig.word]} {variants}"
 
     # only lines without highlited lemmas, i.e. gramm. annotation or union annotation
-    merge_rows = [i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)]
-    non_gram_group = [group[i] for i in merge_rows]
-    non_union_group = [r for r in non_gram_group if not _hilited_union(orig, trans, r)]
-
-    # collect content
-    line = [""] * STYLE_COL
-
-    line[orig.word] = orig.collect_word(group)
-    line[trans.word] = trans.collect_word(group)
-
-    line[orig.other().word] = orig.other().collect_word(group)
-    line[trans.other().word] = trans.other().collect_word(group)
-
-    line[orig.other().lemmas[0]] = orig.other().collect_lemma(
-        non_gram_group, orig.other().lemmas[0]
+    merge_rows_main = [
+        i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)
+    ]
+    merge_rows_var = (
+        [i for i, r in enumerate(group) if not _hilited_gram(orig, trans.var, r)]
+        if trans.var
+        else []
     )
 
-    for c in trans.lem1_cols():
-        line[c] = trans.collect_lemma(non_gram_group, c, V_LEMMA_SEP)
-    for c in orig.lemn_cols()[1:] + trans.lemn_cols()[1:]:
-        line[c] = trans.collect_lemma(non_gram_group, c)
-    for c in [orig.lemn_cols()[0], trans.lemn_cols()[0]]:
-        line[c] = trans.collect_lemma(non_union_group, c)
+    # collect content
+    line = _collect_group(group, orig, trans, merge_rows_main, merge_rows_var)
 
     # update content
-    for i in range(len(group)):
-        for c in orig.word_cols():
-            group[i][c] = line[c]
-        if incl_hilited or not _hilited_gram(orig, trans, group[i]):
-            group[i][IDX_COL] = idx.longstr()
-            for c in orig.lemn_cols():
-                if not _hilited_union(orig, trans, group[i], c):
-                    group[i][c] = line[c]
-            group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
-        for c in trans.cols():
-            if i in merge_rows or c in trans.word_cols():
-                # do not update lines that have union highlighting in translation
-                if not _hilited_union(orig, trans, group[i], c):
-                    group[i][c] = line[c]
-
-    return group.copy()
+    return _update_group(group, orig, trans, line, merge_rows_main, merge_rows_var)
 
 
 def _close(
     group: List[List[str]],
     orig: LangSemantics,
-    trans: LangSemantics,
-    incl_hilited: bool = False,
+    trans: MainLangSemantics,
 ) -> List[List[str]]:
     """Wraps up a group that is currently being read.
     Redistributes content according to desired (complex) logic
@@ -168,7 +242,7 @@ def _close(
     if _same(group[-1], trans) or _same(group[-1], orig):
         assert len(group) == 2
         return _close_same(group, orig, trans)
-    return _close_group(group, orig, trans, incl_hilited)
+    return _close_group(group, orig, trans)
 
 
 def _grouped(row: List[str], sem: LangSemantics) -> bool:
@@ -190,8 +264,7 @@ def _same(row: List[str], sem: LangSemantics) -> bool:
 def merge(
     corpus: List[List[str]],
     orig: LangSemantics,
-    trans: LangSemantics,
-    incl_hilited: bool = False,
+    trans: MainLangSemantics,
 ) -> List[List[str]]:
     """Merge lines according to color groups. This is an asymmetric operation
 
@@ -216,8 +289,8 @@ def merge(
         try:
             row = [clean_word(v) if v else "" for v in raw]
 
-            # if "19/97d20" in row[IDX_COL]:
-            #     print(row)
+            if "19/94d08" in row[IDX_COL]:
+                print(row)
 
             if not row[IDX_COL] and any(row):
                 row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
@@ -250,7 +323,7 @@ def merge(
                 group += [row]
             else:
                 if group:
-                    group = _close(group, orig, trans, incl_hilited)
+                    group = _close(group, orig, trans)
                     result += group
                     group = []
                 result += [row]
@@ -262,7 +335,7 @@ def merge(
             print(e)
             break
     if group:
-        group = _close(group, orig, trans, incl_hilited)
+        group = _close(group, orig, trans)
         result += group
 
     return result

@@ -4,14 +4,15 @@ from config import FROM_LANG, TO_LANG
 from semantics import MainLangSemantics, VarLangSemantics
 from merger import _close, _grouped, _group_variants
 
+sl_sem = MainLangSemantics(
+    FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
+)
+gr_sem = MainLangSemantics(
+    TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20])
+)
+
 
 def test_close():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
     group = [
         ["все WH", "вьсь"]
         + [""] * 2
@@ -85,7 +86,7 @@ def test_close():
         ]
         + [""] * 13
         + [
-            "hl05|hl11",
+            "hl05",
         ],
         [""] * 4
         + [
@@ -96,7 +97,7 @@ def test_close():
         ]
         + [""] * 18
         + [
-            "hl05|hl11",
+            "hl05",
         ],
     ]
     res = _close(group, sl_sem, gr_sem)
@@ -115,7 +116,7 @@ def test_close():
             "ἀπείρως",
         ]
         + [""] * 13
-        + ["hl05|hl11"],
+        + ["hl05"],
         [""] * 4
         + [
             "01/005a10",
@@ -130,7 +131,7 @@ def test_close():
             "ἀπείρως",
         ]
         + [""] * 13
-        + ["hl05|hl11"],
+        + ["hl05"],
     ]
     assert res == expected
 
@@ -372,13 +373,6 @@ def test_close():
 
 
 def test_tyam_li():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     group = [
         [
             "\ue205л\ue205 WH",
@@ -541,13 +535,6 @@ def test_tyam_li():
 
 
 def test_biti():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     g1 = (
         [""] * 4
         + [
@@ -658,13 +645,6 @@ def test_biti():
 
 
 def test_vetuhu():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     r1 = (
         [""] * 4
         + ["1/W168c20"]
@@ -709,13 +689,6 @@ def test_vetuhu():
 
 
 def test_vidit():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     r1 = (
         ["вѣдѣл\ue205 WG оувѣдѣл\ue205 H", "ѹвѣдѣт\ue205 H"]
         + [""] * 2
@@ -730,7 +703,7 @@ def test_vidit():
         + ["12/67c10", "бꙑхомъ•", "в\ue205дѣл\ue205 бꙑхо-", "бꙑт\ue205"]
         + ["", "gramm.", ""] * 2
         + [""] * 12
-        + ["hl05|hl09"]
+        + ["hl03|hl05|hl09"]
     )
 
     group = [r1.copy(), r2.copy()]
@@ -764,7 +737,7 @@ def test_vidit():
             "gramm.",
         ]
         + [""] * 13
-        + ["hl05|hl09"]
+        + ["hl03|hl05|hl09"]
     )
     assert res == [e1, e2]
 
@@ -799,7 +772,7 @@ def test_vidit():
             "gramm.",
         ]
         + [""] * 13
-        + ["hl05|hl09"]
+        + ["hl03|hl05|hl09"]
     )
     assert res == [e1, e2]
 
@@ -830,7 +803,7 @@ def test_vidit():
         ]
         + ["", "gramm.", "", "ἔγνωμεν", "gramm."]
         + [""] * 13
-        + ["hl05|hl09"]
+        + ["hl03|hl05|hl09"]
     )
     assert res == [e1, e2]
 
@@ -865,7 +838,73 @@ def test_vidit():
             "gramm.",
         ]
         + [""] * 13
-        + ["hl05|hl09"]
+        + ["hl03|hl05|hl09"]
     )
 
     assert res == [e1, e2]
+
+
+def test_zemenu():
+    rows = [
+        [""] * 4
+        + ["19/94d08"]
+        + ["ₓ", ""] * 2
+        + [""] * 7
+        + ["τῶν Ch", "ὁ"]
+        + [""] * 8
+        + ["hl16|hl19"],
+        [""] * 4
+        + ["19/94d08", "ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
+        + [""] * 8
+        + ["ἐπὶ Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
+        + [""] * 6
+        + ["hl16|hl18"],
+        [""] * 4 + ["19/94d08"] + [""] * 11 + ["γῆς Ch", "γῆ"] + [""] * 8 + ["hl16"],
+    ]
+
+    res = _close(rows.copy(), gr_sem.var, sl_sem)
+    assert res == [
+        [""] * 4
+        + ["19/94d08", "ₓ ꙁемьнꙑ\ue205", "", "ₓ"]
+        + [""] * 8
+        + ["τῶν ἐπὶ γῆς Ch", "ὁ"]
+        + [""] * 8
+        + ["hl16|hl19"],
+        [""] * 4
+        + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
+        + [""] * 8
+        + ["τῶν ἐπὶ γῆς Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
+        + [""] * 6
+        + ["hl16|hl18"],
+        [""] * 4
+        + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "", "ꙁемьнъ"]
+        + [""] * 8
+        + ["τῶν ἐπὶ γῆς Ch", "γῆ", "", "ὁ ἐπὶ γῆς"]
+        + [""] * 6
+        + ["hl16"],
+    ]
+
+    res = _close(rows.copy(), sl_sem, gr_sem)
+    # TODO
+    """
+    assert res == [
+        [""] * 4
+        + ["19/94d08", "ₓ ꙁемьнꙑ\ue205", "", "ₓ"]
+        + [""] * 8
+        + ["τῶν ἐπὶ γῆς Ch", "ὁ"]
+        + [""] * 8
+        + ["hl16|hl19"],
+        [""] * 4
+        + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
+        + [""] * 8
+        + ["τῶν ἐπὶ γῆς Ch", "ἐπί & γῆ", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
+        + [""] * 6
+        + ["hl16|hl18"],
+        [""] * 4
+        + ["19/094d08", "ₓ ꙁемьнꙑ\ue205"]
+        + [""] * 10
+        + ["τῶν ἐπὶ γῆς Ch", "ἐπί & γῆ", "", "ὁ ἐπὶ γῆς"]
+        + [""] * 6
+        + ["hl16"],
+    ]
+    """
