@@ -143,7 +143,7 @@ class Source:
         >>> True if Source("A") else False
         True
         """
-        return bool(self.src)
+        return bool(self.src.strip())
 
     def inside(self, iterable) -> Optional["Source"]:
         """
