@@ -43,3 +43,7 @@ def test_index_order():
     assert Index.unpack("3/11b2-3") > Index.unpack("1/W168a14-15")
 
     assert Index.unpack("1/8a13") > Index.unpack("1/5d9{2}")
+
+    assert Index(5, False, 22, "b", 5, word="оуслышат\ue205 GH") < Index(
+        5, False, 22, "b", 5, 2, 2, word="оуслышат\ue205 GH"
+    )

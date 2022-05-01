@@ -1896,3 +1896,59 @@ def test_missing_gr_main():
             }
         }
     }
+
+
+def test_v_loc():
+    row = (
+        [
+            "вь WGH",
+            "въ",
+            "въ + Loc.",
+            "",
+            "1/7d1",
+            "оу",
+            "оу насъ",
+            "ѹ praep.",
+            "оу + Gen.",
+        ]
+        + [""] * 2
+        + ["om."]
+        + [""] * 4
+        + ["παρ’", "παρά", "παρά + Acc."]
+        + [""] * 8
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = aggregate([row], sl_sem.var, gr_sem, result)
+    assert result == {
+        "въ": {
+            "въ + Loc.": {
+                "": {
+                    "": {
+                        "παρά + Acc. → παρά": {
+                            ("вь WGH", "παρ’ C"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=False,
+                                            page=7,
+                                            col="d",
+                                            row=1,
+                                            word="вь WGH",
+                                        ),
+                                        lang="sl",
+                                        var=Source("WHGC"),
+                                        orig_alt=Alternative(
+                                            main_lemma="оу + Gen.",
+                                            main_word="оу",
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }

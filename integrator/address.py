@@ -201,9 +201,20 @@ class Index:
         if self.row > other.row:
             return False
 
-        if other.end and self.end < other.end:
+        if self.end and other.end:
+            if self.end < other.end:
+                return True
+            if self.end > other.end:
+                return False
+
+        if self.ocnt < other.ocnt:
             return True
-        if not other.end or self.end > other.end:
+        if self.ocnt > other.ocnt:
+            return False
+
+        if self.tcnt < other.tcnt:
+            return True
+        if self.tcnt > other.tcnt:
             return False
 
         return self.word < other.word
