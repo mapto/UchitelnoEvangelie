@@ -45,13 +45,10 @@ def test_hilited_gram():
             "сътвор\ue205лъ",
             "om.",
         ]
-        + [""] * 3
-        + ["Ø"] * 2
-        + [""] * 13
-        + ["hl05|hl03"]
+        + [""] * 18
+        + ["hl05|hl09"]
     )
     assert _hilited_gram(sl_sem, gr_sem, r)
-    assert _hilited_gram(sl_sem.var, gr_sem.var, r)
     r = (
         [""] * 4
         + ["12/67c10", "бꙑхомъ•", "в\ue205дѣл\ue205 бꙑхо-", "бꙑт\ue205"]
@@ -60,7 +57,7 @@ def test_hilited_gram():
         + ["hl05|hl09"]
     )
     assert _hilited_gram(sl_sem, gr_sem, r)
-    assert _hilited_gram(sl_sem.var, gr_sem, r)
+    assert not _hilited_gram(sl_sem.var, gr_sem, r)
 
 
 def test_expand_special_char():

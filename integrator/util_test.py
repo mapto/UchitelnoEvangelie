@@ -3,17 +3,10 @@ import re
 import alphabet
 from config import FROM_LANG, TO_LANG
 from util import collect, ord_word, subscript, _ord
-from semantics import MainLangSemantics, VarLangSemantics
+from setup import sl_sem, gr_sem
 
 
 def test_collect_words():
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
     r1 = (
         [""] * 4
         + ["1/5a5", "не", "не бѣ ꙗвленъ•", "не", "не бꙑт\ue205 ꙗвл\ue201нъ"]
