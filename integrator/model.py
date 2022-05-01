@@ -105,10 +105,6 @@ class Source:
         >>> hash(Source('WH')) == hash(Source('HW'))
         True
         """
-        # print("-"*8)
-        # print(self._sort_vars())
-        # print((self._sort_vars()).__hash__())
-        # print(hash((self._sort_vars())))
         return hash(self._sort_vars())
 
     def __iter__(self):
@@ -185,7 +181,7 @@ class Source:
             return None
         for i in iterable:
             if Source(self) in Source(i):
-                return i
+                return Source(i)
         return None
 
     def has_lang(self, lang: str) -> bool:
@@ -204,7 +200,7 @@ class Source:
         True
         """
         for s in self:
-            if Source(s).inside(VAR_SOURCES[lang]):
+            if Source(s).inside(Source(VAR_SOURCES[lang])):
                 return True
         return False
 
