@@ -222,7 +222,21 @@ def test_agg_lemma_missing_gr_main():
     }
 
 
-def test_est_in_var_no_main():
+def test_agg_lemma_est_in_var_no_main():
+    sl_sem = MainLangSemantics(
+        FROM_LANG,
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
+    )
+    gr_sem = MainLangSemantics(
+        TO_LANG,
+        11,
+        [12, 13, 14, 15],
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
+    )
     row = (
         [
             "\ue201сть GH",

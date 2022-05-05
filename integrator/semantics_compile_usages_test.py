@@ -721,3 +721,80 @@ def test_artos():
             )
         }
     }
+
+
+def test_est_in_var_no_main():
+    sl_sem = MainLangSemantics(
+        FROM_LANG,
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
+    )
+    gr_sem = MainLangSemantics(
+        TO_LANG,
+        11,
+        [12, 13, 14, 15],
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
+    )
+
+    row = [
+        "\ue201сть GH",
+        "бꙑт\ue205",
+        "",
+        "gramm.",
+        "07/47a06",
+        "om.",
+        "сътвор\ue205лъ",
+        "om.",
+        "",
+        "",
+        "",
+        "Ø",
+        "Ø",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "hl03",
+        "1",
+        "1",
+        "1",
+        "1",
+    ]
+    result = SortedDict()
+    result = sl_sem.var.compile_usages(gr_sem, row, result, "бꙑт", "Ø")
+    assert result == {
+        "Ø": {
+            ("\ue201сть GH", "Ø"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=7,
+                            alt=False,
+                            page=47,
+                            col="a",
+                            row=6,
+                            word="\ue201сть GH",
+                        ),
+                        lang="sl",
+                        var=Source("GH"),
+                        orig_alt=Alternative(
+                            main_lemma="om.",
+                            main_word="om.",
+                        ),
+                    )
+                ]
+            )
+        }
+    }

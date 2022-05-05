@@ -1,7 +1,7 @@
 from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 
-
+from const import STYLE_COL
 from config import FROM_LANG, TO_LANG
 from setup import sl_sem, gr_sem
 
@@ -317,3 +317,39 @@ def test_gr_variant():
     )
     result = gr_sem.var.multilemma(row)
     assert result == {Source("Ch"): "ἄρτος"}
+
+
+def test_est_in_var_no_main():
+    sl_sem = MainLangSemantics(
+        FROM_LANG,
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
+    )
+
+    row = (
+        [
+            "\ue201сть GH",
+            "бꙑт\ue205",
+            "",
+            "gramm.",
+            "07/47a06",
+            "om.",
+            "сътвор\ue205лъ",
+            "om.",
+        ]
+        + [""] * 3
+        + ["Ø"] * 2
+        + [""] * 13
+        + ["hl03"]
+        + ["1"] * 4
+    )
+    # result = sl_sem.var.multilemma(row)
+    # assert result == {Source("GH"): "бꙑт\ue205"}
+
+    # result = sl_sem.var.multilemma(row, 1)
+    # assert result == {}
+
+    result = sl_sem.var.multilemma(row, 2)
+    assert result == {Source("GH"): "gramm."}

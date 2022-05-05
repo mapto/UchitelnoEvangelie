@@ -438,7 +438,10 @@ class VarLangSemantics(LangSemantics):
         # When in some variants word is missing, get lemma for this variant from main
         # When different variants have same lemma, unite. Case present only when deduced from different multiwords
         if len(result) == 1 and next(iter(result.keys())) == "":
-            prev_multi = self.multilemma(row, lidx - 1) if lidx else self.multiword(row)
+            previdx = lidx - 1
+            while not row[self.lemmas[previdx]]:
+                previdx -= 1
+            prev_multi = self.multilemma(row, previdx) if lidx else self.multiword(row)
             s = {str(k) for k, v in prev_multi.items() if v != EMPTY_CH}
             keys = Source(remove_repetitions("".join(s)))
             # keys = ""
