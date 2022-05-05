@@ -1,8 +1,7 @@
 from sortedcontainers import SortedDict, SortedSet, SortedSet  # type: ignore
 
 from config import TO_LANG
-from address import Index
-from model import Usage, Alternative
+from model import Usage, Alternative, Index
 from generator import _get_dict_counts
 
 

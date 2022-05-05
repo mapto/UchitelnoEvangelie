@@ -2,8 +2,7 @@ from sortedcontainers import SortedSet  # type: ignore
 
 from config import FROM_LANG, TO_LANG
 from const import VAR_SOURCES
-from address import Index
-from model import Alternative, Source, Usage
+from model import Alternative, Index, Source, Usage
 
 
 def test_order_usage():

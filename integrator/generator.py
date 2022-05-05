@@ -12,8 +12,7 @@ from const import SPECIAL_CHARS
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 from util import main_source, subscript
-from address import Index
-from model import Alternative, Usage, Counter, Source
+from model import Alternative, Index, Usage, Counter
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts

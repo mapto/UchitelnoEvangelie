@@ -1,4 +1,4 @@
-from address import Index
+from .address import Index
 
 
 def test_index_unpack():

@@ -13,8 +13,7 @@ from const import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
 from util import base_word, collect, remove_repetitions
-from address import Index
-from model import Alternative, Path, Source, Usage
+from model import Alternative, Index, Path, Source, Usage
 
 LAST_LEMMA = -1
 

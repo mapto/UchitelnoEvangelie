@@ -7,8 +7,7 @@ from typing import Dict, List
 
 from const import IDX_COL, SAME_CH, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
 
-from address import Index
-from model import Source
+from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
 from util import clean_word, collect
 
@@ -289,8 +288,9 @@ def merge(
         try:
             row = [clean_word(v) if v else "" for v in raw]
 
-            if "19/94d08" in row[IDX_COL]:
-                print(row)
+            # if "05/28c21" in row[IDX_COL] or "05/28d01" in row[IDX_COL]:
+            # if "14/72d1" in row[IDX_COL]:
+            #    print(row)
 
             if not row[IDX_COL] and any(row):
                 row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]

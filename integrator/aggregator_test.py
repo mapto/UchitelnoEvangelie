@@ -3,8 +3,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 
-from address import Index
-from model import Usage, Source, Alternative
+from model import Index, Usage, Source, Alternative
 
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import (
