@@ -253,8 +253,8 @@ def test_build_paths_puteshestive():
 
     res = sl_sem.var.build_paths(rows[0])
     assert res == [
-        Path(parts=["шьст\ue205\ue201", "шьст\ue205\ue201 пѫт\ue205"]),
         Path(parts=["шьств\ue205\ue201", "шьств\ue205\ue201 пѫт\ue205"]),
+        Path(parts=["шьст\ue205\ue201", "шьст\ue205\ue201 пѫт\ue205"]),
     ]
 
 

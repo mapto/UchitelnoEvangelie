@@ -5,7 +5,7 @@ so to avoid circular references they cannot use it"""
 
 from typing import Dict, List, Set
 import unicodedata
-from sortedcontainers import SortedSet  # type: ignore
+from sortedcontainers import SortedSet, SortedDict  # type: ignore
 
 from config import FROM_LANG, TO_LANG
 from config import MAIN_SL, MAIN_GR
@@ -117,11 +117,16 @@ def remove_repetitions(src: str = "") -> str:
 def regroup(d: Dict[Source, str]) -> Dict[Source, str]:
     """
     >>> regroup({Source('H'): 'шьств\ue205ꙗ', Source('G'): 'шьст\ue205ꙗ', Source('GH'): 'пꙋт\ue205'})
-    {Source('H'): 'шьств\ue205ꙗ пꙋт\ue205', Source('G'): 'шьст\ue205ꙗ пꙋт\ue205'}
-
+    {Source('G'): 'шьст\ue205ꙗ пꙋт\ue205', Source('H'): 'шьств\ue205ꙗ пꙋт\ue205'}
     >>> regroup({Source('G'): 'престьнц б•', Source('H'): 'престнц б•', Source('W'): 'боудемь W'})
     {Source('G'): 'престьнц б•', Source('H'): 'престнц б•', Source('W'): 'боудемь W'}
+    >>> regroup({Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь', Source('WG'): 'хⷪ҇домь спѣюще'})
+    {Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'}
+    >>> regroup({Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'})
+    {Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'}
     """
+    if not d:
+        return d
     basic = []
     compound = []
     for l in d.keys():
@@ -134,9 +139,9 @@ def regroup(d: Dict[Source, str]) -> Dict[Source, str]:
         else:
             compound += [l]
 
-    result: Dict[Source, List[str]] = {s: [d[s]] for s in basic}
+    result: Dict[Source, List[str]] = SortedDict({s: [d[s]] for s in basic})
     for l in compound:
         for s in basic:
-            if s in l:
+            if s in l and d[l]:
                 result[s] += [d[l]]
-    return {k: " ".join(v) for k, v in result.items()}
+    return {k: " ".join(result[k]) for k in reversed(result) if result[k]}

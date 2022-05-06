@@ -1,12 +1,12 @@
 from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 
-from const import STYLE_COL
+from const import STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP
 from config import FROM_LANG, TO_LANG
 from setup import sl_sem, gr_sem
 
 
-def test_LangSemantics_multilemma():
+def test_basic():
     # old semantics
     sl_sem = MainLangSemantics(
         FROM_LANG, 4, [6, 7, 8, 9], VarLangSemantics(FROM_LANG, 0, [1, 2])
@@ -80,7 +80,7 @@ def test_LangSemantics_multilemma():
     assert result == {"C": "ἐγώ"}
 
 
-def test_LangSemantics_multilemma_std_sem():
+def test_std_sem():
     row = (
         ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"]
         + [""] * 2
@@ -353,3 +353,99 @@ def test_est_in_var_no_main():
 
     result = sl_sem.var.multilemma(row, 2)
     assert result == {Source("GH"): "gramm."}
+
+
+def test_collect_puteshestive():
+    rows = [
+        [
+            "шьст\ue205ꙗ G шьств\ue205ꙗ H",
+            "шьст\ue205\ue201 G / шьств\ue205\ue201 H",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "поутошьств\ue205-",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+        [
+            "пꙋт\ue205 GH",
+            "пѫть",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+    ]
+
+    assert (
+        sl_sem.var.collect_lemma(rows, 1, H_LEMMA_SEP)
+        == "шьст\ue205\ue201 пѫть G / шьств\ue205\ue201 пѫть H"
+    )
+
+
+def test_zemenu():
+    rows = [
+        [""] * 4
+        + ["19/94d08", "ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
+        + [""] * 8
+        + ["ἐπὶ Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
+        + [""] * 6
+        + ["hl16|hl18"],
+        [""] * 4 + ["19/94d08"] + [""] * 11 + ["γῆς Ch", "γῆ"] + [""] * 8 + ["hl16"],
+    ]
+
+    assert (
+        gr_sem.var.collect_lemma(rows, gr_sem.var.lemmas[0], V_LEMMA_SEP)
+        == "ἐπί & γῆ Ch"
+    )
+
+
+def test_tyam_ili():
+    rows = [
+        [
+            "тѣмь WH",
+            "",
+            "тѣмь \ue205л\ue205",
+            "",
+            "1/6a10",
+            "тѣмь",
+            "тѣмь л\ue205 в\ue205д\ue205мо",
+            "тѣмь",
+            "тѣмь л\ue205",
+            "",
+            "",
+            "κἂν",
+            "κἄν",
+        ]
+        + [""] * 13
+        + ["hl05"],
+        [
+            "\ue205л\ue205 WH",
+            "\ue205л\ue205",
+            "",
+            "",
+            "1/6a10",
+            "л\ue205",
+            "тѣмь л\ue205 в\ue205д\ue205мо",
+            "л\ue205",
+        ]
+        + [""] * 18
+        + ["hl05"],
+    ]
+
+    assert gr_sem.collect_lemma(rows, gr_sem.lemmas[0]) == "κἄν"
+    assert (
+        sl_sem.var.collect_lemma(rows, sl_sem.var.lemmas[1]) == "тѣмь \ue205л\ue205 WH"
+    )

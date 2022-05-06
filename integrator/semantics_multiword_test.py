@@ -4,7 +4,7 @@ from semantics import MainLangSemantics, VarLangSemantics
 from setup import sl_sem, gr_sem
 
 
-def test_VarLangSemantics_multiword():
+def test_basic():
     sem = VarLangSemantics(FROM_LANG, 0, [1])
     result = sem.multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"])
     assert len(result) == 2
@@ -99,7 +99,7 @@ def test_gr_variant():
     assert result == {Source("Ch"): "ἄρτους"}
 
 
-def test_multiword_puteshestive():
+def test_puteshestive():
     assert sl_sem.var.multiword(
         ["шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H"]
     ) == {Source("G"): "шьст\ue205ꙗ пꙋт\ue205", Source("H"): "шьств\ue205ꙗ пꙋт\ue205"}
@@ -110,7 +110,7 @@ def test_multiword_puteshestive():
     }
 
 
-def test_collect_multiword_puteshestive():
+def test_collect_puteshestive():
     rows = [
         [
             "шьст\ue205ꙗ G шьств\ue205ꙗ H",
@@ -150,7 +150,7 @@ def test_collect_multiword_puteshestive():
     )
 
 
-def test_collect_multiword_prichatnik_biti():
+def test_collect_prichatnik_biti():
     rows = [
         [
             "пр\ue205\ue20dестьн\ue205ц\ue205 б• G  пр\ue205\ue20dестн\ue205ц\ue205 б• H",
@@ -184,3 +184,35 @@ def test_collect_multiword_prichatnik_biti():
         sl_sem.var.collect_word(rows)
         == "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W"
     )
+
+
+def test_collect_hoditi_spiti():
+    rows = [
+        [
+            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
+            "ходъ WG",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/72d18",
+            "ход\ue205мъ",
+            "себе• по поут\ue205 хо-",
+            "ход\ue205т\ue205",
+            "≈ ход\ue205т\ue205 спѣѭще",
+            "",
+            "",
+            "προβαίνοντες",
+            "προβαίνω",
+        ]
+        + [""] * 13
+        + ["hl05"],
+        [""] * 4
+        + ["14/72d19", "спѣюще•", "д\ue205мъ спѣюще•", "спѣт\ue205"]
+        + [""] * 18
+        + ["hl05"],
+    ]
+
+    assert (
+        sl_sem.var.collect_word(rows)
+        == "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H"
+    )
+    assert gr_sem.collect_word(rows) == "προβαίνοντες"

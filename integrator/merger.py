@@ -117,7 +117,7 @@ def _collect_group(
         non_gram_group_main, trans.lemmas[0], V_LEMMA_SEP
     )
     if trans.var:
-        line[trans.var.lemmas[0]] = trans.collect_lemma(
+        line[trans.var.lemmas[0]] = trans.var.collect_lemma(
             non_gram_group_var, trans.var.lemmas[0], V_LEMMA_SEP
         )
 
@@ -125,12 +125,12 @@ def _collect_group(
         line[c] = trans.collect_lemma(non_gram_group_main, c)
     if trans.var:
         for c in trans.var.lemmas[1:]:
-            line[c] = trans.collect_lemma(non_gram_group_var, c)
+            line[c] = trans.var.collect_lemma(non_gram_group_var, c)
 
     for c in [orig.lemmas[1], trans.lemmas[1]]:
         line[c] = trans.collect_lemma(non_union_group_main, c)
     if trans.var:
-        line[trans.var.lemmas[1]] = trans.collect_lemma(
+        line[trans.var.lemmas[1]] = trans.var.collect_lemma(
             non_union_group_var, trans.var.lemmas[1]
         )
     return line

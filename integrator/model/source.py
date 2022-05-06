@@ -19,6 +19,8 @@ class Source:
 
     def _sort_vars(self) -> str:
         """
+        >>> Source('Ch')._sort_vars()
+        'Ch'
         >>> Source('GHW')._sort_vars()
         'WGH'
         >>> Source('PbPa')._sort_vars()
@@ -88,7 +90,12 @@ class Source:
         # return f"'{self.src}'"
 
     def __len__(self) -> int:
-        return len(self.src)
+        if not self.src:
+            return len("".join(VAR_SOURCES.values()))
+        l = 0
+        for s in self:
+            l += 1
+        return l
 
     def __add__(self, other) -> "Source":
         return Source(self.src + str(other))
@@ -119,6 +126,8 @@ class Source:
 
     def __contains__(self, other) -> bool:
         """
+        >>> Source('Ch') in Source('Ch')
+        True
         >>> Source('GH') in Source('GWH')
         True
         >>> Source('HW') in Source('WH')
@@ -132,6 +141,8 @@ class Source:
         >>> Source('D') in Source('GWH')
         False
         """
+        if type(other) == str:
+            other = Source(other)
         if len(other) > len(self):
             return False
         return all(c in self.values() for c in Source(other).values())
@@ -146,6 +157,42 @@ class Source:
         True
         """
         return bool(self.src.strip())
+
+    def __list__(self) -> List[str]:
+        return [i for i in self]
+
+    def __lt__(self, other) -> bool:
+        """
+        >>> Source("WHPaPb") > Source("WHPaPb")
+        False
+        >>> Source("WHPaPb") > Source("WHPa")
+        True
+        >>> Source("WHPb") < Source("WHPa")
+        True
+        """
+        if len(other) > len(self):
+            return True
+        if len(other) < len(self):
+            return False
+
+        s = list(self)
+        o = list(other)
+        for i, x in enumerate(self):
+            if o[i] > s[i]:
+                return False
+            if o[i] < s[i]:
+                return True
+
+        return False
+
+    def __le__(self, other) -> bool:
+        return self < other or self == other
+
+    def __gt__(self, other) -> bool:
+        return not self <= other
+
+    def __ge__(self, other) -> bool:
+        return not self < other
 
     def inside(self, iterable) -> Optional["Source"]:
         """

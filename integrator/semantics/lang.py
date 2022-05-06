@@ -6,7 +6,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import IDX_COL, NON_COUNTABLE, STYLE_COL
+from const import IDX_COL, NON_COUNTABLE, STYLE_COL, V_LEMMA_SEP
 from const import EMPTY_CH, MISSING_CH
 from const import VAR_SEP
 from const import DEFAULT_SOURCES
@@ -17,6 +17,7 @@ from util import base_word
 from model import Alternative, Index, Path, Source, Usage
 
 LAST_LEMMA = -1
+UNSPECIFIED = -1
 
 
 def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
@@ -351,28 +352,35 @@ class VarLangSemantics(LangSemantics):
         """Collects the content of the multiwords for a variant in a group into a single string.
         The output is conformant with the multiword syntax.
         Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
-        print(group)
-        collected: Dict[Source, List[str]] = {}
-        # assert self.var  # for mypy
+        collected: Dict[Source, List[str]] = SortedDict()
         for row in group:
-            # for k, v in _normalise_multiword(sem.var.multiword(row)).items():
-            print(self.multiword(row))
             for k, v in self.multiword(row).items():
+                if not v.strip():
+                    continue
+                if k not in collected:
+                    collected[k] = []
+                collected[k] += [v.strip()]
+        result = regroup(
+            {k: " ".join(collected[k]) for k in collected if any(collected[k])}
+        )
+        return " ".join([f"{v} {k}" if k else v for k, v in result.items() if v])
+
+    def collect_lemma(
+        self, group: List[List[str]], cidx: int = UNSPECIFIED, separator: str = None
+    ) -> str:
+        if cidx == UNSPECIFIED:
+            cidx = self.lemmas[0]
+        multis = [self.multilemma(r, self.lemmas.index(cidx)) for r in group]
+        collected: Dict[Source, List[str]] = SortedDict()
+        for m in multis:
+            for k, v in m.items():
                 if k not in collected:
                     collected[k] = []
                 collected[k] += [v]
-        result = regroup({k: " ".join(v) for k, v in collected.items()})
-        print(result)
-        return " ".join([f"{v.strip()} {k}" for k, v in result.items() if v.strip()])
-
-    def collect_lemma(
-        self, group: List[List[str]], cidx: int, separator: str = None
-    ) -> str:
-        """TODO implement the multilemma part. Necessary for multilemmas present in row groups"""
-        g = [e for e in collect(group, cidx) if e.strip() != MISSING_CH]
-        if separator:
-            return f" {separator} ".join(g)
-        return f" ".join(g)
+        glue = f" {separator} " if separator else " "
+        result = regroup({k: glue.join(collected[k]).strip() for k in collected})
+        g = [f"{v} {k}" if k else v for k, v in result.items() if v]
+        return glue.join(g)
 
     def level_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
@@ -408,7 +416,7 @@ class VarLangSemantics(LangSemantics):
         return [""]
 
     def multiword(self, row: List[str]) -> Dict[Source, str]:
-        result: Dict[Source, str] = {}
+        result: Dict[Source, str] = SortedDict()
         m = re.search(multiword_regex, row[self.word].strip())
         while m:
             s = Source(m.group(2))
@@ -427,7 +435,7 @@ class VarLangSemantics(LangSemantics):
             while not row[self.lemmas[lidx]]:
                 lidx -= 1
             return self.multilemma(row, lidx)
-        result = {}
+        result = SortedDict()
         m = re.search(multilemma_regex, row[self.lemmas[lidx]].strip())
         while m:
             v = m.group(1) if m.group(1) else ""
@@ -444,9 +452,11 @@ class VarLangSemantics(LangSemantics):
         # When different variants have same lemma, unite. Case present only when deduced from different multiwords
         if len(result) == 1 and next(iter(result.keys())) == "":
             previdx = lidx - 1
-            while not row[self.lemmas[previdx]]:
+            while not row[self.lemmas[previdx]] and previdx >= 0:
                 previdx -= 1
-            prev_multi = self.multilemma(row, previdx) if lidx else self.multiword(row)
+            prev_multi = (
+                self.multilemma(row, previdx) if previdx >= 0 else self.multiword(row)
+            )
             s = {str(k) for k, v in prev_multi.items() if v != EMPTY_CH}
             keys = Source(remove_repetitions("".join(s)))
             # keys = ""
