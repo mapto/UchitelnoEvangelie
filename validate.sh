@@ -5,6 +5,8 @@ rm -rf .mypy_cache
 rm -rf .pytest_cache
 rm -rf extractor/__pycache__
 rm -rf integrator/__pycache__
+rm -rf integrator/.ipynb_checkpoints
+rm -rf integrator/.pytest_cache
 rm -rf semantics/__pycache__
 rm -rf model/__pycache__
 

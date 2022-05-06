@@ -14,6 +14,8 @@ from const import SPECIAL_CHARS, V_LEMMA_SEP
 
 from alphabet import remap, reduce
 
+from model import Source
+
 
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
@@ -110,3 +112,31 @@ def remove_repetitions(src: str = "") -> str:
     if prev:
         split.add(prev)
     return "".join(split)
+
+
+def regroup(d: Dict[Source, str]) -> Dict[Source, str]:
+    """
+    >>> regroup({Source('H'): 'шьств\ue205ꙗ', Source('G'): 'шьст\ue205ꙗ', Source('GH'): 'пꙋт\ue205'})
+    {Source('H'): 'шьств\ue205ꙗ пꙋт\ue205', Source('G'): 'шьст\ue205ꙗ пꙋт\ue205'}
+
+    >>> regroup({Source('G'): 'престьнц б•', Source('H'): 'престнц б•', Source('W'): 'боудемь W'})
+    {Source('G'): 'престьнц б•', Source('H'): 'престнц б•', Source('W'): 'боудемь W'}
+    """
+    basic = []
+    compound = []
+    for l in d.keys():
+        b = True
+        for s in d.keys():
+            if s != l and s in l:
+                b = False
+        if b:
+            basic += [l]
+        else:
+            compound += [l]
+
+    result: Dict[Source, List[str]] = {s: [d[s]] for s in basic}
+    for l in compound:
+        for s in basic:
+            if s in l:
+                result[s] += [d[l]]
+    return {k: " ".join(v) for k, v in result.items()}

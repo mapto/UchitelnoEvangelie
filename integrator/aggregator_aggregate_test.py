@@ -1292,7 +1292,7 @@ def test_puteshestive():
                     "": {
                         "ὁδοιπορία": {
                             (
-                                "пꙋт\ue205 GH шьств\ue205ꙗ H шьст\ue205ꙗ G",
+                                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
                                 "ὁδοιπορίας",
                             ): SortedSet(
                                 [
@@ -1303,7 +1303,7 @@ def test_puteshestive():
                                             page=28,
                                             col="d",
                                             row=18,
-                                            word="пꙋт\ue205 GH шьств\ue205ꙗ H шьст\ue205ꙗ G",
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
@@ -1318,11 +1318,11 @@ def test_puteshestive():
                                             },
                                             var_words={
                                                 Source("G"): (
-                                                    "пꙋт\ue205 GH шьст\ue205ꙗ G",
+                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
                                                     1,
                                                 ),
                                                 Source("H"): (
-                                                    "пꙋт\ue205 GH шьств\ue205ꙗ H",
+                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
                                                     1,
                                                 ),
                                             },
@@ -1339,7 +1339,7 @@ def test_puteshestive():
                     "": {
                         "ὁδοιπορία": {
                             (
-                                "пꙋт\ue205 GH шьств\ue205ꙗ H шьст\ue205ꙗ G",
+                                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
                                 "ὁδοιπορίας",
                             ): SortedSet(
                                 [
@@ -1350,7 +1350,7 @@ def test_puteshestive():
                                             page=28,
                                             col="d",
                                             row=18,
-                                            word="пꙋт\ue205 GH шьств\ue205ꙗ H шьст\ue205ꙗ G",
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
@@ -1365,11 +1365,11 @@ def test_puteshestive():
                                             },
                                             var_words={
                                                 Source("G"): (
-                                                    "пꙋт\ue205 GH шьст\ue205ꙗ G",
+                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
                                                     1,
                                                 ),
                                                 Source("H"): (
-                                                    "пꙋт\ue205 GH шьств\ue205ꙗ H",
+                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
                                                     1,
                                                 ),
                                             },
@@ -1387,7 +1387,7 @@ def test_puteshestive():
                 "": {
                     "": {
                         "ὁδοιπορία": {
-                            ("пꙋт\ue205 GH шьств\ue205ꙗ H", "ὁδοιπορίας"): SortedSet(
+                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
                                         idx=Index(
@@ -1396,7 +1396,7 @@ def test_puteshestive():
                                             page=28,
                                             col="d",
                                             row=18,
-                                            word="пꙋт\ue205 GH шьств\ue205ꙗ H",
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H",
                                         ),
                                         lang="sl",
                                         var=Source("H"),
@@ -1409,7 +1409,7 @@ def test_puteshestive():
                                             main_word="поутошьств\ue205ꙗ",
                                             var_words={
                                                 Source("G"): (
-                                                    "пꙋт\ue205 GH шьст\ue205ꙗ G",
+                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
                                                     1,
                                                 )
                                             },
@@ -1425,7 +1425,7 @@ def test_puteshestive():
                 "": {
                     "": {
                         "ὁδοιπορία": {
-                            ("пꙋт\ue205 GH шьств\ue205ꙗ H", "ὁδοιπορίας"): SortedSet(
+                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
                                         idx=Index(
@@ -1434,7 +1434,7 @@ def test_puteshestive():
                                             page=28,
                                             col="d",
                                             row=18,
-                                            word="пꙋт\ue205 GH шьств\ue205ꙗ H",
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H",
                                         ),
                                         lang="sl",
                                         var=Source("H"),
@@ -1447,7 +1447,7 @@ def test_puteshestive():
                                             main_word="поутошьств\ue205ꙗ",
                                             var_words={
                                                 Source("G"): (
-                                                    "пꙋт\ue205 GH шьст\ue205ꙗ G",
+                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
                                                     1,
                                                 )
                                             },
@@ -1465,7 +1465,7 @@ def test_puteshestive():
                 "": {
                     "": {
                         "ὁδοιπορία": {
-                            ("пꙋт\ue205 GH шьст\ue205ꙗ G", "ὁδοιπορίας"): SortedSet(
+                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
                                         idx=Index(
@@ -1474,7 +1474,7 @@ def test_puteshestive():
                                             page=28,
                                             col="d",
                                             row=18,
-                                            word="пꙋт\ue205 GH шьст\ue205ꙗ G",
+                                            word="шьст\ue205ꙗ пꙋт\ue205 G",
                                         ),
                                         lang="sl",
                                         var=Source("G"),
@@ -1487,7 +1487,7 @@ def test_puteshestive():
                                             main_word="поутошьств\ue205ꙗ",
                                             var_words={
                                                 Source("H"): (
-                                                    "пꙋт\ue205 GH шьств\ue205ꙗ H",
+                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
                                                     1,
                                                 )
                                             },
@@ -1503,7 +1503,7 @@ def test_puteshestive():
                 "": {
                     "": {
                         "ὁδοιπορία": {
-                            ("пꙋт\ue205 GH шьст\ue205ꙗ G", "ὁδοιπορίας"): SortedSet(
+                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
                                         idx=Index(
@@ -1512,7 +1512,7 @@ def test_puteshestive():
                                             page=28,
                                             col="d",
                                             row=18,
-                                            word="пꙋт\ue205 GH шьст\ue205ꙗ G",
+                                            word="шьст\ue205ꙗ пꙋт\ue205 G",
                                         ),
                                         lang="sl",
                                         var=Source("G"),
@@ -1525,7 +1525,7 @@ def test_puteshestive():
                                             main_word="поутошьств\ue205ꙗ",
                                             var_words={
                                                 Source("H"): (
-                                                    "пꙋт\ue205 GH шьств\ue205ꙗ H",
+                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
                                                     1,
                                                 )
                                             },
@@ -1547,7 +1547,7 @@ def test_puteshestive():
             "": {
                 "": {
                     "пѫть": {
-                        ("ὁδοιπορίας", "пꙋт\ue205 GH шьств\ue205ꙗ H"): SortedSet(
+                        ("ὁδοιπορίας", "шьств\ue205ꙗ пꙋт\ue205 H"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -1566,16 +1566,13 @@ def test_puteshestive():
                                         },
                                         main_word="поутошьств\ue205ꙗ",
                                         var_words={
-                                            Source("G"): (
-                                                "пꙋт\ue205 GH шьст\ue205ꙗ G",
-                                                1,
-                                            )
+                                            Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1)
                                         },
                                     ),
                                 )
                             ]
                         ),
-                        ("ὁδοιπορίας", "пꙋт\ue205 GH шьст\ue205ꙗ G"): SortedSet(
+                        ("ὁδοιπορίας", "шьст\ue205ꙗ пꙋт\ue205 G"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -1594,10 +1591,7 @@ def test_puteshestive():
                                         },
                                         main_word="поутошьств\ue205ꙗ",
                                         var_words={
-                                            Source("H"): (
-                                                "пꙋт\ue205 GH шьств\ue205ꙗ H",
-                                                1,
-                                            )
+                                            Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)
                                         },
                                     ),
                                 )
@@ -1605,7 +1599,7 @@ def test_puteshestive():
                         ),
                     },
                     "шьств\ue205\ue201 пѫт\ue205 → шьств\ue205\ue201": {
-                        ("ὁδοιπορίας", "пꙋт\ue205 GH шьств\ue205ꙗ H"): SortedSet(
+                        ("ὁδοιπορίας", "шьств\ue205ꙗ пꙋт\ue205 H"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -1624,10 +1618,7 @@ def test_puteshestive():
                                         },
                                         main_word="поутошьств\ue205ꙗ",
                                         var_words={
-                                            Source("G"): (
-                                                "пꙋт\ue205 GH шьст\ue205ꙗ G",
-                                                1,
-                                            )
+                                            Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1)
                                         },
                                     ),
                                 )
@@ -1635,7 +1626,7 @@ def test_puteshestive():
                         )
                     },
                     "шьст\ue205\ue201 пѫт\ue205 → шьст\ue205\ue201": {
-                        ("ὁδοιπορίας", "пꙋт\ue205 GH шьст\ue205ꙗ G"): SortedSet(
+                        ("ὁδοιπορίας", "шьст\ue205ꙗ пꙋт\ue205 G"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -1654,10 +1645,7 @@ def test_puteshestive():
                                         },
                                         main_word="поутошьств\ue205ꙗ",
                                         var_words={
-                                            Source("H"): (
-                                                "пꙋт\ue205 GH шьств\ue205ꙗ H",
-                                                1,
-                                            )
+                                            Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)
                                         },
                                     ),
                                 )
@@ -1689,19 +1677,14 @@ def test_puteshestive():
                                     ),
                                     lang="gr",
                                     trans_alt=Alternative(
-                                        var_lemmas={
-                                            Source("G"): "шьст\ue205\ue201",
-                                            Source("H"): "шьств\ue205\ue201",
-                                        },
+                                        main_lemma="",
+                                        var_lemmas={Source("GH"): "пѫть"},
+                                        main_word="",
                                         var_words={
-                                            Source("G"): (
-                                                "пꙋт\ue205 GH шьст\ue205ꙗ G",
+                                            Source("GH"): (
+                                                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
                                                 1,
-                                            ),
-                                            Source("H"): (
-                                                "пꙋт\ue205 GH шьств\ue205ꙗ H",
-                                                1,
-                                            ),
+                                            )
                                         },
                                     ),
                                 ),
@@ -1716,12 +1699,18 @@ def test_puteshestive():
                                     ),
                                     lang="gr",
                                     trans_alt=Alternative(
-                                        var_lemmas={Source("HG"): "пѫть"},
+                                        main_lemma="",
+                                        var_lemmas={
+                                            Source("G"): "шьст\ue205\ue201",
+                                            Source("H"): "шьств\ue205\ue201",
+                                        },
+                                        main_word="",
                                         var_words={
-                                            Source("HG"): (
-                                                "пꙋт\ue205 GH шьств\ue205ꙗ H шьст\ue205ꙗ G",
+                                            Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
+                                            Source("H"): (
+                                                "шьств\ue205ꙗ пꙋт\ue205 H",
                                                 1,
-                                            )
+                                            ),
                                         },
                                     ),
                                 ),
@@ -1729,7 +1718,7 @@ def test_puteshestive():
                         )
                     },
                     "пѫть": {
-                        ("ὁδοιπορίας", "пꙋт\ue205 GH шьств\ue205ꙗ H"): SortedSet(
+                        ("ὁδοιπορίας", "шьств\ue205ꙗ пꙋт\ue205 H"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -1748,16 +1737,13 @@ def test_puteshestive():
                                         },
                                         main_word="поутошьств\ue205ꙗ",
                                         var_words={
-                                            Source("G"): (
-                                                "пꙋт\ue205 GH шьст\ue205ꙗ G",
-                                                1,
-                                            )
+                                            Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1)
                                         },
                                     ),
                                 )
                             ]
                         ),
-                        ("ὁδοιπορίας", "пꙋт\ue205 GH шьст\ue205ꙗ G"): SortedSet(
+                        ("ὁδοιπορίας", "шьст\ue205ꙗ пꙋт\ue205 G"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -1776,10 +1762,7 @@ def test_puteshestive():
                                         },
                                         main_word="поутошьств\ue205ꙗ",
                                         var_words={
-                                            Source("H"): (
-                                                "пꙋт\ue205 GH шьств\ue205ꙗ H",
-                                                1,
-                                            )
+                                            Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)
                                         },
                                     ),
                                 )
@@ -1787,7 +1770,7 @@ def test_puteshestive():
                         ),
                     },
                     "шьств\ue205\ue201 пѫт\ue205 → шьств\ue205\ue201": {
-                        ("ὁδοιπορίας", "пꙋт\ue205 GH шьств\ue205ꙗ H"): SortedSet(
+                        ("ὁδοιπορίας", "шьств\ue205ꙗ пꙋт\ue205 H"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -1806,10 +1789,7 @@ def test_puteshestive():
                                         },
                                         main_word="поутошьств\ue205ꙗ",
                                         var_words={
-                                            Source("G"): (
-                                                "пꙋт\ue205 GH шьст\ue205ꙗ G",
-                                                1,
-                                            )
+                                            Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1)
                                         },
                                     ),
                                 )
@@ -1817,7 +1797,7 @@ def test_puteshestive():
                         )
                     },
                     "шьст\ue205\ue201 пѫт\ue205 → шьст\ue205\ue201": {
-                        ("ὁδοιπορίας", "пꙋт\ue205 GH шьст\ue205ꙗ G"): SortedSet(
+                        ("ὁδοιπορίας", "шьст\ue205ꙗ пꙋт\ue205 G"): SortedSet(
                             [
                                 Usage(
                                     idx=Index(
@@ -1836,10 +1816,7 @@ def test_puteshestive():
                                         },
                                         main_word="поутошьств\ue205ꙗ",
                                         var_words={
-                                            Source("H"): (
-                                                "пꙋт\ue205 GH шьств\ue205ꙗ H",
-                                                1,
-                                            )
+                                            Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)
                                         },
                                     ),
                                 )

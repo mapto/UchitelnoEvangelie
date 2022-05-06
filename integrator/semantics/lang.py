@@ -12,7 +12,7 @@ from const import VAR_SEP
 from const import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
-from .util import collect, remove_repetitions
+from .util import collect, remove_repetitions, regroup
 from util import base_word
 from model import Alternative, Index, Path, Source, Usage
 
@@ -351,16 +351,19 @@ class VarLangSemantics(LangSemantics):
         """Collects the content of the multiwords for a variant in a group into a single string.
         The output is conformant with the multiword syntax.
         Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
-        collected: Dict[Source, str] = {}
+        print(group)
+        collected: Dict[Source, List[str]] = {}
         # assert self.var  # for mypy
         for row in group:
             # for k, v in _normalise_multiword(sem.var.multiword(row)).items():
+            print(self.multiword(row))
             for k, v in self.multiword(row).items():
-                if k in collected:
-                    collected[k] = collected[k] + " " + v
-                else:
-                    collected[k] = v
-        return " ".join([f"{v} {k}" for k, v in collected.items() if v.strip()])
+                if k not in collected:
+                    collected[k] = []
+                collected[k] += [v]
+        result = regroup({k: " ".join(v) for k, v in collected.items()})
+        print(result)
+        return " ".join([f"{v.strip()} {k}" for k, v in result.items() if v.strip()])
 
     def collect_lemma(
         self, group: List[List[str]], cidx: int, separator: str = None
@@ -405,16 +408,18 @@ class VarLangSemantics(LangSemantics):
         return [""]
 
     def multiword(self, row: List[str]) -> Dict[Source, str]:
-        result = {}
+        result: Dict[Source, str] = {}
         m = re.search(multiword_regex, row[self.word].strip())
         while m:
-            result[Source(m.group(2))] = m.group(1).strip()
+            s = Source(m.group(2))
+            v = m.group(1).strip()
+            result[s] = " ".join([result[s], v]) if s in result else v
             rest = m.group(4).strip()
             m = re.search(multiword_regex, rest)
         if not result:
             return {Source(DEFAULT_SOURCES[self.lang]): row[self.word].strip()}
             # return {'': row[self.word].strip()}
-        return result
+        return regroup(result)
 
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
         if lidx == LAST_LEMMA:

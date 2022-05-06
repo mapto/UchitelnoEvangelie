@@ -132,6 +132,8 @@ class Source:
         >>> Source('D') in Source('GWH')
         False
         """
+        if len(other) > len(self):
+            return False
         return all(c in self.values() for c in Source(other).values())
 
     def __bool__(self) -> bool:
