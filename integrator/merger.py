@@ -9,13 +9,14 @@ from const import IDX_COL, SAME_CH, SPECIAL_CHARS, STYLE_COL, V_LEMMA_SEP
 
 from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, VarLangSemantics, present
-from util import clean_word, collect
+from util import clean_word
 
-
+"""
 def _has_real_var(row: List[str], sem: MainLangSemantics) -> bool:
     if not sem.var:
         return False
     return bool(row[sem.var.word])
+"""
 
 
 def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:

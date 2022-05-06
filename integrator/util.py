@@ -45,55 +45,6 @@ def _ord(a: str) -> float:
     return ord(a)
 
 
-'''
-def cmp_chr(a: str, b: str) -> int:
-    """
-    >>> cmp_chr("а", "б")
-    -1
-
-    >>> cmp_chr("", "к")
-    -1
-
-    >>> cmp_chr("ꙁ", "")
-    -1
-
-    >>> sl = "а б в г д е ж ꙃ ꙁ \ue205 к л м н о п р с т ѹ ф х ш ц \ue20d щ ъ ꙑ ь ѣ ю ꙗ \ue201 ѧ ѫ ѩ ѭ ѯ ѱ ѳ у"
-    >>> sl2 = sl.split()
-    >>> sl2.sort(key=_ord)
-    >>> sl == " ".join(sl2)
-    True
-
-    >>> sl = "а б в г д е ж ꙅ ꙁ і к л м н о п р с т ꙋ ф х ш ц  щ ъ ы ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ ѵ"
-    >>> sl2 = sl.split()
-    >>> sl2.sort(key=_ord)
-    >>> sl == " ".join(sl2)
-    True
-
-    >>> sl = "а б в г д е ж ѕ ꙁ и к л м н о п р с т ѹ ф х ш ц  щ ъ ꙑ ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ ѵ"
-    >>> sl2 = sl.split()
-    >>> sl2.sort(key=_ord)
-    >>> sl == " ".join(sl2)
-    True
-
-    >>> sl = "α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ ϕ χ ψ ω"
-    >>> sl2 = sl.split()
-    >>> sl2.sort(key=_ord)
-    >>> sl == " ".join(sl2)
-    True
-
-    >>> sl = "α β γ δ ε ζ η ϑ ι ϰ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω"
-    >>> sl2 = sl.split()
-    >>> sl2.sort(key=_ord)
-    >>> sl == " ".join(sl2)
-    True
-    """
-    assert len(a) == len(b) == 1
-
-    return 0 if _ord(a) - _ord(b) == 0 else 1 if _ord(a) > _ord(b) else -1
-    # return _ord(a) - _ord(b)
-'''
-
-
 def base_word(w: str) -> str:
     if not w:
         return ""
@@ -153,17 +104,6 @@ def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
     return {l: ord(l) for l in letters}
 
 
-if __name__ == "__main__":
-    print(ord_word(" conj.: н*"))
-    print(ord_word(" conj."))
-    print(ord_word("*"))
-
-
-def collect(group: List[List[str]], col: int) -> List[str]:
-    """Collects the actual content in the group column"""
-    return [group[i][col] for i in range(len(group)) if group[i][col]]
-
-
 def main_source(lang: str, alt: bool):
     if lang == TO_LANG:
         return MAIN_GR
@@ -179,18 +119,3 @@ def subscript(cnt: int, lang: str) -> str:
     if lang == FROM_LANG:
         return chr(ord("0") + cnt)
     return chr(ord("α") + cnt - 1)
-
-
-def remove_repetitions(src: str = "") -> str:
-    split = set()
-    prev = ""
-    for c in src:
-        if c == c.lower():
-            split.add(prev + c)
-            prev = ""
-        else:
-            split.add(prev)
-            prev = c
-    if prev:
-        split.add(prev)
-    return "".join(split)

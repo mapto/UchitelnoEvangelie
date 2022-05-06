@@ -12,7 +12,8 @@ from const import VAR_SEP
 from const import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
-from util import base_word, collect, remove_repetitions
+from .util import collect, remove_repetitions
+from util import base_word
 from model import Alternative, Index, Path, Source, Usage
 
 LAST_LEMMA = -1
