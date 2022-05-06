@@ -1,12 +1,10 @@
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
 
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS
 from regex import source_regex
-
-from util import base_word
 
 from .address import Index
 from .source import Source
@@ -161,23 +159,3 @@ class Path:
                 self.parts.pop(cur)
             elif re.match(r"^[a-zA-z\.]+$", self.parts[cur]):
                 self.annotation = self.parts.pop(cur)
-
-
-@dataclass
-class Counter:
-    orig_main: Set[Index] = field(default_factory=lambda: set())
-    orig_var: Set[Index] = field(default_factory=lambda: set())
-    trans_main: Set[Index] = field(default_factory=lambda: set())
-    trans_var: Set[Index] = field(default_factory=lambda: set())
-
-    def __iadd__(self, other: "Counter") -> "Counter":
-        self.orig_main = self.orig_main.union(other.orig_main)
-        self.orig_var = self.orig_var.union(other.orig_var)
-        self.trans_main = self.trans_main.union(other.trans_main)
-        self.trans_var = self.trans_var.union(other.trans_var)
-        return self
-
-    def get_counts(self, trans: bool = False) -> Tuple[int, int]:
-        if trans:
-            return (len(self.trans_main), len(self.trans_var))
-        return (len(self.orig_main), len(self.orig_var))

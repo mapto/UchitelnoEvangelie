@@ -1,11 +1,10 @@
 from sortedcontainers import SortedDict, SortedSet, SortedSet  # type: ignore
 
 from config import TO_LANG
-from model import Usage, Alternative, Index
-from generator import _get_dict_counts
+from model import Alternative, Index, Counter, Usage
 
 
-def test__get_dict_counts_ipercliso():
+def test_dict_counts_ipercliso():
     d = SortedDict(
         {
             "ὑπερβλύω": SortedDict(
@@ -92,12 +91,12 @@ def test__get_dict_counts_ipercliso():
             ),
         }
     )
-    c = _get_dict_counts(d)
+    c = Counter.get_dict_counts(d)
     assert (4, 0) == c.get_counts(True)
     assert (2, 2) == c.get_counts(False)
 
 
-def test__get_dict_counts_monogenis():
+def test_dict_counts_monogenis():
     d = {
         "μονογενής": {
             "": {
@@ -284,6 +283,6 @@ def test__get_dict_counts_monogenis():
             }
         }
     }
-    c = _get_dict_counts(d)
+    c = Counter.get_dict_counts(d)
     assert (4, 3) == c.get_counts(True)
     assert (5, 0) == c.get_counts(False)

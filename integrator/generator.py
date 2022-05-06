@@ -7,15 +7,15 @@ from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
 from config import FROM_LANG, TO_LANG
-from config import VAR_GR, VAR_SL
 from const import SPECIAL_CHARS
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 from util import main_source, subscript
-from model import Alternative, Index, Usage, Counter
+from model import Alternative, Usage
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, other_lang, fonts
+from model import Counter
 
 BULLET_STYLE = "List Bullet"
 LEVEL_OFFSET = 0.4
@@ -122,98 +122,9 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
             break
 
 
-def _get_set_counts(s: SortedSet) -> Counter:
-    """
-    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)]
-    >>> s = SortedSet([Usage(n, FROM_LANG) for n in i])
-    >>> c = _get_set_counts(s)
-    >>> c.get_counts(True)
-    (2, 0)
-    >>> c.get_counts(False)
-    (2, 0)
-
-    >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=168, col='c', row=7, ocnt=2)]
-    >>> s = SortedSet([Usage(n, FROM_LANG, "W" if x == 0 else "") for x, n in enumerate(i)])
-    >>> c = _get_set_counts(s)
-    >>> c.get_counts(False)
-    (1, 1)
-    >>> c.get_counts(True)
-    (2, 0)
-    """
-    lang = next(iter(s)).lang
-    orig_var = VAR_SL if lang == FROM_LANG else VAR_GR
-    trans_var = VAR_GR if lang == FROM_LANG else VAR_SL
-    r = Counter()
-    for nxt in s:
-        assert nxt.lang == lang
-
-        found = False
-        for v in orig_var:
-            if v in nxt.var:
-                r.orig_var.add(nxt.idx)
-                found = True
-                break
-        if not found:
-            r.orig_main.add(nxt.idx)
-
-        found = False
-        for v in trans_var:
-            if v in nxt.var:
-                r.trans_var.add(nxt.idx)
-                found = True
-                break
-        if not found:
-            r.trans_main.add(nxt.idx)
-
-    return r
-
-
-def _get_dict_counts(d: Union[SortedDict, dict]) -> Counter:
-    """
-    >> c = _get_dict_counts({})
-    >> c.get_counts(True)
-    (0, 0)
-    >> c.get_counts(False)
-    (0, 0)
-
-    >>> u = Usage(Index(ch=1, alt=False, page=5, col='a', row=5), FROM_LANG)
-    >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([u])}})
-    >>> c = _get_dict_counts(d)
-    >>> c.get_counts(True)
-    (1, 0)
-    >>> c.get_counts(False)
-    (1, 0)
-
-    >>> u1 = Usage(Index(ch=1, alt=False, page=8, col='a', row=3), FROM_LANG)
-    >>> u2 = Usage(Index(ch=1, alt=False, page=6, col='b', row=7), FROM_LANG)
-    >>> d = SortedDict({'lem2': SortedDict({'lem1': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
-    >>> c = _get_dict_counts(d)
-    >>> c.get_counts(True)
-    (2, 0)
-    >>> c.get_counts(False)
-    (2, 0)
-    """
-    # print(dict(d))
-    r = Counter()
-    # if not d:
-    #    return r
-    any = next(iter(d.values()))
-    if type(any) is SortedSet:
-        for n in d.values():
-            r += _get_set_counts(n)
-    else:  # type(any) is SortedDict or type(any) is dict:
-        for k, n in d.items():
-            try:
-                r += _get_dict_counts(n)
-            except StopIteration as si:
-                print(f"ГРЕШКА: При генериране неуспешно преброяване на {k}")
-                raise si
-    return r
-
-
 def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> None:
     try:
-        c = _get_dict_counts(d).get_counts(trans)
+        c = Counter.get_dict_counts(d).get_counts(trans)
     except StopIteration as si:
         keys = []
         key = next(iter(d))
