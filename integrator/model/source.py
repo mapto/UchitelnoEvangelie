@@ -1,9 +1,30 @@
 from typing import Dict, List, Optional, Set
 
-import re
-
 from const import VAR_SOURCES, VAR_SEP
 from config import FROM_LANG, TO_LANG
+
+
+def _values(src: str) -> List[str]:
+    """
+    >>> _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
+    ['W', 'G', 'H', 'B', 'C', 'M', 'As', 'Ch', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pj', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'Pp', 'Pq', 'Pr', 'Ps', 'Pt', 'Pu', 'Pv', 'Pw', 'Px', 'Py', 'Pz']
+    """
+    split = []
+    prev = ""
+    for c in src:
+        if c.islower() or c.isnumeric():
+            split += [prev + c]
+            prev = ""
+        else:
+            if prev:
+                split += [prev]
+            prev = c
+    if prev:
+        split += [prev]
+    return split
+
+
+ORDERED_SOURCES = _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
 
 
 class Source:
@@ -32,33 +53,16 @@ class Source:
         >>> Source('CMBAsChHW')._sort_vars()
         'WHBCMAsCh'
         """
-        res = ""
-        for lang in [FROM_LANG, TO_LANG]:
-            for s in Source(VAR_SOURCES[lang]):
-                if s in self:
-                    res += str(s)
-        return res
+        return "".join([v for v in ORDERED_SOURCES if v in self])
 
-    def values(self) -> Set[str]:
+    def values(self) -> List[str]:
         """
-        >>> Source('MP').values() == {'P', 'M'}
-        True
-        >>> Source('MPaPb').values() == {'Pb', 'Pa', 'M'}
-        True
+        >>> Source('MP').values()
+        ['M', 'P']
+        >>> Source('MPaPb').values()
+        ['M', 'Pa', 'Pb']
         """
-        split = set()
-        prev = ""
-        for c in self.src:
-            if c == c.lower():
-                split.add(prev + c)
-                prev = ""
-            else:
-                if prev:
-                    split.add(prev)
-                prev = c
-        if prev:
-            split.add(prev)
-        return split
+        return _values(self.src.replace(VAR_SEP, ""))
 
     def __eq__(self, other) -> bool:
         """
@@ -114,6 +118,7 @@ class Source:
         >>> [x for x in Source('WGH-BCMAsCh')]
         ['W', 'G', 'H', 'B', 'C', 'M', 'As', 'Ch']
         """
+        """
         result = []
         rest = self.src.replace(VAR_SEP, "")
         iter_regex = r"^([A-Z][a-z0-9]?)(.*)$"
@@ -123,6 +128,8 @@ class Source:
             rest = found.group(2)
             found = re.match(iter_regex, rest)
         return iter(result)
+        """
+        return iter(self.values())
 
     def __contains__(self, other) -> bool:
         """
@@ -145,7 +152,7 @@ class Source:
             other = Source(other)
         if len(other) > len(self):
             return False
-        return all(c in self.values() for c in Source(other).values())
+        return all(c in self.values() for c in other.values())
 
     def __bool__(self) -> bool:
         """
