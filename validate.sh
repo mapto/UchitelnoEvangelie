@@ -7,12 +7,14 @@ rm -rf extractor/__pycache__
 rm -rf integrator/__pycache__
 rm -rf integrator/.ipynb_checkpoints
 rm -rf integrator/.pytest_cache
-rm -rf semantics/__pycache__
-rm -rf model/__pycache__
+rm -rf integrator/semantics/__pycache__
+rm -rf integrator/model/__pycache__
 
-echo '>>> Skipping Pylint'
-# pylint -E extractor
-# pylint -E integrator/
+echo '>>> Running Pylint'
+# pylint -E extractor/*.py
+pylint -E -v integrator/*.py
+pylint -E -v integrator/model
+pylint -E -v integrator/semantics
 
 echo '>>> Running Mypy'
 mypy extractor

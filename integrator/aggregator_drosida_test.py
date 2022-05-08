@@ -1,5 +1,6 @@
 from sortedcontainers import SortedDict  # type: ignore
 
+from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 
 from semantics import MainLangSemantics, VarLangSemantics
