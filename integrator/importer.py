@@ -3,7 +3,7 @@
 from typing import List, Dict, Optional
 
 from openpyxl import load_workbook  # type: ignore
-from openpyxl.styles import Font  # type: ignore
+from openpyxl.styles import Font, colors  # type: ignore
 
 from config import FROM_LANG, TO_LANG
 from const import IDX_COL, STYLE_COL
@@ -35,7 +35,11 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
         # Two consequent blank lines
         if blank and not [l for l in line if l]:
             break
-        bgs = {f"hl{v:02d}": row[v].fill.patternType for v in sem.cols() if row[v].fill}
+        bgs = {
+            f"hl{v:02d}": row[v].fill.patternType
+            for v in sem.cols()
+            if row[v].fill and row[v].fill.start_color != colors.WHITE
+        }
         line.append(_style2str(row[IDX_COL].font, bgs))
         result.append(line)
         blank = not [l for l in line if l]
