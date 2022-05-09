@@ -2111,3 +2111,86 @@ def test_prichatnik_biti():
     result = SortedDict()
     result = aggregate([rows[1]], sl_sem.var, gr_sem, result)
     assert result == {}
+
+
+def test_hodom_spiti():
+    rows = [
+        [
+            "хⷪ҇домь WG ход\ue205т\ue205 H",
+            "ходъ WG",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/72d18",
+            "ход\ue205мъ",
+            "себе• по поут\ue205 хо-",
+            "ход\ue205т\ue205",
+            "≈ ход\ue205т\ue205 спѣѭще",
+            "",
+            "",
+            "προβαίνοντες",
+            "προβαίνω",
+        ]
+        + [""] * 13
+        + ["hl05|hl00"]
+        + ["1"] * 4,
+        ["спѣюще WG с пѣн\ue205\ue201мь H"]
+        + [""] * 3
+        + ["14/72d19", "спѣюще•", "д\ue205мъ спѣюще•", "спѣт\ue205"]
+        + [""] * 18
+        + ["hl05|hl00"]
+        + ["1"] * 4,
+    ]
+
+    result = SortedDict()
+    result = aggregate(rows, gr_sem, sl_sem, result)
+    assert result == {
+        "προβαίνω": {
+            "": {
+                "": {
+                    "ходомь спѣт\ue205 → ходъ": {
+                        ("προβαίνοντες", "хⷪ҇домь WG"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=14,
+                                        alt=False,
+                                        page=72,
+                                        col="d",
+                                        row=18,
+                                        word="προβαίνοντες",
+                                    ),
+                                    lang="gr",
+                                    var=Source("WG"),
+                                    trans_alt=Alternative(
+                                        main_lemma="≈ ход\ue205т\ue205 спѣѭще",
+                                        main_word="ход\ue205мъ",
+                                    ),
+                                )
+                            ]
+                        )
+                    },
+                    "≈ ход\ue205т\ue205 спѣѭще → ход\ue205т\ue205": {
+                        ("προβαίνοντες", "ход\ue205мъ"): SortedSet(
+                            [
+                                Usage(
+                                    idx=Index(
+                                        ch=14,
+                                        alt=False,
+                                        page=72,
+                                        col="d",
+                                        row=18,
+                                        word="προβαίνοντες",
+                                    ),
+                                    lang="gr",
+                                    trans_alt=Alternative(
+                                        var_lemmas={Source("WG"): "ходомь спѣт\ue205"},
+                                        var_words={Source("WG"): ("хⷪ҇домь WG", 1)},
+                                    ),
+                                )
+                            ]
+                        )
+                    },
+                }
+            }
+        }
+    }

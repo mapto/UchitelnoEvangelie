@@ -44,7 +44,7 @@ def test__is_variant_lemma():
     assert _is_variant_lemma(row, gr_sem, Source(""), "ὑπερκλύζω")
     assert _is_variant_lemma(row, gr_sem.var, Source("C"), "ὑπερβλύω")
 
-    assert not _is_variant_lemma(row, gr_sem.var, Source("D"), "ὑπερβλύω")
+    assert not _is_variant_lemma(row, gr_sem.var, Source("M"), "ὑπερβλύω")
 
     row = (
         ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"]

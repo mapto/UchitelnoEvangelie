@@ -8,5 +8,5 @@ ALT_SL = "W"  # for Wiener
 VAR_SL = "WGH"
 DEFAULT_SL = VAR_SL
 MAIN_GR = ""  # "C" for Cramer
-VAR_GR = "BCMAsCh" + "".join(f"P{chr(ord('a')+c)}" for c in range(26))  # for Paris x
+VAR_GR = "BCMAsChP" + "".join(f"P{chr(ord('a')+c)}" for c in range(26))  # for Paris x
 DEFAULT_GR = "C"  # for Cramer

@@ -7,7 +7,11 @@ from config import FROM_LANG, TO_LANG
 def _values(src: str) -> List[str]:
     """
     >>> _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
-    ['W', 'G', 'H', 'B', 'C', 'M', 'As', 'Ch', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pj', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'Pp', 'Pq', 'Pr', 'Ps', 'Pt', 'Pu', 'Pv', 'Pw', 'Px', 'Py', 'Pz']
+    ['W', 'G', 'H', 'B', 'C', 'M', 'As', 'Ch', 'P', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pj', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'Pp', 'Pq', 'Pr', 'Ps', 'Pt', 'Pu', 'Pv', 'Pw', 'Px', 'Py', 'Pz']
+    >>> _values('MP')
+    ['M', 'P']
+    >>> _values('D')
+    ['D']
     """
     split = []
     prev = ""
@@ -28,15 +32,28 @@ ORDERED_SOURCES = _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
 
 
 class Source:
-    """Represents a list of sources, could be one or two letter symbols"""
+    """Represents a list of sources, could be one or two letter symbols
+    >>> Source('MP').data
+    ['M', 'P']
+    >>> Source('D')
+    Traceback (most recent call last):
+    ...
+    KeyError: "Source unknown: ['D']"
+    """
 
     src: str = ""
+    data: List[str] = []
 
     def __init__(self, other=None) -> None:
         if type(other) == str:
             self.src = other
         elif type(other) == Source:
             self.src = other.src
+        raw_values = _values(self.src.replace("-", ""))
+        if not all([s in ORDERED_SOURCES for s in raw_values]):
+            out = [s for s in raw_values if s not in ORDERED_SOURCES]
+            raise KeyError(f"Source unknown: {out}")
+        self.data = [v for v in ORDERED_SOURCES if v in raw_values]
 
     def _sort_vars(self) -> str:
         """
@@ -53,7 +70,7 @@ class Source:
         >>> Source('CMBAsChHW')._sort_vars()
         'WHBCMAsCh'
         """
-        return "".join([v for v in ORDERED_SOURCES if v in self])
+        return "".join(self.data)
 
     def values(self) -> List[str]:
         """
@@ -62,11 +79,11 @@ class Source:
         >>> Source('MPaPb').values()
         ['M', 'Pa', 'Pb']
         """
-        return _values(self.src.replace(VAR_SEP, ""))
+        return self.data
 
     def __eq__(self, other) -> bool:
         """
-        >>> Source('A') == Source('B')
+        >>> Source('M') == Source('P')
         False
         >>> Source('HW') == Source('WH')
         True
@@ -81,7 +98,9 @@ class Source:
         >>> Source('HW') in {Source('WH'): '\ue201д\ue205но\ue20dѧдъ'}
         True
         """
-        return self._sort_vars() == Source(other)._sort_vars()
+        if type(other) not in [Source, str]:
+            return False
+        return self.data == Source(other).data
 
     def __ne__(self, other) -> bool:
         return not (self == other)
@@ -129,24 +148,26 @@ class Source:
             found = re.match(iter_regex, rest)
         return iter(result)
         """
-        return iter(self.values())
+        return iter(self.data)
 
     def __contains__(self, other) -> bool:
         """
-        >>> Source('Ch') in Source('Ch')
+        >> Source('Ch') in Source('Ch')
         True
-        >>> Source('GH') in Source('GWH')
+        >> Source('GH') in Source('GWH')
         True
-        >>> Source('HW') in Source('WH')
+        >> Source('HW') in Source('WH')
         True
-        >>> Source('WH') in Source('HW')
+        >> Source('WH') in Source('HW')
         True
-        >>> Source('PaPb') in Source('MPaPb')
+        >> Source('PaPb') in Source('MPaPb')
         True
-        >>> Source('MP') in Source('MPaPb')
+        >> Source('MP') in Source('MPaPb')
         False
-        >>> Source('D') in Source('GWH')
+        >>> Source('M') in Source('GWH')
         False
+        >>> Source() in Source()
+        True
         """
         if type(other) == str:
             other = Source(other)
@@ -160,13 +181,13 @@ class Source:
         False
         >>> True if Source("") else False
         False
-        >>> True if Source("A") else False
+        >>> True if Source("G") else False
         True
         """
         return bool(self.src.strip())
 
     def __list__(self) -> List[str]:
-        return [i for i in self]
+        return self.data
 
     def __lt__(self, other) -> bool:
         """
@@ -203,21 +224,21 @@ class Source:
 
     def inside(self, iterable) -> Optional["Source"]:
         """
-        >>> Source("A").inside([Source("AB"), Source("C")])
-        Source('AB')
-        >>> Source("A").inside({Source("AB"): 1, Source("C"): 2})
-        Source('AB')
-        >>> Source("F").inside("ABCDEF")
-        Source('ABCDEF')
-        >>> Source("AF").inside(["ABCDEF"])
-        Source('ABCDEF')
-        >>> Source("A").inside([Source("AB"), Source("C")])
-        Source('AB')
+        >>> Source("G").inside([Source("GH"), Source("W")])
+        Source('GH')
+        >>> Source("G").inside({Source("GH"): 1, Source("W"): 2})
+        Source('GH')
+        >>> Source("Pf").inside("PaPbPcPdPePf")
+        Source('PaPbPcPdPePf')
+        >>> Source("PaPf").inside(["PaPbPcPdPePf"])
+        Source('PaPbPcPdPePf')
+        >>> Source("Pa").inside([Source("PaPb"), Source("Pc")])
+        Source('PaPb')
         >>> Source("Pz").inside(Source("PwPxPyPz"))
         Source('PwPxPyPz')
         >>> Source("").inside([Source("")])
         Source('')
-        >>> Source("").inside([Source("A")])
+        >>> Source("").inside([Source("G")])
         """
         if type(iterable) == str:
             iterable = Source(iterable)

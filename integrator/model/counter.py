@@ -7,6 +7,7 @@ from config import FROM_LANG
 from config import VAR_GR, VAR_SL
 
 from .address import Index
+from .source import Source
 
 
 @dataclass
@@ -56,8 +57,8 @@ class Counter:
             assert nxt.lang == lang
 
             found = False
-            for v in orig_var:
-                if v in nxt.var:
+            for v in Source(orig_var):
+                if v in Source(nxt.var):
                     r.orig_var.add(nxt.idx)
                     found = True
                     break
@@ -65,8 +66,8 @@ class Counter:
                 r.orig_main.add(nxt.idx)
 
             found = False
-            for v in trans_var:
-                if v in nxt.var:
+            for v in Source(trans_var):
+                if v in Source(nxt.var):
                     r.trans_var.add(nxt.idx)
                     found = True
                     break

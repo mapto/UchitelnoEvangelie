@@ -322,8 +322,8 @@ def test_alternative():
 
 def test_inside():
     assert Source("HGW").inside([Source("WGH")]) == Source("WGH")
-    assert Source("A").inside(Source("A"))
+    assert Source("M").inside(Source("M"))
 
     assert Source("").inside([Source("")]) == Source("")
-    assert Source("").inside([Source("A")]) == None
+    assert Source("").inside([Source("B")]) == None
     assert Source("Pz").inside(VAR_SOURCES["gr"]) == Source(VAR_SOURCES["gr"])
