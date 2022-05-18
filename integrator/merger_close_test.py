@@ -2,7 +2,7 @@ from typing import List
 
 from config import FROM_LANG, TO_LANG
 from semantics import MainLangSemantics, VarLangSemantics
-from merger import _close, _grouped, _group_variants
+from merger import _close, _grouped
 
 sl_sem = MainLangSemantics(
     FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
