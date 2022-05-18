@@ -6,13 +6,7 @@ from const import STYLE_COL
 from model import Index, Usage, Source, Alternative
 
 from semantics import MainLangSemantics, VarLangSemantics
-from aggregator import (
-    FIRST_LEMMA,
-    LAST_LEMMA,
-    present,
-    _expand_and_aggregate,
-    _agg_lemma,
-)
+from aggregator import present, _expand_and_aggregate, _agg_lemma
 
 # semantics change from September 2021
 # with repetitions added (as if after merge)
@@ -26,10 +20,12 @@ sl_sem = MainLangSemantics(
 gr_sem = MainLangSemantics(
     TO_LANG,
     11,
-    [12, 13, 14],
-    VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
+    [12, 13, 14, 15],
+    VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
     cnt_col=STYLE_COL + 3,
 )
+
+LAST_LEMMA = -2
 
 
 def test_present():
@@ -124,32 +120,8 @@ def test_expand_and_aggregate():
     d = _expand_and_aggregate(row, dummy_sem, None, d)
     assert len(d) == 0
 
-    sl_sem = MainLangSemantics(
-        FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19])
-    )
-
 
 def test_agg_lemma_missing_gr_main():
-    # semantics change from September 2021
-    # with repetitions added (as if after merge)
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
-
     row = (
         [""] * 4
         + ["16/80a08", "хлѣбꙑ•", "ре\ue20dе хлѣбꙑ• не", "хлѣбъ"]
@@ -166,27 +138,29 @@ def test_agg_lemma_missing_gr_main():
         "ἄρτος": {
             "": {
                 "": {
-                    "хлѣбъ": {
-                        ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
-                            [
-                                Usage(
-                                    idx=Index(
-                                        ch=16,
-                                        alt=False,
-                                        page=80,
-                                        col="a",
-                                        row=8,
-                                        word="ἄρτους Ch",
-                                    ),
-                                    lang="gr",
-                                    var=Source("Ch"),
-                                    orig_alt=Alternative(
-                                        main_lemma="om.",
-                                        main_word="om.",
-                                    ),
-                                )
-                            ]
-                        )
+                    "": {
+                        "хлѣбъ": {
+                            ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=16,
+                                            alt=False,
+                                            page=80,
+                                            col="a",
+                                            row=8,
+                                            word="ἄρτους Ch",
+                                        ),
+                                        lang="gr",
+                                        var=Source("Ch"),
+                                        orig_alt=Alternative(
+                                            main_lemma="om.",
+                                            main_word="om.",
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
                     }
                 }
             }
@@ -194,7 +168,7 @@ def test_agg_lemma_missing_gr_main():
     }
 
     result = SortedDict()
-    result = _agg_lemma(row, gr_sem.var, sl_sem, result, -2, "ἄρτος", "хлѣбъ")
+    result = _agg_lemma(row, gr_sem.var, sl_sem, result, LAST_LEMMA, "ἄρτος", "хлѣбъ")
     assert result == {
         "хлѣбъ": {
             ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
@@ -222,20 +196,6 @@ def test_agg_lemma_missing_gr_main():
 
 
 def test_agg_lemma_est_in_var_no_main():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14, 15],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
     row = (
         [
             "\ue201сть GH",
@@ -280,4 +240,94 @@ def test_agg_lemma_est_in_var_no_main():
                 ]
             )
         }
+    }
+
+
+def test_agg_lemma_hodom_spiti():
+    # TODO: verify inputs, variant seems to be wrong
+    row_main = (
+        [
+            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
+            "ходъ WG",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/072d18-19",
+            "ход\ue205мъ спѣюще•",
+            "д\ue205мъ спѣюще•",
+            "спѣт\ue205",
+            "≈ ход\ue205т\ue205 спѣѭще",
+        ]
+        + [""] * 2
+        + ["προβαίνοντες", "προβαίνω"]
+        + [""] * 13
+        + ["hl05"]
+        + ["1"] * 4
+    )
+
+    row_var = (
+        [
+            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
+            "",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/072d18-19",
+            "ход\ue205мъ спѣюще•",
+            "д\ue205мъ спѣюще•",
+            "ход\ue205т\ue205 спѣт\ue205",
+            "≈ ход\ue205т\ue205 спѣѭще",
+        ]
+        + [""] * 2
+        + ["προβαίνοντες", "προβαίνω"]
+        + [""] * 13
+        + ["hl05"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    _agg_lemma(row_main, sl_sem, gr_sem, result)
+    # _agg_lemma(row_var, sl_sem.var, gr_sem, result)
+    assert result == {
+        # "": {"ходомь спѣт\ue205 WG": {"": {"": {}}}},
+        "спѣт\ue205": {
+            "≈ ход\ue205т\ue205 спѣѭще": {
+                "": {
+                    "": {
+                        "προβαίνω": {
+                            ("ход\ue205мъ спѣюще•", "προβαίνοντες"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=14,
+                                            alt=False,
+                                            page=72,
+                                            col="d",
+                                            row=18,
+                                            end=Index(
+                                                ch=14,
+                                                alt=False,
+                                                page=72,
+                                                col="d",
+                                                row=19,
+                                                word="ход\ue205мъ спѣюще•",
+                                            ),
+                                            word="ход\ue205мъ спѣюще•",
+                                        ),
+                                        lang="sl",
+                                        var=Source(""),
+                                        orig_alt=Alternative(
+                                            var_lemmas={
+                                                Source("WG"): "ходомь спѣт\ue205"
+                                            },
+                                            var_words={
+                                                Source("WG"): ("хⷪ҇домь спѣюще WG", 1)
+                                            },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
     }

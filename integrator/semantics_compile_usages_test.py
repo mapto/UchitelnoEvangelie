@@ -798,3 +798,33 @@ def test_est_in_var_no_main():
             )
         }
     }
+
+
+def test_hodom_spiti():
+    # TODO: something is wrong in call
+    row = (
+        [
+            "хⷪ҇домь WG ход\ue205т\ue205 H",
+            "ходъ WG",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/72d18",
+            "ход\ue205мъ",
+            "себе• по поут\ue205 хо-",
+            "ход\ue205т\ue205",
+            "≈ ход\ue205т\ue205 спѣѭще",
+            "",
+            "",
+            "προβαίνοντες",
+            "προβαίνω",
+        ]
+        + [""] * 13
+        + ["hl05|hl00"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    result = gr_sem.compile_usages(
+        sl_sem.var, row, result, "προβαίνω", "ходомь спѣт\ue205"
+    )
+    assert result == {}
