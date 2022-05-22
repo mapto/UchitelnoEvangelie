@@ -1,7 +1,7 @@
 from sortedcontainers import SortedDict, SortedSet, SortedSet  # type: ignore
 
 from config import TO_LANG
-from model import Alternative, Index, Counter, Usage
+from model import Alternative, Counter, Index, Source, Usage
 
 
 def test_dict_counts_ipercliso():
@@ -286,3 +286,98 @@ def test_dict_counts_monogenis():
     c = Counter.get_dict_counts(d)
     assert (4, 3) == c.get_counts(True)
     assert (5, 0) == c.get_counts(False)
+
+def test_dict_counts_prichatnik_biti():
+    d = {
+        "бꙑт\ue205": {
+            "пр\ue205\ue20dьтьн\ue205къ быт\ue205": {
+                "": {
+                    "": {
+                        "ποιέω κοινωνόν → ποιέω & κοινωνός": {
+                            (
+                                "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                "ποιῆσαι κοινωνοὺς",
+                            ): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=28,
+                                            col="c",
+                                            row=21,
+                                            end=Index(
+                                                ch=5,
+                                                alt=False,
+                                                page=28,
+                                                col="d",
+                                                row=1,
+                                                word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                            ),
+                                            word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                        ),
+                                        lang="sl",
+                                        orig_alt=Alternative(
+                                            var_lemmas={
+                                                Source(
+                                                    "GH"
+                                                ): "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"
+                                            },
+                                            var_words={
+                                                Source("GH"): (
+                                                    "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205": {
+                "": {
+                    "": {
+                        "ποιέω κοινωνόν → ποιέω & κοινωνός": {
+                            (
+                                "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                "ποιῆσαι κοινωνοὺς",
+                            ): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=28,
+                                            col="c",
+                                            row=21,
+                                            end=Index(
+                                                ch=5,
+                                                alt=False,
+                                                page=28,
+                                                col="d",
+                                                row=1,
+                                                word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                            ),
+                                            word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                        ),
+                                        lang="sl",
+                                        var=Source("GH"),
+                                        orig_alt=Alternative(
+                                            main_lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                            main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+        }
+    }
+    c = Counter.get_dict_counts(d)
+    # assert (1, 0) == c.get_counts(True)
+    assert (1, 0) == c.get_counts(False)
