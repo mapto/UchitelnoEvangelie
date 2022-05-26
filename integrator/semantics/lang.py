@@ -32,13 +32,14 @@ def _build_usage(
     ovar: Source,
     tvar: Source,
     word: str,
+    lemma: str,
     ocnt: int,
     tcnt: int,
 ):
     """ovar and tvar are a list of variant identifiers"""
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i, word, ocnt, tcnt)
+    idx = Index.unpack(row[IDX_COL], b, i, word, lemma, ocnt, tcnt)
     oalt = osem.alternatives(row, ovar)
     talt = tsem.alternatives(row, tvar)
     return Usage(idx, osem.lang, ovar + tvar, oalt, talt)
@@ -181,7 +182,9 @@ class LangSemantics:
 
         return list(paths.values())
 
-    def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, int]:
+    def compile_words_by_lemma(
+        self, row: List[str], var: Source
+    ) -> Tuple[str, str, int]:
         raise NotImplementedError("abstract method")
 
     def compile_usages(
@@ -189,22 +192,22 @@ class LangSemantics:
         trans: "LangSemantics",
         row: List[str],
         d: SortedDict,
-        olemma: str,
-        tlemma: str,
+        rolemma: str,
+        rtlemma: str,
     ) -> SortedDict:
-        # print(self.multiword(row))
-        # print(trans.multiword(row))
         for ovar in self.multilemma(row).keys():
             for tvar in trans.multilemma(row, LAST_LEMMA).keys():
-                (oword, ocnt) = self.compile_words_by_lemma(row, ovar)
-                (tword, tcnt) = trans.compile_words_by_lemma(row, tvar)
-                val = _build_usage(row, self, trans, ovar, tvar, oword, ocnt, tcnt)
+                (oword, olemma, ocnt) = self.compile_words_by_lemma(row, ovar)
+                (tword, tlemma, tcnt) = trans.compile_words_by_lemma(row, tvar)
+                val = _build_usage(
+                    row, self, trans, ovar, tvar, oword, olemma, ocnt, tcnt
+                )
                 for nxt in trans.build_paths(row):
-                    orig_var_in_lemma = _is_variant_lemma(row, self, ovar, olemma)
-                    # print(f"{ovar} in {olemma}: {orig_var_in_lemma}")
-                    trans_var_in_lemma = _is_variant_lemma(row, trans, tvar, tlemma)
-                    # print(f"{tvar} in {tlemma}: {trans_var_in_lemma}")
-                    if orig_var_in_lemma and trans_var_in_lemma and tlemma in nxt:
+                    orig_var_in_lemma = _is_variant_lemma(row, self, ovar, rolemma)
+                    # print(f"{ovar} in {rolemma}: {orig_var_in_lemma}")
+                    trans_var_in_lemma = _is_variant_lemma(row, trans, tvar, rtlemma)
+                    # print(f"{tvar} in {rtlemma}: {trans_var_in_lemma}")
+                    if orig_var_in_lemma and trans_var_in_lemma and rtlemma in nxt:
                         key = (oword, tword)
                         d = _add_usage(val, nxt, key, d)
         return d
@@ -270,9 +273,8 @@ class MainLangSemantics(LangSemantics):
             for k, v in self.var.multilemma(row, lidx).items()
             if v != row[self.lemmas[lidx]]
         }
-        alt_words = {
-            l: self.var.compile_words_by_lemma(row, l) for l in alt_lemmas.keys()
-        }
+        aw = {l: self.var.compile_words_by_lemma(row, l) for l in alt_lemmas.keys()}
+        alt_words = {l: (v[0], v[2]) for l, v in aw.items()}
         if Source() in alt_lemmas:
             alt_lemmas[Source("".join(str(s) for s in alt_words.keys()))] = alt_lemmas[
                 Source()
@@ -294,6 +296,9 @@ class MainLangSemantics(LangSemantics):
         """Main variant does not have multiple words in a cell"""
         if lidx == LAST_LEMMA:
             lidx = len(self.lemmas) - 1
+            # print(lidx)
+            # print(self.lemmas)
+            # print(row)
             while not row[self.lemmas[lidx]]:
                 lidx -= 1
             return self.multilemma(row, lidx)
@@ -301,8 +306,8 @@ class MainLangSemantics(LangSemantics):
 
     def compile_words_by_lemma(
         self, row: List[str], var: Source = Source()
-    ) -> Tuple[str, int]:
-        return (row[self.word], int(row[self.cnt_col]))
+    ) -> Tuple[str, str, int]:
+        return (row[self.word], row[self.lemmas[0]], int(row[self.cnt_col]))
 
     def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:
         """based on word (in column) expand it with counter
@@ -397,11 +402,12 @@ class VarLangSemantics(LangSemantics):
                 main_lemma = row[self.main.lemmas[lidx]]
                 main_word = row[self.main.word]
         alt_lemmas = {k: v for k, v in multilemma.items() if my_var not in k}
-        alt_words = {
+        aw = {
             k: self.compile_words_by_lemma(row, k)
             for k, v in multiword.items()
             if k.inside(alt_lemmas)
         }
+        alt_words = {k: (v[0], v[2]) for k, v in aw.items()}
         return Alternative(
             main_lemma,
             alt_lemmas,
@@ -471,17 +477,32 @@ class VarLangSemantics(LangSemantics):
 
         return result
 
-    def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, int]:
+    def compile_words_by_lemma(
+        self, row: List[str], var: Source
+    ) -> Tuple[str, str, int]:
+        """returns:
+        1. concatenated pairs (word, variant)
+        2. lemmas without variants
+        3. repetition index in row
+        TODO: Consider introducing a new data class
+        """
         vars = SortedSet()
+        lemmas = SortedSet()
         multiword = self.multiword(row)
+        multilemma = self.multilemma(row)
         for v in var:
             for kw in multiword.keys():
                 if not kw and v in Source(DEFAULT_SOURCES[self.lang]):
                     vars.add(f"{multiword[Source()]} {kw}")
+                    lemmas.add(multilemma[Source()])
                 elif v in kw and kw in multiword:
                     vars.add(f"{multiword[kw]} {kw}")
+                    for m in multilemma.keys():
+                        if kw in m:
+                            lemmas.add(multilemma[m])
+                            break
         # TODO: multiword counts need to distinguish between variants
-        return (" ".join(vars), int(row[self.cnt_col]))
+        return (" ".join(vars), " ".join(lemmas), int(row[self.cnt_col]))
 
     def __repr__(self):
         """main ignored to avoid recursion"""

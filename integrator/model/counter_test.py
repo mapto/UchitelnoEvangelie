@@ -20,6 +20,7 @@ def test_dict_counts_ipercliso():
                                         col="c",
                                         row=17,
                                         word="ὑπερβλύζων",
+                                        lemma="ὑπερβλύω",
                                     ),
                                     lang=TO_LANG,
                                     var="C",
@@ -39,6 +40,7 @@ def test_dict_counts_ipercliso():
                                         col="c",
                                         row=17,
                                         word="ὑπερβλύσαι",
+                                        lemma="ὑπερβλύω",
                                     ),
                                     lang=TO_LANG,
                                     var="C",
@@ -62,6 +64,7 @@ def test_dict_counts_ipercliso():
                                         col="c",
                                         row=17,
                                         word="ὑπερκλύζων",
+                                        lemma="ὑπερκλύζω",
                                     ),
                                     lang=TO_LANG,
                                     orig_alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
@@ -80,6 +83,7 @@ def test_dict_counts_ipercliso():
                                         col="c",
                                         row=17,
                                         word="ὑπερκλύσαι",
+                                        lemma="ὑπερκλύζω",
                                     ),
                                     lang=TO_LANG,
                                     orig_alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
@@ -286,6 +290,7 @@ def test_dict_counts_monogenis():
     c = Counter.get_dict_counts(d)
     assert (4, 3) == c.get_counts(True)
     assert (5, 0) == c.get_counts(False)
+
 
 def test_dict_counts_prichatnik_biti():
     d = {

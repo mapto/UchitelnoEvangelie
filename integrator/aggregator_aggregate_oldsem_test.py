@@ -27,133 +27,6 @@ gr_sem = MainLangSemantics(
 
 
 def test_monogenis():
-    # simplified semantics
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7],
-        VarLangSemantics(FROM_LANG, 0, [1], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12],
-        VarLangSemantics(TO_LANG, 16, [17, 18], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
-
-    row = (
-        [
-            "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
-            "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
-        ]
-        + [""] * 2
-        + [
-            "1/W168a25",
-            "\ue201д\ue205но\ue20dедоу",
-            "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
-            "\ue201д\ue205но\ue20dѧдъ",
-        ]
-        + [""] * 3
-        + ["μονογενοῦς", "μονογενής"]
-        + [""] * 14
-        + ["1"] * 4
-    )
-
-    result = SortedDict()
-    result = aggregate([row], sl_sem, gr_sem, result)
-    assert result == {
-        "\ue201д\ue205но\ue20dѧдъ": {
-            "μονογενής": {
-                ("\ue201д\ue205но\ue20dедоу", "μονογενοῦς"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                                word="\ue201д\ue205но\ue20dедоу",
-                            ),
-                            lang=FROM_LANG,
-                            orig_alt=Alternative(
-                                var_lemmas={
-                                    Source("H"): "\ue201д\ue205нородъ",
-                                    Source("G"): "\ue205но\ue20dѧдъ",
-                                },
-                                var_words={
-                                    Source("H"): ("\ue201д\ue205нородоу H", 1),
-                                    Source("G"): ("\ue205но\ue20dедаго G", 1),
-                                },
-                            ),
-                        )
-                    ]
-                )
-            }
-        }
-    }
-
-    result = SortedDict()
-    result = aggregate([row], sl_sem.var, gr_sem, result)
-    assert result == {
-        "\ue201д\ue205нородъ": {
-            "μονογενής": {
-                ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                                word="\ue201д\ue205нородоу H",
-                            ),
-                            lang=FROM_LANG,
-                            var=Source("H"),
-                            orig_alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
-                            ),
-                        )
-                    ]
-                )
-            }
-        },
-        "\ue205но\ue20dѧдъ": {
-            "μονογενής": {
-                ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
-                    [
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                                word="\ue205но\ue20dедаго G",
-                            ),
-                            lang=FROM_LANG,
-                            var=Source("G"),
-                            orig_alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
-                            ),
-                        )
-                    ]
-                )
-            }
-        },
-    }
-
-
-def test_monogenis2():
     rows = [
         [
             "\ue201д\ue205нородоу H",
@@ -244,8 +117,9 @@ def test_monogenis2():
                                         bold=True,
                                         italic=True,
                                         word="μονογενοῦς",
+                                        lemma="μονογενής",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("H"),
                                     trans_alt=Alternative(
                                         main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -270,8 +144,9 @@ def test_monogenis2():
                                         col="a",
                                         row=28,
                                         word="μονογενοῦς",
+                                        lemma="μονογενής",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                 )
                             ]
                         ),
@@ -287,8 +162,9 @@ def test_monogenis2():
                                         bold=True,
                                         italic=True,
                                         word="μονογενοῦς",
+                                        lemma="μονογενής",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source("H"): "\ue201д\ue205нородъ",
@@ -312,8 +188,9 @@ def test_monogenis2():
                                         col="c",
                                         row=15,
                                         word="μονογενοῦς",
+                                        lemma="μονογενής",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("WH"),
                                     trans_alt=Alternative(
                                         main_lemma="\ue205но\ue20dѧдъ",
@@ -332,8 +209,9 @@ def test_monogenis2():
                                         col="a",
                                         row=4,
                                         word="μονογενὴς",
+                                        lemma="μονογενής",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("WH"),
                                     trans_alt=Alternative(
                                         main_lemma="\ue205но\ue20dѧдъ ",
@@ -354,8 +232,9 @@ def test_monogenis2():
                                         col="c",
                                         row=15,
                                         word="μονογενοῦς",
+                                        lemma="μονογενής",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source("WH"): "\ue201д\ue205но\ue20dѧдъ"
@@ -382,8 +261,9 @@ def test_monogenis2():
                                         bold=True,
                                         italic=True,
                                         word="μονογενοῦς",
+                                        lemma="μονογενής",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("G"),
                                     trans_alt=Alternative(
                                         main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -406,8 +286,9 @@ def test_monogenis2():
                                         col="a",
                                         row=4,
                                         word="μονογενὴς",
+                                        lemma="μονογενής",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source("WH"): "\ue201д\ue205но\ue20dѧдъ"
@@ -475,8 +356,9 @@ def test_ipercliso():
                                         col="c",
                                         row=17,
                                         word="ὑπερκλύζων",
+                                        lemma="ὑπερκλύζω",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     orig_alt=Alternative(
                                         var_lemmas={Source("C"): "ὑπερβλύω"},
                                         var_words={Source("C"): ("ὑπερβλύζων C", 1)},
@@ -500,8 +382,9 @@ def test_ipercliso():
                                         col="c",
                                         row=17,
                                         word="ὑπερκλύσαι",
+                                        lemma="ὑπερκλύζω",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     orig_alt=Alternative(
                                         var_lemmas={Source("C"): "ὑπερβλύω"},
                                         var_words={Source("C"): ("ὑπερβλύσαι C", 1)},
@@ -532,8 +415,9 @@ def test_ipercliso():
                                         col="c",
                                         row=17,
                                         word="ὑπερβλύζων C",
+                                        lemma="ὑπερβλύω",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("C"),
                                     orig_alt=Alternative(
                                         main_lemma="ὑπερκλύζω",
@@ -558,8 +442,9 @@ def test_ipercliso():
                                         col="c",
                                         row=17,
                                         word="ὑπερβλύσαι C",
+                                        lemma="ὑπερβλύω",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("C"),
                                     orig_alt=Alternative(
                                         main_lemma="ὑπερκλύζω",
@@ -638,6 +523,7 @@ def test_bozhii():
                                             col="a",
                                             row=4,
                                             word="боꙁѣ",
+                                            lemma="богъ",
                                         ),
                                         lang=FROM_LANG,
                                         orig_alt=Alternative(
@@ -683,6 +569,7 @@ def test_bozhii():
                                             col="a",
                                             row=4,
                                             word="б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
+                                            lemma="бож\ue205\ue205",
                                         ),
                                         lang=FROM_LANG,
                                         var=Source("WGH"),
@@ -720,6 +607,7 @@ def test_bozhii():
                                         col="a",
                                         row=4,
                                         word="Θεοῦ",
+                                        lemma="θεός",
                                     ),
                                     lang=TO_LANG,
                                     var=Source("WGH"),
@@ -770,8 +658,9 @@ def test_bozhii():
                                         row=5,
                                         ocnt=2,
                                         word="ἀκοῦσαι",
+                                        lemma="ἀκούω",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     trans_alt=Alternative(
                                         var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
                                         var_words={
@@ -793,8 +682,9 @@ def test_bozhii():
                                         col="b",
                                         row=5,
                                         word="ἀκοῦσαι",
+                                        lemma="ἀκούω",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     trans_alt=Alternative(
                                         var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
                                         var_words={
@@ -816,8 +706,9 @@ def test_bozhii():
                                         col="b",
                                         row=5,
                                         word="ἀκοῦσαι",
+                                        lemma="ἀκούω",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("GH"),
                                     trans_alt=Alternative(
                                         main_lemma="слꙑшат\ue205",
@@ -834,8 +725,9 @@ def test_bozhii():
                                         ocnt=2,
                                         tcnt=2,
                                         word="ἀκοῦσαι",
+                                        lemma="ἀκούω",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("GH"),
                                     trans_alt=Alternative(
                                         main_lemma="послꙑшат\ue205",
@@ -872,8 +764,9 @@ def test_bozhii():
                                             col="b",
                                             row=5,
                                             word="оуслышат\ue205 GH",
+                                            lemma="ѹслꙑшат\ue205",
                                         ),
-                                        lang=FROM_LANG,
+                                        lang="sl",
                                         var=Source("GH"),
                                         orig_alt=Alternative(
                                             main_lemma="слꙑшат\ue205",
@@ -890,8 +783,9 @@ def test_bozhii():
                                             ocnt=2,
                                             tcnt=2,
                                             word="оуслышат\ue205 GH",
+                                            lemma="ѹслꙑшат\ue205",
                                         ),
-                                        lang=FROM_LANG,
+                                        lang="sl",
                                         var=Source("GH"),
                                         orig_alt=Alternative(
                                             main_lemma="послꙑшат\ue205",
@@ -926,8 +820,9 @@ def test_bozhii():
                                             row=5,
                                             tcnt=2,
                                             word="послꙑшат\ue205",
+                                            lemma="послꙑшат\ue205",
                                         ),
-                                        lang=FROM_LANG,
+                                        lang="sl",
                                         orig_alt=Alternative(
                                             var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
                                             var_words={
@@ -957,8 +852,9 @@ def test_bozhii():
                                             col="b",
                                             row=5,
                                             word="слꙑшат\ue205",
+                                            lemma="слꙑшат\ue205",
                                         ),
-                                        lang=FROM_LANG,
+                                        lang="sl",
                                         orig_alt=Alternative(
                                             var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
                                             var_words={
@@ -1021,8 +917,9 @@ def test_velichanie():
                                         col="a",
                                         row=19,
                                         word="ἄτυφον",
+                                        lemma="ἄτυφος",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1043,8 +940,9 @@ def test_velichanie():
                                         col="a",
                                         row=19,
                                         word="ἄτυφον",
+                                        lemma="ἄτυφος",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source(
@@ -1069,8 +967,9 @@ def test_velichanie():
                                         ocnt=2,
                                         tcnt=2,
                                         word="ἄτυφον",
+                                        lemma="ἄτυφος",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     trans_alt=Alternative(
                                         var_lemmas={
                                             Source(
@@ -1100,8 +999,9 @@ def test_velichanie():
                                         row=19,
                                         ocnt=2,
                                         word="ἄτυφον",
+                                        lemma="ἄτυφος",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1134,8 +1034,9 @@ def test_velichanie():
                                         col="a",
                                         row=19,
                                         word="ἄτυφον",
+                                        lemma="ἄτυφος",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1157,8 +1058,9 @@ def test_velichanie():
                                         row=19,
                                         ocnt=2,
                                         word="ἄτυφον",
+                                        lemma="ἄτυφος",
                                     ),
-                                    lang=TO_LANG,
+                                    lang="gr",
                                     var=Source("WGH"),
                                     trans_alt=Alternative(
                                         main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1192,8 +1094,9 @@ def test_velichanie():
                                             col="a",
                                             row=19,
                                             word="вел\ue205\ue20dан\ue205е WGH",
+                                            lemma="вел\ue205\ue20dан\ue205\ue201",
                                         ),
-                                        lang=FROM_LANG,
+                                        lang="sl",
                                         var=Source("WGH"),
                                         orig_alt=Alternative(
                                             main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1223,8 +1126,9 @@ def test_velichanie():
                                             row=19,
                                             tcnt=2,
                                             word="невел\ue205\ue20d\ue205\ue201 WGH",
+                                            lemma="невел\ue205\ue20d\ue205\ue201",
                                         ),
-                                        lang=FROM_LANG,
+                                        lang="sl",
                                         var=Source("WGH"),
                                         orig_alt=Alternative(
                                             main_lemma="невел\ue205\ue20dан\ue205\ue201",
@@ -1294,6 +1198,7 @@ def test_puteshestive():
                                             col="d",
                                             row=18,
                                             word="поутошьств\ue205ꙗ",
+                                            lemma="пѫтошьств\ue205\ue201",
                                         ),
                                         lang="sl",
                                         var=Source(""),
@@ -1315,6 +1220,7 @@ def test_puteshestive():
                                             col="d",
                                             row=18,
                                             word="поутошьств\ue205ꙗ",
+                                            lemma="пѫтошьств\ue205\ue201",
                                         ),
                                         lang="sl",
                                         var=Source(""),
@@ -1365,6 +1271,7 @@ def test_puteshestive():
                                             col="d",
                                             row=18,
                                             word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemma="пѫть",
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
@@ -1412,6 +1319,7 @@ def test_puteshestive():
                                             col="d",
                                             row=18,
                                             word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemma="пѫть",
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
@@ -1458,6 +1366,7 @@ def test_puteshestive():
                                             col="d",
                                             row=18,
                                             word="шьств\ue205ꙗ пꙋт\ue205 H",
+                                            lemma="шьств\ue205\ue201",
                                         ),
                                         lang="sl",
                                         var=Source("H"),
@@ -1496,6 +1405,7 @@ def test_puteshestive():
                                             col="d",
                                             row=18,
                                             word="шьств\ue205ꙗ пꙋт\ue205 H",
+                                            lemma="шьств\ue205\ue201",
                                         ),
                                         lang="sl",
                                         var=Source("H"),
@@ -1536,6 +1446,7 @@ def test_puteshestive():
                                             col="d",
                                             row=18,
                                             word="шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemma="шьст\ue205\ue201",
                                         ),
                                         lang="sl",
                                         var=Source("G"),
@@ -1574,6 +1485,7 @@ def test_puteshestive():
                                             col="d",
                                             row=18,
                                             word="шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemma="шьст\ue205\ue201",
                                         ),
                                         lang="sl",
                                         var=Source("G"),
@@ -2165,6 +2077,7 @@ def test_missing_gr_main():
                                         col="a",
                                         row=8,
                                         word="ἄρτους Ch",
+                                        lemma="ἄρτος",
                                     ),
                                     lang="gr",
                                     var=Source("Ch"),
@@ -2220,6 +2133,7 @@ def test_v_loc():
                                             col="d",
                                             row=1,
                                             word="вь WGH",
+                                            lemma="въ",
                                         ),
                                         lang="sl",
                                         var=Source("WHGC"),
@@ -2285,6 +2199,7 @@ def test_hodom_spiti():
                                             col="d",
                                             row=18,
                                             word="ход\ue205мъ",
+                                            lemma="ход\ue205т\ue205",
                                         ),
                                         lang="sl",
                                         orig_alt=Alternative(
@@ -2405,8 +2320,10 @@ def test_agg_lemma_hodom_spiti():
                                                 col="d",
                                                 row=19,
                                                 word="ход\ue205мъ спѣюще•",
+                                                lemma="спѣт\ue205",
                                             ),
                                             word="ход\ue205мъ спѣюще•",
+                                            lemma="спѣт\ue205",
                                         ),
                                         lang="sl",
                                         orig_alt=Alternative(
@@ -2446,8 +2363,10 @@ def test_agg_lemma_hodom_spiti():
                                                 col="d",
                                                 row=19,
                                                 word="хⷪ҇домь спѣюще WG",
+                                                lemma="ходъ",
                                             ),
                                             word="хⷪ҇домь спѣюще WG",
+                                            lemma="ходъ",
                                         ),
                                         lang="sl",
                                         var=Source("WG"),
@@ -2484,8 +2403,10 @@ def test_agg_lemma_hodom_spiti():
                                                 col="d",
                                                 row=19,
                                                 word="ход\ue205мъ спѣюще•",
+                                                lemma="ход\ue205т\ue205",
                                             ),
                                             word="ход\ue205мъ спѣюще•",
+                                            lemma="ход\ue205т\ue205",
                                         ),
                                         lang="sl",
                                         orig_alt=Alternative(

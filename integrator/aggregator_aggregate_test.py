@@ -60,6 +60,7 @@ def test_est_in_var_no_main():
                                             col="a",
                                             row=6,
                                             word="\ue201сть GH",
+                                            lemma="бꙑт\ue205",
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
@@ -150,8 +151,10 @@ def test_prichatnik_biti_sl():
                                                 col="d",
                                                 row=1,
                                                 word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                                lemma="пр\ue205\ue20dьтьн\ue205къ",
                                             ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                            lemma="пр\ue205\ue20dьтьн\ue205къ",
                                         ),
                                         lang="sl",
                                         orig_alt=Alternative(
@@ -203,8 +206,10 @@ def test_prichatnik_biti_sl():
                                                 col="d",
                                                 row=1,
                                                 word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                                lemma="бꙑт\ue205",
                                             ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                            lemma="бꙑт\ue205",
                                         ),
                                         lang="sl",
                                         orig_alt=Alternative(
@@ -295,8 +300,10 @@ def test_prichatnik_biti_sl_var():
                                                 col="d",
                                                 row=1,
                                                 word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                                lemma="пр\ue205\ue20dѧстьн\ue205къ",
                                             ),
                                             word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                            lemma="пр\ue205\ue20dѧстьн\ue205къ",
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
@@ -341,8 +348,10 @@ def test_prichatnik_biti_sl_var():
                                                 col="d",
                                                 row=1,
                                                 word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                                lemma="бꙑт\ue205",
                                             ),
                                             word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                            lemma="бꙑт\ue205",
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
@@ -433,8 +442,10 @@ def test_prichatnik_biti_combined():
                                                 col="d",
                                                 row=1,
                                                 word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                                lemma="бꙑт\ue205",
                                             ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                            lemma="бꙑт\ue205",
                                         ),
                                         lang="sl",
                                         orig_alt=Alternative(
@@ -522,8 +533,10 @@ def test_prichatnik_biti_combined():
                                                 col="d",
                                                 row=1,
                                                 word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                                lemma="бꙑт\ue205",
                                             ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                            lemma="бꙑт\ue205",
                                         ),
                                         lang="sl",
                                         orig_alt=Alternative(
@@ -569,8 +582,10 @@ def test_prichatnik_biti_combined():
                                                 col="d",
                                                 row=1,
                                                 word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                                lemma="бꙑт\ue205",
                                             ),
                                             word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                            lemma="бꙑт\ue205",
                                         ),
                                         lang="sl",
                                         var=Source("GH"),
@@ -586,4 +601,114 @@ def test_prichatnik_biti_combined():
                 }
             },
         }
+    }
+
+
+def test_monogenes():
+    row = (
+        [
+            "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
+            "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
+        ]
+        + [""] * 2
+        + [
+            "1/W168a25",
+            "\ue201д\ue205но\ue20dедоу",
+            "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
+            "\ue201д\ue205но\ue20dѧдъ",
+        ]
+        + [""] * 3
+        + ["μονογενοῦς", "μονογενής"]
+        + [""] * 13
+        + ["bold|italic"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    result = aggregate([row], sl_sem.var, gr_sem, result)
+    assert result == {
+        "\ue201д\ue205нородъ": {
+            "": {
+                "": {
+                    "": {
+                        "μονογενής": {
+                            ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=True,
+                                            page=168,
+                                            col="a",
+                                            row=25,
+                                            bold=True,
+                                            italic=True,
+                                            word="\ue201д\ue205нородоу H",
+                                            lemma="\ue201д\ue205нородъ",
+                                        ),
+                                        lang="sl",
+                                        var=Source("H"),
+                                        orig_alt=Alternative(
+                                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                            var_lemmas={
+                                                Source("G"): "\ue205но\ue20dѧдъ"
+                                            },
+                                            main_word="\ue201д\ue205но\ue20dедоу",
+                                            var_words={
+                                                Source("G"): (
+                                                    "\ue205но\ue20dедаго G",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                    )
+                                ]
+                            ),
+                        }
+                    }
+                }
+            }
+        },
+        "\ue205но\ue20dѧдъ": {
+            "": {
+                "": {
+                    "": {
+                        "μονογενής": {
+                            ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=1,
+                                            alt=True,
+                                            page=168,
+                                            col="a",
+                                            row=25,
+                                            bold=True,
+                                            italic=True,
+                                            word="\ue205но\ue20dедаго G",
+                                            lemma="\ue205но\ue20dѧдъ",
+                                        ),
+                                        lang="sl",
+                                        var=Source("G"),
+                                        orig_alt=Alternative(
+                                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                            var_lemmas={
+                                                Source("H"): "\ue201д\ue205нородъ"
+                                            },
+                                            main_word="\ue201д\ue205но\ue20dедоу",
+                                            var_words={
+                                                Source("H"): (
+                                                    "\ue201д\ue205нородоу H",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                    )
+                                ]
+                            ),
+                        }
+                    }
+                }
+            }
+        },
     }

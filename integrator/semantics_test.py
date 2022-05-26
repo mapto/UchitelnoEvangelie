@@ -19,7 +19,7 @@ def test_post_init():
     assert len(sem.lemmas) == len(sem.var.lemmas) == 4
 
 
-def test__is_variant_lemma():
+def test_is_variant_lemma():
     row = (
         [""] * 4
         + [
@@ -585,7 +585,7 @@ def test_add_usage_puteshestvie():
     }
 
 
-def test_LangSemantics_compile_words_by_lemma():
+def test_compile_words_by_lemma():
     sl_sem = MainLangSemantics(
         FROM_LANG,
         5,
@@ -603,7 +603,11 @@ def test_LangSemantics_compile_words_by_lemma():
     )
 
     result = sl_sem.var.compile_words_by_lemma(row, "WGH")
-    assert result == ("б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G", 1)
+    assert result == (
+        "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
+        "бож\ue205\ue205",
+        1,
+    )
 
     row = (
         ["ѿ WG  ѡ H", "отъ"]
@@ -617,7 +621,7 @@ def test_LangSemantics_compile_words_by_lemma():
     )
 
     result = sl_sem.var.compile_words_by_lemma(row, "WGH")
-    assert result == ("ѡ H ѿ WG", 1)
+    assert result == ("ѡ H ѿ WG", "отъ", 1)
 
     row = (
         [
@@ -637,7 +641,7 @@ def test_LangSemantics_compile_words_by_lemma():
         + ["2"]
     )
     result = sl_sem.var.compile_words_by_lemma(row, "H")
-    assert result == ("днородоу H", 2)
+    assert result == ("днородоу H", "\ue201д\ue205нородъ", 2)
 
 
 def test_add_count():
@@ -682,4 +686,4 @@ def test_compile_words_by_lemma_artos():
         + ["1"] * 4
     )
     res = gr_sem.var.compile_words_by_lemma(row, Source("Ch"))
-    assert res == ("ἄρτους Ch", 1)
+    assert res == ("ἄρτους Ch", "ἄρτος", 1)

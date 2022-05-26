@@ -10,6 +10,14 @@ from .address import Index
 from .source import Source
 
 
+def _present(a: Index, s: Set[Index]) -> bool:
+    present = False
+    for e in s:
+        if e == a:
+            present = True
+    return present
+
+
 @dataclass
 class Counter:
     orig_main: Set[Index] = field(default_factory=lambda: set())
@@ -27,7 +35,8 @@ class Counter:
     def get_counts(self, trans: bool = False) -> Tuple[int, int]:
         if trans:
             return (len(self.trans_main), len(self.trans_var))
-        return (len(self.orig_main), len(self.orig_var))
+        orig_l = [s for s in self.orig_var if not _present(s, self.orig_main)]
+        return (len(self.orig_main), len(orig_l))
 
     @staticmethod
     def get_set_counts(s: SortedSet) -> "Counter":

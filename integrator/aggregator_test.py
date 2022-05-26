@@ -7,6 +7,7 @@ from model import Index, Usage, Source, Alternative
 
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import present, _expand_and_aggregate, _agg_lemma
+from aggregator import LAST_LEMMA
 
 # semantics change from September 2021
 # with repetitions added (as if after merge)
@@ -24,8 +25,6 @@ gr_sem = MainLangSemantics(
     VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
     cnt_col=STYLE_COL + 3,
 )
-
-LAST_LEMMA = -2
 
 
 def test_present():
@@ -150,6 +149,7 @@ def test_agg_lemma_missing_gr_main():
                                             col="a",
                                             row=8,
                                             word="ἄρτους Ch",
+                                            lemma="ἄρτος",
                                         ),
                                         lang="gr",
                                         var=Source("Ch"),
@@ -181,6 +181,7 @@ def test_agg_lemma_missing_gr_main():
                             col="a",
                             row=8,
                             word="ἄρτους Ch",
+                            lemma="ἄρτος",
                         ),
                         lang="gr",
                         var=Source("Ch"),
@@ -229,6 +230,7 @@ def test_agg_lemma_est_in_var_no_main():
                             col="a",
                             row=6,
                             word="\ue201сть GH",
+                            lemma="бꙑт\ue205",
                         ),
                         lang="sl",
                         var=Source("GH"),
@@ -309,8 +311,10 @@ def test_agg_lemma_hodom_spiti():
                                                 col="d",
                                                 row=19,
                                                 word="ход\ue205мъ спѣюще•",
+                                                lemma="спѣт\ue205",
                                             ),
                                             word="ход\ue205мъ спѣюще•",
+                                            lemma="спѣт\ue205",
                                         ),
                                         lang="sl",
                                         var=Source(""),
@@ -330,4 +334,58 @@ def test_agg_lemma_hodom_spiti():
                 }
             }
         },
+    }
+
+
+def test_agg_lemma_monogenis():
+    row = (
+        [
+            "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
+            "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
+        ]
+        + [""] * 2
+        + [
+            "1/W168a25",
+            "\ue201д\ue205но\ue20dедоу",
+            "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
+            "\ue201д\ue205но\ue20dѧдъ",
+        ]
+        + [""] * 3
+        + ["μονογενοῦς", "μονογενής"]
+        + [""] * 13
+        + ["bold|italic"]
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = _agg_lemma(
+        row, sl_sem.var, gr_sem, result, LAST_LEMMA, "днородъ", "μονογενής"
+    )
+    assert result == {
+        "μονογενής": {
+            ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=1,
+                            alt=True,
+                            page=168,
+                            col="a",
+                            row=25,
+                            bold=True,
+                            italic=True,
+                            word="\ue201д\ue205нородоу H",
+                            lemma="\ue201д\ue205нородъ",
+                        ),
+                        lang="sl",
+                        var=Source("H"),
+                        orig_alt=Alternative(
+                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                            var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+                            main_word="\ue201д\ue205но\ue20dедоу",
+                            var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
+                        ),
+                    )
+                ]
+            )
+        }
     }

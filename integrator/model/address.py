@@ -41,6 +41,7 @@ class Index:
     bold: bool = False
     italic: bool = False
     word: str = ""
+    lemma: str = ""
 
     @staticmethod
     def unpack(
@@ -48,6 +49,7 @@ class Index:
         b: bool = False,
         i: bool = False,
         word: str = "",
+        lemma: str = "",
         ocnt: int = 1,
         tcnt: int = 1,
     ) -> "Index":
@@ -58,6 +60,8 @@ class Index:
         Regex using: https://regex101.com/
         """
         # TODO: derive regex from parts
+        # TODO: Probably need to find a better way to localise within line, than passing on word and/or lemma
+
         m = re.search(address_regex, value)
         assert m
         # print(m.groups())
@@ -103,10 +107,30 @@ class Index:
                 bold=b,
                 italic=i,
                 word=word,
+                lemma=lemma,
             )
-        return Index(ch, alt, page, col, row, ocnt, tcnt, end, b, i, word=word)
+        return Index(
+            ch, alt, page, col, row, ocnt, tcnt, end, b, i, word=word, lemma=lemma
+        )
 
-    def __str__(self):
+    def __eq__(self, other) -> bool:
+        if type(other) is not Index:
+            return False
+        if (
+            self.ch != other.ch
+            or self.alt != other.alt
+            or self.page != other.page
+            or self.col != other.col
+            or self.row != other.row
+            or self.ocnt != other.ocnt
+            or self.tcnt != other.tcnt
+            or self.end != other.end
+            or self.lemma != other.lemma
+        ):
+            return False
+        return True
+
+    def __str__(self) -> str:
         """
         >>> str(Index(1, False, 6, "c", 4, end=Index(1, False, 6, "d", 4)))
         '1/6c4-d4'
@@ -142,7 +166,7 @@ class Index:
                 return f"{start}-{self.end.row}{ecnt}"
         return start
 
-    def longstr(self):
+    def longstr(self) -> str:
         """
         >>> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4)).longstr()
         '01/006c04-02/006c04'

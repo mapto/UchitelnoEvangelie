@@ -51,6 +51,7 @@ def test_para():
                             col="a",
                             row=19,
                             word="παρὰ",
+                            lemma="παρά",
                         ),
                         lang=TO_LANG,
                     )
@@ -82,8 +83,9 @@ def test_para():
                             col="d",
                             row=1,
                             word="παρ’ C",
+                            lemma="παρά",
                         ),
-                        lang=TO_LANG,
+                        lang="gr",
                         var=Source("C"),
                         trans_alt=Alternative(
                             var_lemmas={Source("WGH"): "въ"},
@@ -145,8 +147,9 @@ def test_ipercliso():
                             col="c",
                             row=17,
                             word="ὑπερβλύζων C",
+                            lemma="ὑπερβλύω",
                         ),
-                        lang=TO_LANG,
+                        lang="gr",
                         var=Source("C"),
                         orig_alt=Alternative(
                             main_lemma="ὑπερκλύζω",
@@ -167,8 +170,9 @@ def test_ipercliso():
                             col="c",
                             row=17,
                             word="ὑπερβλύσαι C",
+                            lemma="ὑπερβλύω",
                         ),
-                        lang=TO_LANG,
+                        lang="gr",
                         var=Source("C"),
                         orig_alt=Alternative(
                             main_lemma="ὑπερκλύζω",
@@ -217,6 +221,7 @@ def test_verovat():
                             col="b",
                             row=19,
                             word="вѣроують",
+                            lemma="вѣроват_",
                         ),
                         lang=FROM_LANG,
                         orig_alt=Alternative(
@@ -242,6 +247,7 @@ def test_verovat():
                             col="b",
                             row=19,
                             word="πιστεύσωσι",
+                            lemma="πιστεύω",
                         ),
                         lang=TO_LANG,
                         trans_alt=Alternative(
@@ -281,6 +287,7 @@ def test_mene():
                             col="c",
                             row=7,
                             word="мене",
+                            lemma="аꙁъ",
                         ),
                         lang=FROM_LANG,
                         var=Source("C"),
@@ -303,6 +310,7 @@ def test_mene():
                             col="c",
                             row=7,
                             word="με C",
+                            lemma="ἐγώ",
                         ),
                         lang=TO_LANG,
                         var=Source("C"),
@@ -343,6 +351,7 @@ def test_monogenis():
                             col="a",
                             row=4,
                             word="\ue205но\ue20dадꙑ\ue205",
+                            lemma="\ue205но\ue20dѧдъ",
                         ),
                         lang=FROM_LANG,
                         orig_alt=Alternative(
@@ -374,6 +383,7 @@ def test_monogenis():
                             col="a",
                             row=4,
                             word="μονογενὴς",
+                            lemma="μονογενής",
                         ),
                         lang=TO_LANG,
                         trans_alt=Alternative(
@@ -388,6 +398,8 @@ def test_monogenis():
         }
     }
 
+
+def test_monogenis2():
     row = (
         [
             "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
@@ -423,8 +435,9 @@ def test_monogenis():
                             bold=True,
                             italic=True,
                             word="\ue205но\ue20dедаго G",
+                            lemma="\ue205но\ue20dѧдъ",
                         ),
-                        lang=FROM_LANG,
+                        lang="sl",
                         var=Source("G"),
                         orig_alt=Alternative(
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -434,7 +447,7 @@ def test_monogenis():
                         ),
                     )
                 ]
-            )
+            ),
         }
     }
 
@@ -454,8 +467,9 @@ def test_monogenis():
                             bold=True,
                             italic=True,
                             word="\ue201д\ue205нородоу H",
+                            lemma="\ue201д\ue205нородъ",
                         ),
-                        lang=FROM_LANG,
+                        lang="sl",
                         var=Source("H"),
                         orig_alt=Alternative(
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -469,6 +483,8 @@ def test_monogenis():
         }
     }
 
+
+def test_monogenis3():
     row = (
         [
             "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
@@ -490,7 +506,7 @@ def test_monogenis():
     d = SortedDict()
     d = sl_sem.var.compile_usages(gr_sem, row, d, "\ue205но\ue20dѧдъ", "μονογενής")
     # print(d)
-    expected = {
+    assert d == {
         "μονογενής": {
             ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                 [
@@ -502,8 +518,9 @@ def test_monogenis():
                             col="a",
                             row=25,
                             word="\ue205но\ue20dедаго G",
+                            lemma="\ue205но\ue20dѧдъ",
                         ),
-                        lang=FROM_LANG,
+                        lang="sl",
                         var=Source("G"),
                         orig_alt=Alternative(
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -513,14 +530,13 @@ def test_monogenis():
                         ),
                     )
                 ]
-            )
+            ),
         }
     }
-    assert d == expected
 
     d = SortedDict()
     d = sl_sem.var.compile_usages(gr_sem, row, d, "\ue201д\ue205нородъ", "μονογενής")
-    expected = {
+    assert d == {
         "μονογενής": {
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                 [
@@ -532,8 +548,9 @@ def test_monogenis():
                             col="a",
                             row=25,
                             word="\ue201д\ue205нородоу H",
+                            lemma="\ue201д\ue205нородъ",
                         ),
-                        lang=FROM_LANG,
+                        lang="sl",
                         var=Source("H"),
                         orig_alt=Alternative(
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -543,14 +560,13 @@ def test_monogenis():
                         ),
                     )
                 ]
-            )
+            ),
         }
     }
-    assert d == expected
 
     d = SortedDict()
     d = gr_sem.compile_usages(sl_sem, row, d, "μονογενής", "\ue201д\ue205но\ue20dѧдъ")
-    expected = {
+    assert d == {
         "\ue201д\ue205но\ue20dѧдъ": {
             ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
                 [
@@ -562,6 +578,7 @@ def test_monogenis():
                             col="a",
                             row=25,
                             word="μονογενοῦς",
+                            lemma="μονογενής",
                         ),
                         lang=TO_LANG,
                         trans_alt=Alternative(
@@ -579,11 +596,10 @@ def test_monogenis():
             )
         }
     }
-    assert d == expected
 
     d = SortedDict()
     d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue201д\ue205нородъ")
-    expected = {
+    assert d == {
         "\ue201д\ue205нородъ": {
             ("μονογενοῦς", "\ue201д\ue205нородоу H"): SortedSet(
                 [
@@ -595,8 +611,9 @@ def test_monogenis():
                             col="a",
                             row=25,
                             word="μονογενοῦς",
+                            lemma="μονογενής",
                         ),
-                        lang=TO_LANG,
+                        lang="gr",
                         var=Source("H"),
                         trans_alt=Alternative(
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -609,11 +626,10 @@ def test_monogenis():
             )
         }
     }
-    assert d == expected
 
     d = SortedDict()
     d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue205но\ue20dѧдъ")
-    expected = {
+    assert d == {
         "\ue205но\ue20dѧдъ": {
             ("μονογενοῦς", "\ue205но\ue20dедаго G"): SortedSet(
                 [
@@ -625,8 +641,9 @@ def test_monogenis():
                             col="a",
                             row=25,
                             word="μονογενοῦς",
+                            lemma="μονογενής",
                         ),
-                        lang=TO_LANG,
+                        lang="gr",
                         var=Source("G"),
                         trans_alt=Alternative(
                             main_lemma="\ue201д\ue205но\ue20dѧдъ",
@@ -637,9 +654,8 @@ def test_monogenis():
                     )
                 ]
             )
-        }
+        },
     }
-    assert d == expected
 
 
 def test_bozhii():
@@ -670,6 +686,7 @@ def test_bozhii():
                             col="a",
                             row=4,
                             word="б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
+                            lemma="бож\ue205\ue205",
                         ),
                         lang=FROM_LANG,
                         var=Source("WGH"),
@@ -709,6 +726,7 @@ def test_artos():
                             col="a",
                             row=8,
                             word="ἄρτους Ch",
+                            lemma="ἄρτος",
                         ),
                         lang="gr",
                         var=Source("Ch"),
@@ -786,6 +804,7 @@ def test_est_in_var_no_main():
                             col="a",
                             row=6,
                             word="\ue201сть GH",
+                            lemma="бꙑт\ue205",
                         ),
                         lang="sl",
                         var=Source("GH"),
@@ -801,7 +820,6 @@ def test_est_in_var_no_main():
 
 
 def test_hodom_spiti():
-    # TODO: something is wrong in call
     row = (
         [
             "хⷪ҇домь WG ход\ue205т\ue205 H",
@@ -824,7 +842,29 @@ def test_hodom_spiti():
     )
 
     result = SortedDict()
-    result = gr_sem.compile_usages(
-        sl_sem.var, row, result, "προβαίνω", "ходомь спѣт\ue205"
-    )
-    assert result == {}
+    result = gr_sem.compile_usages(sl_sem.var, row, result, "προβαίνω", "ходъ")
+    assert result == {
+        "ходомь спѣт\ue205 → ходъ": {
+            ("προβαίνοντες", "хⷪ҇домь WG"): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=14,
+                            alt=False,
+                            page=72,
+                            col="d",
+                            row=18,
+                            word="προβαίνοντες",
+                            lemma="προβαίνω",
+                        ),
+                        lang="gr",
+                        var=Source("WG"),
+                        trans_alt=Alternative(
+                            main_lemma="≈ ход\ue205т\ue205 спѣѭще",
+                            main_word="ход\ue205мъ",
+                        ),
+                    )
+                ]
+            )
+        }
+    }
