@@ -4,8 +4,6 @@ from model import Alternative, Source
 from semantics import MainLangSemantics, VarLangSemantics
 
 
-# semantics update from September 2021
-# with repetitions added (as if after merge)
 sl_sem = MainLangSemantics(
     FROM_LANG,
     5,
@@ -13,9 +11,16 @@ sl_sem = MainLangSemantics(
     VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
     cnt_col=STYLE_COL + 1,
 )
+gr_sem = MainLangSemantics(
+    TO_LANG,
+    11,
+    [12, 13, 14, 15],
+    VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
+    cnt_col=STYLE_COL + 3,
+)
 
 
-def test_LangSemantics_alternatives():
+def test_base():
     style_col = 24
     # old semantics
     sl_sem = MainLangSemantics(
@@ -104,7 +109,7 @@ def test_LangSemantics_alternatives():
     )
 
 
-def test_LangSemantics_alternatives_std_sem():
+def test_std_sem():
     row = (
         ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"]
         + [""] * 2
@@ -158,7 +163,7 @@ def test_bozhii():
     assert result == Alternative("богъ", {}, "боꙁѣ")
 
 
-def test_MainLangSemantics_ot():
+def test_ot():
     row = (
         ["ѿ WG  ѡ H", "отъ"]
         + [""] * 2
@@ -173,4 +178,127 @@ def test_MainLangSemantics_ot():
     result = sl_sem.alternatives(row, Source())
     assert result == Alternative(
         var_lemmas={Source("WGH"): "отъ"}, var_words={Source("WGH"): ("ѡ H ѿ WG", 1)}
+    )
+
+
+def test_put():
+    row = (
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "пѫть GH",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4
+    )
+
+    result = sl_sem.var.alternatives(row, Source("GH"))
+    assert result == Alternative(
+        main_lemma="пѫтошьств\ue205\ue201",
+        var_lemmas={
+            Source("H"): "шьств\ue205\ue201 пѫт\ue205",
+            Source("G"): "шьст\ue205\ue201 пѫт\ue205",
+        },
+        main_word="поутошьств\ue205ꙗ",
+        var_words={
+            Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
+            Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1),
+        },
+        main_cnt=1,
+    )
+
+
+def test_var_main_level_alternatives_put():
+    row = (
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "пѫть GH",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4
+    )
+
+    m = len(sl_sem.var.lemmas) - 1
+    for l in range(m, 0, -1):  # does not reach 0
+        alt = sl_sem.var.level_main_alternatives(row, Source("GH"), l)
+        assert not alt[0] and not alt[1]
+
+    result = sl_sem.var.level_main_alternatives(row, Source("GH"))
+    assert result == ("пѫтошьств\ue205\ue201", "поутошьств\ue205ꙗ", 1)
+
+
+def test_var_var_level_alternatives_put():
+    row = (
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "пѫть GH",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4
+    )
+
+    m = len(sl_sem.var.lemmas) - 1
+    for l in range(m, 1, -1):  # does not reach 1
+        alt = sl_sem.var.level_var_alternatives(row, Source("GH"), l)
+        assert not alt[0] and not alt[1]
+
+    result = sl_sem.var.level_var_alternatives(row, Source("GH"), 1)
+    assert result == (
+        {
+            Source("H"): "шьств\ue205\ue201 пѫт\ue205",
+            Source("G"): "шьст\ue205\ue201 пѫт\ue205",
+        },
+        {
+            Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1),
+            Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
+        },
+    )
+
+
+def test_main_var_alternatives_trans_gram():
+    row = (
+        [
+            "сть GH",
+            "бꙑт",
+            "",
+            "gramm.",
+            "06/50a06",
+        ]
+        + ["om."] * 3
+        + [""] * 3
+        + ["Ø"] * 2
+        + [""] * 13
+        + ["hl03"]
+        + ["1"] * 4
+    )
+
+    result = sl_sem.alternatives(row, Source())
+    assert result == Alternative(
+        var_lemmas={Source("HG"): "бꙑт"}, var_words={Source("HG"): ("\ue201сть GH", 1)}
     )

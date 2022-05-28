@@ -70,7 +70,7 @@ class Alternative:
 @dataclass(frozen=True)
 class Usage:
     """Variant is not only indicative, but also nominative - which variant.
-    Here alt means other other transcriptions (main or var).
+    Here alt means other transcriptions (main or var).
     Contrast these to Index
 
     >>> i = Index(1, False, 7, "c", 6, word="om.")

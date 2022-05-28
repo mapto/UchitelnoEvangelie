@@ -1,9 +1,8 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 from dataclasses import dataclass
 
 import re
 
-from const import BRACE_OPEN
 from regex import address_regex
 
 
@@ -28,7 +27,14 @@ class Index:
     """Index only indicates if it is from a variant.
     Alternative variable (alt) means alternative indexing (as in Vienna scroll).
     Not related to alternative variants
-    Contrast these to Usage."""
+    Contrast these to Usage.
+
+    TODO: Need to find a better way to localise within line,
+    than passing on word and/or lemma
+    Probably this logic needs to be moved to Usage.
+    Before Usages get created, Index is contextualised in line.
+    Same for counts
+    """
 
     ch: int = 1
     alt: bool = False
@@ -60,7 +66,6 @@ class Index:
         Regex using: https://regex101.com/
         """
         # TODO: derive regex from parts
-        # TODO: Probably need to find a better way to localise within line, than passing on word and/or lemma
 
         m = re.search(address_regex, value)
         assert m

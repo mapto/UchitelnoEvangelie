@@ -29,7 +29,6 @@ pytest -vv --doctest-modules -s integrator/semantics # --disable-warnings
 pytest -vv --doctest-modules -s integrator/model # --disable-warnings
 
 echo '>>> Running Black'
+# processes also subdirectories
 black extractor
 black integrator
-black integrator/semantics
-black integrator/model

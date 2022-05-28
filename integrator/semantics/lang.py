@@ -6,7 +6,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import IDX_COL, NON_COUNTABLE, STYLE_COL, V_LEMMA_SEP
+from const import IDX_COL, NON_COUNTABLE, NON_LEMMAS, STYLE_COL, V_LEMMA_SEP
 from const import EMPTY_CH, MISSING_CH
 from const import VAR_SEP
 from const import DEFAULT_SOURCES
@@ -35,7 +35,7 @@ def _build_usage(
     lemma: str,
     ocnt: int,
     tcnt: int,
-):
+) -> Usage:
     """ovar and tvar are a list of variant identifiers"""
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
@@ -122,19 +122,35 @@ class LangSemantics:
         raise NotImplementedError("abstract method")
 
     def alternatives(self, row: List[str], my_var: Source) -> Alternative:
-        m = len(self.lemmas)
-        for l in range(m - 1, 0, -1):  # does not reach 0
-            if row[self.lemmas[l]].strip():
-                lalt = self.level_alternatives(row, my_var, l)
-                if not lalt:
-                    continue
-                return lalt
-        return self.level_alternatives(row, my_var)  # return with 0 if reach this line
+        m = len(self.lemmas) - 1
+        alt_main = ("", "", 1)
+        alt_var: Tuple[Dict[Source, str], Dict[Source, Tuple[str, int]]] = ({}, {})
+        for l in range(m, -1, -1):
+            if not alt_main[0]:
+                alt_main = self.level_main_alternatives(row, my_var, l)
+                if alt_main[0] in NON_LEMMAS:
+                    alt_main = ("", "", 1)
+            if not alt_var[0]:
+                alt_var = self.level_var_alternatives(row, my_var, l)
+                for v in alt_var[0].values():
+                    if v in NON_LEMMAS:
+                        alt_var = ({}, {})
+        return Alternative(
+            alt_main[0], alt_var[0], alt_main[1], alt_var[1], alt_main[2]
+        )
 
-    def level_alternatives(
+    def level_main_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Alternative:
-        """Get alternative lemmas"""
+    ) -> Tuple[str, str, int]:
+        """Get alternative lemmas in main.
+        First return value is lemma, second word"""
+        raise NotImplementedError("abstract method")
+
+    def level_var_alternatives(
+        self, row: List[str], my_var: Source, lidx: int = 0
+    ) -> Tuple[Dict[Source, str], Dict[Source, Tuple[str, int]]]:
+        """Get alternative lemmas in variant.
+        First return value is lemma, second word"""
         raise NotImplementedError("abstract method")
 
     def build_keys(self, row: List[str]) -> List[str]:
@@ -262,11 +278,15 @@ class MainLangSemantics(LangSemantics):
             return f" {separator} ".join(g)
         return f" ".join(g)
 
-    def level_alternatives(
+    def level_main_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Alternative:
-        """Get alternative lemmas, ignoring variants that coincide with main
-        Main alternative to main is always empty/nonexistent"""
+    ) -> Tuple[str, str, int]:
+        return "", "", 1
+
+    def level_var_alternatives(
+        self, row: List[str], my_var: Source, lidx: int = 0
+    ) -> Tuple[Dict[Source, str], Dict[Source, Tuple[str, int]]]:
+        """Get alternative lemmas, ignoring variants that coincide with main"""
         assert self.var  # for mypy
         alt_lemmas = {
             k: v
@@ -281,7 +301,7 @@ class MainLangSemantics(LangSemantics):
             ]
             alt_lemmas.pop(Source())
             alt_words.pop(Source())
-        return Alternative("", alt_lemmas, "", alt_words)
+        return alt_lemmas, alt_words
 
     def build_keys(self, row: List[str]) -> List[str]:
         if present(row, self) and self.word != None and bool(row[self.word]):
@@ -387,34 +407,36 @@ class VarLangSemantics(LangSemantics):
         g = [f"{v} {k}" if k else v for k, v in result.items() if v]
         return glue.join(g)
 
-    def level_alternatives(
+    def level_main_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Alternative:
-        """Get alternative lemmas, skipping main if coincides with my variant"""
+    ) -> Tuple[str, str, int]:
+        """Get alternative lemmas in main"""
         main_lemma = ""
         main_word = ""
         multilemma = self.multilemma(row, lidx)
-        multiword = self.multiword(row)
         if present(row, self.main):
             assert self.main  # for mypy
             loc = my_var.inside(multilemma)
             if loc and row[self.main.lemmas[lidx]] != multilemma[loc]:
                 main_lemma = row[self.main.lemmas[lidx]]
                 main_word = row[self.main.word]
+        return main_lemma, main_word, int(row[self.other().cnt_col])
+
+    def level_var_alternatives(
+        self, row: List[str], my_var: Source, lidx: int = 0
+    ) -> Tuple[Dict[Source, str], Dict[Source, Tuple[str, int]]]:
+        """Get alternative lemmas in variant"""
+        multilemma = self.multilemma(row, lidx)
         alt_lemmas = {k: v for k, v in multilemma.items() if my_var not in k}
+
         aw = {
             k: self.compile_words_by_lemma(row, k)
-            for k, v in multiword.items()
+            for k, v in self.multiword(row).items()
             if k.inside(alt_lemmas)
         }
         alt_words = {k: (v[0], v[2]) for k, v in aw.items()}
-        return Alternative(
-            main_lemma,
-            alt_lemmas,
-            main_word,
-            alt_words,
-            int(row[self.other().cnt_col]),
-        )
+
+        return alt_lemmas, alt_words
 
     def build_keys(self, row: List[str]) -> List[str]:
         if present(row, self) and self.word != None and bool(row[self.word]):

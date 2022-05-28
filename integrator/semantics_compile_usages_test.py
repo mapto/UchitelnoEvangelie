@@ -88,7 +88,7 @@ def test_para():
                         lang="gr",
                         var=Source("C"),
                         trans_alt=Alternative(
-                            var_lemmas={Source("WGH"): "въ"},
+                            var_lemmas={Source("WGH"): "въ + Loc."},
                             var_words={Source("WGH"): ("вь WGH", 1)},
                         ),
                     )
@@ -223,9 +223,9 @@ def test_verovat():
                             word="вѣроують",
                             lemma="вѣроват_",
                         ),
-                        lang=FROM_LANG,
+                        lang="sl",
                         orig_alt=Alternative(
-                            var_lemmas={Source("GH"): "вѣра"},
+                            var_lemmas={Source("GH"): "вѣрѫ ѩт_"},
                             var_words={Source("GH"): ("вѣроу GH", 1)},
                         ),
                     )
@@ -233,6 +233,7 @@ def test_verovat():
             )
         }
     }
+
     d2 = SortedDict()
     d2 = gr_sem.compile_usages(sl_sem, row, d2, "πιστεύω", "вѣроват_")
     assert d2 == {
@@ -249,9 +250,9 @@ def test_verovat():
                             word="πιστεύσωσι",
                             lemma="πιστεύω",
                         ),
-                        lang=TO_LANG,
+                        lang="gr",
                         trans_alt=Alternative(
-                            var_lemmas={Source("GH"): "вѣра"},
+                            var_lemmas={Source("GH"): "вѣрѫ ѩт_"},
                             var_words={Source("GH"): ("вѣроу GH", 1)},
                         ),
                     )
@@ -862,6 +863,65 @@ def test_hodom_spiti():
                         trans_alt=Alternative(
                             main_lemma="≈ ход\ue205т\ue205 спѣѭще",
                             main_word="ход\ue205мъ",
+                        ),
+                    )
+                ]
+            )
+        }
+    }
+
+
+def test_puteshestvie_put():
+    row = (
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "пѫть GH",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    result = sl_sem.var.compile_usages(gr_sem, row, result, "пѫть", "ὁδοιπορία")
+    assert result == {
+        "ὁδοιπορία": {
+            (
+                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                "ὁδοιπορίας",
+            ): SortedSet(
+                [
+                    Usage(
+                        idx=Index(
+                            ch=5,
+                            alt=False,
+                            page=28,
+                            col="d",
+                            row=18,
+                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                            lemma="пѫть",
+                        ),
+                        lang="sl",
+                        var=Source("GH"),
+                        orig_alt=Alternative(
+                            main_lemma="пѫтошьств",
+                            var_lemmas={
+                                Source("H"): "шьств\ue205\ue201 пѫт\ue205",
+                                Source("G"): "шьст\ue205\ue201 пѫт\ue205",
+                            },
+                            main_word="поутошьствꙗ",
+                            var_words={
+                                Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
+                                Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1),
+                            },
                         ),
                     )
                 ]

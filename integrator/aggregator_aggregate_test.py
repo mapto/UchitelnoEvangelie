@@ -712,3 +712,145 @@ def test_monogenes():
             }
         },
     }
+
+
+def test_puteshestvie_sl_var():
+    rows = [
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "шьст\ue205\ue201 G / шьств\ue205\ue201 H",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "поутошьств\ue205-",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "пѫть GH",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+    ]
+
+    result = SortedDict()
+    result = aggregate([rows[1]], sl_sem.var, gr_sem, result)
+    assert result == {
+        "пѫть": {
+            "шьств\ue205\ue201 пѫт\ue205": {
+                "": {
+                    "": {
+                        "ὁδοιπορία": {
+                            (
+                                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                                "ὁδοιπορίας",
+                            ): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=28,
+                                            col="d",
+                                            row=18,
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemma="пѫть",
+                                        ),
+                                        lang="sl",
+                                        var=Source("GH"),
+                                        orig_alt=Alternative(
+                                            main_lemma="пѫтошьств",
+                                            var_lemmas={
+                                                Source(
+                                                    "H"
+                                                ): "шьств\ue205\ue201 пѫт\ue205",
+                                                Source(
+                                                    "G"
+                                                ): "шьст\ue205\ue201 пѫт\ue205",
+                                            },
+                                            main_word="поутошьствꙗ",
+                                            var_words={
+                                                Source("G"): (
+                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
+                                                    1,
+                                                ),
+                                                Source("H"): (
+                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
+                                                    1,
+                                                ),
+                                            },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+            "шьст\ue205\ue201 пѫт\ue205": {
+                "": {
+                    "": {
+                        "ὁδοιπορία": {
+                            (
+                                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                                "ὁδοιπορίας",
+                            ): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=28,
+                                            col="d",
+                                            row=18,
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemma="пѫть",
+                                        ),
+                                        lang="sl",
+                                        var=Source("GH"),
+                                        orig_alt=Alternative(
+                                            main_lemma="пѫтошьств",
+                                            var_lemmas={
+                                                Source(
+                                                    "H"
+                                                ): "шьств\ue205\ue201 пѫт\ue205",
+                                                Source(
+                                                    "G"
+                                                ): "шьст\ue205\ue201 пѫт\ue205",
+                                            },
+                                            main_word="поутошьствꙗ",
+                                            var_words={
+                                                Source("G"): (
+                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
+                                                    1,
+                                                ),
+                                                Source("H"): (
+                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
+                                                    1,
+                                                ),
+                                            },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+        }
+    }
