@@ -113,6 +113,7 @@ def remove_repetitions(src: str = "") -> str:
         split.add(prev)
     return "".join(split)
 
+
 def regroup(d: Dict[Source, str]) -> Dict[Source, str]:
     """
     >>> regroup({Source('H'): 'шьств\ue205ꙗ', Source('G'): 'шьст\ue205ꙗ', Source('GH'): 'пꙋт\ue205'})
@@ -143,4 +144,4 @@ def regroup(d: Dict[Source, str]) -> Dict[Source, str]:
         for s in basic:
             if s in l and d[l]:
                 result[s] += [d[l]]
-    return {k: " ".join(result[k]) for k in sorted(result) if result[k]}
+    return {k: " ".join(result[k]) for k in reversed(result) if result[k]}
