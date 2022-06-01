@@ -7,11 +7,11 @@ from config import FROM_LANG, TO_LANG
 def _values(src: str) -> List[str]:
     """
     >>> _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
-    ['W', 'G', 'H', 'B', 'C', 'M', 'As', 'Ch', 'P', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pj', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'Pp', 'Pq', 'Pr', 'Ps', 'Pt', 'Pu', 'Pv', 'Pw', 'Px', 'Py', 'Pz']
-    >>> _values('MP')
-    ['M', 'P']
-    >>> _values('D')
-    ['D']
+    ['W', 'G', 'H', 'C', 'A', 'Sp', 'Ca', 'Ch', 'Fa', 'Fb', 'L', 'M', 'Ma', 'B', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'R', 'Tb', 'V', 'Z', 'Nt']
+    >>> _values('MB')
+    ['M', 'B']
+    >>> _values('V')
+    ['V']
     """
     split = []
     prev = ""
@@ -33,8 +33,8 @@ ORDERED_SOURCES = _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
 
 class Source:
     """Represents a list of sources, could be one or two letter symbols
-    >>> Source('MP').data
-    ['M', 'P']
+    >>> Source('MB').data
+    ['M', 'B']
     >>> Source('D')
     Traceback (most recent call last):
     ...
@@ -63,19 +63,19 @@ class Source:
         'WGH'
         >>> Source('PbPa')._sort_vars()
         'PaPb'
-        >>> Source('CMBAsCh')._sort_vars()
-        'BCMAsCh'
+        >>> Source('CMBSpCh')._sort_vars()
+        'CSpChMB'
         >>> Source('WH')._sort_vars()
         'WH'
-        >>> Source('CMBAsChHW')._sort_vars()
-        'WHBCMAsCh'
+        >>> Source('CMBSpChHW')._sort_vars()
+        'WHCSpChMB'
         """
         return "".join(self.data)
 
     def values(self) -> List[str]:
         """
-        >>> Source('MP').values()
-        ['M', 'P']
+        >>> Source('MB').values()
+        ['M', 'B']
         >>> Source('MPaPb').values()
         ['M', 'Pa', 'Pb']
         """
@@ -83,7 +83,7 @@ class Source:
 
     def __eq__(self, other) -> bool:
         """
-        >>> Source('M') == Source('P')
+        >>> Source('M') == Source('L')
         False
         >>> Source('HW') == Source('WH')
         True
@@ -132,21 +132,10 @@ class Source:
 
     def __iter__(self):
         """
-        >>> [x for x in Source('BCMAsCh')]
-        ['B', 'C', 'M', 'As', 'Ch']
-        >>> [x for x in Source('WGH-BCMAsCh')]
-        ['W', 'G', 'H', 'B', 'C', 'M', 'As', 'Ch']
-        """
-        """
-        result = []
-        rest = self.src.replace(VAR_SEP, "")
-        iter_regex = r"^([A-Z][a-z0-9]?)(.*)$"
-        found = re.match(iter_regex, rest)
-        while found and found.group(1):
-            result += [found.group(1)]
-            rest = found.group(2)
-            found = re.match(iter_regex, rest)
-        return iter(result)
+        >>> [x for x in Source('BCMSpCh')]
+        ['C', 'Sp', 'Ch', 'M', 'B']
+        >>> [x for x in Source('WGH-BCMSpCh')]
+        ['W', 'G', 'H', 'C', 'Sp', 'Ch', 'M', 'B']
         """
         return iter(self.data)
 
@@ -234,8 +223,8 @@ class Source:
         Source('PaPbPcPdPePf')
         >>> Source("Pa").inside([Source("PaPb"), Source("Pc")])
         Source('PaPb')
-        >>> Source("Pz").inside(Source("PwPxPyPz"))
-        Source('PwPxPyPz')
+        >>> Source("Pk").inside(Source("PkPmPnPo"))
+        Source('PkPmPnPo')
         >>> Source("").inside([Source("")])
         Source('')
         >>> Source("").inside([Source("G")])
@@ -276,18 +265,18 @@ class Source:
 
     def by_lang(self, lang: str) -> "Source":
         """
-        >>> Source("MPz").by_lang("gr")
-        Source('MPz')
+        >>> Source("MPo").by_lang("gr")
+        Source('MPo')
         >>> Source("WPb").by_lang("sl")
         Source('W')
         >>> Source("MPb").by_lang("gr")
         Source('MPb')
         >>> Source("HG").by_lang("sl")
         Source('GH')
-        >>> Source("CMBAsChHW").by_lang("sl")
+        >>> Source("CMBSpChHW").by_lang("sl")
         Source('WH')
-        >>> Source("CMBAsChHW").by_lang("gr")
-        Source('BCMAsCh')
+        >>> Source("CMBSpChHW").by_lang("gr")
+        Source('CSpChMB')
         >>> Source("WGH").by_lang("sl")
         Source('WGH')
         >>> Source("GHW").by_lang("sl")

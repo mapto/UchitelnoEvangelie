@@ -113,13 +113,12 @@ def remove_repetitions(src: str = "") -> str:
         split.add(prev)
     return "".join(split)
 
-
 def regroup(d: Dict[Source, str]) -> Dict[Source, str]:
     """
     >>> regroup({Source('H'): 'шьств\ue205ꙗ', Source('G'): 'шьст\ue205ꙗ', Source('GH'): 'пꙋт\ue205'})
     {Source('G'): 'шьст\ue205ꙗ пꙋт\ue205', Source('H'): 'шьств\ue205ꙗ пꙋт\ue205'}
     >>> regroup({Source('G'): 'престьнц б•', Source('H'): 'престнц б•', Source('W'): 'боудемь W'})
-    {Source('G'): 'престьнц б•', Source('H'): 'престнц б•', Source('W'): 'боудемь W'}
+    {Source('G'): 'пр\ue205\ue20dестьн\ue205ц\ue205 б•', Source('H'): 'пр\ue205\ue20dестн\ue205ц\ue205 б•', Source('W'): 'боудемь W'}
     >>> regroup({Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь', Source('WG'): 'хⷪ҇домь спѣюще'})
     {Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'}
     >>> regroup({Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'})
@@ -144,4 +143,4 @@ def regroup(d: Dict[Source, str]) -> Dict[Source, str]:
         for s in basic:
             if s in l and d[l]:
                 result[s] += [d[l]]
-    return {k: " ".join(result[k]) for k in reversed(result) if result[k]}
+    return {k: " ".join(result[k]) for k in sorted(result) if result[k]}
