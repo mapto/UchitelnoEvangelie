@@ -7,7 +7,7 @@ from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
 from config import FROM_LANG, TO_LANG
-from const import SPECIAL_CHARS
+from const import INDENT_CH, SPECIAL_CHARS
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 from util import main_source, subscript
@@ -204,7 +204,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
             if level > 0:
                 par.paragraph_format.first_line_indent = Cm(LEVEL_OFFSET * level)
 
-            prefix = "" if li[0] in SPECIAL_CHARS else "| " * level
+            prefix = "" if li[0] in SPECIAL_CHARS else f"{INDENT_CH} " * level
             _generate_text(
                 par,
                 f"{prefix}{li}",

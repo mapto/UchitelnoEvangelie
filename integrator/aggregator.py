@@ -34,6 +34,7 @@ def _agg_lemma(
     d: SortedDict,
     col: int = FIRST_LEMMA,
     olemma: str = "",
+    olemvar: Source = Source(),
     tlemma: str = "",
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
@@ -52,15 +53,16 @@ def _agg_lemma(
         SortedDict: *IN PLACE* hierarchical dictionary
     """
 
+    lem_cols = orig.lemmas
     omultilemmas = {}
     tmultilemmas = {}
     if col == FIRST_LEMMA:  # autodetect
-        col = orig.lemmas[0]
+        col = lem_cols[0]
         tmultilemmas = _multilemma(row, trans)
     elif col == LAST_LEMMA:  # exhausted
         assert row[IDX_COL]
         return orig.compile_usages(trans, row, d, olemma, tlemma)
-    lidx = orig.lemmas.index(col)
+    lidx = lem_cols.index(col)
     omultilemmas = _multilemma(row, orig, lidx)
 
     # if orig.is_variant() and row[col]:
@@ -71,17 +73,19 @@ def _agg_lemma(
     if not tmultilemmas:
         tmultilemmas[Source("")] = tlemma
 
-    lem_col = orig.lemmas
-    for oli in omultilemmas.values():
+    for oliv, oli in omultilemmas.items():
         for tli in tmultilemmas.values():
             if oli.strip() == MISSING_CH:
+                continue
+            if oliv and olemvar and oliv not in olemvar:
                 continue
             nxt = base_word(oli)
             if nxt not in d:
                 d[nxt] = SortedDict(ord_word)
-            next_idx = lem_col.index(col) + 1
-            next_c = lem_col[next_idx] if next_idx < len(lem_col) else LAST_LEMMA
+            next_idx = lem_cols.index(col) + 1
+            next_c = lem_cols[next_idx] if next_idx < len(lem_cols) else LAST_LEMMA
             ol = olemma if olemma else oli
+            olv = olemvar if olemvar else oliv
             tl = tlemma if tlemma else tli
             d[nxt] = _agg_lemma(
                 row,
@@ -90,6 +94,7 @@ def _agg_lemma(
                 d[nxt],
                 next_c,
                 ol,
+                olv,
                 tl,
             )
     return d

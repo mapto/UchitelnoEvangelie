@@ -749,6 +749,95 @@ def test_puteshestvie_sl_var():
     ]
 
     result = SortedDict()
+    result = aggregate([rows[0]], sl_sem.var, gr_sem, result)
+    assert result == {
+        "шьств\ue205\ue201": {
+            "шьств\ue205\ue201 пѫт\ue205": {
+                "": {
+                    "": {
+                        "ὁδοιπορία": {
+                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=28,
+                                            col="d",
+                                            row=18,
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H",
+                                            lemma="шьств\ue205\ue201",
+                                        ),
+                                        lang="sl",
+                                        var=Source("H"),
+                                        orig_alt=Alternative(
+                                            main_lemma="пѫтошьств\ue205\ue201",
+                                            var_lemmas={
+                                                Source(
+                                                    "G"
+                                                ): "шьст\ue205\ue201 пѫт\ue205"
+                                            },
+                                            main_word="поутошьств\ue205ꙗ",
+                                            var_words={
+                                                Source("G"): (
+                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+        },
+        "шьст\ue205\ue201": {
+            "шьст\ue205\ue201 пѫт\ue205": {
+                "": {
+                    "": {
+                        "ὁδοιπορία": {
+                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index(
+                                            ch=5,
+                                            alt=False,
+                                            page=28,
+                                            col="d",
+                                            row=18,
+                                            word="шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemma="шьст\ue205\ue201",
+                                        ),
+                                        lang="sl",
+                                        var=Source("G"),
+                                        orig_alt=Alternative(
+                                            main_lemma="пѫтошьств\ue205\ue201",
+                                            var_lemmas={
+                                                Source(
+                                                    "H"
+                                                ): "шьств\ue205\ue201 пѫт\ue205"
+                                            },
+                                            main_word="поутошьств\ue205ꙗ",
+                                            var_words={
+                                                Source("H"): (
+                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+        },
+    }
+
+    result = SortedDict()
     result = aggregate([rows[1]], sl_sem.var, gr_sem, result)
     assert result == {
         "пѫть": {

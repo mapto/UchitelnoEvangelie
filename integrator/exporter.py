@@ -1,6 +1,6 @@
 """The exporter specific to the integrator"""
 
-from const import SPECIAL_CHARS
+from const import INDENT_CH, SPECIAL_CHARS
 from typing import Dict, Tuple
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
@@ -166,7 +166,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             if level > 0:
                 par.paragraph_format.first_line_indent = Pt(10)
 
-            prefix = "" if li[0] in SPECIAL_CHARS else "| " * level
+            prefix = "" if li[0] in SPECIAL_CHARS else f"{INDENT_CH} " * level
             _generate_text(
                 par, f"{prefix} {li}", fonts[lang], size=Pt(14 if level == 0 else 12)
             )

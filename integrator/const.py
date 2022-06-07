@@ -12,6 +12,8 @@ H_LEMMA_SEP = "/"  # indicates multiple variants provided together
 V_LEMMA_SEP = "&"  # indicates lemmas merged from several rows
 VAR_SEP = "-"  # used to separate the two language in variant source annotation
 
+INDENT_CH = "|"
+BULLET_CH = "∙"  # or ●
 SAME_CH = "="
 MISSING_CH = "ₓ"
 EMPTY_CH = "Ø"  # used when text is original, so no translation
