@@ -1,7 +1,11 @@
 from sortedcontainers import SortedDict, SortedSet, SortedSet  # type: ignore
 
+from const import STYLE_COL
 from config import FROM_LANG, TO_LANG
 from model import Alternative, Counter, Index, Source, Usage, UsageContent
+
+from aggregator import aggregate
+from setup import MainLangSemantics, VarLangSemantics
 
 
 def test_dict_ipercliso():
@@ -105,6 +109,7 @@ def test_dict_ipercliso():
 
 
 def test_dict_monogenis():
+    """
     d = {
         "μονογενής": {
             "": {
@@ -286,12 +291,35 @@ def test_dict_monogenis():
             }
         }
     }
+    """ 
+    sl_sem = MainLangSemantics(
+    FROM_LANG,
+    5,
+    [7, 8, 9, 10],
+    VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+    cnt_col=STYLE_COL + 1,
+    )
+    gr_sem = MainLangSemantics(
+        TO_LANG,
+        11,
+        [12, 13, 14],
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
+    )
+
+    rows = [['\ue201д\ue205нородоу H', '\ue201д\ue205нородъ', '', '', '1/W168a34', '\ue201д\ue205но\ue20dедоу', 'бѣ \ue205мѣт\ue205 \ue201д\ue205но\ue20dедоу', '\ue201д\ue205но\ue20dѧдъ', '', '', '', 'μονογενῆ', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '1', '1', '1', '1'],
+    ['', '', '', '', '1/W168a28', '\ue201д\ue205но\ue20dедаго', 'цⷭ҇ре \ue201д\ue205но\ue20dедаго ѡтрока ѡ\ue010\ue20dа•', '\ue201д\ue205но\ue20dѧдъ', '', '', '', 'μονογενοῦς', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '1', '1', '1', '1'],
+    ['\ue205но\ue20dедаго G  \ue201д\ue205нородоу H', '\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G', '', '', '1/W168a25', '\ue201д\ue205но\ue20dедоу', 'вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу', '\ue201д\ue205но\ue20dѧдъ', '', '', '', 'μονογενοῦς', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', 'bold|italic', '1', '1', '1', '1'],
+    ['\ue201д\ue205но\ue20dеды WH Ø G', '\ue201д\ue205но\ue20dѧдъ', '', '', '1/5a4', '\ue205но\ue20dадꙑ\ue205', 'нъ ꙗко б\ue010ъ• а \ue205но\ue20dадꙑ\ue205', '\ue205но\ue20dѧдъ', '', '', '', 'μονογενὴς', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '1', '1', '1', '1'],
+    ['\ue201д\ue205но\ue20dедѣмь WH Ø G', '\ue201д\ue205но\ue20dѧдъ', '', '', '1/4c15', '\ue205но\ue20dадѣмь', 'о \ue205но\ue20dадѣмь', '\ue205но\ue20dѧдъ', '', '', '', 'μονογενοῦς', 'μονογενής', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '1', '1', '1', '1'],
+    ]
+    d = SortedDict()
+    d = aggregate(rows, gr_sem, sl_sem, d)
     c = Counter.get_dict_counts(d)
-    assert (4, 3) == c.get_counts(True)
     assert (5, 0) == c.get_counts(False)
+    assert (5, 4) == c.get_counts(True)
 
-
-    """
+"""
 def test_dict_prichatnik_biti():
     d = {
         "бꙑт\ue205": {
@@ -360,4 +388,4 @@ def test_dict_prichatnik_biti():
 
     c = Counter.get_dict_counts(d)
     assert (1, 0) == c.get_counts(False)
-    """
+"""

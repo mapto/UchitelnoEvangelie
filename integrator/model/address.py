@@ -6,12 +6,6 @@ import re
 from regex import address_regex
 
 
-def _cnt_str(idx: "Index") -> str:
-    p1 = f"[{idx.ocnt}]" if idx.ocnt > 1 else ""
-    p2 = f"{{{idx.tcnt}}}" if idx.tcnt > 1 else ""
-    return p1 + p2
-
-
 def _merge_counts(pval: int, reval: Any) -> int:
     # We don't know if counters come from corresponding columns or index postfix.
     # TODO: Make sure to investigate and fix this, so they're not messed up
@@ -41,24 +35,10 @@ class Index:
     page: int = 0
     col: str = ""
     row: int = 0
-    ocnt: int = 1
-    tcnt: int = 1
     end: Optional["Index"] = None
-    bold: bool = False
-    italic: bool = False
-    word: str = ""
-    lemma: str = ""
 
     @staticmethod
-    def unpack(
-        value: str,
-        b: bool = False,
-        i: bool = False,
-        word: str = "",
-        lemma: str = "",
-        ocnt: int = 1,
-        tcnt: int = 1,
-    ) -> "Index":
+    def unpack(value: str) -> "Index":
         """
         Parsing the format produced by exporter or merger.
         Thus, repetition indices external to the string,
@@ -77,14 +57,8 @@ class Index:
         col = m.group(4) if m.group(4) else ""
         row = int(m.group(5)) if m.group(5) else 0
 
-        ocnt = _merge_counts(ocnt, m.group(7))
-        tcnt = _merge_counts(tcnt, m.group(9))
-
         end = None
         if m.group(18):
-            e_ocnt = _merge_counts(ocnt, m.group(20))
-            e_tcnt = _merge_counts(tcnt, m.group(22))
-
             e_ch = ch
             e_alt = alt
             e_page = page
@@ -101,22 +75,8 @@ class Index:
                         if e_ch < 3
                         else False
                     )
-            end = Index(
-                e_ch,
-                e_alt,
-                e_page,
-                e_col,
-                e_row,
-                e_ocnt,
-                e_tcnt,
-                bold=b,
-                italic=i,
-                word=word,
-                lemma=lemma,
-            )
-        return Index(
-            ch, alt, page, col, row, ocnt, tcnt, end, b, i, word=word, lemma=lemma
-        )
+            end = Index(e_ch, e_alt, e_page, e_col, e_row)
+        return Index(ch, alt, page, col, row, end)
 
     def __eq__(self, other) -> bool:
         if type(other) is not Index:
@@ -127,13 +87,13 @@ class Index:
             or self.page != other.page
             or self.col != other.col
             or self.row != other.row
-            or self.ocnt != other.ocnt
-            or self.tcnt != other.tcnt
             or self.end != other.end
-            or self.lemma != other.lemma
         ):
             return False
         return True
+
+    def __repr__(self) -> str:
+        return f'Index.unpack("{self}")'
 
     def __str__(self) -> str:
         """
@@ -152,23 +112,19 @@ class Index:
         '2/W6c4'
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        cnt = _cnt_str(self)
-        start = f"{self.ch}/{w}{self.page}{self.col}{self.row}{cnt}"
+        start = f"{self.ch}/{w}{self.page}{self.col}{self.row}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{str(self.end)}"
-            ecnt = _cnt_str(self.end)
             if self.end.alt != self.alt:
                 ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
-                return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}{ecnt}"
+                return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}"
             if self.end.page != self.page:
-                return f"{start}-{self.end.page}{self.end.col}{self.end.row}{ecnt}"
+                return f"{start}-{self.end.page}{self.end.col}{self.end.row}"
             if self.end.col != self.col:
-                return f"{start}-{self.end.col}{self.end.row}{ecnt}"
+                return f"{start}-{self.end.col}{self.end.row}"
             if self.end.row != self.row:
-                return f"{start}-{self.end.row}{ecnt}"
-            if self.end.ocnt != self.ocnt:
-                return f"{start}-{self.end.row}{ecnt}"
+                return f"{start}-{self.end.row}"
         return start
 
     def longstr(self) -> str:
@@ -182,23 +138,21 @@ class Index:
         '01/006c04-02/006c04WH'
         """
         w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        cnt = _cnt_str(self)
-        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}{cnt}"
+        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}"
         if self.end:
             if self.end.ch != self.ch:
                 return f"{start}-{self.end.longstr()}"
-            ecnt = _cnt_str(self.end)
             if self.end.alt != self.alt:
                 ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
-                return f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}"
-            if self.end.page != self.page:
                 return (
-                    f"{start}-{self.end.page:03d}{self.end.col}{self.end.row:02d}{ecnt}"
+                    f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}"
                 )
+            if self.end.page != self.page:
+                return f"{start}-{self.end.page:03d}{self.end.col}{self.end.row:02d}"
             if self.end.col != self.col:
-                return f"{start}-" f"{self.end.col}{self.end.row:02d}{ecnt}"
+                return f"{start}-" f"{self.end.col}{self.end.row:02d}"
             if self.end.row != self.row:
-                return f"{start}-{self.end.row:02d}{ecnt}"
+                return f"{start}-{self.end.row:02d}"
         return start
 
     def __lt__(self, other) -> bool:
@@ -230,23 +184,12 @@ class Index:
         if self.row > other.row:
             return False
 
-        if self.end and other.end:
-            if self.end < other.end:
-                return True
-            if self.end > other.end:
-                return False
-
-        if self.ocnt < other.ocnt:
-            return True
-        if self.ocnt > other.ocnt:
+        if self.end is None:
+            return other.end is not None
+        elif other.end is None:
             return False
 
-        if self.tcnt < other.tcnt:
-            return True
-        if self.tcnt > other.tcnt:
-            return False
-
-        return self.word < other.word
+        return self.end < other.end
 
     def __le__(self, other) -> bool:
         return self < other or self == other

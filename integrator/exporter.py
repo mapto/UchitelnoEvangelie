@@ -8,7 +8,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import Pt  # type: ignore
 
-from config import FROM_LANG, TO_LANG
+from config import FROM_LANG, TO_LANG, other_lang
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 
@@ -16,7 +16,7 @@ from util import main_source, subscript
 from model import Usage, Source
 
 from wordproc import _generate_text, any_grandchild
-from wordproc import GENERIC_FONT, other_lang, fonts, colors
+from wordproc import GENERIC_FONT, fonts, colors
 
 
 def _generate_usage_alt_vars(
@@ -38,61 +38,59 @@ def _generate_usage_alt_vars(
 
 def _generate_index(par, u: Usage) -> None:
     s = str(u.idx)
-    if u.idx.ocnt != 1:
-        s = s[:-3]
-    if u.idx.tcnt != 1:
-        s = s[:-3]
-    _generate_text(par, s, bold=u.idx.bold, italic=u.idx.italic)
+    _generate_text(par, s, bold=u.bold, italic=u.italic)
 
-    sl_cnt = u.idx.ocnt if u.lang == FROM_LANG else u.idx.tcnt
-    gr_cnt = u.idx.tcnt if u.lang == FROM_LANG else u.idx.ocnt
+    sl_cnt = u.orig.cnt if u.orig.lang == FROM_LANG else u.trans.cnt
+    gr_cnt = u.trans.cnt if u.orig.lang == FROM_LANG else u.orig.cnt
 
     other_before_own = False
-    if u.var and u.var.has_lang(FROM_LANG):
-        if not u.var.has_lang(TO_LANG):
+    if u.var() and u.var().has_lang(FROM_LANG):
+        if not u.var().has_lang(TO_LANG):
             if gr_cnt > 1:
                 _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
             other_before_own = True
-        _generate_text(par, str(u.var.by_lang(FROM_LANG)), superscript=True)
+        _generate_text(par, str(u.var().by_lang(FROM_LANG)), superscript=True)
     if sl_cnt > 1:
         _generate_text(par, subscript(sl_cnt, FROM_LANG), subscript=True)
-    elif u.var and u.var.has_lang(FROM_LANG) and u.var.has_lang(TO_LANG):
+    elif u.var() and u.var().has_lang(FROM_LANG) and u.var().has_lang(TO_LANG):
         _generate_text(par, "-", superscript=True)
     if not other_before_own:
-        if u.var and u.var.has_lang(TO_LANG):
-            _generate_text(par, str(u.var.by_lang(TO_LANG)), superscript=True)
+        if u.var() and u.var().has_lang(TO_LANG):
+            _generate_text(par, str(u.var().by_lang(TO_LANG)), superscript=True)
         if gr_cnt > 1:
             _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
 
 
 def _generate_usage(par, u: Usage) -> None:
     _generate_index(par, u)
-    if not u.orig_alt and not u.trans_alt:
+    if not u.orig.alt and not u.trans.alt:
         return
 
     _generate_text(par, f" {CF_SEP}")
-    if u.orig_alt.main_word:
+    if u.orig.alt.main_word:
         _generate_text(par, " ")
-        _generate_text(par, u.orig_alt.main_word, fonts[u.lang])
-        _generate_text(par, f" {main_source(u.lang, u.idx.alt)}")
-        if u.orig_alt.main_cnt > 1:
-            _generate_text(par, subscript(u.orig_alt.main_cnt, u.lang), subscript=True)
-
-    if u.orig_alt.var_words:
-        _generate_usage_alt_vars(par, u.lang, u.orig_alt.var_words)
-
-    # previous addition certainly finished with GENERIC_FONT
-    if u.trans_alt.main_word:
-        _generate_text(par, " ")
-        _generate_text(par, u.trans_alt.main_word, fonts[other_lang[u.lang]])
-        _generate_text(par, f" {main_source(other_lang[u.lang], u.idx.alt)}")
-        if u.trans_alt.main_cnt > 1:
+        _generate_text(par, u.orig.alt.main_word, fonts[u.orig.lang])
+        _generate_text(par, f" {main_source(u.orig.lang, u.idx.alt)}")
+        if u.orig.alt.main_cnt > 1:
             _generate_text(
-                par, subscript(u.trans_alt.main_cnt, other_lang[u.lang]), subscript=True
+                par, subscript(u.orig.alt.main_cnt, u.orig.lang), subscript=True
             )
 
-    if u.trans_alt.var_words:
-        _generate_usage_alt_vars(par, other_lang[u.lang], u.trans_alt.var_words)
+    if u.orig.alt.var_words:
+        _generate_usage_alt_vars(par, u.orig.lang, u.orig.alt.var_words)
+
+    # previous addition certainly finished with GENERIC_FONT
+    if u.trans.alt.main_word:
+        _generate_text(par, " ")
+        _generate_text(par, u.trans.alt.main_word, fonts[u.trans.lang])
+        _generate_text(par, f" {main_source(u.trans.lang, u.idx.alt)}")
+        if u.trans.alt.main_cnt > 1:
+            _generate_text(
+                par, subscript(u.trans.alt.main_cnt, u.trans.lang), subscript=True
+            )
+
+    if u.trans.alt.var_words:
+        _generate_usage_alt_vars(par, u.trans.lang, u.trans.alt.var_words)
 
 
 def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> None:

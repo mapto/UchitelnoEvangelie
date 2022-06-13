@@ -14,7 +14,7 @@ from const import DEFAULT_SOURCES
 from regex import multiword_regex, multilemma_regex
 from .util import collect, remove_repetitions, regroup
 from util import base_word
-from model import Alternative, Index, Path, Source, Usage
+from model import Alternative, Index, Path, Source, Usage, UsageContent
 
 LAST_LEMMA = -1
 UNSPECIFIED = -1
@@ -33,16 +33,25 @@ def _build_usage(
     tvar: Source,
     word: str,
     lemma: str,
+    tword: str,
+    tlemma: str,
     ocnt: int,
     tcnt: int,
 ) -> Usage:
-    """ovar and tvar are a list of variant identifiers"""
+    """
+    Whereas word contains the multiword (in packed form),
+    TODO: UsageContent could potentially contain the unpacked multilemmas for the variant of the current usage.
+    See if Path logic can be reused
+    Currently, it contains only the first one.
+    """
     b = "bold" in row[STYLE_COL]
     i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL], b, i, word, lemma, ocnt, tcnt)
+    idx = Index.unpack(row[IDX_COL])
     oalt = osem.alternatives(row, ovar)
     talt = tsem.alternatives(row, tvar)
-    return Usage(idx, osem.lang, ovar + tvar, oalt, talt)
+    orig = UsageContent(osem.lang, ovar, oalt, word, [lemma], ocnt)
+    trans = UsageContent(tsem.lang, tvar, talt, tword, [tlemma], tcnt)
+    return Usage(idx, orig, trans, b, i)
 
 
 def _is_variant_lemma(
@@ -216,7 +225,17 @@ class LangSemantics:
                 (oword, olemma, ocnt) = self.compile_words_by_lemma(row, ovar)
                 (tword, tlemma, tcnt) = trans.compile_words_by_lemma(row, tvar)
                 val = _build_usage(
-                    row, self, trans, ovar, tvar, oword, olemma, ocnt, tcnt
+                    row,
+                    self,
+                    trans,
+                    ovar,
+                    tvar,
+                    oword,
+                    olemma,
+                    tword,
+                    tlemma,
+                    ocnt,
+                    tcnt,
                 )
                 for nxt in trans.build_paths(row):
                     orig_var_in_lemma = _is_variant_lemma(row, self, ovar, rolemma)

@@ -7,7 +7,7 @@ from config import FROM_LANG, TO_LANG
 from semantics.lang import MainLangSemantics, VarLangSemantics
 from semantics.lang import _build_usage
 
-from model import Alternative, Index, Source, Usage
+from model import Alternative, Index, Source, Usage, UsageContent
 
 sl_sem = MainLangSemantics(
     FROM_LANG,
@@ -51,32 +51,31 @@ def test_build_usage():
         Source("GH"),
         Source(),
         "шьствꙗ пꙋт H шьстꙗ пꙋт G",
+        "пѫть",
         "ὁδοιπορίας",
+        "ὁδοιπορία",
         1,
         1,
     )
     assert result == Usage(
-        idx=Index(
-            ch=5,
-            alt=False,
-            page=28,
-            col="d",
-            row=18,
-            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
-            lemma="ὁδοιπορίας",
+        Index.unpack("5/28d18"),
+        UsageContent(
+            "sl",
+            Source("GH"),
+            Alternative(
+                main_lemma="пѫтошьств\ue205\ue201",
+                var_lemmas={
+                    Source("H"): "шьств\ue205\ue201 пѫт\ue205",
+                    Source("G"): "шьст\ue205\ue201 пѫт\ue205",
+                },
+                main_word="поутошьств\ue205ꙗ",
+                var_words={
+                    Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
+                    Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1),
+                },
+            ),
+            "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+            ["пѫть"],
         ),
-        lang="sl",
-        var=Source("GH"),
-        orig_alt=Alternative(
-            main_lemma="пѫтошьств\ue205\ue201",
-            var_lemmas={
-                Source("H"): "шьств\ue205\ue201 пѫт\ue205",
-                Source("G"): "шьст\ue205\ue201 пѫт\ue205",
-            },
-            main_word="поутошьств\ue205ꙗ",
-            var_words={
-                Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
-                Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1),
-            },
-        ),
+        UsageContent("gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]),
     )

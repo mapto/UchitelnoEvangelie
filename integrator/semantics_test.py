@@ -2,7 +2,7 @@ from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
 from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
-from model import Alternative, Index, Path, Source, Usage
+from model import Alternative, Index, Path, Source, Usage, UsageContent
 from semantics import MainLangSemantics, VarLangSemantics
 from semantics import _is_variant_lemma, _add_usage
 from setup import sl_sem, gr_sem
@@ -261,114 +261,79 @@ def test_build_paths_puteshestive():
 def test_add_usage():
     usages = [
         Usage(
-            idx=Index(
-                ch=1,
-                alt=True,
-                page=168,
-                col="a",
-                row=25,
-                word="μονογενοῦς",
-            ),
-            lang=TO_LANG,
-            var="G",
-            trans_alt=Alternative(
-                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                var_lemmas={"H": "\ue201д\ue205нородъ"},
+            Index.unpack("1/W168a25"),
+            UsageContent("gr", word="μονογενοῦς"),
+            UsageContent(
+                "sl",
+                Source("G"),
+                alt=Alternative(
+                    main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                    var_lemmas={"H": "\ue201д\ue205нородъ"},
+                ),
             ),
         ),
         Usage(
-            idx=Index(
-                ch=1,
-                alt=False,
-                page=5,
-                col="a",
-                row=4,
-                word="μονογενὴς",
-            ),
-            lang=TO_LANG,
-            trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
-        ),
-        Usage(
-            idx=Index(
-                ch=1,
-                alt=False,
-                page=4,
-                col="c",
-                row=15,
-                word="μονογενοῦς",
-            ),
-            lang=TO_LANG,
-            trans_alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
-        ),
-        Usage(
-            idx=Index(
-                ch=1,
-                alt=True,
-                page=168,
-                col="a",
-                row=25,
-                word="μονογενοῦς",
-            ),
-            lang=TO_LANG,
-            var="H",
-            trans_alt=Alternative(
-                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                var_lemmas={"G": "\ue205но\ue20dѧдъ"},
+            Index.unpack("1/5a4"),
+            UsageContent("gr", word="μονογενὴς"),
+            UsageContent(
+                "sl",
+                alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
             ),
         ),
         Usage(
-            idx=Index(
-                ch=1,
-                alt=True,
-                page=168,
-                col="a",
-                row=28,
-                word="μονογενοῦς",
-            ),
-            lang=TO_LANG,
-        ),
-        Usage(
-            idx=Index(
-                ch=1,
-                alt=True,
-                page=168,
-                col="a",
-                row=25,
-                word="μονογενοῦς",
-            ),
-            lang=TO_LANG,
-            trans_alt=Alternative(
-                var_lemmas={
-                    "H": "\ue201д\ue205нородъ",
-                    "G": "\ue205но\ue20dѧдъ",
-                }
+            Index.unpack("1/4c15"),
+            UsageContent("gr", word="μονογενοῦς"),
+            UsageContent(
+                "sl",
+                alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
             ),
         ),
         Usage(
-            idx=Index(
-                ch=1,
-                alt=False,
-                page=5,
-                col="a",
-                row=4,
-                word="μονογενὴς",
+            Index.unpack("1/W168a25"),
+            UsageContent("gr", word="μονογενοῦς"),
+            UsageContent(
+                "sl",
+                Source("H"),
+                alt=Alternative(
+                    main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                    var_lemmas={"G": "\ue205но\ue20dѧдъ"},
+                ),
             ),
-            lang=TO_LANG,
-            var="WH",
-            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
         ),
         Usage(
-            idx=Index(
-                ch=1,
-                alt=False,
-                page=4,
-                col="c",
-                row=15,
-                word="μονογενοῦς",
+            Index.unpack("1/W168a28"),
+            UsageContent("gr", word="μονογενοῦς"),
+        ),
+        Usage(
+            Index.unpack("1/W168a25"),
+            UsageContent("gr", word="μονογενοῦς"),
+            UsageContent(
+                "sl",
+                alt=Alternative(
+                    var_lemmas={
+                        "H": "\ue201д\ue205нородъ",
+                        "G": "\ue205но\ue20dѧдъ",
+                    }
+                ),
             ),
-            lang=TO_LANG,
-            var="WH",
-            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
+        ),
+        Usage(
+            Index.unpack("1/5a4"),
+            UsageContent("gr", word="μονογενὴς"),
+            UsageContent(
+                "sl",
+                Source("WH"),
+                alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
+            ),
+        ),
+        Usage(
+            Index.unpack("1/4c15"),
+            UsageContent("gr", word="μονογενοῦς"),
+            UsageContent(
+                "sl",
+                Source("WH"),
+                alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
+            ),
         ),
     ]
 
@@ -381,117 +346,82 @@ def test_add_usage():
                 ("", ""): SortedSet(
                     [
                         Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=False,
-                                page=4,
-                                col="c",
-                                row=15,
-                                word="μονογενοῦς",
-                            ),
-                            lang=TO_LANG,
-                            trans_alt=Alternative(
-                                var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                            Index.unpack("1/4c15"),
+                            UsageContent("gr", word="μονογενοῦς"),
+                            UsageContent(
+                                "sl",
+                                alt=Alternative(
+                                    var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                                ),
                             ),
                         ),
                         Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=False,
-                                page=4,
-                                col="c",
-                                row=15,
-                                word="μονογενοῦς",
-                            ),
-                            lang=TO_LANG,
-                            var="WH",
-                            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
-                        ),
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=False,
-                                page=5,
-                                col="a",
-                                row=4,
-                                word="μονογενὴς",
-                            ),
-                            lang=TO_LANG,
-                            trans_alt=Alternative(
-                                var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                            Index.unpack("1/4c15"),
+                            UsageContent("gr", word="μονογενοῦς"),
+                            UsageContent(
+                                "sl",
+                                Source("WH"),
+                                alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
                             ),
                         ),
                         Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=False,
-                                page=5,
-                                col="a",
-                                row=4,
-                                word="μονογενὴς",
-                            ),
-                            lang=TO_LANG,
-                            var="WH",
-                            trans_alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
-                        ),
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                                word="μονογενοῦς",
-                            ),
-                            lang=TO_LANG,
-                            trans_alt=Alternative(
-                                var_lemmas={
-                                    "H": "\ue201д\ue205нородъ",
-                                    "G": "\ue205но\ue20dѧдъ",
-                                }
+                            Index.unpack("1/5a4"),
+                            UsageContent("gr", word="μονογενὴς"),
+                            UsageContent(
+                                "sl",
+                                alt=Alternative(
+                                    var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
+                                ),
                             ),
                         ),
                         Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=28,
-                                word="μονογενοῦς",
-                            ),
-                            lang=TO_LANG,
-                        ),
-                        Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                                word="μονογενοῦς",
-                            ),
-                            lang=TO_LANG,
-                            var="G",
-                            trans_alt=Alternative(
-                                "\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={"H": "\ue201д\ue205нородъ"},
+                            Index.unpack("1/5a4"),
+                            UsageContent("gr", word="μονογενὴς"),
+                            UsageContent(
+                                "sl",
+                                Source("WH"),
+                                alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
                             ),
                         ),
                         Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
-                                word="μονογενοῦς",
+                            Index.unpack("1/W168a25"),
+                            UsageContent("gr", word="μονογενοῦς"),
+                            UsageContent(
+                                "sl",
+                                alt=Alternative(
+                                    var_lemmas={
+                                        "H": "\ue201д\ue205нородъ",
+                                        "G": "\ue205но\ue20dѧдъ",
+                                    }
+                                ),
                             ),
-                            lang=TO_LANG,
-                            var="H",
-                            trans_alt=Alternative(
-                                "\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={"G": "\ue205но\ue20dѧдъ"},
+                        ),
+                        Usage(
+                            Index.unpack("1/W168a28"),
+                            UsageContent("gr", word="μονογενοῦς"),
+                        ),
+                        Usage(
+                            Index.unpack("1/W168a25"),
+                            UsageContent("gr", word="μονογενοῦς"),
+                            UsageContent(
+                                "sl",
+                                Source("G"),
+                                alt=Alternative(
+                                    "\ue201д\ue205но\ue20dѧдъ",
+                                    var_lemmas={"H": "\ue201д\ue205нородъ"},
+                                ),
+                            ),
+                        ),
+                        Usage(
+                            Index.unpack("1/W168a25"),
+                            UsageContent("gr", word="μονογενοῦς"),
+                            UsageContent(
+                                "sl",
+                                Source("H"),
+                                alt=Alternative(
+                                    "\ue201д\ue205но\ue20dѧдъ",
+                                    var_lemmas={"G": "\ue205но\ue20dѧдъ"},
+                                ),
                             ),
                         ),
                     ]
@@ -504,37 +434,29 @@ def test_add_usage():
 def test_add_usage_puteshestvie():
     usages = [
         Usage(
-            idx=Index(
-                ch=5,
-                alt=False,
-                page=28,
-                col="d",
-                row=18,
+            Index.unpack("5/28d18"),
+            UsageContent(
+                "sl",
+                Source("G"),
+                alt=Alternative(
+                    var_lemmas={Source("H"): "шьств\ue205\ue201 пѫт\ue205"},
+                    main_word="поутошьств\ue205ꙗ",
+                    var_words={Source("H"): ("пꙋт\ue205 GH шьств\ue205ꙗ H", 1)},
+                ),
                 word="пꙋт\ue205 GH шьст\ue205ꙗ G",
-            ),
-            lang="sl",
-            var=Source("G"),
-            orig_alt=Alternative(
-                var_lemmas={Source("H"): "шьств\ue205\ue201 пѫт\ue205"},
-                main_word="поутошьств\ue205ꙗ",
-                var_words={Source("H"): ("пꙋт\ue205 GH шьств\ue205ꙗ H", 1)},
             ),
         ),
         Usage(
-            idx=Index(
-                ch=5,
-                alt=False,
-                page=28,
-                col="d",
-                row=18,
+            Index.unpack("5/28d18"),
+            UsageContent(
+                "sl",
+                Source("H"),
+                alt=Alternative(
+                    var_lemmas={Source("G"): "шьст\ue205\ue201 пѫт\ue205"},
+                    main_word="поутошьств\ue205ꙗ",
+                    var_words={Source("G"): ("пꙋт\ue205 GH шьст\ue205ꙗ G", 1)},
+                ),
                 word="пꙋт\ue205 GH шьств\ue205ꙗ H",
-            ),
-            lang="sl",
-            var=Source("H"),
-            orig_alt=Alternative(
-                var_lemmas={Source("G"): "шьст\ue205\ue201 пѫт\ue205"},
-                main_word="поутошьств\ue205ꙗ",
-                var_words={Source("G"): ("пꙋт\ue205 GH шьст\ue205ꙗ G", 1)},
             ),
         ),
     ]
@@ -546,37 +468,33 @@ def test_add_usage_puteshestvie():
             ("пꙋт\ue205 GH шьст\ue205ꙗ G", "ὁδοιπορίας"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=5,
-                            alt=False,
-                            page=28,
-                            col="d",
-                            row=18,
+                        Index.unpack("5/28d18"),
+                        UsageContent(
+                            "sl",
+                            Source("G"),
+                            Alternative(
+                                var_lemmas={Source("H"): "шьств\ue205\ue201 пѫт\ue205"},
+                                main_word="поутошьств\ue205ꙗ",
+                                var_words={
+                                    Source("H"): ("пꙋт\ue205 GH шьств\ue205ꙗ H", 1)
+                                },
+                            ),
                             word="пꙋт\ue205 GH шьст\ue205ꙗ G",
-                        ),
-                        lang="sl",
-                        var=Source("G"),
-                        orig_alt=Alternative(
-                            var_lemmas={Source("H"): "шьств\ue205\ue201 пѫт\ue205"},
-                            main_word="поутошьств\ue205ꙗ",
-                            var_words={Source("H"): ("пꙋт\ue205 GH шьств\ue205ꙗ H", 1)},
                         ),
                     ),
                     Usage(
-                        idx=Index(
-                            ch=5,
-                            alt=False,
-                            page=28,
-                            col="d",
-                            row=18,
+                        Index.unpack("5/28d18"),
+                        UsageContent(
+                            "sl",
+                            Source("H"),
+                            Alternative(
+                                var_lemmas={Source("G"): "шьст\ue205\ue201 пѫт\ue205"},
+                                main_word="поутошьств\ue205ꙗ",
+                                var_words={
+                                    Source("G"): ("пꙋт\ue205 GH шьст\ue205ꙗ G", 1)
+                                },
+                            ),
                             word="пꙋт\ue205 GH шьств\ue205ꙗ H",
-                        ),
-                        lang="sl",
-                        var=Source("H"),
-                        orig_alt=Alternative(
-                            var_lemmas={Source("G"): "шьст\ue205\ue201 пѫт\ue205"},
-                            main_word="поутошьств\ue205ꙗ",
-                            var_words={Source("G"): ("пꙋт\ue205 GH шьст\ue205ꙗ G", 1)},
                         ),
                     ),
                 ]

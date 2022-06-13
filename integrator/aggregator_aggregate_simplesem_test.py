@@ -4,7 +4,7 @@ from const import FROM_LANG, TO_LANG
 from config import FROM_LANG
 from const import STYLE_COL
 
-from model import Index, Usage, Source, Alternative
+from model import Alternative, Index, Source, Usage, UsageContent
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import aggregate
 
@@ -52,25 +52,24 @@ def test_monogenis():
                 ("\ue201д\ue205но\ue20dедоу", "μονογενοῦς"): SortedSet(
                     [
                         Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
+                            Index.unpack("1/W168a25"),
+                            UsageContent(
+                                FROM_LANG,
+                                alt=Alternative(
+                                    var_lemmas={
+                                        Source("H"): "\ue201д\ue205нородъ",
+                                        Source("G"): "\ue205но\ue20dѧдъ",
+                                    },
+                                    var_words={
+                                        Source("H"): ("\ue201д\ue205нородоу H", 1),
+                                        Source("G"): ("\ue205но\ue20dедаго G", 1),
+                                    },
+                                ),
                                 word="\ue201д\ue205но\ue20dедоу",
-                                lemma="\ue201д\ue205но\ue20dѧдъ",
+                                lemmas=["\ue201д\ue205но\ue20dѧдъ"],
                             ),
-                            lang=FROM_LANG,
-                            orig_alt=Alternative(
-                                var_lemmas={
-                                    Source("H"): "\ue201д\ue205нородъ",
-                                    Source("G"): "\ue205но\ue20dѧдъ",
-                                },
-                                var_words={
-                                    Source("H"): ("\ue201д\ue205нородоу H", 1),
-                                    Source("G"): ("\ue205но\ue20dедаго G", 1),
-                                },
+                            UsageContent(
+                                lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
                             ),
                         )
                     ]
@@ -87,22 +86,23 @@ def test_monogenis():
                 ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                     [
                         Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
+                            Index.unpack("1/W168a25"),
+                            UsageContent(
+                                "sl",
+                                var=Source("H"),
+                                alt=Alternative(
+                                    main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                    var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+                                    main_word="\ue201д\ue205но\ue20dедоу",
+                                    var_words={
+                                        Source("G"): ("\ue205но\ue20dедаго G", 1)
+                                    },
+                                ),
                                 word="\ue201д\ue205нородоу H",
-                                lemma="\ue201д\ue205нородъ",
+                                lemmas=["\ue201д\ue205нородъ"],
                             ),
-                            lang="sl",
-                            var=Source("H"),
-                            orig_alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
+                            UsageContent(
+                                lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
                             ),
                         )
                     ]
@@ -114,22 +114,23 @@ def test_monogenis():
                 ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                     [
                         Usage(
-                            idx=Index(
-                                ch=1,
-                                alt=True,
-                                page=168,
-                                col="a",
-                                row=25,
+                            Index.unpack("1/W168a25"),
+                            UsageContent(
+                                "sl",
+                                var=Source("G"),
+                                alt=Alternative(
+                                    main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                    var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
+                                    main_word="\ue201д\ue205но\ue20dедоу",
+                                    var_words={
+                                        Source("H"): ("\ue201д\ue205нородоу H", 1)
+                                    },
+                                ),
                                 word="\ue205но\ue20dедаго G",
-                                lemma="\ue205но\ue20dѧдъ",
+                                lemmas=["\ue205но\ue20dѧдъ"],
                             ),
-                            lang="sl",
-                            var=Source("G"),
-                            orig_alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
+                            UsageContent(
+                                lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
                             ),
                         )
                     ]

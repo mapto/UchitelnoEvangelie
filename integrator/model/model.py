@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS
+from config import other_lang
 from regex import source_regex
 
 from .address import Index
@@ -15,8 +16,6 @@ class Alternative:
     """Word occurences in a line are counted.
     For main alternative this is in a separate variable,
     but for variants, it's part of the dictionary
-    >>> Alternative("аще", main_word="аще") < Alternative("\ue205 conj.", main_word="\ue205")
-    True
     """
 
     main_lemma: str = ""
@@ -25,10 +24,19 @@ class Alternative:
     var_words: Dict[Source, Tuple[str, int]] = field(default_factory=lambda: {})
     main_cnt: int = 1
 
+    def __hash__(self):
+        vl = "/".join([f"{v} {k}" for k, v in self.var_lemmas.items()])
+        vw = "/".join([f"{v[0]}{v[1]} {k}" for k, v in self.var_words.items()])
+        return hash((self.main_lemma, vl, self.main_word, vw, self.main_cnt))
+
     def __bool__(self) -> bool:
         return bool(self.main_lemma) or bool(self.var_lemmas)
 
     def __lt__(self, other) -> bool:
+        """
+        >>> Alternative("аще", main_word="аще") < Alternative("\ue205 conj.", main_word="\ue205")
+        True
+        """
         if self.main_word < other.main_word:
             return True
         elif self.main_word > other.main_word:
@@ -68,49 +76,131 @@ class Alternative:
 
 
 @dataclass(frozen=True)
-class Usage:
-    """Variant is not only indicative, but also nominative - which variant.
-    Here alt means other transcriptions (main or var).
-    Contrast these to Index
+class UsageContent:
+    """Here alt means other transcriptions (main or var)"""
 
-    >>> i = Index(1, False, 7, "c", 6, word="om.")
-    >>> s = Source("WH")
-    >>> a = Usage(i, "gr", s, trans_alt=Alternative("аще", main_word="аще"))
-    >>> b = Usage(i, "gr", s, trans_alt=Alternative("\ue205 conj.", main_word="\ue205"))
-    >>> a < b
-    True
+    lang: str = ""
+    var: Source = field(default_factory=lambda: Source())
+    alt: Alternative = field(default_factory=lambda: Alternative())
+    word: str = ""
+    lemmas: List[str] = field(default_factory=lambda: [])
+    cnt: int = 1
 
-    >>> i1 = Index(5, False, 22, "b", 5, word="оуслышат\ue205 GH")
-    >>> i2 = Index(5, False, 22, "b", 5, 2, 2, word="оуслышат\ue205 GH")
-    >>> s = Source("GH")
-    >>> a = Usage(i1, "sl", s, Alternative("слꙑшат\ue205", main_word="слꙑшат\ue205"))
-    >>> b = Usage(i2, "sl", s, Alternative("послꙑшат\ue205", main_word="послꙑшат\ue205"))
-    >>> a < b
-    True
-    """
-
-    idx: Index
-    lang: str
-    var: Source = field(default_factory=lambda: Source(""))
-    orig_alt: Alternative = field(default_factory=lambda: Alternative())
-    trans_alt: Alternative = field(default_factory=lambda: Alternative())
-
-    def __hash__(self):
-        return hash((self.idx, self.lang, self.var))
+    def __hash__(self) -> int:
+        return hash(
+            (self.lang, self.var, self.alt, self.word, tuple(self.lemmas), self.cnt)
+        )
 
     def __lt__(self, other) -> bool:
+        """
+        >>> s = Source("WH")
+        >>> a = UsageContent("sl", s, Alternative("аще", main_word="аще"), "om.")
+        >>> b = UsageContent("sl", s, Alternative("\ue205 conj.", main_word="\ue205"), "om.")
+        >>> a < b
+        True
+
+        >>> s = Source("GH")
+        >>> a = UsageContent("sl", s, Alternative("слꙑшат\ue205", main_word="слꙑшат\ue205"), "оуслышат\ue205 GH")
+        >>> b = UsageContent("sl", s, Alternative("послꙑшат\ue205", main_word="послꙑшат\ue205"), "оуслышат\ue205 GH", cnt=2)
+        >>> a < b
+        True
+        """
         return (
-            self.idx < other.idx
-            or self.idx == other.idx
+            self.cnt < other.cnt
+            or self.cnt == other.cnt
             and len(self.var) < len(other.var)
-            or self.idx == other.idx
+            or self.cnt == other.cnt
             and len(self.var) == len(other.var)
-            and self.orig_alt < other.orig_alt
-            or self.idx == other.idx
-            and len(self.var) == len(other.var)
-            and self.orig_alt == other.orig_alt
-            and self.trans_alt < other.trans_alt
+            and self.alt < other.alt
         )
+
+    def __le__(self, other) -> bool:
+        return self < other or self == other
+
+    def __gt__(self, other) -> bool:
+        return not self <= other
+
+    def __ge__(self, other) -> bool:
+        return not self < other
+
+
+@dataclass(frozen=True)
+class Usage:
+    idx: Index
+    orig: UsageContent = field(default_factory=lambda: UsageContent())
+    trans: UsageContent = field(default_factory=lambda: UsageContent())
+    bold: bool = False
+    italic: bool = False
+
+    def __hash__(self):
+        return hash((self.idx, self.orig, self.trans))
+
+    def __eq__(self, other) -> bool:
+        """
+        >>> ta1 = Alternative("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
+        >>> ta2 = Alternative("\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"})
+        >>> a = Usage(Index.unpack("1/W168a25"), UsageContent("gr", word="μονογενοῦς"), UsageContent("sl", Source("H"), ta1))
+        >>> b = Usage(Index.unpack("1/W168a25"), UsageContent("gr", word="μονογενοῦς"), UsageContent("sl", Source("G"), ta2))
+        >>> a == b
+        False
+
+        >> vl = {Source("GH"): "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"}
+        >> vw = {Source("GH"): ("пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G", 1)}
+        >> oa1 = Alternative(var_lemmas=vl, var_words=vw)
+        >> oa2 = Alternative(main_lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205", main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть")
+        >> a = Usage(Index.unpack("5/28c21-d1"), UsageContent("sl", alt=oa1, word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть"))
+        >> b = Usage(Index.unpack("5/28c21-d1"), UsageContent("sl", Source("GH"), oa2, "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G"))
+        >> a == b
+        False
+        """
+        if type(other) != Usage:
+            return False
+        return (
+            self.idx == other.idx
+            and self.orig == other.orig
+            and self.trans == other.trans
+        )
+
+    def var(self) -> Source:
+        return self.orig.var + self.trans.var
+
+    def colocated(self, other, transl: bool = False):
+        """
+        A loose type of coincidence, used for occurence counting:
+        if the same lemma and in the same language-specific address, considering also repetitions,
+        usage should not be counted a second time
+        see counter.py::_present
+        """
+        if type(other) != Usage:
+            return False
+        mine = self.trans if transl else self.orig
+        hers = other.trans if transl else other.orig
+        return (
+            self.idx == other.idx
+            and mine.lang == hers.lang
+            # and bool(self.var.by_lang(l)) == bool(other.var.by_lang(l))
+            and mine.word == hers.word
+            and mine.lemmas == hers.lemmas
+            and mine.cnt == hers.cnt
+        )
+
+    def __lt__(self, other) -> bool:
+        """
+        >>> i = Index(1, False, 7, "c", 6)
+        >>> s = Source("WH")
+        >>> a = Usage(i, UsageContent("sl", s, Alternative("аще", main_word="аще"), "om."))
+        >>> b = Usage(i, UsageContent("sl", s, Alternative("\ue205 conj.", main_word="\ue205"), "om."))
+        >>> a < b
+        True
+
+        >>> i = Index(5, False, 22, "b", 5)
+        >>> s = Source("GH")
+        >>> a = Usage(i, UsageContent("sl", s, Alternative("слꙑшат\ue205", main_word="слꙑшат\ue205"), "оуслышат\ue205 GH"))
+        >>> b = Usage(i, UsageContent("sl", s, Alternative("послꙑшат\ue205", main_word="послꙑшат\ue205"), "оуслышат\ue205 GH", cnt=2))
+        >>> a < b
+        True
+        """
+        return self.idx < other.idx or self.idx == other.idx and self.orig < other.orig
 
     def __le__(self, other) -> bool:
         return self < other or self == other

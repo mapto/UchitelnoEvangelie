@@ -4,7 +4,7 @@ from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
 from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
-from model import Index, Usage, Source, Alternative
+from model import Alternative, Index, Source, Usage, UsageContent
 from semantics import MainLangSemantics, VarLangSemantics
 
 # semantics update from September 2021
@@ -44,16 +44,19 @@ def test_para():
             ("παρὰ", "Instr."): SortedSet(
                 [
                     Usage(
-                        idx=Index(
+                        Index(
                             ch=1,
                             alt=True,
                             page=168,
                             col="a",
                             row=19,
-                            word="παρὰ",
-                            lemma="παρά",
                         ),
-                        lang=TO_LANG,
+                        UsageContent(
+                            TO_LANG,
+                            word="παρὰ",
+                            lemmas=["παρά"],
+                        ),
+                        UsageContent("sl", word="Instr.", lemmas=["Instr."]),
                     )
                 ]
             )
@@ -76,20 +79,22 @@ def test_para():
             ("παρ’ C", "оу"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
+                        Index(
                             ch=1,
                             alt=False,
                             page=7,
                             col="d",
                             row=1,
-                            word="παρ’ C",
-                            lemma="παρά",
                         ),
-                        lang="gr",
-                        var=Source("C"),
-                        trans_alt=Alternative(
-                            var_lemmas={Source("WGH"): "въ + Loc."},
-                            var_words={Source("WGH"): ("вь WGH", 1)},
+                        UsageContent("gr", Source("C"), word="παρ’ C", lemmas=["παρά"]),
+                        UsageContent(
+                            "sl",
+                            alt=Alternative(
+                                var_lemmas={Source("WGH"): "въ + Loc."},
+                                var_words={Source("WGH"): ("вь WGH", 1)},
+                            ),
+                            word="оу",
+                            lemmas=["ѹ"],
                         ),
                     )
                 ]
@@ -140,20 +145,21 @@ def test_ipercliso():
             ("ὑπερβλύζων C", "прѣ\ue205сто\ue20dе"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="c",
-                            row=17,
-                            word="ὑπερβλύζων C",
-                            lemma="ὑπερβλύω",
+                        Index.unpack("1/W168c17"),
+                        UsageContent(
+                            "gr",
+                            Source("C"),
+                            Alternative(
+                                main_lemma="ὑπερκλύζω",
+                                main_word="ὑπερκλύζων",
+                            ),
+                            "ὑπερβλύζων C",
+                            ["ὑπερβλύω"],
                         ),
-                        lang="gr",
-                        var=Source("C"),
-                        orig_alt=Alternative(
-                            main_lemma="ὑπερκλύζω",
-                            main_word="ὑπερκλύζων",
+                        UsageContent(
+                            "sl",
+                            word="прѣ\ue205сто\ue20dе",
+                            lemmas=["прѣ\ue205сто\ue20d\ue205т\ue205"],
                         ),
                     )
                 ]
@@ -163,20 +169,21 @@ def test_ipercliso():
             ("ὑπερβλύσαι C", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="c",
-                            row=17,
-                            word="ὑπερβλύσαι C",
-                            lemma="ὑπερβλύω",
+                        Index.unpack("1/W168c17"),
+                        UsageContent(
+                            "gr",
+                            Source("C"),
+                            Alternative(
+                                main_lemma="ὑπερκλύζω",
+                                main_word="ὑπερκλύσαι",
+                            ),
+                            "ὑπερβλύσαι C",
+                            ["ὑπερβλύω"],
                         ),
-                        lang="gr",
-                        var=Source("C"),
-                        orig_alt=Alternative(
-                            main_lemma="ὑπερκλύζω",
-                            main_word="ὑπερκλύσαι",
+                        UsageContent(
+                            "sl",
+                            word="\ue205сто\ue20dен\ue205\ue205",
+                            lemmas=["\ue205сто\ue20dен\ue205\ue201"],
                         ),
                     )
                 ]
@@ -214,20 +221,17 @@ def test_verovat():
             ("вѣроують", "πιστεύσωσι"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=False,
-                            page=7,
-                            col="b",
-                            row=19,
+                        Index.unpack("1/7b19"),
+                        UsageContent(
+                            "sl",
+                            alt=Alternative(
+                                var_lemmas={Source("GH"): "вѣрѫ ѩт_"},
+                                var_words={Source("GH"): ("вѣроу GH", 1)},
+                            ),
                             word="вѣроують",
-                            lemma="вѣроват_",
+                            lemmas=["вѣроват_"],
                         ),
-                        lang="sl",
-                        orig_alt=Alternative(
-                            var_lemmas={Source("GH"): "вѣрѫ ѩт_"},
-                            var_words={Source("GH"): ("вѣроу GH", 1)},
-                        ),
+                        UsageContent("gr", word="πιστεύσωσι", lemmas=["πιστεύω"]),
                     )
                 ]
             )
@@ -241,19 +245,20 @@ def test_verovat():
             ("πιστεύσωσι", "вѣроують"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=False,
-                            page=7,
-                            col="b",
-                            row=19,
+                        Index.unpack("1/7b19"),
+                        UsageContent(
+                            "gr",
                             word="πιστεύσωσι",
-                            lemma="πιστεύω",
+                            lemmas=["πιστεύω"],
                         ),
-                        lang="gr",
-                        trans_alt=Alternative(
-                            var_lemmas={Source("GH"): "вѣрѫ ѩт_"},
-                            var_words={Source("GH"): ("вѣроу GH", 1)},
+                        UsageContent(
+                            "sl",
+                            alt=Alternative(
+                                var_lemmas={Source("GH"): "вѣрѫ ѩт_"},
+                                var_words={Source("GH"): ("вѣроу GH", 1)},
+                            ),
+                            word="вѣроують",
+                            lemmas=["вѣроват_"],
                         ),
                     )
                 ]
@@ -281,17 +286,9 @@ def test_mene():
             ("мене", "με C"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="c",
-                            row=7,
-                            word="мене",
-                            lemma="аꙁъ",
-                        ),
-                        lang=FROM_LANG,
-                        var=Source("C"),
+                        Index.unpack("1/W168c7"),
+                        UsageContent("sl", word="мене", lemmas=["аꙁъ"]),
+                        UsageContent("gr", Source("C"), word="με C", lemmas=["ἐγώ"]),
                     )
                 ]
             )
@@ -304,17 +301,11 @@ def test_mene():
             ("με C", "мене"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="c",
-                            row=7,
-                            word="με C",
-                            lemma="ἐγώ",
+                        Index.unpack("1/W168c7"),
+                        UsageContent(
+                            TO_LANG, var=Source("C"), word="με C", lemmas=["ἐγώ"]
                         ),
-                        lang=TO_LANG,
-                        var=Source("C"),
+                        UsageContent(lang="sl", word="мене", lemmas=["аꙁъ"]),
                     )
                 ]
             )
@@ -345,22 +336,19 @@ def test_monogenis():
             ("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=False,
-                            page=5,
-                            col="a",
-                            row=4,
+                        Index.unpack("1/5a4"),
+                        UsageContent(
+                            FROM_LANG,
+                            alt=Alternative(
+                                var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
+                                var_words={
+                                    Source("WH"): ("\ue201д\ue205но\ue20dеды WH", 1)
+                                },
+                            ),
                             word="\ue205но\ue20dадꙑ\ue205",
-                            lemma="\ue205но\ue20dѧдъ",
+                            lemmas=["\ue205но\ue20dѧдъ"],
                         ),
-                        lang=FROM_LANG,
-                        orig_alt=Alternative(
-                            var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-                            var_words={
-                                Source("WH"): ("\ue201д\ue205но\ue20dеды WH", 1)
-                            },
-                        ),
+                        UsageContent(lang="gr", word="μονογενὴς", lemmas=["μονογενής"]),
                     )
                 ]
             )
@@ -377,21 +365,18 @@ def test_monogenis():
             ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=False,
-                            page=5,
-                            col="a",
-                            row=4,
-                            word="μονογενὴς",
-                            lemma="μονογενής",
-                        ),
-                        lang=TO_LANG,
-                        trans_alt=Alternative(
-                            var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-                            var_words={
-                                Source("WH"): ("\ue201д\ue205но\ue20dеды WH", 1)
-                            },
+                        Index.unpack("1/5a4"),
+                        UsageContent(TO_LANG, word="μονογενὴς", lemmas=["μονογενής"]),
+                        UsageContent(
+                            FROM_LANG,
+                            alt=Alternative(
+                                var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
+                                var_words={
+                                    Source("WH"): ("\ue201д\ue205но\ue20dеды WH", 1)
+                                },
+                            ),
+                            word="\ue205но\ue20dадꙑ\ue205",
+                            lemmas=["\ue205но\ue20dѧдъ"],
                         ),
                     )
                 ]
@@ -427,25 +412,24 @@ def test_monogenis2():
             ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="a",
-                            row=25,
-                            bold=True,
-                            italic=True,
+                        Index.unpack("1/W168a25"),
+                        UsageContent(
+                            "sl",
+                            var=Source("G"),
+                            alt=Alternative(
+                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
+                                main_word="\ue201д\ue205но\ue20dедоу",
+                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
+                            ),
                             word="\ue205но\ue20dедаго G",
-                            lemma="\ue205но\ue20dѧдъ",
+                            lemmas=["\ue205но\ue20dѧдъ"],
                         ),
-                        lang="sl",
-                        var=Source("G"),
-                        orig_alt=Alternative(
-                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                            var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                            main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
+                        UsageContent(
+                            lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
                         ),
+                        bold=True,
+                        italic=True,
                     )
                 ]
             ),
@@ -459,25 +443,24 @@ def test_monogenis2():
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="a",
-                            row=25,
-                            bold=True,
-                            italic=True,
+                        Index.unpack("1/W168a25"),
+                        UsageContent(
+                            "sl",
+                            var=Source("H"),
+                            alt=Alternative(
+                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+                                main_word="\ue201д\ue205но\ue20dедоу",
+                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
+                            ),
                             word="\ue201д\ue205нородоу H",
-                            lemma="\ue201д\ue205нородъ",
+                            lemmas=["\ue201д\ue205нородъ"],
                         ),
-                        lang="sl",
-                        var=Source("H"),
-                        orig_alt=Alternative(
-                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                            var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                            main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
+                        UsageContent(
+                            lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
                         ),
+                        bold=True,
+                        italic=True,
                     )
                 ]
             )
@@ -512,22 +495,21 @@ def test_monogenis3():
             ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="a",
-                            row=25,
+                        Index.unpack("1/W168a25"),
+                        UsageContent(
+                            "sl",
+                            var=Source("G"),
+                            alt=Alternative(
+                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
+                                main_word="\ue201д\ue205но\ue20dедоу",
+                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
+                            ),
                             word="\ue205но\ue20dедаго G",
-                            lemma="\ue205но\ue20dѧдъ",
+                            lemmas=["\ue205но\ue20dѧдъ"],
                         ),
-                        lang="sl",
-                        var=Source("G"),
-                        orig_alt=Alternative(
-                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                            var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                            main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
+                        UsageContent(
+                            lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
                         ),
                     )
                 ]
@@ -542,22 +524,21 @@ def test_monogenis3():
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="a",
-                            row=25,
+                        Index.unpack("1/W168a25"),
+                        UsageContent(
+                            "sl",
+                            Source("H"),
+                            Alternative(
+                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+                                main_word="\ue201д\ue205но\ue20dедоу",
+                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
+                            ),
                             word="\ue201д\ue205нородоу H",
-                            lemma="\ue201д\ue205нородъ",
+                            lemmas=["\ue201д\ue205нородъ"],
                         ),
-                        lang="sl",
-                        var=Source("H"),
-                        orig_alt=Alternative(
-                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                            var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                            main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
+                        UsageContent(
+                            lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
                         ),
                     )
                 ]
@@ -572,25 +553,22 @@ def test_monogenis3():
             ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="a",
-                            row=25,
-                            word="μονογενοῦς",
-                            lemma="μονογενής",
-                        ),
-                        lang=TO_LANG,
-                        trans_alt=Alternative(
-                            var_lemmas={
-                                Source("H"): "\ue201д\ue205нородъ",
-                                Source("G"): "\ue205но\ue20dѧдъ",
-                            },
-                            var_words={
-                                Source("H"): ("\ue201д\ue205нородоу H", 1),
-                                Source("G"): ("\ue205но\ue20dедаго G", 1),
-                            },
+                        Index.unpack("1/W168a25"),
+                        UsageContent(TO_LANG, word="μονογενοῦς", lemmas=["μονογενής"]),
+                        UsageContent(
+                            FROM_LANG,
+                            alt=Alternative(
+                                var_lemmas={
+                                    Source("H"): "\ue201д\ue205нородъ",
+                                    Source("G"): "\ue205но\ue20dѧдъ",
+                                },
+                                var_words={
+                                    Source("H"): ("\ue201д\ue205нородоу H", 1),
+                                    Source("G"): ("\ue205но\ue20dедаго G", 1),
+                                },
+                            ),
+                            word="\ue201д\ue205но\ue20dедоу",
+                            lemmas=["\ue201д\ue205но\ue20dѧдъ"],
                         ),
                     )
                 ]
@@ -605,22 +583,23 @@ def test_monogenis3():
             ("μονογενοῦς", "\ue201д\ue205нородоу H"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="a",
-                            row=25,
+                        Index.unpack("1/W168a25"),
+                        UsageContent(
+                            "gr",
                             word="μονογενοῦς",
-                            lemma="μονογενής",
+                            lemmas=["μονογενής"],
                         ),
-                        lang="gr",
-                        var=Source("H"),
-                        trans_alt=Alternative(
-                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                            var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                            main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
+                        UsageContent(
+                            "sl",
+                            var=Source("H"),
+                            alt=Alternative(
+                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
+                                main_word="\ue201д\ue205но\ue20dедоу",
+                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
+                            ),
+                            word="\ue201д\ue205нородоу H",
+                            lemmas=["\ue201д\ue205нородъ"],
                         ),
                     )
                 ]
@@ -635,22 +614,23 @@ def test_monogenis3():
             ("μονογενοῦς", "\ue205но\ue20dедаго G"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=1,
-                            alt=True,
-                            page=168,
-                            col="a",
-                            row=25,
+                        Index.unpack("1/W168a25"),
+                        UsageContent(
+                            "gr",
                             word="μονογενοῦς",
-                            lemma="μονογενής",
+                            lemmas=["μονογενής"],
                         ),
-                        lang="gr",
-                        var=Source("G"),
-                        trans_alt=Alternative(
-                            main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                            var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                            main_word="\ue201д\ue205но\ue20dедоу",
-                            var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
+                        UsageContent(
+                            "sl",
+                            Source("G"),
+                            alt=Alternative(
+                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
+                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
+                                main_word="\ue201д\ue205но\ue20dедоу",
+                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
+                            ),
+                            word="\ue205но\ue20dедаго G",
+                            lemmas=["\ue205но\ue20dѧдъ"],
                         ),
                     )
                 ]
@@ -680,21 +660,24 @@ def test_bozhii():
             ): SortedSet(
                 [
                     Usage(
-                        idx=Index(
+                        Index(
                             ch=1,
                             alt=False,
                             page=7,
                             col="a",
                             row=4,
+                        ),
+                        UsageContent(
+                            FROM_LANG,
+                            var=Source("WGH"),
+                            alt=Alternative(
+                                main_lemma="богъ",
+                                main_word="боꙁѣ",
+                            ),
                             word="б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
-                            lemma="бож\ue205\ue205",
+                            lemmas=["бож\ue205\ue205"],
                         ),
-                        lang=FROM_LANG,
-                        var=Source("WGH"),
-                        orig_alt=Alternative(
-                            main_lemma="богъ",
-                            main_word="боꙁѣ",
-                        ),
+                        UsageContent(lang="gr", word="Θεοῦ", lemmas=["θεός"]),
                     )
                 ]
             )
@@ -720,21 +703,18 @@ def test_artos():
             ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
-                            ch=16,
-                            alt=False,
-                            page=80,
-                            col="a",
-                            row=8,
+                        Index.unpack("16/80a8"),
+                        UsageContent(
+                            "gr",
+                            var=Source("Ch"),
+                            alt=Alternative(
+                                main_lemma="om.",
+                                main_word="om.",
+                            ),
                             word="ἄρτους Ch",
-                            lemma="ἄρτος",
+                            lemmas=["ἄρτος"],
                         ),
-                        lang="gr",
-                        var=Source("Ch"),
-                        orig_alt=Alternative(
-                            main_lemma="om.",
-                            main_word="om.",
-                        ),
+                        UsageContent(lang="sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
                     )
                 ]
             )
@@ -758,39 +738,23 @@ def test_est_in_var_no_main():
         cnt_col=STYLE_COL + 3,
     )
 
-    row = [
-        "\ue201сть GH",
-        "бꙑт\ue205",
-        "",
-        "gramm.",
-        "07/47a06",
-        "om.",
-        "сътвор\ue205лъ",
-        "om.",
-        "",
-        "",
-        "",
-        "Ø",
-        "Ø",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "hl03",
-        "1",
-        "1",
-        "1",
-        "1",
-    ]
+    row = (
+        [
+            "\ue201сть GH",
+            "бꙑт\ue205",
+            "",
+            "gramm.",
+            "07/47a06",
+            "om.",
+            "сътвор\ue205лъ",
+            "om.",
+        ]
+        + [""] * 3
+        + ["Ø"] * 2
+        + [""] * 13
+        + ["hl03"]
+        + ["1"] * 4
+    )
     result = SortedDict()
     result = sl_sem.var.compile_usages(gr_sem, row, result, "бꙑт", "Ø")
     assert result == {
@@ -798,21 +762,24 @@ def test_est_in_var_no_main():
             ("\ue201сть GH", "Ø"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
+                        Index(
                             ch=7,
                             alt=False,
                             page=47,
                             col="a",
                             row=6,
-                            word="\ue201сть GH",
-                            lemma="бꙑт\ue205",
                         ),
-                        lang="sl",
-                        var=Source("GH"),
-                        orig_alt=Alternative(
-                            main_lemma="om.",
-                            main_word="om.",
+                        UsageContent(
+                            "sl",
+                            Source("GH"),
+                            Alternative(
+                                main_lemma="om.",
+                                main_word="om.",
+                            ),
+                            "\ue201сть GH",
+                            ["бꙑт\ue205"],
                         ),
+                        UsageContent(lang="gr", word="Ø", lemmas=["Ø"]),
                     )
                 ]
             )
@@ -849,20 +816,23 @@ def test_hodom_spiti():
             ("προβαίνοντες", "хⷪ҇домь WG"): SortedSet(
                 [
                     Usage(
-                        idx=Index(
+                        Index(
                             ch=14,
                             alt=False,
                             page=72,
                             col="d",
                             row=18,
-                            word="προβαίνοντες",
-                            lemma="προβαίνω",
                         ),
-                        lang="gr",
-                        var=Source("WG"),
-                        trans_alt=Alternative(
-                            main_lemma="≈ ход\ue205т\ue205 спѣѭще",
-                            main_word="ход\ue205мъ",
+                        UsageContent("gr", word="προβαίνοντες", lemmas=["προβαίνω"]),
+                        UsageContent(
+                            "sl",
+                            Source("WG"),
+                            alt=Alternative(
+                                main_lemma="≈ ход\ue205т\ue205 спѣѭще",
+                                main_word="ход\ue205мъ",
+                            ),
+                            word="хⷪ҇домь WG",
+                            lemmas=["ходъ"],
                         ),
                     )
                 ]
@@ -871,7 +841,7 @@ def test_hodom_spiti():
     }
 
 
-def test_puteshestvie_put():
+def test_put():
     row = (
         [
             "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
@@ -900,28 +870,33 @@ def test_puteshestvie_put():
             ): SortedSet(
                 [
                     Usage(
-                        idx=Index(
+                        Index(
                             ch=5,
                             alt=False,
                             page=28,
                             col="d",
                             row=18,
-                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
-                            lemma="пѫть",
                         ),
-                        lang="sl",
-                        var=Source("GH"),
-                        orig_alt=Alternative(
-                            main_lemma="пѫтошьств",
-                            var_lemmas={
-                                Source("H"): "шьств\ue205\ue201 пѫт\ue205",
-                                Source("G"): "шьст\ue205\ue201 пѫт\ue205",
-                            },
-                            main_word="поутошьствꙗ",
-                            var_words={
-                                Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
-                                Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1),
-                            },
+                        UsageContent(
+                            "sl",
+                            Source("GH"),
+                            alt=Alternative(
+                                main_lemma="пѫтошьств",
+                                var_lemmas={
+                                    Source("H"): "шьств\ue205\ue201 пѫт\ue205",
+                                    Source("G"): "шьст\ue205\ue201 пѫт\ue205",
+                                },
+                                main_word="поутошьствꙗ",
+                                var_words={
+                                    Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
+                                    Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1),
+                                },
+                            ),
+                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
+                            lemmas=["пѫть"],
+                        ),
+                        UsageContent(
+                            lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]
                         ),
                     )
                 ]

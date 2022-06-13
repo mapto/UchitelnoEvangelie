@@ -41,3 +41,5 @@ VAR_GR = DEFAULT_GR + (
     "Z"  # 	Venezia, BNM, Z.544, f. 54v ff
     "Nt"  # 	NA
 )
+
+other_lang = {TO_LANG: FROM_LANG, FROM_LANG: TO_LANG}
