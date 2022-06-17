@@ -135,6 +135,9 @@ class Index:
             return False
         return True
 
+    # def __repr__(self) -> str:
+    #     return f"Index.unpack('{self}')"
+
     def __str__(self) -> str:
         """
         >>> str(Index(1, False, 6, "c", 4, end=Index(1, False, 6, "d", 4)))
