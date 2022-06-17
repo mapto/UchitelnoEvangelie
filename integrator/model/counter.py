@@ -89,7 +89,7 @@ class Counter:
 
             found = False
             for v in Source(trans_var):
-                if v in Source(nxt.orig.var):
+                if v in Source(nxt.trans.var):
                     r.trans_var.add(nxt)
                     found = True
                     break
