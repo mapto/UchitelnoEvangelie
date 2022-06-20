@@ -22,12 +22,6 @@ class Index:
     Alternative variable (alt) means alternative indexing (as in Vienna scroll).
     Not related to alternative variants
     Contrast these to Usage.
-
-    TODO: Need to find a better way to localise within line,
-    than passing on word and/or lemma
-    Probably this logic needs to be moved to Usage.
-    Before Usages get created, Index is contextualised in line.
-    Same for counts
     """
 
     ch: int = 1

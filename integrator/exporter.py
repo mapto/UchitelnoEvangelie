@@ -13,7 +13,7 @@ from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 
 from util import main_source, subscript
-from model import Usage, Source
+from model import Source, Usage
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, fonts, colors

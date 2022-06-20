@@ -6,8 +6,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from config import FROM_LANG
 from config import VAR_GR, VAR_SL
 
-from .address import Index
-from .model import Usage, UsageContent
+from .usage import Usage
 from .source import Source
 
 
