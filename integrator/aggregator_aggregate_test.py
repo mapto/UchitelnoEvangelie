@@ -1007,3 +1007,121 @@ def test_repeated_om():
             }
         }
     }
+
+
+def test_puteshestvie_gr():
+    rows = [
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "шьст & пѫть G / шьств & пѫть H",
+            "шьст\ue205\ue201 пѫт\ue205 G шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "поутошьств\ue205-",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4,
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "шьст\ue205\ue201 пѫть G & шьств\ue205\ue201 пѫть H",
+            "шьст\ue205\ue201 пѫт\ue205 G шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας"]
+        + [""] * 14
+        + ["hl00"]
+        + ["1"] * 4,
+    ]
+
+    result = SortedDict()
+    result = aggregate([rows[0]], gr_sem, sl_sem.var, result)
+    assert result == {
+        "ὁδοιπορία": {
+            "": {
+                "": {
+                    "": {
+                        "шьств\ue205\ue201 пѫт\ue205 → шьств\ue205\ue201 & пѫть": {
+                            ("ὁδοιπορίας", "шьств\ue205ꙗ пꙋт\ue205 H"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index.unpack("5/28d18"),
+                                        orig=UsageContent(
+                                            lang="gr",
+                                            word="ὁδοιπορίας",
+                                            lemmas=["ὁδοιπορία"],
+                                        ),
+                                        trans=UsageContent(
+                                            lang="sl",
+                                            var=Source("H"),
+                                            alt=Alternative(
+                                                main_lemma="пѫтошьств\ue205\ue201",
+                                                var_lemmas={
+                                                    Source(
+                                                        "G"
+                                                    ): "шьст\ue205\ue201 пѫт\ue205"
+                                                },
+                                                main_word="поутошьств\ue205ꙗ",
+                                                var_words={
+                                                    Source("G"): (
+                                                        "шьст\ue205ꙗ пꙋт\ue205 G",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H",
+                                            lemmas=["шьств\ue205\ue201 & пѫть"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        },
+                        "шьст\ue205\ue201 пѫт\ue205 → шьст\ue205\ue201 & пѫть": {
+                            ("ὁδοιπορίας", "шьст\ue205ꙗ пꙋт\ue205 G"): SortedSet(
+                                [
+                                    Usage(
+                                        idx=Index.unpack("5/28d18"),
+                                        orig=UsageContent(
+                                            lang="gr",
+                                            word="ὁδοιπορίας",
+                                            lemmas=["ὁδοιπορία"],
+                                        ),
+                                        trans=UsageContent(
+                                            lang="sl",
+                                            var=Source("G"),
+                                            alt=Alternative(
+                                                main_lemma="пѫтошьств\ue205\ue201",
+                                                var_lemmas={
+                                                    Source(
+                                                        "H"
+                                                    ): "шьств\ue205\ue201 пѫт\ue205"
+                                                },
+                                                main_word="поутошьств\ue205ꙗ",
+                                                var_words={
+                                                    Source("H"): (
+                                                        "шьств\ue205ꙗ пꙋт\ue205 H",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemmas=["шьст\ue205\ue201 & пѫть"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        },
+                    }
+                }
+            }
+        }
+    }

@@ -355,7 +355,7 @@ def test_est_in_var_no_main():
     assert result == {Source("GH"): "gramm."}
 
 
-def test_collect_puteshestive():
+def test_collect_puteshestvie():
     rows = [
         [
             "шьст\ue205ꙗ G шьств\ue205ꙗ H",
@@ -390,8 +390,8 @@ def test_collect_puteshestive():
     ]
 
     assert (
-        sl_sem.var.collect_lemma(rows, 1, H_LEMMA_SEP)
-        == "шьст\ue205\ue201 пѫть G / шьств\ue205\ue201 пѫть H"
+        sl_sem.var.collect_lemma(rows, separator=V_LEMMA_SEP)
+        == "шьст & пѫть G / шьств & пѫть H"
     )
 
 

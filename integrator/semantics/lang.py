@@ -6,9 +6,8 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 import re
 
-from const import IDX_COL, NON_COUNTABLE, NON_LEMMAS, STYLE_COL, V_LEMMA_SEP
+from const import H_LEMMA_SEP, IDX_COL, NON_COUNTABLE, NON_LEMMAS, STYLE_COL
 from const import EMPTY_CH, MISSING_CH
-from const import VAR_SEP
 from const import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
@@ -126,7 +125,7 @@ class LangSemantics:
         raise NotImplementedError("abstract method")
 
     def collect_lemma(
-        self, group: List[List[str]], cidx: int, separator: str = None
+        self, group: List[List[str]], cidx: int, separator: str = ""
     ) -> str:
         raise NotImplementedError("abstract method")
 
@@ -290,7 +289,7 @@ class MainLangSemantics(LangSemantics):
         return " ".join(collect(group, self.word))
 
     def collect_lemma(
-        self, group: List[List[str]], cidx: int, separator: str = None
+        self, group: List[List[str]], cidx: int, separator: str = ""
     ) -> str:
         g = [e for e in collect(group, cidx) if e.strip() != MISSING_CH]
         if separator:
@@ -410,7 +409,7 @@ class VarLangSemantics(LangSemantics):
         return " ".join([f"{v} {k}" if k else v for k, v in result.items() if v])
 
     def collect_lemma(
-        self, group: List[List[str]], cidx: int = UNSPECIFIED, separator: str = None
+        self, group: List[List[str]], cidx: int = UNSPECIFIED, separator: str = ""
     ) -> str:
         if cidx == UNSPECIFIED:
             cidx = self.lemmas[0]
@@ -422,9 +421,9 @@ class VarLangSemantics(LangSemantics):
                     collected[k] = []
                 collected[k] += [v]
         glue = f" {separator} " if separator else " "
-        result = regroup({k: glue.join(collected[k]).strip() for k in collected})
+        result = regroup({k: glue.join(collected[k]).strip() for k in collected}, glue)
         g = [f"{v} {k}" if k else v for k, v in result.items() if v]
-        return glue.join(g)
+        return f" {H_LEMMA_SEP} ".join(g)
 
     def level_main_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0

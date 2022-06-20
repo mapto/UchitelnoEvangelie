@@ -65,7 +65,7 @@
 
 Този проект се разпространява свободно според <a href="https://mit-license.org/">MIT License</a>.
 
-Използваният типографски шрифт *Cyrillica Ochrid 10U* е „раздаван безплатно“ <a href="https://osvedomitel.bg/2020/02/prof-totomanova/">по думите</a> на представител на притежателите на лиценза от БАН.
+Използваният типографски шрифт <a href="https://www.starobulglit.eu/OC10U.ttf">*Cyrillica Ochrid 10U*</a> е „раздаван безплатно“ <a href="https://osvedomitel.bg/2020/02/prof-totomanova/">по думите</a> на представител на притежателите на лиценза от БАН.
 
 За създаването на иконата е използван символът <a href="https://fontawesome.com/icons/book-open?style=solid">open-book</a> от FontAwesome, разпространяван под лиценза <a href="https://creativecommons.org/licenses/by/4.0/">Криейтив комънс признание 4.0 международен вариант</a>.
 

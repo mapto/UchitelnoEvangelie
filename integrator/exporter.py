@@ -20,11 +20,20 @@ from wordproc import GENERIC_FONT, fonts, colors
 
 
 def _generate_usage_alt_vars(
-    par, lang: str, alt_var: Dict[Source, Tuple[str, int]]
+    par, u: Usage, lang: str, alt_var: Dict[Source, Tuple[str, int]]
 ) -> None:
+    # Word is stored in Index only for orig.
+    # Thus the check u.lang == lang
+    if u.orig.lang == lang and not any(
+        v[0] not in u.orig.word for v in alt_var.values()
+    ):
+        return
+
     first = True
     _generate_text(par, f" {BRACE_OPEN[lang]}")
     for word, cnt in alt_var.values():
+        if u.orig.lang == lang and word in u.orig.word:
+            continue
         if first:
             first = False
         else:
@@ -61,13 +70,51 @@ def _generate_index(par, u: Usage) -> None:
             _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
 
 
+def _is_orig_alt(u: Usage) -> bool:
+    """
+    >>> from model import Alternative, Index, UsageContent
+    >>> i = Index.unpack("5/28d18")
+
+    >>> vl0 = {Source("H"): "шьств\ue205\ue201 пѫт\ue205", Source("G"): "other"}
+    >>> vw0 = {Source("G"): ("other", 1), Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)}
+    >>> oa0 = Alternative(var_lemmas=vl0, var_words=vw0)
+    >>> uc0 = UsageContent("sl", Source("GH"), oa0, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
+    >>> u0 = Usage(i, uc0)
+    >>> _is_orig_alt(u0)
+    True
+
+    >>> vl = {Source("H"): "шьств\ue205\ue201 пѫт\ue205", Source("G"): "шьст\ue205\ue201 пѫт\ue205"}
+    >>> vw = {Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1), Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)}
+    >>> oa1 = Alternative("пѫтошьств\ue205\ue201", vl, "поутошьств\ue205ꙗ", vw)
+    >>> uc1 = UsageContent("sl", Source("GH"), oa1, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
+    >>> u1 = Usage(i, uc1)
+    >>> _is_orig_alt(u1)
+    True
+
+    >>> oa2 = Alternative(var_lemmas=vl, var_words=vw)
+    >>> uc2 = UsageContent("sl", Source("GH"), oa2, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
+    >>> u2 = Usage(i, uc2)
+    >>> _is_orig_alt(u2)
+    False
+    """
+    alt = u.orig.alt
+    word = u.orig.word
+    return bool(alt) and (
+        alt.main_word
+        and alt.main_word not in word
+        or bool(u.orig.alt.var_words)
+        and any(v[0] not in word for v in alt.var_words.values())
+    )
+
+
 def _generate_usage(par, u: Usage) -> None:
     _generate_index(par, u)
-    if not u.orig.alt and not u.trans.alt:
+    if not _is_orig_alt(u) and not u.trans.alt:
+        # if not u.orig.alt and not u.trans.alt:
         return
 
     _generate_text(par, f" {CF_SEP}")
-    if u.orig.alt.main_word:
+    if u.orig.alt.main_word and u.orig.alt.main_word not in u.orig.word:
         _generate_text(par, " ")
         _generate_text(par, u.orig.alt.main_word, fonts[u.orig.lang])
         _generate_text(par, f" {main_source(u.orig.lang, u.idx.alt)}")
@@ -77,7 +124,7 @@ def _generate_usage(par, u: Usage) -> None:
             )
 
     if u.orig.alt.var_words:
-        _generate_usage_alt_vars(par, u.orig.lang, u.orig.alt.var_words)
+        _generate_usage_alt_vars(par, u, u.orig.lang, u.orig.alt.var_words)
 
     # previous addition certainly finished with GENERIC_FONT
     if u.trans.alt.main_word:
@@ -90,7 +137,7 @@ def _generate_usage(par, u: Usage) -> None:
             )
 
     if u.trans.alt.var_words:
-        _generate_usage_alt_vars(par, u.trans.lang, u.trans.alt.var_words)
+        _generate_usage_alt_vars(par, u, u.trans.lang, u.trans.alt.var_words)
 
 
 def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> None:
