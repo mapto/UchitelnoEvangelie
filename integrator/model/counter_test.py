@@ -24,8 +24,8 @@ def test_dict_ipercliso():
                                     UsageContent(
                                         FROM_LANG,
                                         word="прѣ\ue205сто\ue20dе",
-                                        lemmas=["прѣ\ue205сто\ue20d\ue205т\ue205"]
-                                    )
+                                        lemmas=["прѣ\ue205сто\ue20d\ue205т\ue205"],
+                                    ),
                                 )
                             ]
                         )
@@ -45,8 +45,8 @@ def test_dict_ipercliso():
                                     UsageContent(
                                         FROM_LANG,
                                         word="\ue205сто\ue20dен\ue205\ue205",
-                                        lemmas=["\ue205сто\ue20dен\ue205\ue201"]
-                                    )
+                                        lemmas=["\ue205сто\ue20dен\ue205\ue201"],
+                                    ),
                                 )
                             ]
                         )
@@ -69,8 +69,8 @@ def test_dict_ipercliso():
                                     UsageContent(
                                         FROM_LANG,
                                         word="прѣ\ue205сто\ue20dе",
-                                        lemmas=["прѣ\ue205сто\ue20d\ue205т\ue205"]
-                                    )
+                                        lemmas=["прѣ\ue205сто\ue20d\ue205т\ue205"],
+                                    ),
                                 )
                             ]
                         )
@@ -89,8 +89,8 @@ def test_dict_ipercliso():
                                     UsageContent(
                                         FROM_LANG,
                                         word="\ue205сто\ue20dен\ue205\ue205",
-                                        lemmas=["\ue205сто\ue20dен\ue205\ue201"]
-                                    )
+                                        lemmas=["\ue205сто\ue20dен\ue205\ue201"],
+                                    ),
                                 )
                             ]
                         )
@@ -100,7 +100,8 @@ def test_dict_ipercliso():
         }
     )
     c = Counter.get_dict_counts(d)
-    # assert (4, 0) == c.get_counts(True)
+    assert str(c) == "(2, 2, 4, 0)"
+    assert (4, 0) == c.get_counts(True)
     assert (2, 2) == c.get_counts(False)
 
 
@@ -287,9 +288,9 @@ def test_dict_monogenis():
         }
     }
     c = Counter.get_dict_counts(d)
+    assert str(c) == "(9, 0, 4, 5)"
     assert (4, 3) == c.get_counts(True)
-    assert (5, 0) == c.get_counts(False)
-
+    assert (4, 0) == c.get_counts(False)
 
     """
 def test_dict_prichatnik_biti():

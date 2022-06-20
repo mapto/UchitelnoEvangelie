@@ -86,6 +86,14 @@ class UsageContent:
     lemmas: List[str] = field(default_factory=lambda: [])
     cnt: int = 1
 
+    # def __eq__(self, other) -> bool:
+    #     if type(other) != "UsageContent":
+    #         return False
+    #     return (self.lang == other.lang
+    #         and self.var == other.var
+    #         and self.alt == other.alt
+    #         and self.cnt == other.cnt)
+
     def __hash__(self) -> int:
         return hash(
             (self.lang, self.var, self.alt, self.word, tuple(self.lemmas), self.cnt)
@@ -123,6 +131,15 @@ class UsageContent:
     def __ge__(self, other) -> bool:
         return not self < other
 
+    # def __repr__(self) -> str:
+    #     params = [f'"{self.lang}"']
+    #     if self.var:
+    #         params += [f"var={repr(self.var)}"]
+    #     if self.alt:
+    #         params += [f"alt={self.alt}"]
+    #     cnt = f", cnt={self.cnt}" if self.cnt > 1 else ""
+    #     return f"UsageContent({', '.join(params)}, word='{self.word}', lemmas={self.lemmas}{cnt})"
+
 
 @dataclass(frozen=True)
 class Usage:
@@ -159,6 +176,8 @@ class Usage:
             self.idx == other.idx
             and self.orig == other.orig
             and self.trans == other.trans
+            and self.orig == other.orig
+            and self.trans == other.trans
         )
 
     def var(self) -> Source:
@@ -173,12 +192,16 @@ class Usage:
         """
         if type(other) != Usage:
             return False
-        mine = self.trans if transl else self.orig
-        hers = other.trans if transl else other.orig
+        mine = self.orig
+        hers = other.orig
+        # wordmatch = self.trans.word == other.trans.word if transl else mine.word == hers.word
+        # mine = self.trans if transl else self.orig
+        # hers = other.trans if transl else other.orig
+        l = self.orig.lang
         return (
             self.idx == other.idx
-            and mine.lang == hers.lang
-            # and bool(self.var.by_lang(l)) == bool(other.var.by_lang(l))
+            and l == hers.lang
+            and bool(self.var().by_lang(l)) == bool(other.var().by_lang(l))
             and mine.word == hers.word
             and mine.lemmas == hers.lemmas
             and mine.cnt == hers.cnt
@@ -210,6 +233,10 @@ class Usage:
 
     def __ge__(self, other) -> bool:
         return not self < other
+
+    # def __repr__(self) -> str:
+    #     return f"Usage({repr(self.idx)}, {self.orig}, {self.trans})"
+    #     # return f"Usage(Index.unpack('{repr(self.idx)}'), {self.orig}, {self.trans})"
 
 
 @dataclass

@@ -33,22 +33,22 @@ class Counter:
         self.trans_var |= other.trans_var
         return self
 
+    def __str__(self) -> str:
+        # return f"({self.orig_main}\n{self.orig_var}\n{self.trans_main}\n{self.trans_var})"
+        return f"({len(self.orig_main)}, {len(self.orig_var)}, {len(self.trans_main)}, {len(self.trans_var)})"
+
     def get_counts(self, trans: bool = False) -> Tuple[int, int]:
-        print()
         m = self.trans_main if trans else self.orig_main
         v = self.trans_var if trans else self.orig_var
-        print(m)
-        print(v)
         ml: List[Usage] = []
         for s in m:
             if not _present(s, ml, trans):
                 ml += [s]
         vl: List[Usage] = []
         for s in v:
-            if not _present(s, m, trans) and not _present(s, vl, trans):
+            # if not _present(s, m, trans) and not _present(s, vl, trans):
+            if not _present(s, vl, trans):
                 vl += [s]
-        print(ml)
-        print(vl)
         return (len(ml), len(vl))
 
     @staticmethod
@@ -58,6 +58,8 @@ class Counter:
         >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)]
         >>> s = SortedSet([Usage(n, UsageContent(FROM_LANG)) for n in i])
         >>> c = Counter.get_set_counts(s)
+        >>> str(c)
+        '(2, 0, 2, 0)'
         >>> c.get_counts(True)
         (2, 0)
         >>> c.get_counts(False)
@@ -66,11 +68,15 @@ class Counter:
         >>> i = Index(ch=1, alt=True, page=168, col='c', row=7)
         >>> s = SortedSet([Usage(i, UsageContent("sl", Source("W"))), Usage(i, UsageContent("sl", cnt=2), UsageContent("gr", cnt=2))])
         >>> c = Counter.get_set_counts(s)
+        >>> str(c)
+        '(1, 1, 2, 0)'
         >>> c.get_counts(False)
         (1, 1)
         >>> c.get_counts(True)
         (2, 0)
         """
+
+        # print(f"set: {s}")
         lang = next(iter(s)).orig.lang
         orig_var = VAR_SL if lang == FROM_LANG else VAR_GR
         trans_var = VAR_GR if lang == FROM_LANG else VAR_SL
@@ -112,6 +118,9 @@ class Counter:
         >>> u = Usage(Index(ch=1, alt=False, page=5, col='a', row=5), UsageContent(FROM_LANG))
         >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([u])}})
         >>> c = Counter.get_dict_counts(d)
+        >>> str(c)
+        '(1, 0, 1, 0)'
+
         >>> c.get_counts(True)
         (1, 0)
         >>> c.get_counts(False)
@@ -121,6 +130,9 @@ class Counter:
         >>> u2 = Usage(Index(ch=1, alt=False, page=6, col='b', row=7), UsageContent(FROM_LANG))
         >>> d = SortedDict({'lem2': SortedDict({'lem1': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
         >>> c = Counter.get_dict_counts(d)
+        >>> str(c)
+        '(2, 0, 2, 0)'
+
         >>> c.get_counts(True)
         (2, 0)
         >>> c.get_counts(False)
