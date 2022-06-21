@@ -174,7 +174,7 @@ def test_agg_lemma_missing_gr_main():
 
     result = SortedDict()
     result = _agg_lemma(
-        row, gr_sem.var, sl_sem, result, LAST_LEMMA, "ἄρτος", Source(""), "хлѣбъ"
+        row, gr_sem.var, sl_sem, result, LAST_LEMMA, "ἄρτος", Source("Ch"), "хлѣбъ"
     )
     assert result == {
         "хлѣбъ": {
@@ -226,7 +226,14 @@ def test_agg_lemma_est_in_var_no_main():
     )
     result = SortedDict()
     result = _agg_lemma(
-        row, sl_sem.var, gr_sem, result, LAST_LEMMA, olemma="бꙑт\ue205", tlemma="Ø"
+        row,
+        sl_sem.var,
+        gr_sem,
+        result,
+        LAST_LEMMA,
+        olemma="бꙑт\ue205",
+        olemvar=Source("GH"),
+        tlemma="Ø",
     )
     assert result == {
         "Ø": {
@@ -242,7 +249,7 @@ def test_agg_lemma_est_in_var_no_main():
                                 main_word="om.",
                             ),
                             word="\ue201сть GH",
-                            lemmas=["бꙑт\ue205"],
+                            lemmas=["бꙑт\ue205", "", "gramm."],
                         ),
                         UsageContent(lang="gr", word="Ø", lemmas=["Ø"]),
                     )
@@ -320,7 +327,10 @@ def test_agg_lemma_hodom_spiti():
                                                 },
                                             ),
                                             word="ход\ue205мъ спѣюще•",
-                                            lemmas=["спѣт\ue205"],
+                                            lemmas=[
+                                                "спѣт\ue205",
+                                                "≈ ход\ue205т\ue205 спѣѭще",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
@@ -448,7 +458,10 @@ def test_agg_lemma_shestvie_first():
                                                 },
                                             ),
                                             word="шьств\ue205ꙗ пꙋт\ue205 H",
-                                            lemmas=["шьств\ue205\ue201"],
+                                            lemmas=[
+                                                "шьств\ue205\ue201",
+                                                "шьств\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
@@ -491,7 +504,10 @@ def test_agg_lemma_shestvie_first():
                                                 },
                                             ),
                                             word="шьст\ue205ꙗ пꙋт\ue205 G",
-                                            lemmas=["шьст\ue205\ue201"],
+                                            lemmas=[
+                                                "шьст\ue205\ue201",
+                                                "шьст\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
@@ -568,7 +584,10 @@ def test_agg_lemma_shestvie_1():
                                                 },
                                             ),
                                             word="шьст\ue205ꙗ пꙋт\ue205 G",
-                                            lemmas=["шьст\ue205\ue201"],
+                                            lemmas=[
+                                                "шьст\ue205\ue201",
+                                                "шьст\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
@@ -625,7 +644,10 @@ def test_agg_lemma_shestvie_1():
                                                 },
                                             ),
                                             word="шьств\ue205ꙗ пꙋт\ue205 H",
-                                            lemmas=["шьств\ue205\ue201"],
+                                            lemmas=[
+                                                "шьств\ue205\ue201",
+                                                "шьств\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
@@ -701,7 +723,10 @@ def test_agg_lemma_shestvie_2():
                                             },
                                         ),
                                         word="шьст\ue205ꙗ пꙋт\ue205 G",
-                                        lemmas=["шьст\ue205\ue201"],
+                                        lemmas=[
+                                            "шьст\ue205\ue201",
+                                            "шьст\ue205\ue201 пѫт\ue205",
+                                        ],
                                     ),
                                     UsageContent(
                                         lang="gr",
@@ -756,7 +781,10 @@ def test_agg_lemma_shestvie_2():
                                             },
                                         ),
                                         word="шьств\ue205ꙗ пꙋт\ue205 H",
-                                        lemmas=["шьств\ue205\ue201"],
+                                        lemmas=[
+                                            "шьств\ue205\ue201",
+                                            "шьств\ue205\ue201 пѫт\ue205",
+                                        ],
                                     ),
                                     UsageContent(
                                         lang="gr",
@@ -821,7 +849,7 @@ def test_agg_lemma_shestvie_last():
                                 },
                             ),
                             word="шьст\ue205ꙗ пꙋт\ue205 G",
-                            lemmas=["шьст\ue205\ue201"],
+                            lemmas=["шьст\ue205\ue201", "шьст\ue205\ue201 пѫт\ue205"],
                         ),
                         UsageContent(
                             lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]
@@ -859,7 +887,7 @@ def test_agg_lemma_shestvie_last():
                                 var_words={Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1)},
                             ),
                             word="шьств\ue205ꙗ пꙋт\ue205 H",
-                            lemmas=["шьств\ue205\ue201"],
+                            lemmas=["шьств\ue205\ue201", "шьств\ue205\ue201 пѫт\ue205"],
                         ),
                         UsageContent(
                             lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]
@@ -892,34 +920,29 @@ def test_agg_lemma_put():
 
     result = SortedDict()
     result = _agg_lemma(
-        row, sl_sem.var, gr_sem, result, LAST_LEMMA, "пѫть", Source(), "ὁδοιπορία"
+        row, sl_sem.var, gr_sem, result, LAST_LEMMA, "пѫть", Source("H"), "ὁδοιπορία"
     )
     assert result == {
         "ὁδοιπορία": {
-            (
-                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
-                "ὁδοιπορίας",
-            ): SortedSet(
+            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
                 [
                     Usage(
                         Index.unpack("5/28d18"),
                         UsageContent(
                             "sl",
-                            Source("GH"),
+                            Source("H"),
                             Alternative(
                                 main_lemma="пѫтошьств\ue205\ue201",
                                 var_lemmas={
-                                    Source("H"): "шьств\ue205\ue201 пѫт\ue205",
                                     Source("G"): "шьст\ue205\ue201 пѫт\ue205",
                                 },
                                 main_word="поутошьств\ue205ꙗ",
                                 var_words={
                                     Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
-                                    Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1),
                                 },
                             ),
-                            "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
-                            ["пѫть"],
+                            "шьств\ue205ꙗ пꙋт\ue205 H",
+                            ["пѫть", "шьств\ue205\ue201 пѫт\ue205"],
                         ),
                         UsageContent(
                             lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]

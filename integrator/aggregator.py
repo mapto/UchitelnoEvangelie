@@ -61,7 +61,7 @@ def _agg_lemma(
         tmultilemmas = _multilemma(row, trans)
     elif col == LAST_LEMMA:  # exhausted
         assert row[IDX_COL]
-        return orig.compile_usages(trans, row, d, olemma, tlemma)
+        return orig.compile_usages(trans, row, d, olemma, tlemma, olemvar)
     lidx = lem_cols.index(col)
     omultilemmas = _multilemma(row, orig, lidx)
 
@@ -85,7 +85,8 @@ def _agg_lemma(
             next_idx = lem_cols.index(col) + 1
             next_c = lem_cols[next_idx] if next_idx < len(lem_cols) else LAST_LEMMA
             ol = olemma if olemma else oli
-            olv = olemvar if olemvar else oliv
+            # pick last present lemma source
+            olv = oliv if oliv else olemvar
             tl = tlemma if tlemma else tli
             d[nxt] = _agg_lemma(
                 row,

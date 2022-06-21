@@ -4,7 +4,7 @@ from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 from model import Alternative, Index, Path, Source, Usage, UsageContent
 from semantics import MainLangSemantics, VarLangSemantics
-from semantics import _is_variant_lemma, _add_usage
+from semantics import _add_usage, _build_content
 from setup import sl_sem, gr_sem
 
 
@@ -17,68 +17,6 @@ def test_post_init():
         FROM_LANG, 4, [6, 7], VarLangSemantics(FROM_LANG, 0, [1, 2, 8, 9])
     )
     assert len(sem.lemmas) == len(sem.var.lemmas) == 4
-
-
-def test_is_variant_lemma():
-    row = (
-        [""] * 4
-        + [
-            "1/W168c17",
-            "прѣ\ue205сто\ue20dе",
-            "всѣмь прѣ\ue205сто\ue20dе\ue201• \ue205 по \ue205сто\ue20dен\ue205\ue205",
-            "прѣ\ue205сто\ue20d\ue205т\ue205",
-        ]
-        + [""] * 3
-        + ["ὑπερκλύζων", "ὑπερκλύζω"]
-        + [""] * 3
-        + ["ὑπερβλύζων C", "ὑπερβλύω"]
-        + [""] * 9
-    )
-    exception = False
-    try:
-        _is_variant_lemma(row, gr_sem, Source("C"), "ὑπερκλύζω")
-    except AssertionError:
-        exception = True
-    assert exception
-
-    assert _is_variant_lemma(row, gr_sem, Source(""), "ὑπερκλύζω")
-    assert _is_variant_lemma(row, gr_sem.var, Source("C"), "ὑπερβλύω")
-
-    assert not _is_variant_lemma(row, gr_sem.var, Source("M"), "ὑπερβλύω")
-
-    row = (
-        ["\ue201д\ue205но\ue20dеды WH Ø G", "\ue201д\ue205но\ue20dѧдъ"]
-        + [""] * 2
-        + [
-            "1/5a4",
-            "\ue205но\ue20dадꙑ\ue205",
-            "нъ ꙗко б\ue010ъ• а \ue205но\ue20dадꙑ\ue205",
-            "\ue205но\ue20dѧдъ",
-        ]
-        + [""] * 3
-        + ["μονογενὴς", "μονογενής"]
-        + [""] * 14
-    )
-    assert _is_variant_lemma(row, sl_sem.var, Source("HW"), "\ue201д\ue205но\ue20dѧдъ")
-    assert not _is_variant_lemma(
-        row, sl_sem.var, Source("G"), "\ue201д\ue205но\ue20dѧдъ"
-    )
-    assert not _is_variant_lemma(row, sl_sem.var, Source("G"), "\ue205но\ue20dѧдъ")
-    assert _is_variant_lemma(row, sl_sem, Source(""), "\ue205но\ue20dѧдъ")
-    assert _is_variant_lemma(row, gr_sem, Source(""), "μονογενής")
-    assert not _is_variant_lemma(row, gr_sem.var, Source(""), "μονογενής")
-
-
-def test_is_variant_lemma_bozhii():
-    row = (
-        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
-        + [""] * 2
-        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
-        + [""] * 2
-        + ["Θεοῦ", "θεός", "Gen."]
-        + [""] * 13
-    )
-    assert _is_variant_lemma(row, sl_sem.var, Source("W"), "бож\ue205\ue205")
 
 
 def test_build_paths():
@@ -605,3 +543,46 @@ def test_compile_words_by_lemma_artos():
     )
     res = gr_sem.var.compile_words_by_lemma(row, Source("Ch"))
     assert res == ("ἄρτους Ch", "ἄρτος", 1)
+
+
+def test_build_content():
+    sl_sem = MainLangSemantics(
+        FROM_LANG,
+        5,
+        [7, 8, 9, 10],
+        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+        cnt_col=STYLE_COL + 1,
+    )
+    gr_sem = MainLangSemantics(
+        TO_LANG,
+        11,
+        [12, 13, 14, 15],
+        VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
+        cnt_col=STYLE_COL + 3,
+    )
+
+    row = (
+        [
+            "\ue201сть GH",
+            "бꙑт\ue205",
+            "",
+            "gramm.",
+            "07/47a06",
+            "om.",
+            "сътвор\ue205лъ",
+            "om.",
+        ]
+        + [""] * 3
+        + ["Ø"] * 2
+        + [""] * 13
+        + ["hl03"]
+        + ["1"] * 4
+    )
+    result = _build_content(row, sl_sem.var, Source("GH"), "\ue201сть GH", 1)
+    assert result == UsageContent(
+        lang="sl",
+        var=Source("GH"),
+        alt=Alternative(main_lemma="om.", main_word="om."),
+        word="\ue201сть GH",
+        lemmas=["бꙑт\ue205", "", "gramm."],
+    )

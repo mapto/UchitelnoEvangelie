@@ -24,33 +24,24 @@ def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
     return not not sem and bool(row[sem.lemmas[0]])
 
 
-def _build_usage(
-    row: List[str],
-    osem: "LangSemantics",
-    tsem: "LangSemantics",
-    ovar: Source,
-    tvar: Source,
-    word: str,
-    lemma: str,
-    tword: str,
-    tlemma: str,
-    ocnt: int,
-    tcnt: int,
-) -> Usage:
-    """
-    Whereas word contains the multiword (in packed form),
-    TODO: UsageContent could potentially contain the unpacked multilemmas for the variant of the current usage.
-    See if Path logic can be reused
-    Currently, it contains only the first one.
-    """
-    b = "bold" in row[STYLE_COL]
-    i = "italic" in row[STYLE_COL]
-    idx = Index.unpack(row[IDX_COL])
-    oalt = osem.alternatives(row, ovar)
-    talt = tsem.alternatives(row, tvar)
-    orig = UsageContent(osem.lang, ovar, oalt, word, [lemma], ocnt)
-    trans = UsageContent(tsem.lang, tvar, talt, tword, [tlemma], tcnt)
-    return Usage(idx, orig, trans, b, i)
+def _build_content(
+    row: List[str], sem: "LangSemantics", var: Source, word: str, cnt: int
+) -> UsageContent:
+    oalt = sem.alternatives(row, var)
+    lemmas = []
+    for lvl in range(0, len(sem.lemmas)):
+        found = False
+        ml = sem.multilemma(row, lvl)
+        for k, v in ml.items():
+            if not k or var in k:
+                lemmas += [v]
+                found = True
+                break
+        if not found:
+            lemmas += [""]
+    while lemmas and not lemmas[-1]:
+        lemmas.pop()
+    return UsageContent(sem.lang, var, oalt, word, lemmas, cnt)
 
 
 def _is_variant_lemma(
@@ -62,9 +53,9 @@ def _is_variant_lemma(
     if not sem.is_variant():
         assert not current_var
         assert len(mlem) == 1
-        return current_lemma == mlem[Source("")]
+        return current_lemma in mlem[Source()]
     loc = current_var.inside(mlem)
-    result = loc is not None and current_lemma == mlem[loc]
+    result = loc is not None and current_lemma in mlem[loc]
     return result
 
 
@@ -218,32 +209,23 @@ class LangSemantics:
         d: SortedDict,
         rolemma: str,
         rtlemma: str,
+        rolv: Source = Source(),
     ) -> SortedDict:
-        for ovar in self.multilemma(row).keys():
-            for tvar in trans.multilemma(row, LAST_LEMMA).keys():
-                (oword, olemma, ocnt) = self.compile_words_by_lemma(row, ovar)
+        for tvar in trans.multilemma(row).keys():
+            for nxt in trans.build_paths(row):
+                tvl = _is_variant_lemma(row, trans, tvar, rtlemma)
+                if not tvl or rtlemma not in nxt:
+                    continue
+                (oword, olemma, ocnt) = self.compile_words_by_lemma(row, rolv)
                 (tword, tlemma, tcnt) = trans.compile_words_by_lemma(row, tvar)
-                val = _build_usage(
-                    row,
-                    self,
-                    trans,
-                    ovar,
-                    tvar,
-                    oword,
-                    olemma,
-                    tword,
-                    tlemma,
-                    ocnt,
-                    tcnt,
-                )
-                for nxt in trans.build_paths(row):
-                    orig_var_in_lemma = _is_variant_lemma(row, self, ovar, rolemma)
-                    # print(f"{ovar} in {rolemma}: {orig_var_in_lemma}")
-                    trans_var_in_lemma = _is_variant_lemma(row, trans, tvar, rtlemma)
-                    # print(f"{tvar} in {rtlemma}: {trans_var_in_lemma}")
-                    if orig_var_in_lemma and trans_var_in_lemma and rtlemma in nxt:
-                        key = (oword, tword)
-                        d = _add_usage(val, nxt, key, d)
+                idx = Index.unpack(row[IDX_COL])
+                ocontent = _build_content(row, self, rolv, oword, ocnt)
+                tcontent = _build_content(row, trans, tvar, tword, tcnt)
+                b = "bold" in row[STYLE_COL]
+                i = "italic" in row[STYLE_COL]
+                val = Usage(idx, ocontent, tcontent, b, i)
+                key = (oword, tword)
+                d = _add_usage(val, nxt, key, d)
         return d
 
     def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:
@@ -340,6 +322,8 @@ class MainLangSemantics(LangSemantics):
             while not row[self.lemmas[lidx]]:
                 lidx -= 1
             return self.multilemma(row, lidx)
+        if not row[self.lemmas[lidx]].strip():
+            return {}
         return {Source(""): row[self.lemmas[lidx]].strip()}
 
     def compile_words_by_lemma(
@@ -478,7 +462,7 @@ class VarLangSemantics(LangSemantics):
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
         if lidx == LAST_LEMMA:
             lidx = len(self.lemmas) - 1
-            while not row[self.lemmas[lidx]]:
+            while lidx > 0 and not row[self.lemmas[lidx]]:
                 lidx -= 1
             return self.multilemma(row, lidx)
         result = SortedDict()
@@ -513,7 +497,9 @@ class VarLangSemantics(LangSemantics):
             # words = {k: v for k, v in self.multiword(row).items() if v != EMPTY_CH}
             # assert len(words) == 1
             # return {next(iter(words.keys())): result[""]}
-            return {keys: result[Source("")]}
+            if not result[Source()]:
+                return {}
+            return {keys: result[Source()]}
 
         return result
 

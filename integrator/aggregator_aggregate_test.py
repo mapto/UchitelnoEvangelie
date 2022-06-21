@@ -68,7 +68,7 @@ def test_est_in_var_no_main():
                                                 main_word="om.",
                                             ),
                                             word="\ue201сть GH",
-                                            lemmas=["бꙑт\ue205"],
+                                            lemmas=["бꙑт\ue205", "", "gramm."],
                                         ),
                                         UsageContent(lang="gr", word="Ø", lemmas=["Ø"]),
                                     )
@@ -158,12 +158,18 @@ def test_prichatnik_biti_sl():
                                                 },
                                             ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                            lemmas=["пр\ue205\ue20dьтьн\ue205къ"],
+                                            lemmas=[
+                                                "пр\ue205\ue20dьтьн\ue205къ",
+                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=["ποιέω & κοινωνός"],
+                                            lemmas=[
+                                                "ποιέω & κοινωνός",
+                                                "ποιέω κοινωνόν",
+                                            ],
                                         ),
                                     )
                                 ]
@@ -205,12 +211,18 @@ def test_prichatnik_biti_sl():
                                                 },
                                             ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                            lemmas=["бꙑт\ue205"],
+                                            lemmas=[
+                                                "бꙑт\ue205",
+                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=["ποιέω & κοινωνός"],
+                                            lemmas=[
+                                                "ποιέω & κοινωνός",
+                                                "ποιέω κοινωνόν",
+                                            ],
                                         ),
                                     )
                                 ]
@@ -283,12 +295,18 @@ def test_prichatnik_biti_sl_var():
                                                 main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
                                             ),
                                             word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                            lemmas=["пр\ue205\ue20dѧстьн\ue205къ"],
+                                            lemmas=[
+                                                "пр\ue205\ue20dѧстьн\ue205къ",
+                                                "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=["ποιέω & κοινωνός"],
+                                            lemmas=[
+                                                "ποιέω & κοινωνός",
+                                                "ποιέω κοινωνόν",
+                                            ],
                                         ),
                                     )
                                 ]
@@ -323,12 +341,18 @@ def test_prichatnik_biti_sl_var():
                                                 main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
                                             ),
                                             word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                            lemmas=["бꙑт\ue205"],
+                                            lemmas=[
+                                                "бꙑт\ue205",
+                                                "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=["ποιέω & κοινωνός"],
+                                            lemmas=[
+                                                "ποιέω & κοινωνός",
+                                                "ποιέω κοινωνόν",
+                                            ],
                                         ),
                                     )
                                 ]
@@ -417,12 +441,18 @@ def test_prichatnik_biti_combined():
                                                 },
                                             ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                            lemmas=["бꙑт\ue205"],
+                                            lemmas=[
+                                                "бꙑт\ue205",
+                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=["ποιέω & κοινωνός"],
+                                            lemmas=[
+                                                "ποιέω & κοινωνός",
+                                                "ποιέω κοινωνόν",
+                                            ],
                                         ),
                                     )
                                 ]
@@ -483,9 +513,9 @@ def test_prichatnik_biti_combined():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
-                                        UsageContent(
-                                            "sl",
+                                        idx=Index.unpack("5/28c21-d1"),
+                                        orig=UsageContent(
+                                            lang="sl",
                                             alt=Alternative(
                                                 var_lemmas={
                                                     Source(
@@ -500,12 +530,18 @@ def test_prichatnik_biti_combined():
                                                 },
                                             ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                            lemmas=["бꙑт\ue205"],
+                                            lemmas=[
+                                                "бꙑт\ue205",
+                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                            ],
                                         ),
-                                        UsageContent(
+                                        trans=UsageContent(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=["ποιέω & κοινωνός"],
+                                            lemmas=[
+                                                "ποιέω & κοινωνός",
+                                                "ποιέω κοινωνόν",
+                                            ],
                                         ),
                                     )
                                 ]
@@ -524,21 +560,27 @@ def test_prichatnik_biti_combined():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
-                                        UsageContent(
-                                            "sl",
+                                        idx=Index.unpack("5/28c21-d1"),
+                                        orig=UsageContent(
+                                            lang="sl",
                                             var=Source("GH"),
                                             alt=Alternative(
                                                 main_lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                                 main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
                                             ),
                                             word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                            lemmas=["бꙑт\ue205"],
+                                            lemmas=[
+                                                "бꙑт\ue205",
+                                                "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                            ],
                                         ),
-                                        UsageContent(
+                                        trans=UsageContent(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=["ποιέω & κοινωνός"],
+                                            lemmas=[
+                                                "ποιέω & κοινωνός",
+                                                "ποιέω κοινωνόν",
+                                            ],
                                         ),
                                     )
                                 ]
@@ -728,7 +770,10 @@ def test_puteshestvie_sl_var():
                                                 },
                                             ),
                                             word="шьств\ue205ꙗ пꙋт\ue205 H",
-                                            lemmas=["шьств\ue205\ue201"],
+                                            lemmas=[
+                                                "шьств\ue205\ue201",
+                                                "шьств\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             "gr",
@@ -771,7 +816,10 @@ def test_puteshestvie_sl_var():
                                                 },
                                             ),
                                             word="шьст\ue205ꙗ пꙋт\ue205 G",
-                                            lemmas=["шьст\ue205\ue201"],
+                                            lemmas=[
+                                                "шьст\ue205\ue201",
+                                                "шьст\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
@@ -796,22 +844,16 @@ def test_puteshestvie_sl_var():
                 "": {
                     "": {
                         "ὁδοιπορία": {
-                            (
-                                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
-                                "ὁδοιπορίας",
-                            ): SortedSet(
+                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
                                 [
                                     Usage(
                                         Index.unpack("5/28d18"),
                                         UsageContent(
                                             "sl",
-                                            var=Source("GH"),
+                                            var=Source("H"),
                                             alt=Alternative(
                                                 main_lemma="пѫтошьств",
                                                 var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "шьств\ue205\ue201 пѫт\ue205",
                                                     Source(
                                                         "G"
                                                     ): "шьст\ue205\ue201 пѫт\ue205",
@@ -822,14 +864,13 @@ def test_puteshestvie_sl_var():
                                                         "шьст\ue205ꙗ пꙋт\ue205 G",
                                                         1,
                                                     ),
-                                                    Source("H"): (
-                                                        "шьств\ue205ꙗ пꙋт\ue205 H",
-                                                        1,
-                                                    ),
                                                 },
                                             ),
-                                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
-                                            lemmas=["пѫть"],
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H",
+                                            lemmas=[
+                                                "пѫть",
+                                                "шьств\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
@@ -847,40 +888,33 @@ def test_puteshestvie_sl_var():
                 "": {
                     "": {
                         "ὁδοιπορία": {
-                            (
-                                "шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
-                                "ὁδοιπορίας",
-                            ): SortedSet(
+                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας",): SortedSet(
                                 [
                                     Usage(
                                         Index.unpack("5/28d18"),
                                         UsageContent(
                                             "sl",
-                                            var=Source("GH"),
+                                            var=Source("G"),
                                             alt=Alternative(
                                                 main_lemma="пѫтошьств",
                                                 var_lemmas={
                                                     Source(
                                                         "H"
                                                     ): "шьств\ue205\ue201 пѫт\ue205",
-                                                    Source(
-                                                        "G"
-                                                    ): "шьст\ue205\ue201 пѫт\ue205",
                                                 },
                                                 main_word="поутошьствꙗ",
                                                 var_words={
-                                                    Source("G"): (
-                                                        "шьст\ue205ꙗ пꙋт\ue205 G",
-                                                        1,
-                                                    ),
                                                     Source("H"): (
                                                         "шьств\ue205ꙗ пꙋт\ue205 H",
                                                         1,
                                                     ),
                                                 },
                                             ),
-                                            word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G",
-                                            lemmas=["пѫть"],
+                                            word="шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemmas=[
+                                                "пѫть",
+                                                "шьст\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                         UsageContent(
                                             lang="gr",
@@ -1079,7 +1113,10 @@ def test_puteshestvie_gr():
                                                 },
                                             ),
                                             word="шьств\ue205ꙗ пꙋт\ue205 H",
-                                            lemmas=["шьств\ue205\ue201 & пѫть"],
+                                            lemmas=[
+                                                "шьств\ue205\ue201 & пѫть",
+                                                "шьств\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                     )
                                 ]
@@ -1114,7 +1151,10 @@ def test_puteshestvie_gr():
                                                 },
                                             ),
                                             word="шьст\ue205ꙗ пꙋт\ue205 G",
-                                            lemmas=["шьст\ue205\ue201 & пѫть"],
+                                            lemmas=[
+                                                "шьст\ue205\ue201 & пѫть",
+                                                "шьст\ue205\ue201 пѫт\ue205",
+                                            ],
                                         ),
                                     )
                                 ]

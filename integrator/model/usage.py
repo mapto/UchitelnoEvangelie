@@ -157,7 +157,14 @@ class Usage:
         >>> a < b
         True
         """
-        return self.idx < other.idx or self.idx == other.idx and self.orig < other.orig or self.idx == other.idx and self.orig == other.orig and self.trans < other.trans
+        return (
+            self.idx < other.idx
+            or self.idx == other.idx
+            and self.orig < other.orig
+            or self.idx == other.idx
+            and self.orig == other.orig
+            and self.trans < other.trans
+        )
 
     def __le__(self, other) -> bool:
         return self < other or self == other
