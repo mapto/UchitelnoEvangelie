@@ -3,11 +3,11 @@
 so to avoid circular references they cannot use it"""
 
 
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Tuple
 import unicodedata
 from sortedcontainers import SortedSet, SortedDict  # type: ignore
 
-from model import Source
+from model import Path, Source, Usage
 
 
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
@@ -140,3 +140,17 @@ def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
             if s in l and d[l]:
                 result[s] += [d[l]]
     return {k: glue.join(result[k]) for k in reversed(result) if result[k]}
+
+
+def _add_usage(
+    val: Usage, nxt: Path, key: Tuple[str, str], d: SortedDict
+) -> SortedDict:
+    """*IN PLACE*"""
+    path = str(nxt)
+    if path in d:
+        if key not in d[path]:
+            d[path][key] = SortedSet()
+        d[path][key].add(val)
+    else:
+        d[path] = {key: SortedSet([val])}
+    return d

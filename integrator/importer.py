@@ -36,7 +36,7 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
         if blank and not [l for l in line if l]:
             break
         bgs = {
-            f"hl{v:02d}": row[v].fill.patternType
+            f"hl{v:02d}:{row[v].fill.start_color.rgb}": row[v].fill.patternType
             for v in sem.cols()
             if row[v].fill and row[v].fill.start_color != colors.WHITE
         }

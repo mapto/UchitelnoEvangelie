@@ -1,7 +1,7 @@
 from typing import List
 
 from model import Source
-from grouper import _grouped, _hilited_gram
+from grouper import _hilited, _hilited_gram
 from grouper import _group_variants, _update_group, _collect_group
 from setup import sl_sem, gr_sem
 
@@ -22,9 +22,9 @@ def test_grouped():
         + [""] * 3
         + ["τοῦτο", "οὗτος"]
         + [""] * 13
-        + ["hl05|hl00|hl11"]
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"]
     )
-    assert _grouped(row, gr_sem)
+    assert _hilited(row, gr_sem)
 
     row = (
         [""] * 4
@@ -35,7 +35,7 @@ def test_grouped():
         + ["ἡμῖν", "ἡμεῖς"]
         + [""] * 9
     )
-    assert not _grouped(row, sl_sem)
+    assert not _hilited(row, sl_sem)
     row = (
         [
             "вѣроу GH",
@@ -53,11 +53,17 @@ def test_grouped():
             "πιστεύω",
         ]
         + [""] * 13
-        + ["hl00"]
+        + ["hl00:AAAAAAAA"]
     )
-    assert _grouped(row, sl_sem)
-    row = ["\ue205моуть GH", "ѩт\ue205"] + [""] * 2 + ["1/7b19"] + [""] * 21 + ["hl00"]
-    assert _grouped(row, sl_sem)
+    assert _hilited(row, sl_sem)
+    row = (
+        ["\ue205моуть GH", "ѩт\ue205"]
+        + [""] * 2
+        + ["1/7b19"]
+        + [""] * 21
+        + ["hl00:AAAAAAAA"]
+    )
+    assert _hilited(row, sl_sem)
 
 
 def test_group_variants():
@@ -75,14 +81,14 @@ def test_group_variants():
         + [""] * 2
         + ["κἂν"] * 2
         + [""] * 13
-        + ["hl04"]
+        + ["hl04:AAAAAAAA"]
     )
     g2 = (
         ["\ue205л\ue205 WH", "\ue205л\ue205"]
         + [""] * 2
         + ["1/6a10", "л\ue205", "тѣмь л\ue205 в\ue205д\ue205мо", "л\ue205"]
         + [""] * 18
-        + ["hl04"]
+        + ["hl04:AAAAAAAA"]
     )
     group = [g1, g2]
     res = _group_variants(group, sl_sem)
@@ -97,14 +103,19 @@ def test_merge_rows():
         + [""] * 7
         + ["τῶν Ch", "ὁ"]
         + [""] * 8
-        + ["hl16|hl19"],
+        + ["hl16:AAAAAAAA|hl19:AAAAAAAA"],
         [""] * 4
         + ["19/94d08", "ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
         + [""] * 8
         + ["ἐπὶ Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
         + [""] * 6
-        + ["hl16|hl18"],
-        [""] * 4 + ["19/94d08"] + [""] * 11 + ["γῆς Ch", "γῆ"] + [""] * 8 + ["hl16"],
+        + ["hl16:AAAAAAAA|hl18:AAAAAAAA"],
+        [""] * 4
+        + ["19/94d08"]
+        + [""] * 11
+        + ["γῆς Ch", "γῆ"]
+        + [""] * 8
+        + ["hl16:AAAAAAAA"],
     ]
 
     merge_rows_main = [
@@ -126,14 +137,19 @@ def test_update_group_zemen():
         + [""] * 7
         + ["τῶν Ch", "ὁ"]
         + [""] * 8
-        + ["hl16|hl19"],
+        + ["hl16:AAAAAAAA|hl19:AAAAAAAA"],
         [""] * 4
         + ["19/94d08", "ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
         + [""] * 8
         + ["ἐπὶ Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
         + [""] * 6
-        + ["hl16|hl18"],
-        [""] * 4 + ["19/94d08"] + [""] * 11 + ["γῆς Ch", "γῆ"] + [""] * 8 + ["hl16"],
+        + ["hl16:AAAAAAAA|hl18:AAAAAAAA"],
+        [""] * 4
+        + ["19/94d08"]
+        + [""] * 11
+        + ["γῆς Ch", "γῆ"]
+        + [""] * 8
+        + ["hl16:AAAAAAAA"],
     ]
     merge_rows_main = [0, 1, 2]
     merge_rows_var = [1, 2]
@@ -153,19 +169,19 @@ def test_update_group_zemen():
         + [""] * 8
         + ["τῶν ἐπὶ γῆς Ch", "ὁ"]
         + [""] * 8
-        + ["hl16|hl19"],
+        + ["hl16:AAAAAAAA|hl19:AAAAAAAA"],
         [""] * 4
         + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
         + [""] * 8
         + ["τῶν ἐπὶ γῆς Ch", "ἐπί & γῆ", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
         + [""] * 6
-        + ["hl16|hl18"],
+        + ["hl16:AAAAAAAA|hl18:AAAAAAAA"],
         [""] * 4
         + ["19/094d08", "ₓ ꙁемьнꙑ\ue205"]
         + [""] * 10
         + ["τῶν ἐπὶ γῆς Ch", "ἐπί & γῆ", "", "ὁ ἐπὶ γῆς"]
         + [""] * 6
-        + ["hl16"],
+        + ["hl16:AAAAAAAA"],
     ]
 
 
@@ -184,8 +200,8 @@ def test_update_group_puteshestvie():
         + [""] * 3
         + ["ὁδοιπορίας", "ὁδοιπορία"]
         + [""] * 13
-        + ["hl00"],
-        ["пꙋт\ue205 GH", "пѫть GH"] + [""] * 24 + ["hl00"],
+        + ["hl00:AAAAAAAA"],
+        ["пꙋт\ue205 GH", "пѫть GH"] + [""] * 24 + ["hl00:AAAAAAAA"],
     ]
     merge = (
         [
@@ -216,7 +232,7 @@ def test_update_group_puteshestvie():
         + [""] * 3
         + ["ὁδοιπορίας", "ὁδοιπορία"]
         + [""] * 13
-        + ["hl00"],
+        + ["hl00:AAAAAAAA"],
         [
             "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
             "шьст\ue205\ue201 пѫть G шьств\ue205\ue201 пѫть H",
@@ -228,7 +244,7 @@ def test_update_group_puteshestvie():
         + [""] * 5
         + ["ὁδοιπορίας", "ὁδοιπορία"]
         + [""] * 13
-        + ["hl00"],
+        + ["hl00:AAAAAAAA"],
     ]
 
 
@@ -248,7 +264,7 @@ def test_biti():
         ]
         + [""] * 13
         + [
-            "hl05",
+            "hl05:AAAAAAAA",
         ]
     )
     g2 = (
@@ -266,7 +282,7 @@ def test_biti():
             "pass.",
         ]
         + [""] * 13
-        + ["hl05|hl09"]
+        + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     group = [g1.copy(), g2.copy()]
 
@@ -290,7 +306,7 @@ def test_biti():
         + [""] * 3
         + ["ἠδυνήθημεν", "δύναμαι"]
         + [""] * 13
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     e2 = (
         [""] * 4
@@ -307,7 +323,7 @@ def test_biti():
         ]
         + [""] * 13
         + [
-            "hl05|hl09",
+            "hl05:AAAAAAAA|hl09:AAAAAAAA",
         ]
     )
     expected = [e1, e2]
@@ -328,8 +344,13 @@ def test_zemenu():
         + [""] * 8
         + ["ἐπὶ Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
         + [""] * 6
-        + ["hl16|hl18"],
-        [""] * 4 + ["19/94d08"] + [""] * 11 + ["γῆς Ch", "γῆ"] + [""] * 8 + ["hl16"],
+        + ["hl16:AAAAAAAA|hl18:AAAAAAAA"],
+        [""] * 4
+        + ["19/94d08"]
+        + [""] * 11
+        + ["γῆς Ch", "γῆ"]
+        + [""] * 8
+        + ["hl16:AAAAAAAA"],
     ]
 
     merge_rows_main = [0, 1, 2]
@@ -358,7 +379,7 @@ def test_hilited_gram():
             "gramm.",
         ]
         + [""] * 16
-        + ["hl05|hl09"]
+        + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     assert _hilited_gram(sl_sem, gr_sem, r)
     assert _hilited_gram(gr_sem, sl_sem, r)
@@ -373,7 +394,7 @@ def test_hilited_gram():
         + [""] * 3
         + ["ἠδυνήθημεν", "δύναμαι", "pass."]
         + [""] * 12
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     assert not _hilited_gram(sl_sem, gr_sem, r)
     assert not _hilited_gram(gr_sem, sl_sem, r)
@@ -389,7 +410,7 @@ def test_hilited_gram():
             "om.",
         ]
         + [""] * 18
-        + ["hl05|hl09"]
+        + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     assert _hilited_gram(sl_sem, gr_sem, r)
     r = (
@@ -397,7 +418,7 @@ def test_hilited_gram():
         + ["12/67c10", "бꙑхомъ•", "в\ue205дѣл\ue205 бꙑхо-", "бꙑт\ue205"]
         + ["", "gramm.", ""] * 2
         + [""] * 12
-        + ["hl05|hl09"]
+        + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     assert _hilited_gram(sl_sem, gr_sem, r)
     assert not _hilited_gram(sl_sem.var, gr_sem, r)
@@ -419,7 +440,7 @@ def test_collect_group():
         + ["ὁδοιπορίας", "ὁδοιπορία"]
         + [""] * 13
         + ["hl00"],
-        ["пꙋт\ue205 GH", "пѫть GH"] + [""] * 24 + ["hl00"],
+        ["пꙋт\ue205 GH", "пѫть GH"] + [""] * 24 + ["hl00:AAAAAAAA"],
     ]
     merge_rows_main = [0, 1]
     merge_rows_var = [0, 1]

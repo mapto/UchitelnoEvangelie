@@ -11,7 +11,7 @@ from const import EMPTY_CH, MISSING_CH
 from const import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
-from .util import collect, remove_repetitions, regroup
+from .util import collect, remove_repetitions, regroup, _add_usage
 from util import base_word
 from model import Alternative, Index, Path, Source, Usage, UsageContent
 
@@ -57,20 +57,6 @@ def _is_variant_lemma(
     loc = current_var.inside(mlem)
     result = loc is not None and current_lemma in mlem[loc]
     return result
-
-
-def _add_usage(
-    val: "Usage", nxt: Path, key: Tuple[str, str], d: SortedDict
-) -> SortedDict:
-    """*IN PLACE*"""
-    path = str(nxt)
-    if path in d:
-        if key not in d[path]:
-            d[path][key] = SortedSet()
-        d[path][key].add(val)
-    else:
-        d[path] = {key: SortedSet([val])}
-    return d
 
 
 @dataclass

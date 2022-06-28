@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List, Optional
 
 from const import IDX_COL, STYLE_COL, V_LEMMA_SEP
 
@@ -6,15 +6,29 @@ from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, present
 
 
-def _hilited(row: List[str], col: int) -> bool:
-    """highlighting implemented via background colour"""
-    return f"hl{col:02d}" in row[STYLE_COL]
+def _hilited_col(row: List[str], col: int) -> Optional[str]:
+    """highlighting implemented via background colour.
+    If column highlighted, return its color, else None
+
+    >>> r = [""] * 4 + ["02/W169b26", "на", "ма же \ue201д\ue205нь ѿ ѡбою на де-", "на", "на + Loc."] + [""] * 17 + ["hl05:AAAAAAAA|hl08:BBBBBBBB|bold|italic"]
+    >>> _hilited_col(r, 5)
+    'AAAAAAAA'
+    >>> _hilited_col(r, 8)
+    'BBBBBBBB'
+    >>> _hilited_col(r, 9)
+    """
+    style = row[STYLE_COL]
+    if f"hl{col:02d}" in style:
+        pos = style.index(f"hl{col:02d}")
+        # print(style[pos+5:pos+13])
+        return style[pos + 5 : pos + 13]
+    return None
 
 
 def _hilited_gram(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
     """highlighting in third lemma and further"""
     cols = [osem.lemmas[2], tsem.lemmas[2]]
-    return any(_hilited(row, c) for c in cols)
+    return any(_hilited_col(row, c) for c in cols)
 
 
 def _hilited_union(
@@ -24,7 +38,7 @@ def _hilited_union(
     cols = [osem.lemmas[1], tsem.lemmas[1]]
     if col != -1 and col not in cols:
         return False
-    return any(_hilited(row, c) for c in cols)
+    return any(_hilited_col(row, c) for c in cols)
 
 
 def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
@@ -179,10 +193,25 @@ def _close_group(
     return _update_group(group, orig, trans, line, merge_rows_main, merge_rows_var)
 
 
-def _grouped(row: List[str], sem: LangSemantics) -> bool:
-    """Returns if the row takes part of a group with respect to this language (and its variants)"""
-    if f"hl{sem.word:02d}" in row[STYLE_COL]:
-        return True
-    if f"hl{sem.other().word:02d}" in row[STYLE_COL]:
-        return True
-    return False
+def _hilited(row: List[str], sem: LangSemantics) -> Dict[int, str]:
+    """Returns if the row takes part of a group with respect to this language (and its variants).
+    The result indicates which column is highlited (change in highlited column results in change of group
+
+    >>> from semantics import VarLangSemantics
+    >>> sl = MainLangSemantics("sl", 5, [7, 8, 9, 10], VarLangSemantics("sl", 0, [1, 2, 3]))
+    >>> r = [""] * 4 + ["02/W169b26", "на", "ма же \ue201д\ue205нь ѿ ѡбою на де-", "на", "на + Loc."] + [""] * 17 + ["hl00:CCCCCCCC|hl05:AAAAAAAA|hl11:BBBBBBBB|bold|italic"]
+    >>> _hilited(r, sl)
+    {5: 'AAAAAAAA', 0: 'CCCCCCCC'}
+    >>> sg = MainLangSemantics("gr", 11, [12, 13, 14, 15], VarLangSemantics("gr", 16, [17, 18, 19, 20]))
+
+    >>> _hilited(r, sg)
+    {11: 'BBBBBBBB'}
+    """
+    result = {}
+    v = _hilited_col(row, sem.word)
+    if v:
+        result[sem.word] = v
+    v = _hilited_col(row, sem.other().word)
+    if v:
+        result[sem.other().word] = v
+    return result

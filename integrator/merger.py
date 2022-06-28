@@ -9,14 +9,9 @@ from const import IDX_COL, SAME_CH, SPECIAL_CHARS
 
 from semantics import LangSemantics, MainLangSemantics, present
 from util import clean_word
-from grouper import _close_group, _grouped
+from grouper import _close_group, _hilited
 
-"""
-def _has_real_var(row: List[str], sem: MainLangSemantics) -> bool:
-    if not sem.var:
-        return False
-    return bool(row[sem.var.word])
-"""
+TRIGGER_SAME = ""
 
 
 def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
@@ -59,7 +54,7 @@ def _close(
                 break
         if idxline:
             print(
-                f"WARNING: липсва индекс в първия ред от групата. Намерен в {idxline} ред"
+                f"WARNING: липсва индекс в първия ред от група на {group[0][IDX_COL]}. Намерен в {idxline} ред"
             )
         else:
             for row in group:
@@ -68,6 +63,7 @@ def _close(
 
     if _same(group[-1], trans) or _same(group[-1], orig):
         assert len(group) == 2
+        # print(group)
         return _close_same(group, orig, trans)
     return _close_group(group, orig, trans)
 
@@ -103,13 +99,16 @@ def merge(
     row_twords_var: Dict[str, int] = {}
     cur_idx = ""
     prev_row: List[str] = []
+    group_triggers: List[str] = []
+
     for raw in corpus:
         try:
             row = [clean_word(v) if v else "" for v in raw]
 
+            # if "19/94d08" in row[IDX_COL] or "2/W169a17" in row[IDX_COL]:
             # if "05/28c21" in row[IDX_COL] or "05/28d01" in row[IDX_COL]:
             # if "14/72d1" in row[IDX_COL]:
-            #    print(row)
+            # print(row)
 
             if not row[IDX_COL] and any(row):
                 row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
@@ -131,22 +130,29 @@ def merge(
             row_twords = trans.add_count(row, row_twords)
             row_twords_var = trans.other().add_count(row, row_twords_var)
 
-            if _same(row, orig) or _same(row, trans):
+            hi = {**_hilited(row, orig), **_hilited(row, trans)}
+            # print(f"{row[IDX_COL]}: {hi}")
+
+            if _same(row, orig) or _same(row, trans) and not group_triggers:
                 group = [prev_row]
-            if (
-                _grouped(row, orig)
-                or _grouped(row, trans)
-                or _same(row, orig)
-                or _same(row, trans)
-            ):
+                group_triggers += [TRIGGER_SAME]
+
+            if hi and all(t in hi.values() for t in group_triggers):
+                group += [row]
+                group_triggers = list(hi.values())
+            elif (
+                _same(row, orig) or _same(row, trans)
+            ) and TRIGGER_SAME in group_triggers:
                 group += [row]
             else:
                 if group:
                     group = _close(group, orig, trans)
                     result += group
                     group = []
+                group_triggers = []
                 result += [row]
             prev_row = row
+            # print(group_triggers)
         except Exception as e:
             print(
                 f"ГРЕШКА: При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"

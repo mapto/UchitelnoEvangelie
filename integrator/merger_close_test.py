@@ -2,7 +2,7 @@ from typing import List
 
 from config import FROM_LANG, TO_LANG
 from semantics import MainLangSemantics, VarLangSemantics
-from merger import _close, _grouped
+from merger import _close, _hilited
 
 sl_sem = MainLangSemantics(
     FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
@@ -23,7 +23,7 @@ def test_close():
             "εἰς",
         ]
         + [""] * 13
-        + ["hl04|hl00|hl10"],
+        + ["hl04:AAAAAAAA|hl00:AAAAAAAA|hl10:AAAAAAAA"],
         ["\ue201л\ue205ко WH", "\ue201л\ue205къ"]
         + [""] * 2
         + [
@@ -38,7 +38,7 @@ def test_close():
             "οὗτος",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
     ]
     res = _close(group, gr_sem, sl_sem)
     expected = [
@@ -57,7 +57,7 @@ def test_close():
             "εἰς",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
         ["все WH \ue201л\ue205ко WH", "вьсь & \ue201л\ue205къ"]
         + [""] * 2
         + [
@@ -73,7 +73,7 @@ def test_close():
             "οὗτος",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
     ]
 
     group = [
@@ -85,9 +85,7 @@ def test_close():
             "ἀπείρως",
         ]
         + [""] * 13
-        + [
-            "hl05",
-        ],
+        + ["hl05:AAAAAAAA"],
         [""] * 4
         + [
             "1/5a10",
@@ -96,9 +94,7 @@ def test_close():
             "вѣдѣн\ue205\ue201",
         ]
         + [""] * 18
-        + [
-            "hl05",
-        ],
+        + ["hl05:AAAAAAAA"],
     ]
     res = _close(group, sl_sem, gr_sem)
     expected = [
@@ -116,7 +112,7 @@ def test_close():
             "ἀπείρως",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [""] * 4
         + [
             "01/005a10",
@@ -131,7 +127,7 @@ def test_close():
             "ἀπείρως",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
     assert res == expected
 
@@ -145,7 +141,7 @@ def test_close():
             "εἰς",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
         ["\ue201л\ue205ко WH", "\ue201л\ue205къ"]
         + [""] * 2
         + [
@@ -160,7 +156,7 @@ def test_close():
             "οὗτος",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
     ]
     res = _close(group, gr_sem, sl_sem)
     expected = [
@@ -179,7 +175,7 @@ def test_close():
             "εἰς",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
         ["все \ue201л\ue205ко WH", "вьсь & \ue201л\ue205къ WH"]
         + [""] * 2
         + [
@@ -195,7 +191,7 @@ def test_close():
             "οὗτος",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
     ]
     assert res == expected
 
@@ -215,8 +211,8 @@ def test_close():
             "διὰ τό",
         ]
         + [""] * 11
-        + ["hl05"],
-        [""] * 4 + ["1/5a16"] + [""] * 6 + ["τὸ", "ὁ"] + [""] * 13 + ["hl05"],
+        + ["hl05:AAAAAAAA"],
+        [""] * 4 + ["1/5a16"] + [""] * 6 + ["τὸ", "ὁ"] + [""] * 13 + ["hl05:AAAAAAAA"],
     ]
     res = _close(group, gr_sem, sl_sem)
     expected = [
@@ -235,7 +231,7 @@ def test_close():
             "διὰ τό",
         ]
         + [""] * 11
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [""] * 4
         + [
             "01/005a16",
@@ -251,7 +247,7 @@ def test_close():
             "διὰ τό",
         ]
         + [""] * 11
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
     assert res == expected
 
@@ -265,7 +261,7 @@ def test_close():
             "εἰς",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
         ["\ue201л\ue205ко WH", "\ue201л\ue205къ"]
         + [""] * 2
         + [
@@ -280,7 +276,7 @@ def test_close():
             "οὗτος",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
     ]
     res = _close(group, sl_sem, gr_sem)
     expected = [
@@ -299,7 +295,7 @@ def test_close():
             "εἰς & οὗτος",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
         [
             "все \ue201л\ue205ко WH",
             "вьсь \ue201л\ue205къ WH",
@@ -318,7 +314,7 @@ def test_close():
             "εἰς & οὗτος",
         ]
         + [""] * 13
-        + ["hl05|hl00|hl11"],
+        + ["hl05:AAAAAAAA|hl00:AAAAAAAA|hl11:AAAAAAAA"],
     ]
     assert res == expected
 
@@ -329,7 +325,7 @@ def test_close():
         + [""] * 2
         + ["ταῖς", "ὁ"]
         + [""] * 13
-        + ["hl11"]
+        + ["hl11:AAAAAAAA"]
     )
     g2 = (
         [""] * 4
@@ -342,7 +338,7 @@ def test_close():
         + [""] * 3
         + ["ἄνω", "ἄνω", "ὁ ἄνω"]
         + [""] * 12
-        + ["hl11"]
+        + ["hl11:AAAAAAAA"]
     )
     group = [g1, g2]
 
@@ -353,7 +349,7 @@ def test_close():
         + [""] * 3
         + ["ταῖς ἄνω", "ὁ", "ὁ ἄνω"]
         + [""] * 12
-        + ["hl11"]
+        + ["hl11:AAAAAAAA"]
     )
     e2 = (
         [""] * 4
@@ -366,7 +362,7 @@ def test_close():
         + [""] * 3
         + ["ταῖς ἄνω", "ἄνω", "ὁ ἄνω"]
         + [""] * 12
-        + ["hl11"]
+        + ["hl11:AAAAAAAA"]
     )
     expected = [e1, e2]
     assert res == expected
@@ -391,8 +387,8 @@ def test_tyam_li():
             "κἄν",
         ]
         + [""] * 12
-        + ["hl11"],
-        [""] * 4 + ["1/6a11"] + [""] * 7 + ["ἀν"] + [""] * 13 + ["hl11"],
+        + ["hl11:AAAAAAAA"],
+        [""] * 4 + ["1/6a11"] + [""] * 7 + ["ἀν"] + [""] * 13 + ["hl11:AAAAAAAA"],
     ]
     res = _close(group, sl_sem, gr_sem)
     expected = [
@@ -407,14 +403,14 @@ def test_tyam_li():
         + [""] * 3
         + ["κἂν", "καί & ἀν", "κἄν"]
         + [""] * 12
-        + ["hl11"],
+        + ["hl11:AAAAAAAA"],
         ["\ue205л\ue205 WH", "\ue205л\ue205 WH"]
         + [""] * 2
         + ["01/006a11", "л\ue205 "]
         + [""] * 5
         + ["κἂν", "καί & ἀν", "κἄν"]
         + [""] * 12
-        + ["hl11"],
+        + ["hl11:AAAAAAAA"],
     ]
     assert res == expected
 
@@ -430,8 +426,8 @@ def test_tyam_li():
         + [""] * 3
         + ["κἂν", "καί", "κἄν"]
         + [""] * 12
-        + ["hl11"],
-        [""] * 4 + ["1/6a11"] + [""] * 7 + ["ἀν"] + [""] * 13 + ["hl11"],
+        + ["hl11:AAAAAAAA"],
+        [""] * 4 + ["1/6a11"] + [""] * 7 + ["ἀν"] + [""] * 13 + ["hl11:AAAAAAAA"],
     ]
     res = _close(group, gr_sem, sl_sem)
     expected = [
@@ -450,7 +446,7 @@ def test_tyam_li():
             "κἄν",
         ]
         + [""] * 12
-        + ["hl11"],
+        + ["hl11:AAAAAAAA"],
         ["\ue205л\ue205 WH", "\ue205л\ue205 WH"]
         + [""] * 2
         + [
@@ -466,7 +462,7 @@ def test_tyam_li():
             "κἄν",
         ]
         + [""] * 12
-        + ["hl11"],
+        + ["hl11:AAAAAAAA"],
     ]
     assert res == expected
 
@@ -480,7 +476,7 @@ def test_tyam_li():
             "κἄν",
         ]
         + [""] * 12
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         ["\ue205л\ue205 WH", "\ue205л\ue205"]
         + [""] * 2
         + [
@@ -492,7 +488,7 @@ def test_tyam_li():
         + [""] * 4
         + ["ἀν"]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
     res = _close(group, gr_sem, sl_sem)
     expected = [
@@ -512,7 +508,7 @@ def test_tyam_li():
             "κἄν",
         ]
         + [""] * 12
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         ["\ue205л\ue205 WH", "\ue205л\ue205 WH"]
         + [""] * 2
         + [
@@ -529,7 +525,7 @@ def test_tyam_li():
             "κἄν",
         ]
         + [""] * 12
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
     assert res == expected
 
@@ -552,7 +548,7 @@ def test_tyam_ili():
             "κἄν",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [
             "\ue205л\ue205 WH",
             "\ue205л\ue205",
@@ -564,7 +560,7 @@ def test_tyam_ili():
             "л\ue205",
         ]
         + [""] * 18
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
 
     res = _close([rows[0].copy(), rows[1].copy()], gr_sem, sl_sem)
@@ -585,7 +581,7 @@ def test_tyam_ili():
             "κἄν",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [
             "тѣмь \ue205л\ue205 WH",
             "\ue205л\ue205 WH",
@@ -601,7 +597,7 @@ def test_tyam_ili():
             "κἂν",
         ]
         + [""] * 14
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
 
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem.var, gr_sem)
@@ -622,7 +618,7 @@ def test_tyam_ili():
             "κἄν",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [
             "тѣмь \ue205л\ue205 WH",
             "\ue205л\ue205",
@@ -639,7 +635,7 @@ def test_tyam_ili():
             "κἄν",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
 
 
@@ -659,7 +655,7 @@ def test_biti():
         ]
         + [""] * 13
         + [
-            "hl05",
+            "hl05:AAAAAAAA",
         ]
     )
     g2 = (
@@ -677,7 +673,7 @@ def test_biti():
             "pass.",
         ]
         + [""] * 13
-        + ["hl05|hl09"]
+        + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     group = [g1.copy(), g2.copy()]
 
@@ -693,7 +689,7 @@ def test_biti():
         + [""] * 3
         + ["ἠδυνήθημεν", "δύναμαι"]
         + [""] * 13
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     e2 = (
         [""] * 4
@@ -710,7 +706,7 @@ def test_biti():
         ]
         + [""] * 13
         + [
-            "hl05|hl09",
+            "hl05:AAAAAAAA|hl09:AAAAAAAA",
         ]
     )
     expected = [e1, e2]
@@ -729,7 +725,7 @@ def test_biti():
         + [""] * 3
         + ["ἠδυνήθημεν", "δύναμαι"]
         + [""] * 13
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     e2 = (
         [""] * 4
@@ -746,7 +742,7 @@ def test_biti():
         ]
         + [""] * 13
         + [
-            "hl05|hl09",
+            "hl05:AAAAAAAA|hl09:AAAAAAAA",
         ]
     )
     expected = [e1, e2]
@@ -761,7 +757,7 @@ def test_vetuhu():
         + [""] * 2
         + ["τῆς", "ὁ"]
         + [""] * 13
-        + ["hl11"]
+        + ["hl11:AAAAAAAA"]
     )
     r2 = (
         [""] * 4
@@ -771,7 +767,7 @@ def test_vetuhu():
         + [""] * 2
         + ["παλαιᾶς C"]
         + [""] * 9
-        + ["hl11"]
+        + ["hl11:AAAAAAAA"]
     )
     group = [r1, r2]
 
@@ -783,7 +779,7 @@ def test_vetuhu():
         + [""] * 2
         + ["παλαιᾶς C"]
         + [""] * 9
-        + ["hl11"],
+        + ["hl11:AAAAAAAA"],
         [""] * 4
         + ["01/W168c20", "ₓ ветьхоую", "пр\ue205\ue201хомь• ꙁа ветьхоую", "ветъхъ"]
         + [""] * 3
@@ -791,7 +787,7 @@ def test_vetuhu():
         + [""] * 2
         + ["παλαιᾶς C"]
         + [""] * 9
-        + ["hl11"],
+        + ["hl11:AAAAAAAA"],
     ]
     res = _close(group, gr_sem, sl_sem)
     assert res == expected
@@ -805,14 +801,14 @@ def test_vidit():
         + [""] * 3
         + ["ἔγνωμεν", "γιγνώσκω"]
         + [""] * 13
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     r2 = (
         [""] * 4
         + ["12/67c10", "бꙑхомъ•", "в\ue205дѣл\ue205 бꙑхо-", "бꙑт\ue205"]
         + ["", "gramm.", ""] * 2
         + [""] * 12
-        + ["hl03|hl05|hl09"]
+        + ["hl03:AAAAAAAA|hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
 
     group = [r1.copy(), r2.copy()]
@@ -829,7 +825,7 @@ def test_vidit():
         + [""] * 3
         + ["ἔγνωμεν", "γιγνώσκω"]
         + [""] * 13
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     e2 = (
         ["вѣдѣл\ue205 WG оувѣдѣл\ue205 H"]
@@ -846,7 +842,7 @@ def test_vidit():
             "gramm.",
         ]
         + [""] * 13
-        + ["hl03|hl05|hl09"]
+        + ["hl03:AAAAAAAA|hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     assert res == [e1, e2]
 
@@ -864,7 +860,7 @@ def test_vidit():
         + [""] * 3
         + ["ἔγνωμεν", "γιγνώσκω"]
         + [""] * 13
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     e2 = (
         ["вѣдѣл\ue205 WG оувѣдѣл\ue205 H"]
@@ -881,7 +877,7 @@ def test_vidit():
             "gramm.",
         ]
         + [""] * 13
-        + ["hl03|hl05|hl09"]
+        + ["hl03:AAAAAAAA|hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     assert res == [e1, e2]
 
@@ -899,7 +895,7 @@ def test_vidit():
         + [""] * 3
         + ["ἔγνωμεν", "γιγνώσκω"]
         + [""] * 13
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     e2 = (
         ["вѣдѣл\ue205 WG оувѣдѣл\ue205 H"]
@@ -912,7 +908,7 @@ def test_vidit():
         ]
         + ["", "gramm.", "", "ἔγνωμεν", "gramm."]
         + [""] * 13
-        + ["hl03|hl05|hl09"]
+        + ["hl03:AAAAAAAA|hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     assert res == [e1, e2]
 
@@ -930,7 +926,7 @@ def test_vidit():
         + [""] * 3
         + ["ἔγνωμεν", "γιγνώσκω"]
         + [""] * 13
-        + ["hl05"]
+        + ["hl05:AAAAAAAA"]
     )
     e2 = (
         ["вѣдѣл\ue205 WG оувѣдѣл\ue205 H"]
@@ -947,7 +943,7 @@ def test_vidit():
             "gramm.",
         ]
         + [""] * 13
-        + ["hl03|hl05|hl09"]
+        + ["hl03:AAAAAAAA|hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
 
     assert res == [e1, e2]
@@ -961,14 +957,19 @@ def test_zemenu():
         + [""] * 7
         + ["τῶν Ch", "ὁ"]
         + [""] * 8
-        + ["hl16|hl19"],
+        + ["hl16:AAAAAAAA|hl19:AAAAAAAA"],
         [""] * 4
         + ["19/94d08", "ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
         + [""] * 8
         + ["ἐπὶ Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
         + [""] * 6
-        + ["hl16|hl18"],
-        [""] * 4 + ["19/94d08"] + [""] * 11 + ["γῆς Ch", "γῆ"] + [""] * 8 + ["hl16"],
+        + ["hl16:AAAAAAAA|hl18:AAAAAAAA"],
+        [""] * 4
+        + ["19/94d08"]
+        + [""] * 11
+        + ["γῆς Ch", "γῆ"]
+        + [""] * 8
+        + ["hl16:AAAAAAAA"],
     ]
 
     res = _close(rows.copy(), gr_sem.var, sl_sem)
@@ -978,22 +979,22 @@ def test_zemenu():
         + [""] * 8
         + ["τῶν ἐπὶ γῆς Ch", "ὁ"]
         + [""] * 8
-        + ["hl16|hl19"],
+        + ["hl16:AAAAAAAA|hl19:AAAAAAAA"],
         [""] * 4
         + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
         + [""] * 8
         + ["τῶν ἐπὶ γῆς Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
         + [""] * 6
-        + ["hl16|hl18"],
+        + ["hl16:AAAAAAAA|hl18:AAAAAAAA"],
         [""] * 4
         + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "", "ꙁемьнъ"]
         + [""] * 8
         + ["τῶν ἐπὶ γῆς Ch", "γῆ", "", "ὁ ἐπὶ γῆς"]
         + [""] * 6
-        + ["hl16"],
+        + ["hl16:AAAAAAAA"],
     ]
 
-    res = _close(rows.copy(), sl_sem, gr_sem)
+    # res = _close(rows.copy(), sl_sem, gr_sem)
     # TODO
     """
     assert res == [
@@ -1035,14 +1036,14 @@ def test_prichatnik_biti():
         + [""] * 2
         + ["ποιῆσαι", "ποιέω", "ποιέω κοινωνόν"]
         + [""] * 12
-        + ["hl05|hl11"],
+        + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         ["боудемь W", "бꙑт\ue205 GH"]
         + [""] * 2
         + ["05/28d01", "боудоуть", "боудоуть• \ue201же", "бꙑт\ue205"]
         + [""] * 3
         + ["κοινωνοὺς", "κοινωνός"]
         + [""] * 13
-        + ["hl05|hl11"],
+        + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
     ]
 
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem.var, gr_sem)
@@ -1062,7 +1063,7 @@ def test_prichatnik_biti():
         + [""] * 2
         + ["ποιῆσαι κοινωνοὺς", "ποιέω & κοινωνός", "ποιέω κοινωνόν"]
         + [""] * 12
-        + ["hl05|hl11"],
+        + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
             "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W",
             "бꙑт\ue205 GH",
@@ -1077,7 +1078,7 @@ def test_prichatnik_biti():
         + [""] * 2
         + ["ποιῆσαι κοινωνοὺς", "ποιέω & κοινωνός", "ποιέω κοινωνόν"]
         + [""] * 12
-        + ["hl05|hl11"],
+        + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
     ]
 
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem, gr_sem)
@@ -1101,7 +1102,7 @@ def test_prichatnik_biti():
             "ποιέω κοινωνόν",
         ]
         + [""] * 12
-        + ["hl05|hl11"],
+        + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
             "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H "
             "боудемь W",
@@ -1120,7 +1121,7 @@ def test_prichatnik_biti():
             "ποιέω κοινωνόν",
         ]
         + [""] * 12
-        + ["hl05|hl11"],
+        + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
     ]
 
     res = _close([rows[0].copy(), rows[1].copy()], gr_sem, sl_sem)
@@ -1142,7 +1143,7 @@ def test_prichatnik_biti():
             "ποιέω κοινωνόν",
         ]
         + [""] * 12
-        + ["hl05|hl11"],
+        + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
             "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W",
             "пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205 GH",
@@ -1160,7 +1161,7 @@ def test_prichatnik_biti():
             "ποιέω κοινωνόν",
         ]
         + [""] * 12
-        + ["hl05|hl11"],
+        + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
     ]
 
 
@@ -1182,11 +1183,11 @@ def test_hoditi_spiti():
             "προβαίνω",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [""] * 4
         + ["14/72d19", "спѣюще•", "д\ue205мъ спѣюще•", "спѣт\ue205"]
         + [""] * 18
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
 
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem, gr_sem)
@@ -1205,7 +1206,7 @@ def test_hoditi_spiti():
         + [""] * 2
         + ["προβαίνοντες", "προβαίνω"]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [
             "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
             "ходъ WG",
@@ -1220,7 +1221,7 @@ def test_hoditi_spiti():
         + [""] * 2
         + ["προβαίνοντες", "προβαίνω"]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
 
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem.var, gr_sem)
@@ -1241,7 +1242,7 @@ def test_hoditi_spiti():
             "προβαίνω",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [
             "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
             "",
@@ -1258,7 +1259,7 @@ def test_hoditi_spiti():
             "προβαίνω",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
 
     res = _close([rows[0].copy(), rows[1].copy()], gr_sem, sl_sem)
@@ -1279,7 +1280,7 @@ def test_hoditi_spiti():
             "προβαίνω",
         ]
         + [""] * 13
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
         [
             "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
             "ходъ WG",
@@ -1295,5 +1296,5 @@ def test_hoditi_spiti():
             "προβαίνοντες",
         ]
         + [""] * 14
-        + ["hl05"],
+        + ["hl05:AAAAAAAA"],
     ]
