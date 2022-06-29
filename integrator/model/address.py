@@ -1,189 +1,127 @@
-from typing import Any, Optional
-from dataclasses import dataclass
+from typing import Any, Callable, List, Optional
 
 import re
 
-from regex import address_regex
+IDX_SEP = "-"  # used to show index/address ranges
 
+# for indices/addresses
+alpha = r"^([A-Za-z]*)(.*)$"
+numeric = r"^([0-9]*)(.*)$"
 
-def _merge_counts(pval: int, reval: Any) -> int:
-    # We don't know if counters come from corresponding columns or index postfix.
-    # TODO: Make sure to investigate and fix this, so they're not messed up
-    result = int(reval) if reval else None
-    assert result == None or pval == 1 or result == pval
-    if result:
-        return result
-    return pval
-
-
-@dataclass(frozen=True)
 class Index:
-    """Index only indicates if it is from a variant.
-    Alternative variable (alt) means alternative indexing (as in Vienna scroll).
-    Not related to alternative variants
-    Contrast these to Usage.
-    """
+    _less: Optional[Callable] = None
+    # end: Optional["Index"] = None
+    maxlen: List[int] = []
 
-    ch: int = 1
-    alt: bool = False
-    page: int = 0
-    col: str = ""
-    row: int = 0
-    end: Optional["Index"] = None
-
-    @staticmethod
-    def unpack(value: str) -> "Index":
+    def __init__(self, value: str) -> None:
         """
-        Parsing the format produced by exporter or merger.
-        Thus, repetition indices external to the string,
-        as they are stored in a separate column in the spreadsheet
-        Regex using: https://regex101.com/
+        >>> Index.maxlen = [2,1,2,3,1,2]
+        >>> i = Index("1/5a5")
+        >>> i.data
+        [1, '/', 5, 'a', 5]
+
+        >>> i = Index("2/W169b26")
+        >>> i.data
+        [2, '/', 'W', 169, 'b', 26]
+
+        >>> Index.maxlen = [3,1,2]
+        >>> i = Index("554.26")
+        >>> i.data
+        [554, '.', 26]
+
+        >>> Index.maxlen = [2,1,3,3,2,2]
+        >>> i = Index("3/15a5-b1")
+        >>> i.data
+        [3, '/', 15, 'a', 5]
+        >>> i.end
+        Index('3/15b1')
+        >>> i.end.data
+        [3, '/', 15, 'b', 1]
         """
-        # TODO: derive regex from parts
+        self.data : List[Any] = []
+        self.end: Optional[Index] = None
 
-        m = re.search(address_regex, value)
-        assert m
-        # print(m.groups())
-        ch = int(m.group(1)) if m.group(1) else 1
-        # alt puts W at end of ch1 and at start of ch2
-        alt = (bool(m.group(2)) if ch % 2 else not m.group(2)) if ch < 3 else False
-        page = int(m.group(3)) if m.group(3) else 0
-        col = m.group(4) if m.group(4) else ""
-        row = int(m.group(5)) if m.group(5) else 0
+        rest = value
+        while rest:
+            # print(Index.maxlen)
+            ci = len(self.data)
+            # print(ci)
+            if rest[0].isnumeric():
+                m = re.search(numeric, rest)
+                assert m
+                v = m.group(1)
+                """
+                if len(Index.maxlen) == len(self.data):
+                    # print(v)
+                    Index.maxlen += [len(v)]
+                    # print(Index.maxlen)
+                elif len(v) > Index.maxlen[ci]:
+                    # print(v)
+                    Index.maxlen[ci] = len(v)
+                    # print(Index.maxlen)
+                """
+                self.data += [int(v)]
+                rest = m.group(2)
+            elif rest[0].isalpha():
+                m = re.search(alpha, rest)
+                assert m
+                v = m.group(1)
+                """
+                if len(Index.maxlen) == len(self.data):
+                    Index.maxlen += [len(v)]
+                    # print(Index.maxlen)
+                elif len(v) > Index.maxlen[ci]:
+                    Index.maxlen[ci] = len(v)
+                    # print(Index.maxlen)
+                """
+                self.data += [v]
+                rest = m.group(2)
+            elif rest[0] == IDX_SEP:
+                self.end = Index(rest[1:])
+                le = len(self.end.data)
+                ls = len(self.data)
+                if le < ls:
+                    edata = self.data[:-le] + self.end.data
+                    self.end.data = edata
+                    # i = "".join(str(d) for d in edata) 
+                    # self.end = Index(i)
+                if self.data == self.end.data:
+                    self.end = None
+                break
+            else:
+                # if len(Index.maxlen) == len(self.data):
+                #     Index.maxlen += [1]
+                self.data += [rest[0]]
+                rest = rest[1:]
 
-        end = None
-        if m.group(18):
-            e_ch = ch
-            e_alt = alt
-            e_page = page
-            e_col = col
-            e_row = int(m.group(18))
-            if m.group(17):
-                e_col = m.group(17)
-                if m.group(16):
-                    e_page = int(m.group(16))
-                    if m.group(14):
-                        e_ch = int(m.group(14))
-                    e_alt = (
-                        (bool(m.group(15)) if e_ch % 2 else not m.group(15))
-                        if e_ch < 3
-                        else False
-                    )
-            end = Index(e_ch, e_alt, e_page, e_col, e_row)
-        return Index(ch, alt, page, col, row, end)
+    def __hash__(self):
+        return hash((tuple(self.data), self.end))
+
 
     def __eq__(self, other) -> bool:
-        if type(other) is not Index:
+        if type(other) != Index:
             return False
-        if (
-            self.ch != other.ch
-            or self.alt != other.alt
-            or self.page != other.page
-            or self.col != other.col
-            or self.row != other.row
-            or self.end != other.end
-        ):
-            return False
-        return True
-
-    def __repr__(self) -> str:
-        return f'Index.unpack("{self}")'
-
-    def __str__(self) -> str:
-        """
-        >>> str(Index(1, False, 6, "c", 4, end=Index(1, False, 6, "d", 4)))
-        '1/6c4-d4'
-        >>> str(Index(1, False, 6, "c", 4, end=Index(1, False, 6, "c", 11)))
-        '1/6c4-11'
-
-        Variants are not shown:
-        >>> str(Index(1, False, 6, "c", 4, end=Index(1, False, 6, "d", 4)))
-        '1/6c4-d4'
-
-        >>> str(Index(1, True, 6, "c", 4))
-        '1/W6c4'
-        >>> str(Index(2, False, 6, "c", 4))
-        '2/W6c4'
-        """
-        w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        start = f"{self.ch}/{w}{self.page}{self.col}{self.row}"
-        if self.end:
-            if self.end.ch != self.ch:
-                return f"{start}-{str(self.end)}"
-            if self.end.alt != self.alt:
-                ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
-                return f"{start}-{ew}{self.end.page}{self.end.col}{self.end.row}"
-            if self.end.page != self.page:
-                return f"{start}-{self.end.page}{self.end.col}{self.end.row}"
-            if self.end.col != self.col:
-                return f"{start}-{self.end.col}{self.end.row}"
-            if self.end.row != self.row:
-                return f"{start}-{self.end.row}"
-        return start
-
-    def longstr(self) -> str:
-        """
-        >>> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4)).longstr()
-        '01/006c04-02/006c04'
-
-        >> Index(1, False, 6, "c", 4, Index(2, True, 6, "c", 4)).longstr()
-        '01/006c04WH-02/006c04'
-        >> Index(1, False, 6, "c", 4, end=Index(2, True, 6, "c", 4)).longstr()
-        '01/006c04-02/006c04WH'
-        """
-        w = "W" if self.ch < 3 and bool(self.ch % 2) == self.alt else ""
-        start = f"{self.ch:02d}/{w}{self.page:03d}{self.col}{self.row:02d}"
-        if self.end:
-            if self.end.ch != self.ch:
-                return f"{start}-{self.end.longstr()}"
-            if self.end.alt != self.alt:
-                ew = "W" if self.end.ch < 3 and self.end.alt and self.end.ch % 2 else ""
-                return (
-                    f"{start}-{ew}{self.end.page:03d}{self.end.col}{self.end.row:02d}"
-                )
-            if self.end.page != self.page:
-                return f"{start}-{self.end.page:03d}{self.end.col}{self.end.row:02d}"
-            if self.end.col != self.col:
-                return f"{start}-" f"{self.end.col}{self.end.row:02d}"
-            if self.end.row != self.row:
-                return f"{start}-{self.end.row:02d}"
-        return start
+        return self.data == other.data
 
     def __lt__(self, other) -> bool:
-        if not other:
-            return False
-
-        if self.ch < other.ch:
-            return True
-        if self.ch > other.ch:
-            return False
-
-        if self.alt < other.alt:
-            return True
-        if self.alt > other.alt:
-            return False
-
-        if self.page < other.page:
-            return True
-        if self.page > other.page:
-            return False
-
-        if self.col < other.col:
-            return True
-        if self.col > other.col:
-            return False
-
-        if self.row < other.row:
-            return True
-        if self.row > other.row:
-            return False
-
-        if self.end is None:
+        if Index._less is not None:
+            return Index._less(self, other)
+        for i, v in enumerate(self.data):
+            try:
+                if v < other.data[i]:
+                    return True
+                if v > other.data[i]:
+                    return False
+            except TypeError as te:
+                print(
+                    f"ГРЕШКА: Сравнение на несравними стойности {v} и {other.data[i]}"
+                )
+                print(te)
+                break
+        if self.end:
+            return self.end < other.end if other.end else True
+        else:
             return other.end is not None
-        elif other.end is None:
-            return False
-
-        return self.end < other.end
 
     def __le__(self, other) -> bool:
         return self < other or self == other
@@ -193,3 +131,59 @@ class Index:
 
     def __ge__(self, other) -> bool:
         return not self < other
+
+    def __str__(self) -> str:
+        """
+        >>> str(Index("1/5a5"))
+        '1/5a5'
+
+        >>> str(Index("2/W169b26"))
+        '2/W169b26'
+
+        >>> str(Index("554.26"))
+        '554.26'
+        """
+        s = "".join(str(d) for d in self.data)
+        if not self.end:
+            return s
+        for i,v in enumerate(self.end.data):
+            if self.data[i] != v:
+                return s + "-" + "".join(str(d) for d in self.end.data[i:])
+        raise Exception(f"ГРЕШКА: Съвпадащи начален и краен адрес/индекс")
+
+    def longstr(self) -> str:
+        # print(Index.maxlen)
+        # print(self.data)
+        # if self.end:
+            # print(self.end.data)
+        ld: List[str] = []
+        for i, d in enumerate(self.data):
+            if type(d) == int:
+                f = f"{{:0{Index.maxlen[i]}d}}" 
+                ld += [f.format(d)]
+            else:
+                ld += [d]
+        s = "".join(ld)
+        if not self.end:
+            return s
+        for i,v in enumerate(self.end.data):
+            # print(f"{i}: {self.data[i]}/{v}")
+            if self.data[i] != v:
+                lde = []
+                for j in range(i, len(self.end.data)):
+                    # print(f"{j}: {self.data[j]}/{self.end.data[j]}")
+                    if type(self.end.data[j]) == int:
+                        f = f"{{:0{Index.maxlen[j]}d}}" 
+                        lde += [f.format(self.end.data[j])]
+                    else:
+                        lde += [self.end.data[j]]
+                return s + "-" + "".join(lde)
+        raise Exception(f"ГРЕШКА: Съвпадащи начален и краен адрес/индекс")
+
+
+    def __repr__(self) -> str:
+        """
+        >>> Index("1/5a5")
+        Index('1/5a5')
+        """
+        return f"Index('{self}')"

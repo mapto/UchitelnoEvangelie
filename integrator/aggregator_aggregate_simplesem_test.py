@@ -52,7 +52,7 @@ def test_monogenis():
                 ("\ue201д\ue205но\ue20dедоу", "μονογενοῦς"): SortedSet(
                     [
                         Usage(
-                            Index.unpack("1/W168a25"),
+                            Index("1/W168a25"),
                             UsageContent(
                                 FROM_LANG,
                                 alt=Alternative(
@@ -86,7 +86,7 @@ def test_monogenis():
                 ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                     [
                         Usage(
-                            Index.unpack("1/W168a25"),
+                            Index("1/W168a25"),
                             UsageContent(
                                 "sl",
                                 var=Source("H"),
@@ -114,7 +114,7 @@ def test_monogenis():
                 ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                     [
                         Usage(
-                            Index.unpack("1/W168a25"),
+                            Index("1/W168a25"),
                             UsageContent(
                                 "sl",
                                 var=Source("G"),

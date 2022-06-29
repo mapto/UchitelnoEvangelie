@@ -60,7 +60,7 @@ def _merge_indices(group: List[List[str]]) -> Index:
             break
     if not s_end:
         s_end = group[0][IDX_COL]
-    return Index.unpack(f"{group[0][IDX_COL]}-{s_end}")
+    return Index(f"{group[0][IDX_COL]}-{s_end}")
 
 
 def _collect_group(

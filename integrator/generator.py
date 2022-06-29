@@ -78,7 +78,7 @@ def _generate_usage(par, u: Usage) -> None:
     if u.orig.alt.main_lemma:
         _generate_text(par, " ")
         _generate_text(par, u.orig.alt.main_lemma, fonts[u.orig.lang])
-        _generate_text(par, f" {main_source(u.orig.lang, u.idx.alt)}")
+        _generate_text(par, f" {main_source(u.orig.lang, u.idx.data[2] == 'W')}")
         if u.orig.alt.main_cnt > 1:
             _generate_text(
                 par, subscript(u.orig.alt.main_cnt, u.orig.lang), subscript=True
@@ -90,7 +90,7 @@ def _generate_usage(par, u: Usage) -> None:
     if u.trans.alt.main_lemma:
         _generate_text(par, " ")
         _generate_text(par, u.trans.alt.main_lemma, fonts[u.trans.lang])
-        _generate_text(par, f" {main_source(u.trans.lang, u.idx.alt)}")
+        _generate_text(par, f" {main_source(u.trans.lang, u.idx.data[2] == 'W')}")
         if u.trans.alt.main_cnt > 1:
             _generate_text(
                 par, subscript(u.trans.alt.main_cnt, u.trans.lang), subscript=True

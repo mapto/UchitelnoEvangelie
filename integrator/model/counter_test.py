@@ -13,7 +13,7 @@ def test_dict_ipercliso():
                         ("ὑπερβλύζων", "прѣ\ue205сто\ue20dе",): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/W168c17"),
+                                    Index("1/W168c17"),
                                     UsageContent(
                                         TO_LANG,
                                         Source("C"),
@@ -34,7 +34,7 @@ def test_dict_ipercliso():
                         ("ὑπερβλύσαι", "\ue205сто\ue20dен\ue205\ue205",): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/W168c17"),
+                                    Index("1/W168c17"),
                                     UsageContent(
                                         TO_LANG,
                                         Source("C"),
@@ -59,7 +59,7 @@ def test_dict_ipercliso():
                         ("ὑπερκλύζων", "прѣ\ue205сто\ue20dе",): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/W168c17"),
+                                    Index("1/W168c17"),
                                     UsageContent(
                                         TO_LANG,
                                         alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
@@ -79,7 +79,7 @@ def test_dict_ipercliso():
                         ("ὑπερκλύσαι", "\ue205сто\ue20dен\ue205\ue205",): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/W168c17"),
+                                    Index("1/W168c17"),
                                     UsageContent(
                                         TO_LANG,
                                         alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
@@ -114,7 +114,7 @@ def test_dict_monogenis():
                         ("μονογενοῦς", "\ue201д\ue205нородоу"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/W168a25"),
+                                    Index("1/W168a25"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενοῦς",
@@ -135,7 +135,7 @@ def test_dict_monogenis():
                         ("μονογενοῦς", "\ue201д\ue205но\ue20dедаго"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/W168a28"),
+                                    Index("1/W168a28"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενοῦς",
@@ -146,7 +146,7 @@ def test_dict_monogenis():
                         ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/W168a25"),
+                                    Index("1/W168a25"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενοῦς",
@@ -168,7 +168,7 @@ def test_dict_monogenis():
                         ("μονογενοῦς", "\ue201д\ue205но\ue20dедѣмь"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/4c15"),
+                                    Index("1/4c15"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενοῦς",
@@ -187,7 +187,7 @@ def test_dict_monogenis():
                         ("μονογενὴς", "\ue201д\ue205но\ue20dеды"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/5a4"),
+                                    Index("1/5a4"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενὴς",
@@ -208,7 +208,7 @@ def test_dict_monogenis():
                         ("μονογενοῦς", "Ø"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/4c15"),
+                                    Index("1/4c15"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενοῦς",
@@ -228,7 +228,7 @@ def test_dict_monogenis():
                         ("μονογενοῦς", "\ue205но\ue20dадѣмь"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/4c15"),
+                                    Index("1/4c15"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενοῦς",
@@ -247,7 +247,7 @@ def test_dict_monogenis():
                         ("μονογενοῦς", "\ue205но\ue20dедаго"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/W168a25"),
+                                    Index("1/W168a25"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενοῦς",
@@ -266,7 +266,7 @@ def test_dict_monogenis():
                         ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("1/5a4"),
+                                    Index("1/5a4"),
                                     UsageContent(
                                         TO_LANG,
                                         word="μονογενὴς",
@@ -306,7 +306,7 @@ def test_dict_prichatnik_biti():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
+                                        Index("5/28c21-d1"),
                                         UsageContent("sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -340,7 +340,7 @@ def test_dict_prichatnik_biti():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
+                                        Index("5/28c21-d1"),
                                         UsageContent("sl",
                                             Source("GH"),
                                             alt=Alternative(

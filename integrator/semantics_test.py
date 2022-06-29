@@ -199,7 +199,7 @@ def test_build_paths_puteshestive():
 def test_add_usage():
     usages = [
         Usage(
-            Index.unpack("1/W168a25"),
+            Index("1/W168a25"),
             UsageContent("gr", word="μονογενοῦς"),
             UsageContent(
                 "sl",
@@ -211,7 +211,7 @@ def test_add_usage():
             ),
         ),
         Usage(
-            Index.unpack("1/5a4"),
+            Index("1/5a4"),
             UsageContent("gr", word="μονογενὴς"),
             UsageContent(
                 "sl",
@@ -219,7 +219,7 @@ def test_add_usage():
             ),
         ),
         Usage(
-            Index.unpack("1/4c15"),
+            Index("1/4c15"),
             UsageContent("gr", word="μονογενοῦς"),
             UsageContent(
                 "sl",
@@ -227,7 +227,7 @@ def test_add_usage():
             ),
         ),
         Usage(
-            Index.unpack("1/W168a25"),
+            Index("1/W168a25"),
             UsageContent("gr", word="μονογενοῦς"),
             UsageContent(
                 "sl",
@@ -239,11 +239,11 @@ def test_add_usage():
             ),
         ),
         Usage(
-            Index.unpack("1/W168a28"),
+            Index("1/W168a28"),
             UsageContent("gr", word="μονογενοῦς"),
         ),
         Usage(
-            Index.unpack("1/W168a25"),
+            Index("1/W168a25"),
             UsageContent("gr", word="μονογενοῦς"),
             UsageContent(
                 "sl",
@@ -256,7 +256,7 @@ def test_add_usage():
             ),
         ),
         Usage(
-            Index.unpack("1/5a4"),
+            Index("1/5a4"),
             UsageContent("gr", word="μονογενὴς"),
             UsageContent(
                 "sl",
@@ -265,7 +265,7 @@ def test_add_usage():
             ),
         ),
         Usage(
-            Index.unpack("1/4c15"),
+            Index("1/4c15"),
             UsageContent("gr", word="μονογενοῦς"),
             UsageContent(
                 "sl",
@@ -284,7 +284,7 @@ def test_add_usage():
                 ("", ""): SortedSet(
                     [
                         Usage(
-                            Index.unpack("1/4c15"),
+                            Index("1/4c15"),
                             UsageContent("gr", word="μονογενοῦς"),
                             UsageContent(
                                 "sl",
@@ -294,7 +294,7 @@ def test_add_usage():
                             ),
                         ),
                         Usage(
-                            Index.unpack("1/4c15"),
+                            Index("1/4c15"),
                             UsageContent("gr", word="μονογενοῦς"),
                             UsageContent(
                                 "sl",
@@ -303,7 +303,7 @@ def test_add_usage():
                             ),
                         ),
                         Usage(
-                            Index.unpack("1/5a4"),
+                            Index("1/5a4"),
                             UsageContent("gr", word="μονογενὴς"),
                             UsageContent(
                                 "sl",
@@ -313,7 +313,7 @@ def test_add_usage():
                             ),
                         ),
                         Usage(
-                            Index.unpack("1/5a4"),
+                            Index("1/5a4"),
                             UsageContent("gr", word="μονογενὴς"),
                             UsageContent(
                                 "sl",
@@ -322,7 +322,7 @@ def test_add_usage():
                             ),
                         ),
                         Usage(
-                            Index.unpack("1/W168a25"),
+                            Index("1/W168a25"),
                             UsageContent("gr", word="μονογενοῦς"),
                             UsageContent(
                                 "sl",
@@ -335,11 +335,11 @@ def test_add_usage():
                             ),
                         ),
                         Usage(
-                            Index.unpack("1/W168a28"),
+                            Index("1/W168a28"),
                             UsageContent("gr", word="μονογενοῦς"),
                         ),
                         Usage(
-                            Index.unpack("1/W168a25"),
+                            Index("1/W168a25"),
                             UsageContent("gr", word="μονογενοῦς"),
                             UsageContent(
                                 "sl",
@@ -351,7 +351,7 @@ def test_add_usage():
                             ),
                         ),
                         Usage(
-                            Index.unpack("1/W168a25"),
+                            Index("1/W168a25"),
                             UsageContent("gr", word="μονογενοῦς"),
                             UsageContent(
                                 "sl",
@@ -372,7 +372,7 @@ def test_add_usage():
 def test_add_usage_puteshestvie():
     usages = [
         Usage(
-            Index.unpack("5/28d18"),
+            Index("5/28d18"),
             UsageContent(
                 "sl",
                 Source("G"),
@@ -385,7 +385,7 @@ def test_add_usage_puteshestvie():
             ),
         ),
         Usage(
-            Index.unpack("5/28d18"),
+            Index("5/28d18"),
             UsageContent(
                 "sl",
                 Source("H"),
@@ -406,7 +406,7 @@ def test_add_usage_puteshestvie():
             ("пꙋт\ue205 GH шьст\ue205ꙗ G", "ὁδοιπορίας"): SortedSet(
                 [
                     Usage(
-                        Index.unpack("5/28d18"),
+                        Index("5/28d18"),
                         UsageContent(
                             "sl",
                             Source("G"),
@@ -421,7 +421,7 @@ def test_add_usage_puteshestvie():
                         ),
                     ),
                     Usage(
-                        Index.unpack("5/28d18"),
+                        Index("5/28d18"),
                         UsageContent(
                             "sl",
                             Source("H"),

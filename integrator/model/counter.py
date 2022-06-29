@@ -54,7 +54,7 @@ class Counter:
     def get_set_counts(s: Set[Usage]) -> "Counter":
         """
         >>> from model import Index, Usage, UsageContent
-        >>> i = [Index(ch=1, alt=True, page=168, col='c', row=7), Index(ch=1, alt=True, page=169, col='c', row=7)]
+        >>> i = [Index("1/W168c7"), Index("1/W169c7")]
         >>> s = SortedSet([Usage(n, UsageContent(FROM_LANG)) for n in i])
         >>> c = Counter.get_set_counts(s)
         >>> str(c)
@@ -64,7 +64,7 @@ class Counter:
         >>> c.get_counts(False)
         (2, 0)
 
-        >>> i = Index(ch=1, alt=True, page=168, col='c', row=7)
+        >>> i = Index("1/W168c7")
         >>> s = SortedSet([Usage(i, UsageContent("sl", Source("W"))), Usage(i, UsageContent("sl", cnt=2), UsageContent("gr", cnt=2))])
         >>> c = Counter.get_set_counts(s)
         >>> str(c)
@@ -114,7 +114,7 @@ class Counter:
         >> c.get_counts(False)
         (0, 0)
 
-        >>> u = Usage(Index(ch=1, alt=False, page=5, col='a', row=5), UsageContent(FROM_LANG))
+        >>> u = Usage(Index("1/5a5"), UsageContent(FROM_LANG))
         >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([u])}})
         >>> c = Counter.get_dict_counts(d)
         >>> str(c)
@@ -125,8 +125,8 @@ class Counter:
         >>> c.get_counts(False)
         (1, 0)
 
-        >>> u1 = Usage(Index(ch=1, alt=False, page=8, col='a', row=3), UsageContent(FROM_LANG))
-        >>> u2 = Usage(Index(ch=1, alt=False, page=6, col='b', row=7), UsageContent(FROM_LANG))
+        >>> u1 = Usage(Index("1/8a3"), UsageContent(FROM_LANG))
+        >>> u2 = Usage(Index("1/6b7"), UsageContent(FROM_LANG))
         >>> d = SortedDict({'lem2': SortedDict({'lem1': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
         >>> c = Counter.get_dict_counts(d)
         >>> str(c)

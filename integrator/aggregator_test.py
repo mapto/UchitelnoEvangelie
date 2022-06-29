@@ -142,13 +142,7 @@ def test_agg_lemma_missing_gr_main():
                             ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
                                 [
                                     Usage(
-                                        Index(
-                                            ch=16,
-                                            alt=False,
-                                            page=80,
-                                            col="a",
-                                            row=8,
-                                        ),
+                                        Index("16/80a8"),
                                         UsageContent(
                                             "gr",
                                             var=Source("Ch"),
@@ -181,13 +175,7 @@ def test_agg_lemma_missing_gr_main():
             ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
                 [
                     Usage(
-                        Index(
-                            ch=16,
-                            alt=False,
-                            page=80,
-                            col="a",
-                            row=8,
-                        ),
+                        Index("16/80a8"),
                         UsageContent(
                             "gr",
                             var=Source("Ch"),
@@ -240,7 +228,7 @@ def test_agg_lemma_est_in_var_no_main():
             ("\ue201сть GH", "Ø"): SortedSet(
                 [
                     Usage(
-                        Index.unpack("7/47a6"),
+                        Index("7/47a6"),
                         UsageContent(
                             "sl",
                             var=Source("GH"),
@@ -312,7 +300,7 @@ def test_agg_lemma_hodom_spiti():
                             ("ход\ue205мъ спѣюще•", "προβαίνοντες"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("14/72d18-19"),
+                                        Index("14/72d18-19"),
                                         UsageContent(
                                             "sl",
                                             alt=Alternative(
@@ -383,7 +371,7 @@ def test_agg_lemma_monogenis():
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                 [
                     Usage(
-                        Index.unpack("1/W168a25"),
+                        Index("1/W168a25"),
                         UsageContent(
                             "sl",
                             var=Source("H"),
@@ -438,7 +426,7 @@ def test_agg_lemma_shestvie_first():
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28d18"),
+                                        Index("5/28d18"),
                                         UsageContent(
                                             "sl",
                                             Source("H"),
@@ -484,7 +472,7 @@ def test_agg_lemma_shestvie_first():
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28d18"),
+                                        Index("5/28d18"),
                                         UsageContent(
                                             "sl",
                                             var=Source("G"),
@@ -564,7 +552,7 @@ def test_agg_lemma_shestvie_1():
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28d18"),
+                                        Index("5/28d18"),
                                         UsageContent(
                                             "sl",
                                             var=Source("G"),
@@ -624,7 +612,7 @@ def test_agg_lemma_shestvie_1():
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28d18"),
+                                        Index("5/28d18"),
                                         UsageContent(
                                             "sl",
                                             var=Source("H"),
@@ -703,7 +691,7 @@ def test_agg_lemma_shestvie_2():
                         ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("5/28d18"),
+                                    Index("5/28d18"),
                                     UsageContent(
                                         "sl",
                                         var=Source("G"),
@@ -761,7 +749,7 @@ def test_agg_lemma_shestvie_2():
                         ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                             [
                                 Usage(
-                                    Index.unpack("5/28d18"),
+                                    Index("5/28d18"),
                                     UsageContent(
                                         "sl",
                                         var=Source("H"),
@@ -836,7 +824,7 @@ def test_agg_lemma_shestvie_last():
             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                 [
                     Usage(
-                        Index.unpack("5/28d18"),
+                        Index("5/28d18"),
                         UsageContent(
                             "sl",
                             var=Source("G"),
@@ -876,7 +864,7 @@ def test_agg_lemma_shestvie_last():
             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                 [
                     Usage(
-                        Index.unpack("5/28d18"),
+                        Index("5/28d18"),
                         UsageContent(
                             "sl",
                             var=Source("H"),
@@ -927,7 +915,7 @@ def test_agg_lemma_put():
             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
                 [
                     Usage(
-                        Index.unpack("5/28d18"),
+                        Index("5/28d18"),
                         UsageContent(
                             "sl",
                             Source("H"),

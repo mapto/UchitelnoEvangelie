@@ -53,13 +53,7 @@ def test_est_in_var_no_main():
                             ("\ue201сть GH", "Ø"): SortedSet(
                                 [
                                     Usage(
-                                        Index(
-                                            ch=7,
-                                            alt=False,
-                                            page=47,
-                                            col="a",
-                                            row=6,
-                                        ),
+                                        Index("7/47a6"),
                                         UsageContent(
                                             "sl",
                                             var=Source("GH"),
@@ -141,7 +135,7 @@ def test_prichatnik_biti_sl():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
+                                        Index("5/28c21-d1"),
                                         UsageContent(
                                             "sl",
                                             alt=Alternative(
@@ -194,7 +188,7 @@ def test_prichatnik_biti_sl():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
+                                        Index("5/28c21-d1"),
                                         UsageContent(
                                             "sl",
                                             alt=Alternative(
@@ -286,7 +280,7 @@ def test_prichatnik_biti_sl_var():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
+                                        Index("5/28c21-d1"),
                                         UsageContent(
                                             "sl",
                                             var=Source("GH"),
@@ -332,7 +326,7 @@ def test_prichatnik_biti_sl_var():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
+                                        Index("5/28c21-d1"),
                                         UsageContent(
                                             "sl",
                                             var=Source("GH"),
@@ -424,7 +418,7 @@ def test_prichatnik_biti_combined():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28c21-d1"),
+                                        Index("5/28c21-d1"),
                                         UsageContent(
                                             "sl",
                                             alt=Alternative(
@@ -513,7 +507,7 @@ def test_prichatnik_biti_combined():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        idx=Index.unpack("5/28c21-d1"),
+                                        idx=Index("5/28c21-d1"),
                                         orig=UsageContent(
                                             lang="sl",
                                             alt=Alternative(
@@ -560,7 +554,7 @@ def test_prichatnik_biti_combined():
                             ): SortedSet(
                                 [
                                     Usage(
-                                        idx=Index.unpack("5/28c21-d1"),
+                                        idx=Index("5/28c21-d1"),
                                         orig=UsageContent(
                                             lang="sl",
                                             var=Source("GH"),
@@ -624,7 +618,7 @@ def test_monogenes():
                             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("1/W168a25"),
+                                        Index("1/W168a25"),
                                         UsageContent(
                                             "sl",
                                             var=Source("H"),
@@ -667,7 +661,7 @@ def test_monogenes():
                             ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("1/W168a25"),
+                                        Index("1/W168a25"),
                                         UsageContent(
                                             "sl",
                                             var=Source("G"),
@@ -750,7 +744,7 @@ def test_puteshestvie_sl_var():
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28d18"),
+                                        Index("5/28d18"),
                                         UsageContent(
                                             "sl",
                                             var=Source("H"),
@@ -796,7 +790,7 @@ def test_puteshestvie_sl_var():
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28d18"),
+                                        Index("5/28d18"),
                                         UsageContent(
                                             "sl",
                                             var=Source("G"),
@@ -847,7 +841,7 @@ def test_puteshestvie_sl_var():
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28d18"),
+                                        Index("5/28d18"),
                                         UsageContent(
                                             "sl",
                                             var=Source("H"),
@@ -891,7 +885,7 @@ def test_puteshestvie_sl_var():
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας",): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("5/28d18"),
+                                        Index("5/28d18"),
                                         UsageContent(
                                             "sl",
                                             var=Source("G"),
@@ -968,7 +962,7 @@ def test_repeated_om():
                             ("om.", "om. WH"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("1/7c6"),
+                                        Index("1/7c6"),
                                         UsageContent("gr", word="om.", lemmas=["om."]),
                                         UsageContent(
                                             "sl",
@@ -982,7 +976,7 @@ def test_repeated_om():
                                         ),
                                     ),
                                     Usage(
-                                        Index.unpack("1/7c6"),
+                                        Index("1/7c6"),
                                         UsageContent("gr", word="om.", lemmas=["om."]),
                                         UsageContent(
                                             "sl",
@@ -1002,7 +996,7 @@ def test_repeated_om():
                             ("om.", "аще"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("1/7c6"),
+                                        Index("1/7c6"),
                                         UsageContent("gr", word="om.", lemmas=["om."]),
                                         UsageContent(
                                             "sl",
@@ -1021,7 +1015,7 @@ def test_repeated_om():
                             ("om.", "\ue205"): SortedSet(
                                 [
                                     Usage(
-                                        Index.unpack("1/7c6"),
+                                        Index("1/7c6"),
                                         UsageContent("gr", word="om.", lemmas=["om."]),
                                         UsageContent(
                                             "sl",
@@ -1088,7 +1082,7 @@ def test_puteshestvie_gr():
                             ("ὁδοιπορίας", "шьств\ue205ꙗ пꙋт\ue205 H"): SortedSet(
                                 [
                                     Usage(
-                                        idx=Index.unpack("5/28d18"),
+                                        idx=Index("5/28d18"),
                                         orig=UsageContent(
                                             lang="gr",
                                             word="ὁδοιπορίας",
@@ -1126,7 +1120,7 @@ def test_puteshestvie_gr():
                             ("ὁδοιπορίας", "шьст\ue205ꙗ пꙋт\ue205 G"): SortedSet(
                                 [
                                     Usage(
-                                        idx=Index.unpack("5/28d18"),
+                                        idx=Index("5/28d18"),
                                         orig=UsageContent(
                                             lang="gr",
                                             word="ὁδοιπορίας",

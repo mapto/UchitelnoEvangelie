@@ -13,7 +13,7 @@ rm -rf integrator/model/__pycache__
 echo '>>> Running Pylint'
 # pylint -E extractor/*.py
 pylint -E -v integrator/*.py
-pylint -E -v integrator/model
+# pylint -E -v integrator/model
 pylint -E -v integrator/semantics
 
 echo '>>> Running Mypy'

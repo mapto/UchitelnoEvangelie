@@ -6,53 +6,53 @@ from model import Alternative, Index, Source, Usage, UsageContent
 
 
 def test_order_usage():
-    assert Usage(Index.unpack("1/6a8"), FROM_LANG) < Usage(
-        Index.unpack("1/6a17"), FROM_LANG
+    assert Usage(Index("1/6a8"), FROM_LANG) < Usage(
+        Index("1/6a17"), FROM_LANG
     )
-    assert Usage(Index.unpack("1/6a8"), FROM_LANG) < Usage(
-        Index.unpack("1/W167c4"), FROM_LANG
+    assert Usage(Index("1/6a8"), FROM_LANG) < Usage(
+        Index("1/W167c4"), FROM_LANG
     )
-    assert Usage(Index.unpack("2/6a8"), FROM_LANG) > Usage(
-        Index.unpack("2/W167c4"), FROM_LANG
-    )
-
-    assert Usage(Index.unpack("1/8b5-6"), FROM_LANG) > Usage(
-        Index.unpack("1/5a5"), FROM_LANG
-    )
-    assert Usage(Index.unpack("1/5a5"), FROM_LANG) < Usage(
-        Index.unpack("3/11b2-3"), FROM_LANG
-    )
-    assert Usage(Index.unpack("3/11b2-3"), FROM_LANG) > Usage(
-        Index.unpack("1/W168a14-15"), FROM_LANG
+    assert Usage(Index("2/6a8"), FROM_LANG) > Usage(
+        Index("2/W167c4"), FROM_LANG
     )
 
-    assert Usage(Index.unpack("1/8a13"), FROM_LANG) > Usage(
-        Index.unpack("1/5d9(2)"), FROM_LANG
+    assert Usage(Index("1/8b5-6"), FROM_LANG) > Usage(
+        Index("1/5a5"), FROM_LANG
+    )
+    assert Usage(Index("1/5a5"), FROM_LANG) < Usage(
+        Index("3/11b2-3"), FROM_LANG
+    )
+    assert Usage(Index("3/11b2-3"), FROM_LANG) > Usage(
+        Index("1/W168a14-15"), FROM_LANG
+    )
+
+    assert Usage(Index("1/8a13"), FROM_LANG) > Usage(
+        Index("1/5d9(2)"), FROM_LANG
     )
 
 
 def test_sort_usage():
     ss1 = SortedSet(
         [
-            Usage(Index.unpack("2/6a8"), UsageContent(FROM_LANG)),
-            Usage(Index.unpack("2/W167c4"), UsageContent(FROM_LANG)),
-            Usage(Index.unpack("1/W167c4"), UsageContent(FROM_LANG)),
-            Usage(Index.unpack("1/6a8"), UsageContent(FROM_LANG)),
+            Usage(Index("2/6a8"), UsageContent(FROM_LANG)),
+            Usage(Index("2/W167c4"), UsageContent(FROM_LANG)),
+            Usage(Index("1/W167c4"), UsageContent(FROM_LANG)),
+            Usage(Index("1/6a8"), UsageContent(FROM_LANG)),
         ]
     )
     assert ss1 == SortedSet(
         [
-            Usage(Index.unpack("1/6a8"), UsageContent(FROM_LANG)),
-            Usage(Index.unpack("1/W167c4"), UsageContent(FROM_LANG)),
-            Usage(Index.unpack("2/W167c4"), UsageContent(FROM_LANG)),
-            Usage(Index.unpack("2/6a8"), UsageContent(FROM_LANG)),
+            Usage(Index("1/6a8"), UsageContent(FROM_LANG)),
+            Usage(Index("1/W167c4"), UsageContent(FROM_LANG)),
+            Usage(Index("2/W167c4"), UsageContent(FROM_LANG)),
+            Usage(Index("2/6a8"), UsageContent(FROM_LANG)),
         ]
     )
 
     ss2 = SortedSet(
         [
             Usage(
-                Index.unpack("1/W168a25"),
+                Index("1/W168a25"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -66,13 +66,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=False,
-                    page=5,
-                    col="a",
-                    row=4,
-                ),
+                Index("1/5a4"),
                 UsageContent(TO_LANG, word="μονογενὴς"),
                 UsageContent(
                     FROM_LANG,
@@ -80,13 +74,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=False,
-                    page=4,
-                    col="c",
-                    row=15,
-                ),
+                Index("1/4c15"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -97,7 +85,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index.unpack("1/W168a25"),
+                Index("1/W168a25"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -111,20 +99,14 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=True,
-                    page=168,
-                    col="a",
-                    row=28,
-                ),
+                Index("1/W168a28"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
                 ),
             ),
             Usage(
-                Index.unpack("1/W168a25"),
+                Index("1/W168a25"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -140,13 +122,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=False,
-                    page=5,
-                    col="a",
-                    row=4,
-                ),
+                Index("1/5a4"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενὴς",
@@ -156,13 +132,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=False,
-                    page=4,
-                    col="c",
-                    row=15,
-                ),
+                Index("1/4c15"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -176,13 +146,7 @@ def test_sort_usage():
     assert ss2 == SortedSet(
         [
             Usage(
-                Index(
-                    ch=1,
-                    alt=False,
-                    page=4,
-                    col="c",
-                    row=15,
-                ),
+                Index("1/4c15"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -193,13 +157,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=False,
-                    page=4,
-                    col="c",
-                    row=15,
-                ),
+                Index("1/4c15"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -209,13 +167,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=False,
-                    page=5,
-                    col="a",
-                    row=4,
-                ),
+                Index("1/5a4"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενὴς",
@@ -226,13 +178,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=False,
-                    page=5,
-                    col="a",
-                    row=4,
-                ),
+                Index("1/5a4"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενὴς",
@@ -242,7 +188,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index.unpack("1/W168a25"),
+                Index("1/W168a25"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -258,20 +204,14 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index(
-                    ch=1,
-                    alt=True,
-                    page=168,
-                    col="a",
-                    row=28,
-                ),
+                Index("1/W168a28"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
                 ),
             ),
             Usage(
-                Index.unpack("1/W168a25"),
+                Index("1/W168a25"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -285,7 +225,7 @@ def test_sort_usage():
                 ),
             ),
             Usage(
-                Index.unpack("1/W168a25"),
+                Index("1/W168a25"),
                 UsageContent(
                     TO_LANG,
                     word="μονογενοῦς",
@@ -314,7 +254,7 @@ def test_alternative():
     )
 
     assert Usage(
-        Index.unpack("5/21a19"),
+        Index("5/21a19"),
         UsageContent(
             FROM_LANG,
             Source("WGH"),
@@ -327,7 +267,7 @@ def test_alternative():
         ),
         UsageContent(TO_LANG, cnt=2),
     ) != Usage(
-        Index.unpack("5/21a19"),
+        Index("5/21a19"),
         UsageContent(
             FROM_LANG,
             Source("WGH"),

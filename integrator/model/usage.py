@@ -90,8 +90,8 @@ class Usage:
         """
         >>> ta1 = Alternative("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
         >>> ta2 = Alternative("\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"})
-        >>> a = Usage(Index.unpack("1/W168a25"), UsageContent("gr", word="μονογενοῦς"), UsageContent("sl", Source("H"), ta1))
-        >>> b = Usage(Index.unpack("1/W168a25"), UsageContent("gr", word="μονογενοῦς"), UsageContent("sl", Source("G"), ta2))
+        >>> a = Usage(Index("1/W168a25"), UsageContent("gr", word="μονογενοῦς"), UsageContent("sl", Source("H"), ta1))
+        >>> b = Usage(Index("1/W168a25"), UsageContent("gr", word="μονογενοῦς"), UsageContent("sl", Source("G"), ta2))
         >>> a == b
         False
 
@@ -99,8 +99,8 @@ class Usage:
         >> vw = {Source("GH"): ("пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G", 1)}
         >> oa1 = Alternative(var_lemmas=vl, var_words=vw)
         >> oa2 = Alternative(main_lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205", main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть")
-        >> a = Usage(Index.unpack("5/28c21-d1"), UsageContent("sl", alt=oa1, word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть"))
-        >> b = Usage(Index.unpack("5/28c21-d1"), UsageContent("sl", Source("GH"), oa2, "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G"))
+        >> a = Usage(Index("5/28c21-d1"), UsageContent("sl", alt=oa1, word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть"))
+        >> b = Usage(Index("5/28c21-d1"), UsageContent("sl", Source("GH"), oa2, "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G"))
         >> a == b
         False
         """
@@ -143,14 +143,14 @@ class Usage:
 
     def __lt__(self, other) -> bool:
         """
-        >>> i = Index(1, False, 7, "c", 6)
+        >>> i = Index("1/7c6")
         >>> s = Source("WH")
         >>> a = Usage(i, UsageContent("sl", s, Alternative("аще", main_word="аще"), "om."))
         >>> b = Usage(i, UsageContent("sl", s, Alternative("\ue205 conj.", main_word="\ue205"), "om."))
         >>> a < b
         True
 
-        >>> i = Index(5, False, 22, "b", 5)
+        >>> i = Index("5/22b5")
         >>> s = Source("GH")
         >>> a = Usage(i, UsageContent("sl", s, Alternative("слꙑшат\ue205", main_word="слꙑшат\ue205"), "оуслышат\ue205 GH"))
         >>> b = Usage(i, UsageContent("sl", s, Alternative("послꙑшат\ue205", main_word="послꙑшат\ue205"), "оуслышат\ue205 GH", cnt=2))
@@ -177,4 +177,4 @@ class Usage:
 
     # def __repr__(self) -> str:
     #     return f"Usage({repr(self.idx)}, {self.orig}, {self.trans})"
-    #     # return f"Usage(Index.unpack('{repr(self.idx)}'), {self.orig}, {self.trans})"
+    #     # return f"Usage(Index('{repr(self.idx)}'), {self.orig}, {self.trans})"

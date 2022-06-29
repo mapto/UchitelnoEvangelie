@@ -73,7 +73,7 @@ def _generate_index(par, u: Usage) -> None:
 def _is_orig_alt(u: Usage) -> bool:
     """
     >>> from model import Alternative, Index, UsageContent
-    >>> i = Index.unpack("5/28d18")
+    >>> i = Index("5/28d18")
 
     >>> vl0 = {Source("H"): "шьств\ue205\ue201 пѫт\ue205", Source("G"): "other"}
     >>> vw0 = {Source("G"): ("other", 1), Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)}
@@ -117,7 +117,7 @@ def _generate_usage(par, u: Usage) -> None:
     if u.orig.alt.main_word and u.orig.alt.main_word not in u.orig.word:
         _generate_text(par, " ")
         _generate_text(par, u.orig.alt.main_word, fonts[u.orig.lang])
-        _generate_text(par, f" {main_source(u.orig.lang, u.idx.alt)}")
+        _generate_text(par, f" {main_source(u.orig.lang, u.idx.data[2] == 'W')}")
         if u.orig.alt.main_cnt > 1:
             _generate_text(
                 par, subscript(u.orig.alt.main_cnt, u.orig.lang), subscript=True
@@ -130,7 +130,7 @@ def _generate_usage(par, u: Usage) -> None:
     if u.trans.alt.main_word:
         _generate_text(par, " ")
         _generate_text(par, u.trans.alt.main_word, fonts[u.trans.lang])
-        _generate_text(par, f" {main_source(u.trans.lang, u.idx.alt)}")
+        _generate_text(par, f" {main_source(u.trans.lang, u.idx.data[2] == 'W')}")
         if u.trans.alt.main_cnt > 1:
             _generate_text(
                 par, subscript(u.trans.alt.main_cnt, u.trans.lang), subscript=True

@@ -204,7 +204,7 @@ class LangSemantics:
                     continue
                 (oword, olemma, ocnt) = self.compile_words_by_lemma(row, rolv)
                 (tword, tlemma, tcnt) = trans.compile_words_by_lemma(row, tvar)
-                idx = Index.unpack(row[IDX_COL])
+                idx = Index(row[IDX_COL])
                 ocontent = _build_content(row, self, rolv, oword, ocnt)
                 tcontent = _build_content(row, trans, tvar, tword, tcnt)
                 b = "bold" in row[STYLE_COL]
