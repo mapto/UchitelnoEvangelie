@@ -2,10 +2,12 @@ from .address import Index
 
 from setup import address_less
 
+
 def test_index_longstr():
     assert Index("1/W167c4").longstr() == "01/W167c04"
 
     assert Index("1/7c4-68a1").longstr() == "01/007c04-068a01"
+
 
 def test_index_unpack():
     assert str(Index("1/6c4")) == "1/6c4"

@@ -112,18 +112,7 @@ def _expand_and_aggregate(
     assert orig  # for mypy
     assert trans  # for mypy
 
-    if int(row[orig.cnt_col]) > 1:
-        row[IDX_COL] += f"[{row[orig.cnt_col]}]"
-    if int(row[trans.cnt_col]) > 1:
-        row[IDX_COL] += f"{{{row[trans.cnt_col]}}}"
-
     result = _agg_lemma(row, orig, trans, d)
-
-    if int(row[trans.cnt_col]) > 1:
-        row[IDX_COL] = row[IDX_COL][:-3]
-    if int(row[orig.cnt_col]) > 1:
-        row[IDX_COL] = row[IDX_COL][:-3]
-
     return result
 
 

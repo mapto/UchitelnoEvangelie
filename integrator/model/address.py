@@ -8,6 +8,7 @@ IDX_SEP = "-"  # used to show index/address ranges
 alpha = r"^([A-Za-z]*)(.*)$"
 numeric = r"^([0-9]*)(.*)$"
 
+
 class Index:
     _less: Optional[Callable] = None
     # end: Optional["Index"] = None
@@ -38,7 +39,7 @@ class Index:
         >>> i.end.data
         [3, '/', 15, 'b', 1]
         """
-        self.data : List[Any] = []
+        self.data: List[Any] = []
         self.end: Optional[Index] = None
 
         rest = value
@@ -83,7 +84,7 @@ class Index:
                 if le < ls:
                     edata = self.data[:-le] + self.end.data
                     self.end.data = edata
-                    # i = "".join(str(d) for d in edata) 
+                    # i = "".join(str(d) for d in edata)
                     # self.end = Index(i)
                 if self.data == self.end.data:
                     self.end = None
@@ -96,7 +97,6 @@ class Index:
 
     def __hash__(self):
         return hash((tuple(self.data), self.end))
-
 
     def __eq__(self, other) -> bool:
         if type(other) != Index:
@@ -146,7 +146,7 @@ class Index:
         s = "".join(str(d) for d in self.data)
         if not self.end:
             return s
-        for i,v in enumerate(self.end.data):
+        for i, v in enumerate(self.end.data):
             if self.data[i] != v:
                 return s + "-" + "".join(str(d) for d in self.end.data[i:])
         raise Exception(f"ГРЕШКА: Съвпадащи начален и краен адрес/индекс")
@@ -155,31 +155,30 @@ class Index:
         # print(Index.maxlen)
         # print(self.data)
         # if self.end:
-            # print(self.end.data)
+        # print(self.end.data)
         ld: List[str] = []
         for i, d in enumerate(self.data):
             if type(d) == int:
-                f = f"{{:0{Index.maxlen[i]}d}}" 
+                f = f"{{:0{Index.maxlen[i]}d}}"
                 ld += [f.format(d)]
             else:
                 ld += [d]
         s = "".join(ld)
         if not self.end:
             return s
-        for i,v in enumerate(self.end.data):
+        for i, v in enumerate(self.end.data):
             # print(f"{i}: {self.data[i]}/{v}")
             if self.data[i] != v:
                 lde = []
                 for j in range(i, len(self.end.data)):
                     # print(f"{j}: {self.data[j]}/{self.end.data[j]}")
                     if type(self.end.data[j]) == int:
-                        f = f"{{:0{Index.maxlen[j]}d}}" 
+                        f = f"{{:0{Index.maxlen[j]}d}}"
                         lde += [f.format(self.end.data[j])]
                     else:
                         lde += [self.end.data[j]]
                 return s + "-" + "".join(lde)
         raise Exception(f"ГРЕШКА: Съвпадащи начален и краен адрес/индекс")
-
 
     def __repr__(self) -> str:
         """

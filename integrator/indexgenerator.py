@@ -12,7 +12,7 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "0.2.5"  # used also by build.sh script
+__version__ = "0.3.0"  # used also by build.sh script
 
 from os import path
 from glob import glob

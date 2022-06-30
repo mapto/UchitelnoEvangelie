@@ -6,29 +6,15 @@ from model import Alternative, Index, Source, Usage, UsageContent
 
 
 def test_order_usage():
-    assert Usage(Index("1/6a8"), FROM_LANG) < Usage(
-        Index("1/6a17"), FROM_LANG
-    )
-    assert Usage(Index("1/6a8"), FROM_LANG) < Usage(
-        Index("1/W167c4"), FROM_LANG
-    )
-    assert Usage(Index("2/6a8"), FROM_LANG) > Usage(
-        Index("2/W167c4"), FROM_LANG
-    )
+    assert Usage(Index("1/6a8"), FROM_LANG) < Usage(Index("1/6a17"), FROM_LANG)
+    assert Usage(Index("1/6a8"), FROM_LANG) < Usage(Index("1/W167c4"), FROM_LANG)
+    assert Usage(Index("2/6a8"), FROM_LANG) > Usage(Index("2/W167c4"), FROM_LANG)
 
-    assert Usage(Index("1/8b5-6"), FROM_LANG) > Usage(
-        Index("1/5a5"), FROM_LANG
-    )
-    assert Usage(Index("1/5a5"), FROM_LANG) < Usage(
-        Index("3/11b2-3"), FROM_LANG
-    )
-    assert Usage(Index("3/11b2-3"), FROM_LANG) > Usage(
-        Index("1/W168a14-15"), FROM_LANG
-    )
+    assert Usage(Index("1/8b5-6"), FROM_LANG) > Usage(Index("1/5a5"), FROM_LANG)
+    assert Usage(Index("1/5a5"), FROM_LANG) < Usage(Index("3/11b2-3"), FROM_LANG)
+    assert Usage(Index("3/11b2-3"), FROM_LANG) > Usage(Index("1/W168a14-15"), FROM_LANG)
 
-    assert Usage(Index("1/8a13"), FROM_LANG) > Usage(
-        Index("1/5d9(2)"), FROM_LANG
-    )
+    assert Usage(Index("1/8a13"), FROM_LANG) > Usage(Index("1/5d9(2)"), FROM_LANG)
 
 
 def test_sort_usage():
