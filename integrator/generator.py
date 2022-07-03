@@ -11,7 +11,7 @@ from const import INDENT_CH, SPECIAL_CHARS
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 from util import main_source, subscript
-from model import Alternative, Usage, UsageContent
+from model import Alternative, Alignment, Usage
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, fonts
@@ -21,7 +21,7 @@ BULLET_STYLE = "List Bullet"
 LEVEL_OFFSET = 0.4
 
 
-def _generate_usage_alt_vars(par, uc: UsageContent) -> None:
+def _generate_usage_alt_vars(par, uc: Usage) -> None:
     first = True
     _generate_text(par, f" {BRACE_OPEN[uc.lang]}")
     for lsrc, lemma in uc.alt.var_lemmas.items():
@@ -44,7 +44,7 @@ def _generate_usage_alt_vars(par, uc: UsageContent) -> None:
     _generate_text(par, BRACE_CLOSE[uc.lang])
 
 
-def _generate_index(par, u: Usage) -> None:
+def _generate_index(par, u: Alignment) -> None:
     s = str(u.idx)
     _generate_text(par, s, bold=u.bold, italic=u.italic)
 
@@ -69,7 +69,7 @@ def _generate_index(par, u: Usage) -> None:
             _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
 
 
-def _generate_usage(par, u: Usage) -> None:
+def _generate_usage(par, u: Alignment) -> None:
     _generate_index(par, u)
     if not u.orig.alt and not u.trans.alt:
         return

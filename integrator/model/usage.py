@@ -10,7 +10,7 @@ from .model import Alternative
 
 
 @dataclass(frozen=True)
-class UsageContent:
+class Usage:
     """Here alt means other transcriptions (main or var)"""
 
     lang: str = ""
@@ -21,7 +21,7 @@ class UsageContent:
     cnt: int = 1
 
     # def __eq__(self, other) -> bool:
-    #     if type(other) != "UsageContent":
+    #     if type(other) != "Usage":
     #         return False
     #     return (self.lang == other.lang
     #         and self.var == other.var
@@ -36,14 +36,14 @@ class UsageContent:
     def __lt__(self, other) -> bool:
         """
         >>> s = Source("WH")
-        >>> a = UsageContent("sl", s, Alternative("аще", main_word="аще"), "om.")
-        >>> b = UsageContent("sl", s, Alternative("\ue205 conj.", main_word="\ue205"), "om.")
+        >>> a = Usage("sl", s, Alternative("аще", main_word="аще"), "om.")
+        >>> b = Usage("sl", s, Alternative("\ue205 conj.", main_word="\ue205"), "om.")
         >>> a < b
         True
 
         >>> s = Source("GH")
-        >>> a = UsageContent("sl", s, Alternative("слꙑшат\ue205", main_word="слꙑшат\ue205"), "оуслышат\ue205 GH")
-        >>> b = UsageContent("sl", s, Alternative("послꙑшат\ue205", main_word="послꙑшат\ue205"), "оуслышат\ue205 GH", cnt=2)
+        >>> a = Usage("sl", s, Alternative("слꙑшат\ue205", main_word="слꙑшат\ue205"), "оуслышат\ue205 GH")
+        >>> b = Usage("sl", s, Alternative("послꙑшат\ue205", main_word="послꙑшат\ue205"), "оуслышат\ue205 GH", cnt=2)
         >>> a < b
         True
         """
@@ -72,14 +72,14 @@ class UsageContent:
     #     if self.alt:
     #         params += [f"alt={self.alt}"]
     #     cnt = f", cnt={self.cnt}" if self.cnt > 1 else ""
-    #     return f"UsageContent({', '.join(params)}, word='{self.word}', lemmas={self.lemmas}{cnt})"
+    #     return f"Usage({', '.join(params)}, word='{self.word}', lemmas={self.lemmas}{cnt})"
 
 
 @dataclass(frozen=True)
-class Usage:
+class Alignment:
     idx: Index
-    orig: UsageContent = field(default_factory=lambda: UsageContent())
-    trans: UsageContent = field(default_factory=lambda: UsageContent())
+    orig: Usage = field(default_factory=lambda: Usage())
+    trans: Usage = field(default_factory=lambda: Usage())
     bold: bool = False
     italic: bool = False
 
@@ -90,8 +90,8 @@ class Usage:
         """
         >>> ta1 = Alternative("\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"})
         >>> ta2 = Alternative("\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"})
-        >>> a = Usage(Index("1/W168a25"), UsageContent("gr", word="μονογενοῦς"), UsageContent("sl", Source("H"), ta1))
-        >>> b = Usage(Index("1/W168a25"), UsageContent("gr", word="μονογενοῦς"), UsageContent("sl", Source("G"), ta2))
+        >>> a = Alignment(Index("1/W168a25"), Usage("gr", word="μονογενοῦς"), Usage("sl", Source("H"), ta1))
+        >>> b = Alignment(Index("1/W168a25"), Usage("gr", word="μονογενοῦς"), Usage("sl", Source("G"), ta2))
         >>> a == b
         False
 
@@ -99,12 +99,12 @@ class Usage:
         >> vw = {Source("GH"): ("пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G", 1)}
         >> oa1 = Alternative(var_lemmas=vl, var_words=vw)
         >> oa2 = Alternative(main_lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205", main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть")
-        >> a = Usage(Index("5/28c21-d1"), UsageContent("sl", alt=oa1, word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть"))
-        >> b = Usage(Index("5/28c21-d1"), UsageContent("sl", Source("GH"), oa2, "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G"))
+        >> a = Alignment(Index("5/28c21-d1"), Usage("sl", alt=oa1, word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть"))
+        >> b = Alignment(Index("5/28c21-d1"), Usage("sl", Source("GH"), oa2, "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G"))
         >> a == b
         False
         """
-        if type(other) != Usage:
+        if type(other) != Alignment:
             return False
         return (
             self.idx == other.idx
@@ -124,7 +124,7 @@ class Usage:
         usage should not be counted a second time
         see counter.py::_present
         """
-        if type(other) != Usage:
+        if type(other) != Alignment:
             return False
         mine = self.orig
         hers = other.orig
@@ -145,15 +145,15 @@ class Usage:
         """
         >>> i = Index("1/7c6")
         >>> s = Source("WH")
-        >>> a = Usage(i, UsageContent("sl", s, Alternative("аще", main_word="аще"), "om."))
-        >>> b = Usage(i, UsageContent("sl", s, Alternative("\ue205 conj.", main_word="\ue205"), "om."))
+        >>> a = Alignment(i, Usage("sl", s, Alternative("аще", main_word="аще"), "om."))
+        >>> b = Alignment(i, Usage("sl", s, Alternative("\ue205 conj.", main_word="\ue205"), "om."))
         >>> a < b
         True
 
         >>> i = Index("5/22b5")
         >>> s = Source("GH")
-        >>> a = Usage(i, UsageContent("sl", s, Alternative("слꙑшат\ue205", main_word="слꙑшат\ue205"), "оуслышат\ue205 GH"))
-        >>> b = Usage(i, UsageContent("sl", s, Alternative("послꙑшат\ue205", main_word="послꙑшат\ue205"), "оуслышат\ue205 GH", cnt=2))
+        >>> a = Alignment(i, Usage("sl", s, Alternative("слꙑшат\ue205", main_word="слꙑшат\ue205"), "оуслышат\ue205 GH"))
+        >>> b = Alignment(i, Usage("sl", s, Alternative("послꙑшат\ue205", main_word="послꙑшат\ue205"), "оуслышат\ue205 GH", cnt=2))
         >>> a < b
         True
         """
@@ -176,5 +176,5 @@ class Usage:
         return not self < other
 
     # def __repr__(self) -> str:
-    #     return f"Usage({repr(self.idx)}, {self.orig}, {self.trans})"
-    #     # return f"Usage(Index('{repr(self.idx)}'), {self.orig}, {self.trans})"
+    #     return f"Alignment({repr(self.idx)}, {self.orig}, {self.trans})"
+    #     # return f"Alignment(Index('{repr(self.idx)}'), {self.orig}, {self.trans})"

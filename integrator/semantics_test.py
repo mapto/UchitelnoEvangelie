@@ -2,7 +2,7 @@ from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
 from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
-from model import Alternative, Index, Path, Source, Usage, UsageContent
+from model import Alternative, Index, Path, Source, Alignment, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 from semantics import _add_usage, _build_content
 from setup import sl_sem, gr_sem
@@ -198,10 +198,10 @@ def test_build_paths_puteshestive():
 
 def test_add_usage():
     usages = [
-        Usage(
+        Alignment(
             Index("1/W168a25"),
-            UsageContent("gr", word="μονογενοῦς"),
-            UsageContent(
+            Usage("gr", word="μονογενοῦς"),
+            Usage(
                 "sl",
                 Source("G"),
                 alt=Alternative(
@@ -210,26 +210,26 @@ def test_add_usage():
                 ),
             ),
         ),
-        Usage(
+        Alignment(
             Index("1/5a4"),
-            UsageContent("gr", word="μονογενὴς"),
-            UsageContent(
+            Usage("gr", word="μονογενὴς"),
+            Usage(
                 "sl",
                 alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
             ),
         ),
-        Usage(
+        Alignment(
             Index("1/4c15"),
-            UsageContent("gr", word="μονογενοῦς"),
-            UsageContent(
+            Usage("gr", word="μονογενοῦς"),
+            Usage(
                 "sl",
                 alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
             ),
         ),
-        Usage(
+        Alignment(
             Index("1/W168a25"),
-            UsageContent("gr", word="μονογενοῦς"),
-            UsageContent(
+            Usage("gr", word="μονογενοῦς"),
+            Usage(
                 "sl",
                 Source("H"),
                 alt=Alternative(
@@ -238,14 +238,14 @@ def test_add_usage():
                 ),
             ),
         ),
-        Usage(
+        Alignment(
             Index("1/W168a28"),
-            UsageContent("gr", word="μονογενοῦς"),
+            Usage("gr", word="μονογενοῦς"),
         ),
-        Usage(
+        Alignment(
             Index("1/W168a25"),
-            UsageContent("gr", word="μονογενοῦς"),
-            UsageContent(
+            Usage("gr", word="μονογενοῦς"),
+            Usage(
                 "sl",
                 alt=Alternative(
                     var_lemmas={
@@ -255,19 +255,19 @@ def test_add_usage():
                 ),
             ),
         ),
-        Usage(
+        Alignment(
             Index("1/5a4"),
-            UsageContent("gr", word="μονογενὴς"),
-            UsageContent(
+            Usage("gr", word="μονογενὴς"),
+            Usage(
                 "sl",
                 Source("WH"),
                 alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
             ),
         ),
-        Usage(
+        Alignment(
             Index("1/4c15"),
-            UsageContent("gr", word="μονογενοῦς"),
-            UsageContent(
+            Usage("gr", word="μονογενοῦς"),
+            Usage(
                 "sl",
                 Source("WH"),
                 alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
@@ -283,48 +283,48 @@ def test_add_usage():
             "": {
                 ("", ""): SortedSet(
                     [
-                        Usage(
+                        Alignment(
                             Index("1/4c15"),
-                            UsageContent("gr", word="μονογενοῦς"),
-                            UsageContent(
+                            Usage("gr", word="μονογενοῦς"),
+                            Usage(
                                 "sl",
                                 alt=Alternative(
                                     var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
                                 ),
                             ),
                         ),
-                        Usage(
+                        Alignment(
                             Index("1/4c15"),
-                            UsageContent("gr", word="μονογενοῦς"),
-                            UsageContent(
+                            Usage("gr", word="μονογενοῦς"),
+                            Usage(
                                 "sl",
                                 Source("WH"),
                                 alt=Alternative(main_lemma="\ue205но\ue20dѧдъ"),
                             ),
                         ),
-                        Usage(
+                        Alignment(
                             Index("1/5a4"),
-                            UsageContent("gr", word="μονογενὴς"),
-                            UsageContent(
+                            Usage("gr", word="μονογενὴς"),
+                            Usage(
                                 "sl",
                                 alt=Alternative(
                                     var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}
                                 ),
                             ),
                         ),
-                        Usage(
+                        Alignment(
                             Index("1/5a4"),
-                            UsageContent("gr", word="μονογενὴς"),
-                            UsageContent(
+                            Usage("gr", word="μονογενὴς"),
+                            Usage(
                                 "sl",
                                 Source("WH"),
                                 alt=Alternative(main_lemma="\ue205но\ue20dѧдъ "),
                             ),
                         ),
-                        Usage(
+                        Alignment(
                             Index("1/W168a25"),
-                            UsageContent("gr", word="μονογενοῦς"),
-                            UsageContent(
+                            Usage("gr", word="μονογενοῦς"),
+                            Usage(
                                 "sl",
                                 alt=Alternative(
                                     var_lemmas={
@@ -334,14 +334,14 @@ def test_add_usage():
                                 ),
                             ),
                         ),
-                        Usage(
+                        Alignment(
                             Index("1/W168a28"),
-                            UsageContent("gr", word="μονογενοῦς"),
+                            Usage("gr", word="μονογενοῦς"),
                         ),
-                        Usage(
+                        Alignment(
                             Index("1/W168a25"),
-                            UsageContent("gr", word="μονογενοῦς"),
-                            UsageContent(
+                            Usage("gr", word="μονογενοῦς"),
+                            Usage(
                                 "sl",
                                 Source("G"),
                                 alt=Alternative(
@@ -350,10 +350,10 @@ def test_add_usage():
                                 ),
                             ),
                         ),
-                        Usage(
+                        Alignment(
                             Index("1/W168a25"),
-                            UsageContent("gr", word="μονογενοῦς"),
-                            UsageContent(
+                            Usage("gr", word="μονογενοῦς"),
+                            Usage(
                                 "sl",
                                 Source("H"),
                                 alt=Alternative(
@@ -371,9 +371,9 @@ def test_add_usage():
 
 def test_add_usage_puteshestvie():
     usages = [
-        Usage(
+        Alignment(
             Index("5/28d18"),
-            UsageContent(
+            Usage(
                 "sl",
                 Source("G"),
                 alt=Alternative(
@@ -384,9 +384,9 @@ def test_add_usage_puteshestvie():
                 word="пꙋт\ue205 GH шьст\ue205ꙗ G",
             ),
         ),
-        Usage(
+        Alignment(
             Index("5/28d18"),
-            UsageContent(
+            Usage(
                 "sl",
                 Source("H"),
                 alt=Alternative(
@@ -405,9 +405,9 @@ def test_add_usage_puteshestvie():
         "ὁδοιπορία": {
             ("пꙋт\ue205 GH шьст\ue205ꙗ G", "ὁδοιπορίας"): SortedSet(
                 [
-                    Usage(
+                    Alignment(
                         Index("5/28d18"),
-                        UsageContent(
+                        Usage(
                             "sl",
                             Source("G"),
                             Alternative(
@@ -420,9 +420,9 @@ def test_add_usage_puteshestvie():
                             word="пꙋт\ue205 GH шьст\ue205ꙗ G",
                         ),
                     ),
-                    Usage(
+                    Alignment(
                         Index("5/28d18"),
-                        UsageContent(
+                        Usage(
                             "sl",
                             Source("H"),
                             Alternative(
@@ -579,7 +579,7 @@ def test_build_content():
         + ["1"] * 4
     )
     result = _build_content(row, sl_sem.var, Source("GH"), "\ue201сть GH", 1)
-    assert result == UsageContent(
+    assert result == Usage(
         lang="sl",
         var=Source("GH"),
         alt=Alternative(main_lemma="om.", main_word="om."),

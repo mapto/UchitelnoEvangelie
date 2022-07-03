@@ -4,7 +4,7 @@ from const import FROM_LANG, TO_LANG
 from config import FROM_LANG
 from const import IDX_COL, STYLE_COL
 
-from model import Alternative, Index, Source, Usage, UsageContent
+from model import Alternative, Index, Source, Alignment, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import aggregate
 
@@ -107,12 +107,12 @@ def test_monogenis():
                     "\ue201д\ue205нородъ": {
                         ("μονογενοῦς", "\ue201д\ue205нородоу H"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/W168a25"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", word="μονογενοῦς", lemmas=["μονογενής"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         Source("H"),
                                         alt=Alternative(
@@ -140,12 +140,12 @@ def test_monogenis():
                     "\ue201д\ue205но\ue20dѧдъ": {
                         ("μονογενοῦς", "\ue201д\ue205но\ue20dедаго"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/W168a28"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", word="μονογενοῦς", lemmas=["μονογενής"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         word="\ue201д\ue205но\ue20dедаго",
                                         lemmas=["\ue201д\ue205но\ue20dѧдъ"],
@@ -155,12 +155,12 @@ def test_monogenis():
                         ),
                         ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/W168a25"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", word="μονογενοῦς", lemmas=["μονογενής"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         alt=Alternative(
                                             var_lemmas={
@@ -188,12 +188,12 @@ def test_monogenis():
                         ),
                         ("μονογενοῦς", "\ue201д\ue205но\ue20dедѣмь WH"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/4c15"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", word="μονογενοῦς", lemmas=["μονογενής"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         Source("WH"),
                                         alt=Alternative(
@@ -208,12 +208,10 @@ def test_monogenis():
                         ),
                         ("μονογενὴς", "\ue201д\ue205но\ue20dеды WH"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/5a4"),
-                                    UsageContent(
-                                        "gr", word="μονογενὴς", lemmas=["μονογενής"]
-                                    ),
-                                    UsageContent(
+                                    Usage("gr", word="μονογενὴς", lemmas=["μονογενής"]),
+                                    Usage(
                                         "sl",
                                         var=Source("WH"),
                                         alt=Alternative(
@@ -230,12 +228,12 @@ def test_monogenis():
                     "\ue205но\ue20dѧдъ": {
                         ("μονογενοῦς", "\ue205но\ue20dадѣмь"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/4c15"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", word="μονογενοῦς", lemmas=["μονογενής"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         alt=Alternative(
                                             var_lemmas={
@@ -256,12 +254,12 @@ def test_monogenis():
                         ),
                         ("μονογενοῦς", "\ue205но\ue20dедаго G"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/W168a25"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", word="μονογενοῦς", lemmas=["μονογενής"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         var=Source("G"),
                                         alt=Alternative(
@@ -287,12 +285,10 @@ def test_monogenis():
                         ),
                         ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/5a4"),
-                                    UsageContent(
-                                        "gr", word="μονογενὴς", lemmas=["μονογενής"]
-                                    ),
-                                    UsageContent(
+                                    Usage("gr", word="μονογενὴς", lemmas=["μονογενής"]),
+                                    Usage(
                                         "sl",
                                         alt=Alternative(
                                             var_lemmas={
@@ -356,9 +352,9 @@ def test_ipercliso():
                     "прѣ\ue205сто\ue20d\ue205т\ue205": {
                         ("ὑπερκλύζων", "прѣ\ue205сто\ue20dе"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/W168c17"),
-                                    UsageContent(
+                                    Usage(
                                         "gr",
                                         alt=Alternative(
                                             var_lemmas={Source("C"): "ὑπερβλύω"},
@@ -369,7 +365,7 @@ def test_ipercliso():
                                         word="ὑπερκλύζων",
                                         lemmas=["ὑπερκλύζω"],
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         word="прѣ\ue205сто\ue20dе",
                                         lemmas=["прѣ\ue205сто\ue20d\ue205т\ue205"],
@@ -385,9 +381,9 @@ def test_ipercliso():
                     "\ue205сто\ue20dен\ue205\ue201": {
                         ("ὑπερκλύσαι", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/W168c17"),
-                                    UsageContent(
+                                    Usage(
                                         "gr",
                                         alt=Alternative(
                                             var_lemmas={Source("C"): "ὑπερβλύω"},
@@ -398,7 +394,7 @@ def test_ipercliso():
                                         word="ὑπερκλύσαι",
                                         lemmas=["ὑπερκλύζω", "inf."],
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         word="\ue205сто\ue20dен\ue205\ue205",
                                         lemmas=["\ue205сто\ue20dен\ue205\ue201"],
@@ -421,9 +417,9 @@ def test_ipercliso():
                     "прѣ\ue205сто\ue20d\ue205т\ue205": {
                         ("ὑπερβλύζων C", "прѣ\ue205сто\ue20dе"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/W168c17"),
-                                    UsageContent(
+                                    Usage(
                                         "gr",
                                         var=Source("C"),
                                         alt=Alternative(
@@ -433,7 +429,7 @@ def test_ipercliso():
                                         word="ὑπερβλύζων C",
                                         lemmas=["ὑπερβλύω"],
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         word="прѣ\ue205сто\ue20dе",
                                         lemmas=["прѣ\ue205сто\ue20d\ue205т\ue205"],
@@ -449,9 +445,9 @@ def test_ipercliso():
                     "\ue205сто\ue20dен\ue205\ue201": {
                         ("ὑπερβλύσαι C", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/W168c17"),
-                                    UsageContent(
+                                    Usage(
                                         "gr",
                                         var=Source("C"),
                                         alt=Alternative(
@@ -461,7 +457,7 @@ def test_ipercliso():
                                         word="ὑπερβλύσαι C",
                                         lemmas=["ὑπερβλύω", "inf."],
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         word="\ue205сто\ue20dен\ue205\ue205",
                                         lemmas=["\ue205сто\ue20dен\ue205\ue201"],
@@ -531,9 +527,9 @@ def test_bozhii():
                         "θεός Gen.": {
                             ("боꙁѣ", "Θεοῦ"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("1/7a4"),
-                                        UsageContent(
+                                        Usage(
                                             FROM_LANG,
                                             alt=Alternative(
                                                 var_lemmas={
@@ -549,7 +545,7 @@ def test_bozhii():
                                             word="боꙁѣ",
                                             lemmas=["богъ", "Dat."],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr", word="Θεοῦ", lemmas=["θεός", "Gen."]
                                         ),
                                     )
@@ -576,9 +572,9 @@ def test_bozhii():
                                 "Θεοῦ",
                             ): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("1/7a4"),
-                                        UsageContent(
+                                        Usage(
                                             FROM_LANG,
                                             var=Source("WGH"),
                                             alt=Alternative(
@@ -588,7 +584,7 @@ def test_bozhii():
                                             word="б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
                                             lemmas=["бож\ue205\ue205"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr", word="Θεοῦ", lemmas=["θεός", "Gen."]
                                         ),
                                     )
@@ -613,12 +609,10 @@ def test_bozhii():
                             "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
                         ): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("1/7a4"),
-                                    UsageContent(
-                                        "gr", word="Θεοῦ", lemmas=["θεός", "Gen."]
-                                    ),
-                                    UsageContent(
+                                    Usage("gr", word="Θεοῦ", lemmas=["θεός", "Gen."]),
+                                    Usage(
                                         "sl",
                                         var=Source("GHW"),
                                         alt=Alternative(
@@ -661,12 +655,12 @@ def test_bozhii():
                     "послꙑшат\ue205": {
                         ("ἀκοῦσαι", "послꙑшат\ue205"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/22b5"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", cnt=2, word="ἀκοῦσαι", lemmas=["ἀκούω"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         alt=Alternative(
                                             var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
@@ -684,12 +678,10 @@ def test_bozhii():
                     "слꙑшат\ue205": {
                         ("ἀκοῦσαι", "слꙑшат\ue205"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/22b5"),
-                                    UsageContent(
-                                        "gr", word="ἀκοῦσαι", lemmas=["ἀκούω"]
-                                    ),
-                                    UsageContent(
+                                    Usage("gr", word="ἀκοῦσαι", lemmas=["ἀκούω"]),
+                                    Usage(
                                         "sl",
                                         alt=Alternative(
                                             var_lemmas={Source("GH"): "ѹслꙑшат\ue205"},
@@ -707,12 +699,10 @@ def test_bozhii():
                     "ѹслꙑшат\ue205": {
                         ("ἀκοῦσαι", "оуслышат\ue205 GH"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/22b5"),
-                                    UsageContent(
-                                        "gr", word="ἀκοῦσαι", lemmas=["ἀκούω"]
-                                    ),
-                                    UsageContent(
+                                    Usage("gr", word="ἀκοῦσαι", lemmas=["ἀκούω"]),
+                                    Usage(
                                         "sl",
                                         var=Source("GH"),
                                         alt=Alternative(
@@ -723,12 +713,12 @@ def test_bozhii():
                                         lemmas=["ѹслꙑшат\ue205"],
                                     ),
                                 ),
-                                Usage(
+                                Alignment(
                                     Index("5/22b5"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", cnt=2, word="ἀκοῦσαι", lemmas=["ἀκούω"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         var=Source("GH"),
                                         alt=Alternative(
@@ -762,9 +752,9 @@ def test_bozhii():
                         "ἀκούω": {
                             ("оуслышат\ue205 GH", "ἀκοῦσαι"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/22b5"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("GH"),
                                             alt=Alternative(
@@ -774,13 +764,11 @@ def test_bozhii():
                                             word="оуслышат\ue205 GH",
                                             lemmas=["ѹслꙑшат\ue205"],
                                         ),
-                                        UsageContent(
-                                            "gr", word="ἀκοῦσαι", lemmas=["ἀκούω"]
-                                        ),
+                                        Usage("gr", word="ἀκοῦσαι", lemmas=["ἀκούω"]),
                                     ),
-                                    Usage(
+                                    Alignment(
                                         Index("5/22b5"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("GH"),
                                             alt=Alternative(
@@ -791,7 +779,7 @@ def test_bozhii():
                                             word="оуслышат\ue205 GH",
                                             lemmas=["ѹслꙑшат\ue205"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="ἀκοῦσαι",
                                             lemmas=["ἀκούω"],
@@ -817,9 +805,9 @@ def test_bozhii():
                         "ἀκούω": {
                             ("послꙑшат\ue205", "ἀκοῦσαι"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/22b5"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -835,7 +823,7 @@ def test_bozhii():
                                             word="послꙑшат\ue205",
                                             lemmas=["послꙑшат\ue205"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="ἀκοῦσαι",
                                             lemmas=["ἀκούω"],
@@ -856,9 +844,9 @@ def test_bozhii():
                         "ἀκούω": {
                             ("слꙑшат\ue205", "ἀκοῦσαι"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/22b5"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -874,9 +862,7 @@ def test_bozhii():
                                             word="слꙑшат\ue205",
                                             lemmas=["слꙑшат\ue205"],
                                         ),
-                                        UsageContent(
-                                            "gr", word="ἀκοῦσαι", lemmas=["ἀκούω"]
-                                        ),
+                                        Usage("gr", word="ἀκοῦσαι", lemmas=["ἀκούω"]),
                                     )
                                 ]
                             )
@@ -925,12 +911,10 @@ def test_velichanie():
                     "вел\ue205\ue20dан\ue205\ue201": {
                         ("ἄτυφον", "вел\ue205\ue20dан\ue205е WGH"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/21a19"),
-                                    UsageContent(
-                                        "gr", word="ἄτυφον", lemmas=["ἄτυφος"]
-                                    ),
-                                    UsageContent(
+                                    Usage("gr", word="ἄτυφον", lemmas=["ἄτυφος"]),
+                                    Usage(
                                         "sl",
                                         var=Source("WGH"),
                                         alt=Alternative(
@@ -947,12 +931,10 @@ def test_velichanie():
                     "невел\ue205\ue20dан\ue205\ue201": {
                         ("ἄτυφον", "невел\ue205\ue20dан\ue205\ue201"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/21a19"),
-                                    UsageContent(
-                                        "gr", word="ἄτυφον", lemmas=["ἄτυφος"]
-                                    ),
-                                    UsageContent(
+                                    Usage("gr", word="ἄτυφον", lemmas=["ἄτυφος"]),
+                                    Usage(
                                         "sl",
                                         alt=Alternative(
                                             var_lemmas={
@@ -971,12 +953,12 @@ def test_velichanie():
                                         lemmas=["невел\ue205\ue20dан\ue205\ue201"],
                                     ),
                                 ),
-                                Usage(
+                                Alignment(
                                     Index("5/21a19"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", cnt=2, word="ἄτυφον", lemmas=["ἄτυφος"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         alt=Alternative(
                                             var_lemmas={
@@ -1002,12 +984,12 @@ def test_velichanie():
                     "невел\ue205\ue20d\ue205\ue201": {
                         ("ἄτυφον", "невел\ue205\ue20d\ue205\ue201 WGH"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/21a19"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", cnt=2, word="ἄτυφον", lemmas=["ἄτυφος"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         var=Source("WGH"),
                                         alt=Alternative(
@@ -1036,12 +1018,10 @@ def test_velichanie():
                     "вел\ue205\ue20dан\ue205\ue201": {
                         ("ἄτυφον", "вел\ue205\ue20dан\ue205е WGH"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/21a19"),
-                                    UsageContent(
-                                        "gr", word="ἄτυφον", lemmas=["ἄτυφος"]
-                                    ),
-                                    UsageContent(
+                                    Usage("gr", word="ἄτυφον", lemmas=["ἄτυφος"]),
+                                    Usage(
                                         "sl",
                                         var=Source("WGH"),
                                         alt=Alternative(
@@ -1058,12 +1038,12 @@ def test_velichanie():
                     "невел\ue205\ue20d\ue205\ue201": {
                         ("ἄτυφον", "невел\ue205\ue20d\ue205\ue201 WGH"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/21a19"),
-                                    UsageContent(
+                                    Usage(
                                         "gr", cnt=2, word="ἄτυφον", lemmas=["ἄτυφος"]
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         var=Source("WGH"),
                                         alt=Alternative(
@@ -1093,9 +1073,9 @@ def test_velichanie():
                         "ἄτυφος": {
                             ("вел\ue205\ue20dан\ue205е WGH", "ἄτυφον"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/21a19"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("WGH"),
                                             alt=Alternative(
@@ -1105,9 +1085,7 @@ def test_velichanie():
                                             word="вел\ue205\ue20dан\ue205е WGH",
                                             lemmas=["вел\ue205\ue20dан\ue205\ue201"],
                                         ),
-                                        UsageContent(
-                                            "gr", word="ἄτυφον", lemmas=["ἄτυφος"]
-                                        ),
+                                        Usage("gr", word="ἄτυφον", lemmas=["ἄτυφος"]),
                                     )
                                 ]
                             )
@@ -1123,9 +1101,9 @@ def test_velichanie():
                         "ἄτυφος": {
                             ("невел\ue205\ue20d\ue205\ue201 WGH", "ἄτυφον"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/21a19"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("WGH"),
                                             alt=Alternative(
@@ -1136,7 +1114,7 @@ def test_velichanie():
                                             word="невел\ue205\ue20d\ue205\ue201 WGH",
                                             lemmas=["невел\ue205\ue20d\ue205\ue201"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="ἄτυφον",
                                             lemmas=["ἄτυφος"],
@@ -1197,9 +1175,9 @@ def test_puteshestive():
                         "ὁδοιπορία": {
                             ("поутошьств\ue205ꙗ", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -1224,7 +1202,7 @@ def test_puteshestive():
                                             word="поутошьств\ue205ꙗ",
                                             lemmas=["пѫтошьств\ue205\ue201"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -1249,9 +1227,9 @@ def test_puteshestive():
                         "ὁδοιπορία": {
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         idx=Index("5/28d18"),
-                                        orig=UsageContent(
+                                        orig=Usage(
                                             lang="sl",
                                             var=Source("H"),
                                             alt=Alternative(
@@ -1275,7 +1253,7 @@ def test_puteshestive():
                                                 "шьств\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        trans=UsageContent(
+                                        trans=Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -1293,9 +1271,9 @@ def test_puteshestive():
                         "ὁδοιπορία": {
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         idx=Index("5/28d18"),
-                                        orig=UsageContent(
+                                        orig=Usage(
                                             lang="sl",
                                             var=Source("G"),
                                             alt=Alternative(
@@ -1319,7 +1297,7 @@ def test_puteshestive():
                                                 "шьст\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        trans=UsageContent(
+                                        trans=Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -1339,9 +1317,9 @@ def test_puteshestive():
                         "ὁδοιπορία": {
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         idx=Index("5/28d18"),
-                                        orig=UsageContent(
+                                        orig=Usage(
                                             lang="sl",
                                             var=Source("H"),
                                             alt=Alternative(
@@ -1366,7 +1344,7 @@ def test_puteshestive():
                                             ],
                                             cnt=1,
                                         ),
-                                        trans=UsageContent(
+                                        trans=Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -1386,9 +1364,9 @@ def test_puteshestive():
                         "ὁδοιπορία": {
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         idx=Index("5/28d18"),
-                                        orig=UsageContent(
+                                        orig=Usage(
                                             lang="sl",
                                             var=Source("G"),
                                             alt=Alternative(
@@ -1412,7 +1390,7 @@ def test_puteshestive():
                                                 "шьст\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        trans=UsageContent(
+                                        trans=Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -1448,9 +1426,9 @@ def test_missing_gr_main():
                     "хлѣбъ": {
                         ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("16/80a8"),
-                                    UsageContent(
+                                    Usage(
                                         "gr",
                                         var=Source("Ch"),
                                         alt=Alternative(
@@ -1460,7 +1438,7 @@ def test_missing_gr_main():
                                         word="ἄρτους Ch",
                                         lemmas=["ἄρτος"],
                                     ),
-                                    UsageContent("sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
+                                    Usage("sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
                                 )
                             ]
                         )
@@ -1501,9 +1479,9 @@ def test_v_loc():
                         "παρά + Acc. → παρά": {
                             ("вь WGH", "παρ’ C"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("1/7d1"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("WHG"),
                                             alt=Alternative(
@@ -1513,7 +1491,7 @@ def test_v_loc():
                                             word="вь WGH",
                                             lemmas=["въ", "въ + Loc."],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             var=Source("C"),
                                             word="παρ’ C",
@@ -1569,9 +1547,9 @@ def test_hodom_spiti():
                         "προβαίνω": {
                             ("ход\ue205мъ", "προβαίνοντες"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("14/72d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -1587,7 +1565,7 @@ def test_hodom_spiti():
                                                 "≈ ход\ue205т\ue205 спѣѭще",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="προβαίνοντες",
                                             lemmas=["προβαίνω"],
@@ -1690,9 +1668,9 @@ def test_agg_lemma_hodom_spiti():
                         "προβαίνω": {
                             ("ход\ue205мъ спѣюще•", "προβαίνοντες"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("14/72d18-19"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -1711,7 +1689,7 @@ def test_agg_lemma_hodom_spiti():
                                                 "≈ ход\ue205т\ue205 спѣѭще",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="προβαίνοντες",
                                             lemmas=["προβαίνω"],
@@ -1731,9 +1709,9 @@ def test_agg_lemma_hodom_spiti():
                         "προβαίνω": {
                             ("хⷪ҇домь спѣюще WG", "προβαίνοντες"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("14/72d18-19"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("WG"),
                                             alt=Alternative(
@@ -1743,7 +1721,7 @@ def test_agg_lemma_hodom_spiti():
                                             word="хⷪ҇домь спѣюще WG",
                                             lemmas=["ходъ", "ходомь спѣт\ue205"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="προβαίνοντες",
                                             lemmas=["προβαίνω"],
@@ -1763,9 +1741,9 @@ def test_agg_lemma_hodom_spiti():
                         "προβαίνω": {
                             ("ход\ue205мъ спѣюще•", "προβαίνοντες"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("14/72d18-19"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -1784,7 +1762,7 @@ def test_agg_lemma_hodom_spiti():
                                                 "≈ ход\ue205т\ue205 спѣѭще",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="προβαίνοντες",
                                             lemmas=["προβαίνω"],

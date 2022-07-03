@@ -16,15 +16,11 @@ def address_less(a: Index, b: Index) -> bool:
         return False
 
     for i, v in enumerate(a.data):
-        try:
-            if v < b.data[i]:
-                return True
-            if v > b.data[i]:
-                return False
-        except TypeError as te:
-            print(f"ГРЕШКА: Сравнение на несравними стойности {v} и {b.data[i]}")
-            print(te)
-            break
+        assert type(v) == type(b.data[i])
+        if v < b.data[i]:  # type: ignore
+            return True
+        if v > b.data[i]:  # type: ignore
+            return False
     if a.end:
         return a.end < b.end if b.end else True
     else:

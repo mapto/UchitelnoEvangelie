@@ -13,14 +13,14 @@ from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 
 from util import main_source, subscript
-from model import Source, Usage
+from model import Source, Alignment
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, fonts, colors
 
 
 def _generate_usage_alt_vars(
-    par, u: Usage, lang: str, alt_var: Dict[Source, Tuple[str, int]]
+    par, u: Alignment, lang: str, alt_var: Dict[Source, Tuple[str, int]]
 ) -> None:
     # Word is stored in Index only for orig.
     # Thus the check u.lang == lang
@@ -45,7 +45,7 @@ def _generate_usage_alt_vars(
     _generate_text(par, BRACE_CLOSE[lang])
 
 
-def _generate_index(par, u: Usage) -> None:
+def _generate_index(par, u: Alignment) -> None:
     s = str(u.idx)
     _generate_text(par, s, bold=u.bold, italic=u.italic)
 
@@ -70,30 +70,30 @@ def _generate_index(par, u: Usage) -> None:
             _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
 
 
-def _is_orig_alt(u: Usage) -> bool:
+def _is_orig_alt(u: Alignment) -> bool:
     """
-    >>> from model import Alternative, Index, UsageContent
+    >>> from model import Alternative, Index, Usage
     >>> i = Index("5/28d18")
 
     >>> vl0 = {Source("H"): "шьств\ue205\ue201 пѫт\ue205", Source("G"): "other"}
     >>> vw0 = {Source("G"): ("other", 1), Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)}
     >>> oa0 = Alternative(var_lemmas=vl0, var_words=vw0)
-    >>> uc0 = UsageContent("sl", Source("GH"), oa0, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
-    >>> u0 = Usage(i, uc0)
+    >>> uc0 = Usage("sl", Source("GH"), oa0, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
+    >>> u0 = Alignment(i, uc0)
     >>> _is_orig_alt(u0)
     True
 
     >>> vl = {Source("H"): "шьств\ue205\ue201 пѫт\ue205", Source("G"): "шьст\ue205\ue201 пѫт\ue205"}
     >>> vw = {Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1), Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)}
     >>> oa1 = Alternative("пѫтошьств\ue205\ue201", vl, "поутошьств\ue205ꙗ", vw)
-    >>> uc1 = UsageContent("sl", Source("GH"), oa1, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
-    >>> u1 = Usage(i, uc1)
+    >>> uc1 = Usage("sl", Source("GH"), oa1, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
+    >>> u1 = Alignment(i, uc1)
     >>> _is_orig_alt(u1)
     True
 
     >>> oa2 = Alternative(var_lemmas=vl, var_words=vw)
-    >>> uc2 = UsageContent("sl", Source("GH"), oa2, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
-    >>> u2 = Usage(i, uc2)
+    >>> uc2 = Usage("sl", Source("GH"), oa2, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
+    >>> u2 = Alignment(i, uc2)
     >>> _is_orig_alt(u2)
     False
     """
@@ -107,7 +107,7 @@ def _is_orig_alt(u: Usage) -> bool:
     )
 
 
-def _generate_usage(par, u: Usage) -> None:
+def _generate_usage(par, u: Alignment) -> None:
     _generate_index(par, u)
     if not _is_orig_alt(u) and not u.trans.alt:
         # if not u.orig.alt and not u.trans.alt:

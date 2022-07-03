@@ -4,7 +4,7 @@ from const import FROM_LANG, TO_LANG
 from config import FROM_LANG
 from const import STYLE_COL
 
-from model import Alternative, Index, Source, Usage, UsageContent
+from model import Alternative, Index, Source, Alignment, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import aggregate
 
@@ -51,9 +51,9 @@ def test_monogenis():
             "μονογενής": {
                 ("\ue201д\ue205но\ue20dедоу", "μονογενοῦς"): SortedSet(
                     [
-                        Usage(
+                        Alignment(
                             Index("1/W168a25"),
-                            UsageContent(
+                            Usage(
                                 FROM_LANG,
                                 alt=Alternative(
                                     var_lemmas={
@@ -68,9 +68,7 @@ def test_monogenis():
                                 word="\ue201д\ue205но\ue20dедоу",
                                 lemmas=["\ue201д\ue205но\ue20dѧдъ"],
                             ),
-                            UsageContent(
-                                lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
-                            ),
+                            Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         )
                     ]
                 )
@@ -85,9 +83,9 @@ def test_monogenis():
             "μονογενής": {
                 ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                     [
-                        Usage(
+                        Alignment(
                             Index("1/W168a25"),
-                            UsageContent(
+                            Usage(
                                 "sl",
                                 var=Source("H"),
                                 alt=Alternative(
@@ -101,9 +99,7 @@ def test_monogenis():
                                 word="\ue201д\ue205нородоу H",
                                 lemmas=["\ue201д\ue205нородъ"],
                             ),
-                            UsageContent(
-                                lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
-                            ),
+                            Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         )
                     ]
                 )
@@ -113,9 +109,9 @@ def test_monogenis():
             "μονογενής": {
                 ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                     [
-                        Usage(
+                        Alignment(
                             Index("1/W168a25"),
-                            UsageContent(
+                            Usage(
                                 "sl",
                                 var=Source("G"),
                                 alt=Alternative(
@@ -129,9 +125,7 @@ def test_monogenis():
                                 word="\ue205но\ue20dедаго G",
                                 lemmas=["\ue205но\ue20dѧдъ"],
                             ),
-                            UsageContent(
-                                lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
-                            ),
+                            Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         )
                     ]
                 )

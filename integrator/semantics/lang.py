@@ -13,7 +13,7 @@ from const import DEFAULT_SOURCES
 from regex import multiword_regex, multilemma_regex
 from .util import collect, remove_repetitions, regroup, _add_usage
 from util import base_word
-from model import Alternative, Index, Path, Source, Usage, UsageContent
+from model import Alternative, Index, Path, Source, Alignment, Usage
 
 LAST_LEMMA = -1
 UNSPECIFIED = -1
@@ -26,7 +26,7 @@ def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
 
 def _build_content(
     row: List[str], sem: "LangSemantics", var: Source, word: str, cnt: int
-) -> UsageContent:
+) -> Usage:
     oalt = sem.alternatives(row, var)
     lemmas = []
     for lvl in range(0, len(sem.lemmas)):
@@ -41,7 +41,7 @@ def _build_content(
             lemmas += [""]
     while lemmas and not lemmas[-1]:
         lemmas.pop()
-    return UsageContent(sem.lang, var, oalt, word, lemmas, cnt)
+    return Usage(sem.lang, var, oalt, word, lemmas, cnt)
 
 
 def _is_variant_lemma(
@@ -209,7 +209,7 @@ class LangSemantics:
                 tcontent = _build_content(row, trans, tvar, tword, tcnt)
                 b = "bold" in row[STYLE_COL]
                 i = "italic" in row[STYLE_COL]
-                val = Usage(idx, ocontent, tcontent, b, i)
+                val = Alignment(idx, ocontent, tcontent, b, i)
                 key = (oword, tword)
                 d = _add_usage(val, nxt, key, d)
         return d

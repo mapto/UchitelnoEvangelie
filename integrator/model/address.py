@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, Union
 
 import re
 
@@ -39,7 +39,7 @@ class Index:
         >>> i.end.data
         [3, '/', 15, 'b', 1]
         """
-        self.data: List[Any] = []
+        self.data: List[Union[str, int]] = []
         self.end: Optional[Index] = None
 
         rest = value
@@ -162,6 +162,7 @@ class Index:
                 f = f"{{:0{Index.maxlen[i]}d}}"
                 ld += [f.format(d)]
             else:
+                assert type(d) == str
                 ld += [d]
         s = "".join(ld)
         if not self.end:
@@ -176,7 +177,9 @@ class Index:
                         f = f"{{:0{Index.maxlen[j]}d}}"
                         lde += [f.format(self.end.data[j])]
                     else:
-                        lde += [self.end.data[j]]
+                        e = self.end.data[j]
+                        assert type(e) == str
+                        lde += [e]
                 return s + "-" + "".join(lde)
         raise Exception(f"ГРЕШКА: Съвпадащи начален и краен адрес/индекс")
 

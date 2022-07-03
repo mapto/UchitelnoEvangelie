@@ -3,7 +3,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 
-from model import Alternative, Index, Source, Usage, UsageContent
+from model import Alternative, Index, Source, Alignment, Usage
 
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import present, _expand_and_aggregate, _agg_lemma
@@ -141,9 +141,9 @@ def test_agg_lemma_missing_gr_main():
                         "хлѣбъ": {
                             ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("16/80a8"),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             var=Source("Ch"),
                                             alt=Alternative(
@@ -153,7 +153,7 @@ def test_agg_lemma_missing_gr_main():
                                             word="ἄρτους Ch",
                                             lemmas=["ἄρτος"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]
                                         ),
                                     )
@@ -174,9 +174,9 @@ def test_agg_lemma_missing_gr_main():
         "хлѣбъ": {
             ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
                 [
-                    Usage(
+                    Alignment(
                         Index("16/80a8"),
-                        UsageContent(
+                        Usage(
                             "gr",
                             var=Source("Ch"),
                             alt=Alternative(
@@ -186,7 +186,7 @@ def test_agg_lemma_missing_gr_main():
                             word="ἄρτους Ch",
                             lemmas=["ἄρτος"],
                         ),
-                        UsageContent(lang="sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
+                        Usage(lang="sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
                     )
                 ]
             )
@@ -227,9 +227,9 @@ def test_agg_lemma_est_in_var_no_main():
         "Ø": {
             ("\ue201сть GH", "Ø"): SortedSet(
                 [
-                    Usage(
+                    Alignment(
                         Index("7/47a6"),
-                        UsageContent(
+                        Usage(
                             "sl",
                             var=Source("GH"),
                             alt=Alternative(
@@ -239,7 +239,7 @@ def test_agg_lemma_est_in_var_no_main():
                             word="\ue201сть GH",
                             lemmas=["бꙑт\ue205", "", "gramm."],
                         ),
-                        UsageContent(lang="gr", word="Ø", lemmas=["Ø"]),
+                        Usage(lang="gr", word="Ø", lemmas=["Ø"]),
                     )
                 ]
             )
@@ -299,9 +299,9 @@ def test_agg_lemma_hodom_spiti():
                         "προβαίνω": {
                             ("ход\ue205мъ спѣюще•", "προβαίνοντες"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("14/72d18-19"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -320,7 +320,7 @@ def test_agg_lemma_hodom_spiti():
                                                 "≈ ход\ue205т\ue205 спѣѭще",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="προβαίνοντες",
                                             lemmas=["προβαίνω"],
@@ -370,9 +370,9 @@ def test_agg_lemma_monogenis():
         "μονογενής": {
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                 [
-                    Usage(
+                    Alignment(
                         Index("1/W168a25"),
-                        UsageContent(
+                        Usage(
                             "sl",
                             var=Source("H"),
                             alt=Alternative(
@@ -384,9 +384,7 @@ def test_agg_lemma_monogenis():
                             word="\ue201д\ue205нородоу H",
                             lemmas=["\ue201д\ue205нородъ"],
                         ),
-                        UsageContent(
-                            lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]
-                        ),
+                        Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         bold=True,
                         italic=True,
                     )
@@ -425,9 +423,9 @@ def test_agg_lemma_shestvie_first():
                         "ὁδοιπορία": {
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             Source("H"),
                                             Alternative(
@@ -451,7 +449,7 @@ def test_agg_lemma_shestvie_first():
                                                 "шьств\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -471,9 +469,9 @@ def test_agg_lemma_shestvie_first():
                         "ὁδοιπορία": {
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("G"),
                                             alt=Alternative(
@@ -497,7 +495,7 @@ def test_agg_lemma_shestvie_first():
                                                 "шьст\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -551,9 +549,9 @@ def test_agg_lemma_shestvie_1():
                         "ὁδοιπορία": {
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("G"),
                                             alt=Alternative(
@@ -577,7 +575,7 @@ def test_agg_lemma_shestvie_1():
                                                 "шьст\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -611,9 +609,9 @@ def test_agg_lemma_shestvie_1():
                         "ὁδοιπορία": {
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("H"),
                                             alt=Alternative(
@@ -637,7 +635,7 @@ def test_agg_lemma_shestvie_1():
                                                 "шьств\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -690,9 +688,9 @@ def test_agg_lemma_shestvie_2():
                     "ὁδοιπορία": {
                         ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/28d18"),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         var=Source("G"),
                                         alt=Alternative(
@@ -716,7 +714,7 @@ def test_agg_lemma_shestvie_2():
                                             "шьст\ue205\ue201 пѫт\ue205",
                                         ],
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         lang="gr",
                                         word="ὁδοιπορίας",
                                         lemmas=["ὁδοιπορία"],
@@ -748,9 +746,9 @@ def test_agg_lemma_shestvie_2():
                     "ὁδοιπορία": {
                         ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                             [
-                                Usage(
+                                Alignment(
                                     Index("5/28d18"),
-                                    UsageContent(
+                                    Usage(
                                         "sl",
                                         var=Source("H"),
                                         alt=Alternative(
@@ -774,7 +772,7 @@ def test_agg_lemma_shestvie_2():
                                             "шьств\ue205\ue201 пѫт\ue205",
                                         ],
                                     ),
-                                    UsageContent(
+                                    Usage(
                                         lang="gr",
                                         word="ὁδοιπορίας",
                                         lemmas=["ὁδοιπορία"],
@@ -823,9 +821,9 @@ def test_agg_lemma_shestvie_last():
         "ὁδοιπορία": {
             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                 [
-                    Usage(
+                    Alignment(
                         Index("5/28d18"),
-                        UsageContent(
+                        Usage(
                             "sl",
                             var=Source("G"),
                             alt=Alternative(
@@ -839,9 +837,7 @@ def test_agg_lemma_shestvie_last():
                             word="шьст\ue205ꙗ пꙋт\ue205 G",
                             lemmas=["шьст\ue205\ue201", "шьст\ue205\ue201 пѫт\ue205"],
                         ),
-                        UsageContent(
-                            lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]
-                        ),
+                        Usage(lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]),
                     )
                 ]
             )
@@ -863,9 +859,9 @@ def test_agg_lemma_shestvie_last():
         "ὁδοιπορία": {
             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                 [
-                    Usage(
+                    Alignment(
                         Index("5/28d18"),
-                        UsageContent(
+                        Usage(
                             "sl",
                             var=Source("H"),
                             alt=Alternative(
@@ -877,9 +873,7 @@ def test_agg_lemma_shestvie_last():
                             word="шьств\ue205ꙗ пꙋт\ue205 H",
                             lemmas=["шьств\ue205\ue201", "шьств\ue205\ue201 пѫт\ue205"],
                         ),
-                        UsageContent(
-                            lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]
-                        ),
+                        Usage(lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]),
                     )
                 ]
             )
@@ -914,9 +908,9 @@ def test_agg_lemma_put():
         "ὁδοιπορία": {
             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
                 [
-                    Usage(
+                    Alignment(
                         Index("5/28d18"),
-                        UsageContent(
+                        Usage(
                             "sl",
                             Source("H"),
                             Alternative(
@@ -932,9 +926,7 @@ def test_agg_lemma_put():
                             "шьств\ue205ꙗ пꙋт\ue205 H",
                             ["пѫть", "шьств\ue205\ue201 пѫт\ue205"],
                         ),
-                        UsageContent(
-                            lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]
-                        ),
+                        Usage(lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]),
                     )
                 ]
             )

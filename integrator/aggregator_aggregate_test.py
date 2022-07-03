@@ -4,7 +4,7 @@ from const import FROM_LANG, TO_LANG
 from config import FROM_LANG
 from const import IDX_COL, STYLE_COL
 
-from model import Alternative, Index, Source, Usage, UsageContent
+from model import Alternative, Index, Source, Alignment, Usage
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import aggregate
 
@@ -52,9 +52,9 @@ def test_est_in_var_no_main():
                         "Ø": {
                             ("\ue201сть GH", "Ø"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("7/47a6"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("GH"),
                                             alt=Alternative(
@@ -64,7 +64,7 @@ def test_est_in_var_no_main():
                                             word="\ue201сть GH",
                                             lemmas=["бꙑт\ue205", "", "gramm."],
                                         ),
-                                        UsageContent(lang="gr", word="Ø", lemmas=["Ø"]),
+                                        Usage(lang="gr", word="Ø", lemmas=["Ø"]),
                                     )
                                 ]
                             )
@@ -134,9 +134,9 @@ def test_prichatnik_biti_sl():
                                 "ποιῆσαι κοινωνοὺς",
                             ): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28c21-d1"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -157,7 +157,7 @@ def test_prichatnik_biti_sl():
                                                 "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
@@ -187,9 +187,9 @@ def test_prichatnik_biti_sl():
                                 "ποιῆσαι κοινωνοὺς",
                             ): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28c21-d1"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -210,7 +210,7 @@ def test_prichatnik_biti_sl():
                                                 "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
@@ -279,9 +279,9 @@ def test_prichatnik_biti_sl_var():
                                 "ποιῆσαι κοινωνοὺς",
                             ): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28c21-d1"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("GH"),
                                             alt=Alternative(
@@ -294,7 +294,7 @@ def test_prichatnik_biti_sl_var():
                                                 "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
@@ -325,9 +325,9 @@ def test_prichatnik_biti_sl_var():
                                 "ποιῆσαι κοινωνοὺς",
                             ): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28c21-d1"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("GH"),
                                             alt=Alternative(
@@ -340,7 +340,7 @@ def test_prichatnik_biti_sl_var():
                                                 "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
@@ -417,9 +417,9 @@ def test_prichatnik_biti_combined():
                                 "ποιῆσαι κοινωνοὺς",
                             ): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28c21-d1"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -440,7 +440,7 @@ def test_prichatnik_biti_combined():
                                                 "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
@@ -506,9 +506,9 @@ def test_prichatnik_biti_combined():
                                 "ποιῆσαι κοινωνοὺς",
                             ): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         idx=Index("5/28c21-d1"),
-                                        orig=UsageContent(
+                                        orig=Usage(
                                             lang="sl",
                                             alt=Alternative(
                                                 var_lemmas={
@@ -529,7 +529,7 @@ def test_prichatnik_biti_combined():
                                                 "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                             ],
                                         ),
-                                        trans=UsageContent(
+                                        trans=Usage(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
@@ -553,9 +553,9 @@ def test_prichatnik_biti_combined():
                                 "ποιῆσαι κοινωνοὺς",
                             ): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         idx=Index("5/28c21-d1"),
-                                        orig=UsageContent(
+                                        orig=Usage(
                                             lang="sl",
                                             var=Source("GH"),
                                             alt=Alternative(
@@ -568,7 +568,7 @@ def test_prichatnik_biti_combined():
                                                 "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
                                             ],
                                         ),
-                                        trans=UsageContent(
+                                        trans=Usage(
                                             lang="gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
@@ -617,9 +617,9 @@ def test_monogenes():
                         "μονογενής": {
                             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("1/W168a25"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("H"),
                                             alt=Alternative(
@@ -638,7 +638,7 @@ def test_monogenes():
                                             word="\ue201д\ue205нородоу H",
                                             lemmas=["\ue201д\ue205нородъ"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="μονογενοῦς",
                                             lemmas=["μονογενής"],
@@ -660,9 +660,9 @@ def test_monogenes():
                         "μονογενής": {
                             ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("1/W168a25"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("G"),
                                             alt=Alternative(
@@ -681,7 +681,7 @@ def test_monogenes():
                                             word="\ue205но\ue20dедаго G",
                                             lemmas=["\ue205но\ue20dѧдъ"],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="μονογενοῦς",
                                             lemmas=["μονογενής"],
@@ -743,9 +743,9 @@ def test_puteshestvie_sl_var():
                         "ὁδοιπορία": {
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("H"),
                                             alt=Alternative(
@@ -769,7 +769,7 @@ def test_puteshestvie_sl_var():
                                                 "шьств\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             "gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -789,9 +789,9 @@ def test_puteshestvie_sl_var():
                         "ὁδοιπορία": {
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("G"),
                                             alt=Alternative(
@@ -815,7 +815,7 @@ def test_puteshestvie_sl_var():
                                                 "шьст\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -840,9 +840,9 @@ def test_puteshestvie_sl_var():
                         "ὁδοιπορία": {
                             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("H"),
                                             alt=Alternative(
@@ -866,7 +866,7 @@ def test_puteshestvie_sl_var():
                                                 "шьств\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -884,9 +884,9 @@ def test_puteshestvie_sl_var():
                         "ὁδοιπορία": {
                             ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας",): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("5/28d18"),
-                                        UsageContent(
+                                        Usage(
                                             "sl",
                                             var=Source("G"),
                                             alt=Alternative(
@@ -910,7 +910,7 @@ def test_puteshestvie_sl_var():
                                                 "шьст\ue205\ue201 пѫт\ue205",
                                             ],
                                         ),
-                                        UsageContent(
+                                        Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
@@ -961,10 +961,10 @@ def test_repeated_om():
                         "om.": {
                             ("om.", "om. WH"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("1/7c6"),
-                                        UsageContent("gr", word="om.", lemmas=["om."]),
-                                        UsageContent(
+                                        Usage("gr", word="om.", lemmas=["om."]),
+                                        Usage(
                                             "sl",
                                             var=Source("WH"),
                                             alt=Alternative(
@@ -975,10 +975,10 @@ def test_repeated_om():
                                             lemmas=["om."],
                                         ),
                                     ),
-                                    Usage(
+                                    Alignment(
                                         Index("1/7c6"),
-                                        UsageContent("gr", word="om.", lemmas=["om."]),
-                                        UsageContent(
+                                        Usage("gr", word="om.", lemmas=["om."]),
+                                        Usage(
                                             "sl",
                                             var=Source("WH"),
                                             alt=Alternative(
@@ -995,10 +995,10 @@ def test_repeated_om():
                         "аще": {
                             ("om.", "аще"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("1/7c6"),
-                                        UsageContent("gr", word="om.", lemmas=["om."]),
-                                        UsageContent(
+                                        Usage("gr", word="om.", lemmas=["om."]),
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={Source("WH"): "om."},
@@ -1014,10 +1014,10 @@ def test_repeated_om():
                         "\ue205 conj.": {
                             ("om.", "\ue205"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         Index("1/7c6"),
-                                        UsageContent("gr", word="om.", lemmas=["om."]),
-                                        UsageContent(
+                                        Usage("gr", word="om.", lemmas=["om."]),
+                                        Usage(
                                             "sl",
                                             alt=Alternative(
                                                 var_lemmas={Source("WH"): "om."},
@@ -1081,14 +1081,14 @@ def test_puteshestvie_gr():
                         "шьств\ue205\ue201 пѫт\ue205 → шьств\ue205\ue201 & пѫть": {
                             ("ὁδοιπορίας", "шьств\ue205ꙗ пꙋт\ue205 H"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         idx=Index("5/28d18"),
-                                        orig=UsageContent(
+                                        orig=Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
                                         ),
-                                        trans=UsageContent(
+                                        trans=Usage(
                                             lang="sl",
                                             var=Source("H"),
                                             alt=Alternative(
@@ -1119,14 +1119,14 @@ def test_puteshestvie_gr():
                         "шьст\ue205\ue201 пѫт\ue205 → шьст\ue205\ue201 & пѫть": {
                             ("ὁδοιπορίας", "шьст\ue205ꙗ пꙋт\ue205 G"): SortedSet(
                                 [
-                                    Usage(
+                                    Alignment(
                                         idx=Index("5/28d18"),
-                                        orig=UsageContent(
+                                        orig=Usage(
                                             lang="gr",
                                             word="ὁδοιπορίας",
                                             lemmas=["ὁδοιπορία"],
                                         ),
-                                        trans=UsageContent(
+                                        trans=Usage(
                                             lang="sl",
                                             var=Source("G"),
                                             alt=Alternative(

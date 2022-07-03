@@ -6,11 +6,11 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from config import FROM_LANG
 from config import VAR_GR, VAR_SL
 
-from .usage import Usage
+from .usage import Alignment
 from .source import Source
 
 
-def _present(a: Usage, s: Iterable[Usage], trans: bool = False) -> bool:
+def _present(a: Alignment, s: Iterable[Alignment], trans: bool = False) -> bool:
     present = False
     for e in s:
         if e.colocated(a, trans):
@@ -20,10 +20,10 @@ def _present(a: Usage, s: Iterable[Usage], trans: bool = False) -> bool:
 
 @dataclass
 class Counter:
-    orig_main: Set[Usage] = field(default_factory=lambda: set())
-    orig_var: Set[Usage] = field(default_factory=lambda: set())
-    trans_main: Set[Usage] = field(default_factory=lambda: set())
-    trans_var: Set[Usage] = field(default_factory=lambda: set())
+    orig_main: Set[Alignment] = field(default_factory=lambda: set())
+    orig_var: Set[Alignment] = field(default_factory=lambda: set())
+    trans_main: Set[Alignment] = field(default_factory=lambda: set())
+    trans_var: Set[Alignment] = field(default_factory=lambda: set())
 
     def __iadd__(self, other: "Counter") -> "Counter":
         self.orig_main |= other.orig_main
@@ -39,11 +39,11 @@ class Counter:
     def get_counts(self, trans: bool = False) -> Tuple[int, int]:
         m = self.trans_main if trans else self.orig_main
         v = self.trans_var if trans else self.orig_var
-        ml: List[Usage] = []
+        ml: List[Alignment] = []
         for s in m:
             if not _present(s, ml, trans):
                 ml += [s]
-        vl: List[Usage] = []
+        vl: List[Alignment] = []
         for s in v:
             # if not _present(s, m, trans) and not _present(s, vl, trans):
             if not _present(s, vl, trans):
@@ -51,11 +51,11 @@ class Counter:
         return (len(ml), len(vl))
 
     @staticmethod
-    def get_set_counts(s: Set[Usage]) -> "Counter":
+    def get_set_counts(s: Set[Alignment]) -> "Counter":
         """
-        >>> from model import Index, Usage, UsageContent
+        >>> from model import Index, Alignment, Usage
         >>> i = [Index("1/W168c7"), Index("1/W169c7")]
-        >>> s = SortedSet([Usage(n, UsageContent(FROM_LANG)) for n in i])
+        >>> s = SortedSet([Alignment(n, Usage(FROM_LANG)) for n in i])
         >>> c = Counter.get_set_counts(s)
         >>> str(c)
         '(2, 0, 2, 0)'
@@ -65,7 +65,7 @@ class Counter:
         (2, 0)
 
         >>> i = Index("1/W168c7")
-        >>> s = SortedSet([Usage(i, UsageContent("sl", Source("W"))), Usage(i, UsageContent("sl", cnt=2), UsageContent("gr", cnt=2))])
+        >>> s = SortedSet([Alignment(i, Usage("sl", Source("W"))), Alignment(i, Usage("sl", cnt=2), Usage("gr", cnt=2))])
         >>> c = Counter.get_set_counts(s)
         >>> str(c)
         '(1, 1, 2, 0)'
@@ -106,7 +106,7 @@ class Counter:
     @staticmethod
     def get_dict_counts(d: Union[SortedDict, Dict]) -> "Counter":
         """
-        >>> from model import Index, Usage, UsageContent
+        >>> from model import Index, Alignment, Usage
 
         >> c = Counter.get_dict_counts({})
         >> c.get_counts(True)
@@ -114,7 +114,7 @@ class Counter:
         >> c.get_counts(False)
         (0, 0)
 
-        >>> u = Usage(Index("1/5a5"), UsageContent(FROM_LANG))
+        >>> u = Alignment(Index("1/5a5"), Usage(FROM_LANG))
         >>> d = SortedDict({'pass. >> ἀγνοέω': {('не бѣ ꙗвленъ•', 'ἠγνοεῖτο'): SortedSet([u])}})
         >>> c = Counter.get_dict_counts(d)
         >>> str(c)
@@ -125,8 +125,8 @@ class Counter:
         >>> c.get_counts(False)
         (1, 0)
 
-        >>> u1 = Usage(Index("1/8a3"), UsageContent(FROM_LANG))
-        >>> u2 = Usage(Index("1/6b7"), UsageContent(FROM_LANG))
+        >>> u1 = Alignment(Index("1/8a3"), Usage(FROM_LANG))
+        >>> u2 = Alignment(Index("1/6b7"), Usage(FROM_LANG))
         >>> d = SortedDict({'lem2': SortedDict({'lem1': SortedDict({'τοσоῦτος': {('тол\ue205ко•', 'τοσοῦτοι'): SortedSet([u1]), ('тол\ue205ка', 'τοσαῦτα'): SortedSet([u2])}})})})
         >>> c = Counter.get_dict_counts(d)
         >>> str(c)

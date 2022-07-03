@@ -7,7 +7,7 @@ from typing import Dict, List, Set, Tuple
 import unicodedata
 from sortedcontainers import SortedSet, SortedDict  # type: ignore
 
-from model import Path, Source, Usage
+from model import Path, Source, Alignment
 
 
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
@@ -143,7 +143,7 @@ def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
 
 
 def _add_usage(
-    val: Usage, nxt: Path, key: Tuple[str, str], d: SortedDict
+    val: Alignment, nxt: Path, key: Tuple[str, str], d: SortedDict
 ) -> SortedDict:
     """*IN PLACE*"""
     path = str(nxt)
