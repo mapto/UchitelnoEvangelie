@@ -5,7 +5,7 @@
 from typing import List, Optional, Dict
 from sortedcontainers import SortedDict  # type: ignore
 
-from const import IDX_COL, H_LEMMA_SEP, V_LEMMA_SEP, MISSING_CH
+from const import IDX_COL, MISSING_CH
 
 from util import ord_word, base_word
 
