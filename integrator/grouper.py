@@ -8,19 +8,22 @@ from semantics import LangSemantics, MainLangSemantics, present
 
 def _hilited_col(row: List[str], col: int) -> Optional[str]:
     """highlighting implemented via background colour.
-    If column highlighted, return its color, else None
+    If column visibly highlighted, return its non-white color, else None
 
-    >>> r = [""] * 4 + ["02/W169b26", "на", "ма же \ue201д\ue205нь ѿ ѡбою на де-", "на", "на + Loc."] + [""] * 17 + ["hl05:AAAAAAAA|hl08:BBBBBBBB|bold|italic"]
+    >>> r = [""] * 4 + ["02/W169b26", "на", "ма же \ue201д\ue205нь ѿ ѡбою на де-", "на", "на + Loc."] + [""] * 17 + ["hl00:FFFFFFFF|hl05:AAAAAAAA|hl08:BBBBBBBB|bold|italic"]
     >>> _hilited_col(r, 5)
     'AAAAAAAA'
     >>> _hilited_col(r, 8)
     'BBBBBBBB'
     >>> _hilited_col(r, 9)
+    >>> _hilited_col(r, 0)
     """
     style = row[STYLE_COL]
     if f"hl{col:02d}" in style:
         pos = style.index(f"hl{col:02d}")
         # print(style[pos+5:pos+13])
+        if style[pos + 5 : pos + 11] == "FFFFFF":
+            return None
         return style[pos + 5 : pos + 13]
     return None
 
