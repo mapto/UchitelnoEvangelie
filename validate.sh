@@ -23,10 +23,9 @@ mypy integrator/semantics
 mypy integrator/model
 
 echo '>>> Running Pytest'
+# processes also subdirectories
 pytest -vv --doctest-modules -s extractor # --disable-warnings
 pytest -vv --doctest-modules -s integrator # --disable-warnings
-pytest -vv --doctest-modules -s integrator/semantics # --disable-warnings
-pytest -vv --doctest-modules -s integrator/model # --disable-warnings
 
 echo '>>> Running Black'
 # processes also subdirectories
