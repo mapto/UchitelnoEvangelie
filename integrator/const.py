@@ -15,8 +15,8 @@ VAR_SEP = "-"  # used to separate the two language in variant source annotation
 INDENT_CH = "|"
 BULLET_CH = "∙"  # or ●
 SAME_CH = "="
-MISSING_CH = "ₓ"
-EMPTY_CH = "Ø"  # used when text is original, so no translation
+MISSING_CH = "ₓ"  # used when untranslatable
+EMPTY_CH = "Ø"  # used when text has intended to have no translation
 SPECIAL_CHARS = ["*", "≠", "≈", "#"]  # # - for contextual translation
 
 ERR_SUBLEMMA = "err. pro"

@@ -163,7 +163,7 @@ class Index:
                 ld += [f.format(d)]
             else:
                 assert type(d) == str
-                ld += [d]
+                ld += [d]  # type: ignore
         s = "".join(ld)
         if not self.end:
             return s
@@ -179,7 +179,7 @@ class Index:
                     else:
                         e = self.end.data[j]
                         assert type(e) == str
-                        lde += [e]
+                        lde += [e]  # type: ignore
                 return s + "-" + "".join(lde)
         raise Exception(f"ГРЕШКА: Съвпадащи начален и краен адрес/индекс")
 

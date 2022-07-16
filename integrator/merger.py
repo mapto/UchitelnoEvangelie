@@ -63,8 +63,7 @@ def _close(
             print(f"ГРЕШКА: липсва индекс в групата.")
 
     same = _same(group[-1], trans) or _same(group[-1], orig)
-    if same:
-        assert len(group) == 2
+    assert not same or len(group) == 2
     close_fn = _close_same if same else _close_group
     return close_fn(group, orig, trans)
 

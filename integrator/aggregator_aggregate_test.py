@@ -1159,3 +1159,159 @@ def test_puteshestvie_gr():
             }
         }
     }
+
+
+def test_mirno_sl():
+    rows = [
+        [
+            "",
+            "",
+            "",
+            "",
+            "02/W169a17",
+            "м\ue205рно\ue201•",
+            "да\ue201 бран\ue205• ꙋтѣшен\ue205\ue201 м\ue205-",
+            "м\ue205рьнъ",
+            "",
+            "",
+            "",
+            "ἐκ",
+            "ἐκ",
+            "ἐκ τῆς εἰρήνης",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "hl11:FFFCE4D6",
+            "1",
+            "1",
+            "1",
+            "1",
+        ],
+        [
+            "",
+            "",
+            "",
+            "",
+            "02/W169a17",
+            "ₓ",
+            "",
+            "ₓ",
+            "",
+            "",
+            "",
+            "τῆς εἰρήνης",
+            "ὁ",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "hl11:FFFCE4D6|hl14:FFB4C7E7",
+            "1",
+            "1",
+            "1",
+            "1",
+        ],
+        [
+            "",
+            "",
+            "",
+            "",
+            "02/W169a17",
+            "ₓ",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "τῆς εἰρήνης",
+            "εἰρήνη",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "hl11:FFFCE4D6",
+            "1",
+            "1",
+            "1",
+            "1",
+        ],
+    ]
+
+    result = SortedDict()
+    result = aggregate([rows[0]], sl_sem, gr_sem, result)
+    assert result == {
+        "м\ue205рьнъ": {
+            "": {
+                "": {
+                    "": {
+                        "ἐκ τῆς εἰρήνης → ἐκ": {
+                            ("м\ue205рно\ue201•", "ἐκ"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("2/W169a17"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            var=Source(""),
+                                            alt=Alternative(
+                                                main_lemma="",
+                                                var_lemmas={},
+                                                main_word="",
+                                                var_words={},
+                                                main_cnt=1,
+                                            ),
+                                            word="м\ue205рно\ue201•",
+                                            lemmas=["м\ue205рьнъ"],
+                                            cnt=1,
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            var=Source(""),
+                                            alt=Alternative(
+                                                main_lemma="",
+                                                var_lemmas={},
+                                                main_word="",
+                                                var_words={},
+                                                main_cnt=1,
+                                            ),
+                                            word="ἐκ",
+                                            lemmas=["ἐκ", "ἐκ τῆς εἰρήνης"],
+                                            cnt=1,
+                                        ),
+                                        bold=False,
+                                        italic=False,
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
