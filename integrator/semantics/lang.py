@@ -8,6 +8,7 @@ import re
 
 from const import H_LEMMA_SEP, IDX_COL, NON_COUNTABLE, NON_LEMMAS, STYLE_COL
 from const import EMPTY_CH, MISSING_CH
+from const import ERR_SUBLEMMA, SPECIAL_CHARS
 from const import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
@@ -279,6 +280,17 @@ class MainLangSemantics(LangSemantics):
             for k, v in self.var.multilemma(row, lidx).items()
             if v != row[self.lemmas[lidx]]
         }
+        # Get interpretative annotation from sublemma if any
+        if lidx == 0 and len(self.var.lemmas) > 1:
+            l2 = self.var.multilemma(row, 1)
+            for k2, v2 in l2.items():
+                for prefix in SPECIAL_CHARS + [ERR_SUBLEMMA]:
+                    if v2.startswith(prefix):
+                        for k1 in alt_lemmas.keys():
+                            if k1.inside(k2):
+                                alt_lemmas[k1] = f"{prefix} {alt_lemmas[k1]}"
+                        break
+
         aw = {l: self.var.compile_words_by_lemma(row, l) for l in alt_lemmas.keys()}
         alt_words = {l: (v[0], v[2]) for l, v in aw.items()}
         if Source() in alt_lemmas:
@@ -408,6 +420,13 @@ class VarLangSemantics(LangSemantics):
             if loc and row[self.main.lemmas[lidx]] != multilemma[loc]:
                 main_lemma = row[self.main.lemmas[lidx]]
                 main_word = row[self.main.word]
+                # Get interpretative annotation from sublemma if any
+                if lidx == 0 and len(self.main.lemmas) > 1:
+                    for prefix in SPECIAL_CHARS + [ERR_SUBLEMMA]:
+                        if row[self.main.lemmas[1]].startswith(prefix):
+                            main_lemma = f"{prefix} {main_lemma}"
+                            break
+
         return main_lemma, main_word, int(row[self.other().cnt_col])
 
     def level_var_alternatives(
@@ -416,6 +435,16 @@ class VarLangSemantics(LangSemantics):
         """Get alternative lemmas in variant"""
         multilemma = self.multilemma(row, lidx)
         alt_lemmas = {k: v for k, v in multilemma.items() if my_var not in k}
+        # Get interpretative annotation from sublemma if any
+        if lidx == 0 and len(self.lemmas) > 1:
+            l2 = self.multilemma(row, 1)
+            for k2, v2 in l2.items():
+                for prefix in SPECIAL_CHARS + [ERR_SUBLEMMA]:
+                    if v2.startswith(prefix):
+                        for k1 in alt_lemmas.keys():
+                            if k1.inside(k2):
+                                alt_lemmas[k1] = f"{prefix} {alt_lemmas[k1]}"
+                        break
 
         aw = {
             k: self.compile_words_by_lemma(row, k)
