@@ -1,10 +1,10 @@
-# Bilingual Word Indices to the Ninth-Century Uchitel’noe evangelie
-A toolset for the generation of bilingual dictionaries for the medieval Slavonic translations of Greek and their copies. These tools support philology researchers in the ellaboration of the word-level alignment between the two texts. The project has started to serve the research on <a href="https://uchitelnoevangelie.eu/?lang=en">„Учително евангелие“</a> (Uchitel’noe evangelie - Didactic Gospel) by Constantine of Preslav, but is designed to also be used on other Slavonic-Greek parallel texts.
+# Bilingual Word Indices to Medieval Slavonic Translations and Copies
+A toolset for the generation of bilingual dictionaries for the medieval Slavonic translations of Greek and their copies. These tools support philology researchers in the ellaboration of the word-level alignment between the two texts. The project has started to serve the research on <a href="https://uchitelnoevangelie.eu/?lang=en">„Учително евангелие“</a> (Uchitel’noe evangelie - Didactic Gospel) by Constantine of Preslav, but is designed to also be used on other Slavonic-Greek parallel texts. Wider application could also be possible, we encourage researchers to get in contact to discuss applicability.
 
 Three software tools are at the core of this project:
 1. `exporter.py` - for the transformation of word usages from original Old Church Slavonic texts into tabular form to be used as a basis of the database (in .xlsx spreadsheets for easy manual editing), later enriched and annotated by the language experts.
 2. `integrator.py` - for the interpretation of the lexicographic annotations from that database and the creation of indexes used for validation. These are indices for both Slavonic to Greek and Greek to Slavonic and include annotations for variations in copies. This tool allows the language expert to iteratively correct possible mistakes in the annotation.
-3. `indexgenerator.py (also in the integrator directory, due to shared codebase) - for the generation of final bilingual indices to be published.
+3. `indexgenerator.py` (also in the integrator directory, due to shared codebase) - for the generation of final bilingual indices to be published.
 
 The programs use the <a href="https://en.wikipedia.org/wiki/Office_Open_XML">Office Open XML</a> file format, and the <a href="https://github.com/python-openxml/python-docx">python-docx</a> and <a href="https://pypi.org/project/openpyxl">openpyxl</a> programming libraries.
 
