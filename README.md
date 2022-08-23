@@ -8,7 +8,7 @@ Three software tools are at the core of this project:
 
 The programs use the <a href="https://en.wikipedia.org/wiki/Office_Open_XML">Office Open XML</a> file format, and the <a href="https://github.com/python-openxml/python-docx">python-docx</a> and <a href="https://pypi.org/project/openpyxl">openpyxl</a> programming libraries.
 
-The tools are used within the following workflow using only freely available instruments (including <a href= "https://transkribus.eu/">Transcribus</a> and the <a href="https://www.libreoffice.org/">LibreOffice package</a>):
+The tools are used within the following workflow using only freely available instruments (including <a href= "https://transkribus.eu/">Transkribus</a> and the <a href="https://www.libreoffice.org/">LibreOffice package</a>):
 
 ```mermaid
 graph LR
