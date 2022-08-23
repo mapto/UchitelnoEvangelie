@@ -12,7 +12,7 @@ The tools are used within the following workflow using only freely available ins
 
 ```mermaid
 graph LR
-    A(Digitalization<br/><i>Transcribus</i>) --> AA(Enrichment<br/><i>LOWriter</i>) 
+    A(Digitalization<br/><i>Transkribus</i>) --> AA(Enrichment<br/><i>LOWriter</i>) 
     AA --> B(Extraction<br/><i>extractor</i>)
     B --> C(Alignment<br/><i>LOCalc</i>)
     C --> D(Lemmatization<br/><i>LOCalc</i>)
