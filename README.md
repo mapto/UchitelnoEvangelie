@@ -77,7 +77,8 @@ The extractor tool also has a command line interface, whose parameters could be 
 # References
 
 Please cite as:
-Ruskov, M., Taseva, L. (2022), _Computer-Aided Modelling of the Bilingual Word Indices to the Nineth-Century Uchitel'noe evangelie_, Proceedings of 1st International Workshop on Digital Platforms and Resources for Access to Literary Heritage, Padua, Italy [bibtex](docs/ref.bib)
+
+Ruskov, M., Taseva, L. (2022), _Computer-Aided Modelling of the Bilingual Word Indices to the Nineth-Century Uchitel'noe evangelie_, Proceedings of 1st International Workshop on Digital Platforms and Resources for Access to Literary Heritage, Padua, Italy [[pdf](docs/ruskov-taseva-DIPRAL2022.pdf)|[bib](docs/ref.bib)]
 
 # Copyrights
 
