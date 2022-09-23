@@ -74,6 +74,11 @@ If you posses a compiled version, it suffices to drag and drop the file to be pr
 
 The extractor tool also has a command line interface, whose parameters could be seen by starting the program without parameters or in the <a href="https://github.com/mapto/UchitelnoEvangelie/blob/master/extractor.py">inline documentation</a>.
 
+# References
+
+Please cite as:
+Ruskov, M., Taseva, L. (2022), _Computer-Aided Modelling of the Bilingual Word Indices to the Nineth-Century Uchitel'noe evangelie_, Proceedings of 1st International Workshop on Digital Platforms and Resources for Access to Literary Heritage, Padua, Italy [bibtex](docs/ref.bib)
+
 # Copyrights
 
 Freely distributed under the <a href="https://mit-license.org/">MIT License</a>.
