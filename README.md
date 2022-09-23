@@ -2,7 +2,7 @@
 A toolset for the generation of bilingual dictionaries for the medieval Slavonic translations of Greek and their copies. These tools support philology researchers in the ellaboration of the word-level alignment between the two texts. The project has started to serve the research on <a href="https://uchitelnoevangelie.eu/?lang=en">„Учително евангелие“</a> (Uchitel’noe evangelie - Didactic Gospel) by Constantine of Preslav, but is designed to also be used on other Slavonic-Greek parallel texts. Wider application could also be possible, we encourage researchers to get in contact to discuss applicability.
 
 Three software tools are at the core of this project:
-1. [`exporter.py`](exporter/README.md) - for the transformation of word usages from original Old Church Slavonic texts into tabular form to be used as a basis of the database (in .xlsx spreadsheets for easy manual editing), later enriched and annotated by the language experts.
+1. [`extractor.py`](extractor/README.md) - for the transformation of word usages from original Old Church Slavonic texts into tabular form to be used as a basis of the database (in .xlsx spreadsheets for easy manual editing), later enriched and annotated by the language experts.
 2. [`integrator.py`](integrator/README.md) - for the interpretation of the lexicographic annotations from that database and the creation of indexes used for validation. These are indices for both Slavonic to Greek and Greek to Slavonic and include annotations for variations in copies. This tool allows the language expert to iteratively correct possible mistakes in the annotation.
 3. [`indexgenerator.py`](integrator/README.md) (also in the integrator directory, due to shared codebase) - for the generation of final bilingual indices to be published.
 
@@ -54,7 +54,7 @@ Alternative (also on Mac) is using pyinstaller, for example for integrator:
 
 The program can be compiled and/or used with a current version of python (3.6+).
 
-The font face <a href="https://www.starobulglit.eu/OC10U.ttf">*Cyrillica Ochrid 10U*</a> needs to be downloaded and installed on the host system for visualisation of the Cyrillic script. Alternatively, configure an alternative font for both (exporter)[extractor/exporter.py#L23] and (integrator)[integrator/wordproc.py#L12].
+The font face <a href="https://www.starobulglit.eu/OC10U.ttf">*Cyrillica Ochrid 10U*</a> needs to be downloaded and installed on the host system for visualisation of the Cyrillic script. Alternatively, configure an alternative font for both [exporter](extractor/exporter.py#L23) and [integrator](integrator/wordproc.py#L12).
 
 ## Interpreted version
 
