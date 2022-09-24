@@ -87,3 +87,10 @@ Freely distributed under the <a href="https://mit-license.org/">MIT License</a>.
 The font face <a href="https://www.starobulglit.eu/OC10U.ttf">*Cyrillica Ochrid 10U*</a> used for Slavonic is freely distributed, and can be downloaded e.g. from journal sites like <a href="https://palaeobulgarica.eu/en/guidelines-authors">Palaeobulgarica</a> or <a href="http://www.starobulglit.eu/en/publication-guidelines/">Starobulgarska Literatura</a>.
 
 For the creation of the icons, the FontAwesome <a href="https://fontawesome.com/icons/book-open?style=solid">open-book icon</a> has been used, distributed under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 international</a>.
+
+
+# Acknowledgments
+
+This work is part of the project _The Vocabulary of Constantine of Preslav’s Uchitel’noe
+evangelie (’Didactic Gospel’): Old Bulgarian-Greek and Greek-Old Bulgarian Word Indices_, funded
+by the Bulgarian National Science Fund (contract КП-06-Н50/2 of 30.11.2020).
