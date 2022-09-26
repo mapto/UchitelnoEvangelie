@@ -1,13 +1,12 @@
 # Bilingual Word Indices to Medieval Slavonic Translations and Copies
 A toolset for the generation of bilingual dictionaries for the medieval Slavonic translations of Greek and their copies. These tools support philology researchers in the ellaboration of the word-level alignment between the two texts. The project has started to serve the research on <a href="https://uchitelnoevangelie.eu/?lang=en">„Учително евангелие“</a> (Uchitel’noe evangelie - Didactic Gospel) by Constantine of Preslav, but is designed to also be used on other Slavonic-Greek parallel texts. Wider application could also be possible, we encourage researchers to get in contact to discuss applicability.
 
-Three software tools are at the core of this project:
+Three software tools (used from the command line interface or via drag & drop) are at the core of this project:
 1. [extractor](extractor/) - for the transformation of word usages from original Old Church Slavonic texts into tabular form to be used as a basis of the database (in .xlsx spreadsheets for easy manual editing), later enriched and annotated by the language experts.
 2. [integrator](integrator/) - for the interpretation of the lexicographic annotations from that database and the creation of indexes used for validation. These are indices for both Slavonic to Greek and Greek to Slavonic and include annotations for variations in copies. This tool allows the language expert to iteratively correct possible mistakes in the annotation.
 3. [indexgenerator](integrator/) (also in the integrator directory, due to shared codebase) - for the generation of final bilingual indices to be published.
 
 The programs use the <a href="https://en.wikipedia.org/wiki/Office_Open_XML">Office Open XML</a> file format, and the <a href="https://github.com/python-openxml/python-docx">python-docx</a> and <a href="https://pypi.org/project/openpyxl">openpyxl</a> programming libraries.
-
 The tools are used within the following workflow using only freely available instruments (including <a href= "https://transkribus.eu/">Transkribus</a> and the <a href="https://www.libreoffice.org/">LibreOffice package</a>):
 
 ```mermaid
@@ -22,14 +21,14 @@ graph LR
     F --> G(Index Generation<br/><i>indexgenerator</i>)
 ```
 
-1. Digitalization - digitialisation of the texts (on how to use Transkribus, see this <a href="https://www.youtube.com/watch?v=X1NxWYWCe9g">presentation by Achim Rabus</a>)
-2. Enrichment - manual annotation of the relevant variations
-2. Extraction - automated extraction of word usages in tabular form (spreadsheet) from the enriched document
-3. Alignment of the Slavonic and Greek texts - this and the following steps are the focus of a peer-reviewed publication - how asymetric cases and variations in copies are being addressed
-4. Lemmatization - inclusion of lemmatization for each word in the spreadsheet
-5. Integration - processing of the spreadsheet, generating verification indices
-6. Consolidation - review of the intermediary index to locate and remove mistakes
-7. Index Generation - final generation of the word indices
+1. Digitalization - digitialisation of the texts (on how to use Transkribus, see this <a href="https://www.youtube.com/watch?v=X1NxWYWCe9g">presentation by Achim Rabus</a>).
+2. Enrichment - manual annotation of the relevant variations, see [input](extractor/).
+2. Extraction - automated extraction of word usages in tabular form (spreadsheet) from the enriched document, see [illustration](extractor/).
+3. Alignment of the Slavonic and Greek texts - this and the following steps are the focus of a peer-reviewed publication - how asymetric cases and variations in copies are being addressed, see [publication](docs/ruskov-taseva-DIPRAL2022.pdf).
+4. Lemmatization - inclusion of lemmatization for each word in the spreadsheet, see [lemma and sublemma explanation](integrator/).
+5. Integration - processing of the spreadsheet, generating verification indices, see [animation](integrator/).
+6. Consolidation - review of the intermediary index to locate and remove mistakes.
+7. Index Generation - final generation of the word indices, see [illustration](integrator/).
 
 # Download
 
