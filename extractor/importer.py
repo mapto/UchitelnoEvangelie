@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from typing import List, Dict, Set
+import logging as log
 
 from pathlib import Path
 import re
@@ -89,7 +90,7 @@ def parse_page(
 
         buffer.swap()
         idx = Index(ch, page, row)
-        # print(idx)
+        log.debug(idx)
         if i < len(cell._element) - 1:  # if not end of page, behave like line break
             compiled = buffer.compile_buffer(idx, comments)
         else:
@@ -130,10 +131,10 @@ def import_chapter(fname: str) -> WordList:
     try:
         book_prefix = int(parts[0])
     except ValueError:
-        print("Името на файла не започва с <номер>-, затова допускаме глава 0.")
+        log.error("Името на файла не започва с <номер>-, затова допускаме глава 0.")
 
     comments = parse_comments(doc)
-    # print(comments)
+    log.debug(comments)
     return parse_document(book_prefix, doc, comments)
 
 

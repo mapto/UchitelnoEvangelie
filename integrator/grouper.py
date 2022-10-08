@@ -1,4 +1,5 @@
 from typing import Dict, List, Optional
+import logging as log
 
 from const import IDX_COL, STYLE_COL, V_LEMMA_SEP
 
@@ -21,7 +22,7 @@ def _hilited_col(row: List[str], col: int) -> Optional[str]:
     style = row[STYLE_COL]
     if f"hl{col:02d}" in style:
         pos = style.index(f"hl{col:02d}")
-        # print(style[pos+5:pos+13])
+        log.debug(style[pos + 5 : pos + 13])
         if style[pos + 5 : pos + 11] == "FFFFFF":
             return None
         return style[pos + 5 : pos + 13]
@@ -152,7 +153,7 @@ def _update_group(
             if i in merge_rows_main or c == trans.word:
                 if _hilited_union(orig, trans, group[i], c):
                     update = False
-            # print(trans.var, merge_rows_var)
+            log.debug(trans.var, merge_rows_var)
             if trans.var and group[i][trans.var.word]:
                 if c in trans.var.lemmas and _hilited_gram(orig, trans.var, group[i]):
                     update = False
@@ -196,10 +197,10 @@ def _close_group(
     try:
         return _update_group(group, orig, trans, line, merge_rows_main, merge_rows_var)
     except Exception as e:
-        print(
-            f"ГРЕШКА: Неуспешно затваряне на група при редове {[row[IDX_COL] for row in group]}"
+        log.error(
+            f"Неуспешно затваряне на група при редове {[row[IDX_COL] for row in group]}"
         )
-        print(e)
+        log.error(e)
         return []
 
 

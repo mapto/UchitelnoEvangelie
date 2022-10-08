@@ -1,4 +1,5 @@
 from typing import Dict, Iterable, List, Set, Tuple, Union
+import logging as log
 from dataclasses import dataclass, field
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
@@ -150,6 +151,6 @@ class Counter:
                 try:
                     r += Counter.get_dict_counts(n)
                 except StopIteration as si:
-                    print(f"ГРЕШКА: При генериране неуспешно преброяване на {k}")
+                    log.error(f"При генериране неуспешно преброяване на {k}")
                     raise si
         return r

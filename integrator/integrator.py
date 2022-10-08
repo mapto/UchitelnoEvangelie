@@ -14,6 +14,7 @@ Options:
 """
 __version__ = "1.3.1"  # used also by build.sh script
 
+import logging as log
 from os import path
 from glob import glob
 import shutil
@@ -33,8 +34,8 @@ from exporter import export_docx
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
-    print(f"Integrator v{__version__}")
-    # print(args)
+    log.info(f"Integrator v{__version__}")
+    log.debug(args)
     fnames = args["<xlsx>"]
 
     assert sl_sem.var  # for mypy
@@ -62,7 +63,7 @@ if __name__ == "__main__":
     expanded_fnames = []
     to_clean = []
     for fname in fnames:
-        print(f"Преглеждане: {fname}")
+        log.info(f"Преглеждане: {fname}")
 
         if path.isdir(fname):
             expanded_fnames += glob(path.join(fname, "*.xlsx"))
@@ -76,7 +77,7 @@ if __name__ == "__main__":
                 shutil.unpack_archive(fname, dest_dir)
                 to_clean += [dest_dir]
             except ValueError as ve:
-                print(
+                log.critical(
                     f"Файлът {fname} трябва да е във формат .xlsx. Като алтернатива, може да е директория или архив. Моля конвертирайте го"
                 )
                 exit()
@@ -86,37 +87,37 @@ if __name__ == "__main__":
     expanded_fnames.sort()
 
     for fname in expanded_fnames:
-        print(f"Прочитане: {fname}")
-        print("Импорт...")
+        log.info(f"Прочитане: {fname}")
+        log.info("Импорт...")
         lines = import_mapping(fname, sem)
-        print(f"{len(lines)} думи")
+        log.info(f"{len(lines)} думи")
 
         # print("Раздуване на индекси...")
         # lines = expand_idx(lines)
         # print(f"{len(lines)} реда")
 
-        print(f"Обзор на буквите в славянски...")
+        log.info(f"Обзор на буквите в славянски...")
         letters = {}
         for c in sl_sem.lem1_cols():
             letters.update(extract_letters(lines, c))
-        print(f"{len(letters)} символа: {letters}")
+        log.info(f"{len(letters)} символа: {letters}")
 
-        print(f"Обзор на буквите в гръцки...")
+        log.info(f"Обзор на буквите в гръцки...")
         letters = {}
         for c in gr_sem.lem1_cols():
             letters.update(extract_letters(lines, c))
-        print(f"{len(letters)} символа: {letters}")
+        log.info(f"{len(letters)} символа: {letters}")
 
         for p in pairs:
-            print(f"Събиране на многоредови преводи {p.label}...")
+            log.info(f"Събиране на многоредови преводи {p.label}...")
             merged = merge(lines, p.orig, p.trans)
-            print(f"{len(merged)} думи")
+            log.info(f"{len(merged)} думи")
 
-            print(f"Кондензиране {p.label}...")
+            log.info(f"Кондензиране {p.label}...")
             before = len(p.result)
             p.result = aggregate(merged, p.orig, p.trans, p.result)
             after = len(p.result)
-            print(f"{after-before} леми")
+            log.info(f"{after-before} леми")
 
     fname_prefix = ""
     if len(fnames) == 1:
@@ -125,15 +126,15 @@ if __name__ == "__main__":
         else:
             fname_prefix = fnames[0] + "-"
 
-    print("Експорт славянски...")
+    log.info("Експорт славянски...")
     export_fname = f"{fname_prefix}list-sla.docx"
     export_docx(sla, FROM_LANG, export_fname)
-    print(f"Записване: {export_fname}")
+    log.info(f"Записване: {export_fname}")
 
-    print("Експорт гръцки...")
+    log.info("Експорт гръцки...")
     export_fname = f"{fname_prefix}list-gre.docx"
     export_docx(gre, TO_LANG, export_fname)
-    print(f"Записване: {export_fname}")
+    log.info(f"Записване: {export_fname}")
 
     for d in to_clean:
         shutil.rmtree(d)

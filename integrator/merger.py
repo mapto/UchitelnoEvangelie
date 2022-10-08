@@ -4,6 +4,7 @@
 Takes care of construct grouping and repeated words counting"""
 
 from typing import Dict, List, Set
+import logging as log
 
 from const import IDX_COL, SAME_CH, SPECIAL_CHARS
 
@@ -54,13 +55,13 @@ def _close(
                 idxline = i + 1
                 break
         if idxline:
-            print(
-                f"WARNING: липсва индекс в първия ред от група на {group[0][IDX_COL]}. Намерен в {idxline} ред"
+            log.warn(
+                f"Липсва индекс в първия ред от група на {group[0][IDX_COL]}. Намерен в {idxline} ред"
             )
         else:
             for row in group:
-                print(row)
-            print(f"ГРЕШКА: липсва индекс в групата.")
+                log.info(row)
+            log.error(f"Липсва индекс в групата.")
 
     same = _same(group[-1], trans) or _same(group[-1], orig)
     assert not same or len(group) == 2
@@ -150,10 +151,10 @@ def merge(
             group_triggers = set(hi.keys())
             prev_row = row
         except Exception as e:
-            print(
-                f"ГРЕШКА: При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"
+            log.error(
+                f"При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"
             )
-            print(e)
+            log.error(e)
             break
     result += _close(group, orig, trans)
 

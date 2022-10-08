@@ -1,5 +1,6 @@
 """The exporter specific to the indexgenerator"""
 from typing import Dict, Union
+import logging as log
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
@@ -113,10 +114,10 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
         try:
             _generate_usage(par, next)
         except Exception as e:
-            print(
-                f"ГРЕШКА: При генериране възникна проблем в ред {next.idx} или групата му"
+            log.error(
+                f"При генериране възникна проблем в ред {next.idx} или групата му"
             )
-            print(e)
+            log.error(e)
             break
 
 
@@ -135,10 +136,10 @@ def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> No
                 keys += [key]
         # TODO: Better reporting
         if keys:
-            print(f"ГРЕШКА: При генериране възникна проблем с {'|'.join(keys)}")
+            log.error(f"При генериране възникна проблем с {'|'.join(keys)}")
         else:
-            print(f"ГРЕШКА: При генериране възникна неидентифициран проблем")
-        print(f"ГРЕШКА: При генериране неуспешно преброяване в {d}")
+            log.error(f"При генериране възникна неидентифициран проблем")
+        log.error(f"При генериране неуспешно преброяване в {d}")
         return
     run = par.add_run()
     run.add_text(" (")
@@ -218,8 +219,8 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
         try:
             any_of_any = any_grandchild(next_d)
         except AssertionError as ae:
-            print(
-                f"ГРЕШКА: При генериране възникна проблем с една от {len(next_d)} употреби на {li}"
+            log.error(
+                f"При генериране възникна проблем с една от {len(next_d)} употреби на {li}"
             )
             raise ae
         if type(any_of_any) is SortedSet:  # bottom of structure
@@ -228,8 +229,8 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
             try:
                 _generate_line(level + 1, lang, next_d, doc)
             except AssertionError as ae:
-                print(
-                    f"ГРЕШКА: При генериране възникна проблем с една от {len(next_d)} употреби на {li}"
+                log.error(
+                    f"При генериране възникна проблем с една от {len(next_d)} употреби на {li}"
                 )
 
 

@@ -14,6 +14,7 @@ Options:
 """
 __version__ = "0.3.1"  # used also by build.sh script
 
+import logging as log
 from os import path
 from glob import glob
 import shutil
@@ -34,8 +35,8 @@ from generator import generate_docx
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
-    print(f"IndexGenerator v{__version__}")
-    # print(args)
+    log.info(f"IndexGenerator v{__version__}")
+    log.debug(args)
     fnames = args["<xlsx>"]
 
     assert sl_sem.var  # for mypy
@@ -63,7 +64,7 @@ if __name__ == "__main__":
     expanded_fnames = []
     to_clean = []
     for fname in fnames:
-        print(f"Преглеждане: {fname}")
+        log.info(f"Преглеждане: {fname}")
 
         if path.isdir(fname):
             expanded_fnames += glob(path.join(fname, "*.xlsx"))
@@ -77,7 +78,7 @@ if __name__ == "__main__":
                 shutil.unpack_archive(fname, dest_dir)
                 to_clean += [dest_dir]
             except ValueError as ve:
-                print(
+                log.critical(
                     f"Файлът {fname} трябва да е във формат .xlsx. Като алтернатива, може да е директория или архив. Моля конвертирайте го"
                 )
                 exit()
@@ -87,21 +88,21 @@ if __name__ == "__main__":
     expanded_fnames.sort()
 
     for fname in expanded_fnames:
-        print(f"Прочитане: {fname}")
-        print("Импорт...")
+        log.info(f"Прочитане: {fname}")
+        log.info("Импорт...")
         lines = import_mapping(fname, sem)
-        print(f"{len(lines)} думи")
+        log.info(f"{len(lines)} думи")
 
         for p in pairs:
-            print(f"Събиране на многоредови преводи {p.label}...")
+            log.info(f"Събиране на многоредови преводи {p.label}...")
             merged = merge(lines, p.orig, p.trans)
-            print(f"{len(merged)} думи")
+            log.info(f"{len(merged)} думи")
 
-            print(f"Кондензиране {p.label}...")
+            log.info(f"Кондензиране {p.label}...")
             before = len(p.result)
             p.result = aggregate(merged, p.orig, p.trans, p.result)
             after = len(p.result)
-            print(f"{after-before} леми")
+            log.info(f"{after-before} леми")
 
     fname_prefix = ""
     if len(fnames) == 1:
@@ -110,15 +111,15 @@ if __name__ == "__main__":
         else:
             fname_prefix = fnames[0] + "-"
 
-    print("Генериране славянски...")
+    log.info("Генериране славянски...")
     export_fname = f"{fname_prefix}index-sla.docx"
     generate_docx(sla, FROM_LANG, export_fname)
-    print(f"Записване: {export_fname}")
+    log.info(f"Записване: {export_fname}")
 
-    print("Генериране гръцки...")
+    log.info("Генериране гръцки...")
     export_fname = f"{fname_prefix}index-gre.docx"
     generate_docx(gre, TO_LANG, export_fname)
-    print(f"Записване: {export_fname}")
+    log.info(f"Записване: {export_fname}")
 
     for d in to_clean:
         shutil.rmtree(d)

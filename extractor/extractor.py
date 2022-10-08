@@ -17,6 +17,8 @@ Options:
 """
 __version__ = "1.1.0"  # used also by build.sh script
 
+import logging as log
+
 from docopt import docopt  # type: ignore
 
 from docx import Document  # type: ignore
@@ -29,24 +31,24 @@ from exporter import export_sheet
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
-    print(f"Extractor v{__version__}")
-    # print(args)
+    log.info(f"Extractor v{__version__}")
+    log.debug(args)
     fname = args["<docx>"]
-    print(f"Прочитане: {fname}")
+    log.info(f"Прочитане: {fname}")
 
     if len(fname) < 6 or "." not in fname[2:]:
         fname += ".docx"
     elif not fname.lower().endswith(".docx"):
-        print("Файлът трябва да е във формат .docx. Моля конвертирайте го")
+        log.critical("Файлът трябва да е във формат .docx. Моля конвертирайте го")
         exit()
 
     try:
         doc = Document(fname)
     except OpcError as oe:
-        print(
+        log.critical(
             "Файлът трябва да е във формат .docx. Посоченият файл изглежда развален. Моля регенерирайте го"
         )
-        print(oe)
+        log.critical(oe)
         exit()
 
     # fname = "../text/00-Prolog-tab.docx"
@@ -60,45 +62,45 @@ if __name__ == "__main__":
     # book_lines = split_rows(transformed, comments)
     # print(book_lines)
 
-    print("Импорт...")
+    log.info("Импорт...")
     lines = import_chapter(fname)
-    print(f"{len(lines)} думи")
+    log.info(f"{len(lines)} думи")
 
-    # print(lines)
+    log.debug(lines)
     # export_sheet(lines, fname + ".1.xlsx")
 
     if not args["--no-dehyphenate"]:
-        print("Премахване на пренос...")
+        log.info("Премахване на пренос...")
         lines = dehyphenate(lines)
         # export_sheet(lines, fname[:-5] + ".d.xlsx")
-        print(f"{len(lines)} думи")
+        log.info(f"{len(lines)} думи")
     else:
-        print("Оставяне на пренос.")
+        log.info("Оставяне на пренос.")
 
     if args["--integrate"]:
-        print("Възстановяване на думи, разделени от коментари...")
-        # print(lines)
+        log.info("Възстановяване на думи, разделени от коментари...")
+        log.debug(lines)
         lines = integrate_words(lines)
         # export_sheet(lines, fname[:-5] + ".i.xlsx")
-        # print(lines)
-        print(f"{len(lines)} думи")
+        log.debug(lines)
+        log.info(f"{len(lines)} думи")
     else:
-        print("Оставяне на думи, разделени от коментари.")
+        log.info("Оставяне на думи, разделени от коментари.")
 
     # export_sheet(lines, fname + ".2.xlsx")
 
     if not args["--no-condense"]:
-        print("Премахване на празни думи...")
+        log.info("Премахване на празни думи...")
         lines = condense(lines)
         # export_sheet(lines, fname[:-5] + ".c.xlsx")
-        print(f"{len(lines)} думи")
+        log.info(f"{len(lines)} думи")
     else:
-        print("Оставяне на празни думи.")
+        log.info("Оставяне на празни думи.")
 
-    print("Експорт...")
+    log.info("Експорт...")
     export_fname = fname[:-5] + ".xlsx"
     export_sheet(lines, export_fname)
-    print(f"Записване: {export_fname}")
+    log.info(f"Записване: {export_fname}")
 
     if not args["--no-pause"]:
         input("Натиснете Enter, за да приключите изпълнението.")

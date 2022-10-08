@@ -3,6 +3,7 @@
 """A processor aggregating different usages into a dictionary hierarchy"""
 
 from typing import List, Optional, Dict
+import logging as log
 from sortedcontainers import SortedDict  # type: ignore
 
 from const import IDX_COL, MISSING_CH
@@ -145,10 +146,10 @@ def aggregate(
             _expand_and_aggregate(row, orig, trans, result)
             _expand_and_aggregate(row, orig, trans.var, result)
         except Exception as e:
-            print(
-                f"ГРЕШКА: При кондензиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]})"
+            log.error(
+                f"При кондензиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]})"
             )
-            print(e)
+            log.error(e)
             break
 
     return result

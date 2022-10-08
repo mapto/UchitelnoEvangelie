@@ -1,13 +1,14 @@
 """The exporter specific to the integrator"""
 
-from const import INDENT_CH, SPECIAL_CHARS
 from typing import Dict, Tuple
+import logging as log
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from docx import Document  # type: ignore
 from docx.shared import Pt  # type: ignore
 
+from const import INDENT_CH, SPECIAL_CHARS
 from config import FROM_LANG, TO_LANG, other_lang
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
@@ -184,10 +185,10 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
             try:
                 docx_usage(par, key, usage, lang)
             except Exception as e:
-                print(
-                    f"ГРЕШКА: При експортиране възникна проблем в ред {usage.idx} ({key}) или групата му"
+                log.error(
+                    f"При експортиране възникна проблем в ред {usage.idx} ({key}) или групата му"
                 )
-                print(e)
+                log.error(e)
                 break
             first = False
 
@@ -219,10 +220,10 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
         try:
             any_of_any = any_grandchild(next_d)
         except AssertionError as ae:
-            print(
-                f"ГРЕШКА: При експортиране възникна проблем с една от {len(next_d)} употреби на {li}"
+            log.error(
+                f"При експортиране възникна проблем с една от {len(next_d)} употреби на {li}"
             )
-            print(ae)
+            log.error(ae)
             return
 
         if type(any_of_any) is SortedSet:  # bottom of structure
@@ -231,8 +232,8 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             try:
                 _export_line(level + 1, lang, next_d, doc)
             except AssertionError as ae:
-                print(
-                    f"ГРЕШКА: При експортиране възникна проблем с една от {len(next_d)} употреби на {li}"
+                log.error(
+                    f"При експортиране възникна проблем с една от {len(next_d)} употреби на {li}"
                 )
 
 

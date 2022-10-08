@@ -1,5 +1,5 @@
 from typing import Any, Callable, List, Optional, Union
-
+import logging as log
 import re
 
 IDX_SEP = "-"  # used to show index/address ranges
@@ -123,10 +123,8 @@ class Index:
                 if v > other.data[i]:
                     return False
             except TypeError as te:
-                print(
-                    f"ГРЕШКА: Сравнение на несравними стойности {v} и {other.data[i]}"
-                )
-                print(te)
+                log.error(f"Сравнение на несравними стойности {v} и {other.data[i]}")
+                log.error(te)
                 break
         if self.end:
             return self.end < other.end if other.end else True

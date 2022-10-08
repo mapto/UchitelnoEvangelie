@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from typing import Optional
-
+import logging as log
 import re
 
 from const import LINE_CH
@@ -13,7 +13,7 @@ def dehyphenate(words: WordList) -> WordList:
     w: Optional[Word] = words[0]
     while w:
         while w.word and w.next and w.word[-1] == "-":
-            # print(w)
+            log.debug(w)
             w.word = w.word[:-1] + w.next.word
             if w.next.variant:
                 if (
@@ -21,13 +21,13 @@ def dehyphenate(words: WordList) -> WordList:
                     and LINE_CH not in w.variant
                     and not w.variant.startswith("om.")
                 ):
-                    print(f"ГРЕШКА: Неочакван вариант на {w.index()}: {w.variant}")
+                    log.error(f"Неочакван вариант на {w.index()}: {w.variant}")
                     # raise SyntaxError(f"Unexpected variant: {w.variant}")
                 if w.variant:
                     w.variant = w.variant.replace(LINE_CH, w.next.variant)
                 else:
                     w.variant = w.next.variant
-            # print(w.next)
+            log.debug(w.next)
             w.prependTo(w.next.next)
         result += w
         w = w.next
@@ -50,10 +50,10 @@ def integrate_words(words: WordList) -> WordList:
     token: Optional[Word] = words[0]
     while token:
         line = re.split(r"\s", token.line_context)
-        # print(f"word: {token}")
-        # print(f"line: {line}")
+        log.debug(f"word: {token}")
+        log.debug(f"line: {line}")
         for word in line:
-            # print(word)
+            log.debug(word)
             while (
                 token.word
                 and word.startswith(token.word)
@@ -74,14 +74,14 @@ def integrate_words(words: WordList) -> WordList:
                     and token.next.variant
                     and token.variant not in token.next.variant
                 ):
-                    print(token)
-                    print(token.variant)
-                    print(token.next.variant)
+                    log.debug(token)
+                    log.debug(token.variant)
+                    log.debug(token.next.variant)
 
                 if not token.variant:
                     token.variant = token.next.variant
                 token.prependTo(token.next.next)
-            # print(token.word)
+            log.debug(token.word)
         result += token
         token = token.next
     return result
