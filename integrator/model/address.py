@@ -43,13 +43,15 @@ class Index:
         self.end: Optional[Index] = None
 
         rest = value
+        restlen = len(rest)
         while rest:
             # print(Index.maxlen)
             ci = len(self.data)
             # print(ci)
             if rest[0].isnumeric():
                 m = re.search(numeric, rest)
-                assert m
+                if not m:
+                    raise ValueError(f"Invalid address: {value}")
                 v = m.group(1)
                 """
                 if len(Index.maxlen) == len(self.data):
@@ -63,6 +65,10 @@ class Index:
                 """
                 self.data += [int(v)]
                 rest = m.group(2)
+                if restlen == len(rest):
+                    raise ValueError(f"Invalid address: {value}")
+                else:
+                    restlen = len(rest)
             elif rest[0].isalpha():
                 m = re.search(alpha, rest)
                 assert m
@@ -77,6 +83,10 @@ class Index:
                 """
                 self.data += [v]
                 rest = m.group(2)
+                if restlen == len(rest):
+                    raise ValueError(f"Invalid address: {value}")
+                else:
+                    restlen = len(rest)
             elif rest[0] == IDX_SEP:
                 self.end = Index(rest[1:])
                 le = len(self.end.data)

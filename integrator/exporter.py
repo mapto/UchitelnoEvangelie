@@ -222,7 +222,9 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             print(
                 f"ГРЕШКА: При експортиране възникна проблем с една от {len(next_d)} употреби на {li}"
             )
-            raise ae
+            print(ae)
+            return
+
         if type(any_of_any) is SortedSet:  # bottom of structure
             _generate_usage_line(lang, next_d, doc)
         else:

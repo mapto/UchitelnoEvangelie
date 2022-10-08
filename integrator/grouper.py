@@ -193,7 +193,14 @@ def _close_group(
     line = _collect_group(group, orig, trans, merge_rows_main, merge_rows_var)
 
     # update content
-    return _update_group(group, orig, trans, line, merge_rows_main, merge_rows_var)
+    try:
+        return _update_group(group, orig, trans, line, merge_rows_main, merge_rows_var)
+    except Exception as e:
+        print(
+            f"ГРЕШКА: Неуспешно затваряне на група при редове {[row[IDX_COL] for row in group]}"
+        )
+        print(e)
+        return []
 
 
 def _hilited(row: List[str], sem: LangSemantics) -> Dict[int, str]:

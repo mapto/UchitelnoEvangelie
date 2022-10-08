@@ -12,13 +12,12 @@ Options:
   -p --no-pause            Disable pause at end of execution
 
 """
-__version__ = "1.3.0"  # used also by build.sh script
+__version__ = "1.3.1"  # used also by build.sh script
 
 from os import path
 from glob import glob
 import shutil
 import tempfile
-from datetime import datetime
 
 from docopt import docopt  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
