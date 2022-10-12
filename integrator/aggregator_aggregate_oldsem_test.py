@@ -326,7 +326,7 @@ def test_ipercliso():
         + [""] * 3
         + ["ὑπερκλύσαι", "ὑπερκλύζω", "inf."]
         + [""] * 2
-        + ["ὑπερβλύσαι C", "ὑπερβλύω", "inf."]
+        + ["ὑπερβλύσαι Cs", "ὑπερβλύω", "inf."]
         + [""] * 8
         + ["1"] * 4,
         [""] * 4
@@ -339,7 +339,7 @@ def test_ipercliso():
         + [""] * 3
         + ["ὑπερκλύζων", "ὑπερκλύζω"]
         + [""] * 3
-        + ["ὑπερβλύζων C", "ὑπερβλύω"]
+        + ["ὑπερβλύζων Cs", "ὑπερβλύω"]
         + [""] * 9
         + ["1"] * 4,
     ]
@@ -357,9 +357,9 @@ def test_ipercliso():
                                     Usage(
                                         "gr",
                                         alt=Alternative(
-                                            var_lemmas={Source("C"): "ὑπερβλύω"},
+                                            var_lemmas={Source("Cs"): "ὑπερβλύω"},
                                             var_words={
-                                                Source("C"): ("ὑπερβλύζων C", 1)
+                                                Source("Cs"): ("ὑπερβλύζων Cs", 1)
                                             },
                                         ),
                                         word="ὑπερκλύζων",
@@ -386,9 +386,9 @@ def test_ipercliso():
                                     Usage(
                                         "gr",
                                         alt=Alternative(
-                                            var_lemmas={Source("C"): "ὑπερβλύω"},
+                                            var_lemmas={Source("Cs"): "ὑπερβλύω"},
                                             var_words={
-                                                Source("C"): ("ὑπερβλύσαι C", 1)
+                                                Source("Cs"): ("ὑπερβλύσαι Cs", 1)
                                             },
                                         ),
                                         word="ὑπερκλύσαι",
@@ -415,18 +415,18 @@ def test_ipercliso():
             "": {
                 "": {
                     "прѣ\ue205сто\ue20d\ue205т\ue205": {
-                        ("ὑπερβλύζων C", "прѣ\ue205сто\ue20dе"): SortedSet(
+                        ("ὑπερβλύζων Cs", "прѣ\ue205сто\ue20dе"): SortedSet(
                             [
                                 Alignment(
                                     Index("1/W168c17"),
                                     Usage(
                                         "gr",
-                                        var=Source("C"),
+                                        var=Source("Cs"),
                                         alt=Alternative(
                                             main_lemma="ὑπερκλύζω",
                                             main_word="ὑπερκλύζων",
                                         ),
-                                        word="ὑπερβλύζων C",
+                                        word="ὑπερβλύζων Cs",
                                         lemmas=["ὑπερβλύω"],
                                     ),
                                     Usage(
@@ -443,18 +443,18 @@ def test_ipercliso():
             "inf.": {
                 "": {
                     "\ue205сто\ue20dен\ue205\ue201": {
-                        ("ὑπερβλύσαι C", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
+                        ("ὑπερβλύσαι Cs", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
                             [
                                 Alignment(
                                     Index("1/W168c17"),
                                     Usage(
                                         "gr",
-                                        var=Source("C"),
+                                        var=Source("Cs"),
                                         alt=Alternative(
                                             main_lemma="ὑπερκλύζω",
                                             main_word="ὑπερκλύσαι",
                                         ),
-                                        word="ὑπερβλύσαι C",
+                                        word="ὑπερβλύσαι Cs",
                                         lemmas=["ὑπερβλύω", "inf."],
                                     ),
                                     Usage(
@@ -1477,7 +1477,7 @@ def test_v_loc():
                 "": {
                     "": {
                         "παρά + Acc. → παρά": {
-                            ("вь WGH", "παρ’ C"): SortedSet(
+                            ("вь WGH", "παρ’ Cs"): SortedSet(
                                 [
                                     Alignment(
                                         Index("1/7d1"),
@@ -1493,8 +1493,8 @@ def test_v_loc():
                                         ),
                                         Usage(
                                             "gr",
-                                            var=Source("C"),
-                                            word="παρ’ C",
+                                            var=Source("Cs"),
+                                            word="παρ’ Cs",
                                             lemmas=["παρά", "παρά + Acc."],
                                         ),
                                     )

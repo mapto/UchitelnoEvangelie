@@ -1,4 +1,3 @@
-from audioop import mul
 from const import V_LEMMA_SEP, H_LEMMA_SEP
 
 # built with regex101.com
@@ -14,7 +13,8 @@ address_regex = (
     + r")?"
 )
 
-source_regex = r"^([A-Z][a-z]?)(.*)$"
+from config import source_regex
+
 sources_regex = r"([A-Z]\w*)"
 
 multiword_regex = r"^([^A-Z]+)(" + sources_regex + r"+)(.*)$"

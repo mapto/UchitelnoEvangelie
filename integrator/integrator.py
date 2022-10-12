@@ -3,18 +3,17 @@
 Licensed under MIT License, detailed here: https://mit-license.org/
 
 Usage:
-  integrator.py [-p] <xlsx>...
-  integrator.py [--no-pause] <xlsx>...
+  integrator.py [-v|--verbose|-s|--silent] <xlsx>...
 
 Options:
-  -h --help                This information
-  -v --version             Print version
-  -p --no-pause            Disable pause at end of execution
+  -h --help             This information
+  -s --silent           Remove output other than warnings and errors, also does not pause after completion
+  -v --verbose          Increase debug level
+  --version             Print version
 
 """
 __version__ = "1.3.1"  # used also by build.sh script
 
-import logging as log
 from os import path
 from glob import glob
 import shutil
@@ -32,8 +31,18 @@ from merger import merge
 from aggregator import aggregate
 from exporter import export_docx
 
+import logging as log
+
+logger = log.getLogger()
+
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
+    if "--verbose" in args and args["--verbose"]:
+        log.basicConfig(level=log.DEBUG)
+    elif "--silent" in args and args["--silent"]:
+        log.basicConfig(level=log.WARNING)
+    else:
+        log.basicConfig(level=log.INFO)
     log.info(f"Integrator v{__version__}")
     log.debug(args)
     fnames = args["<xlsx>"]
@@ -139,5 +148,5 @@ if __name__ == "__main__":
     for d in to_clean:
         shutil.rmtree(d)
 
-    if not args["--no-pause"]:
+    if logger.level < log.WARNING:
         input("Натиснете Enter, за да приключите изпълнението.")

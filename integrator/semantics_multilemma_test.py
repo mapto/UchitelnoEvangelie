@@ -1,7 +1,7 @@
 from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 
-from const import STYLE_COL, H_LEMMA_SEP, V_LEMMA_SEP
+from const import STYLE_COL, V_LEMMA_SEP
 from config import FROM_LANG, TO_LANG
 from setup import sl_sem, gr_sem
 
@@ -29,13 +29,13 @@ def test_basic():
         + [""] * 3
         + ["om."]
         + [""] * 4
-        + ["παρ’ C", "παρά ", "παρά + Acc."]
+        + ["παρ’ Cs", "παρά ", "παρά + Acc."]
         + [""] * 6
     )
     result = sl_sem.var.multilemma(row)
     assert result == {Source("WGH"): "въ"}
     result = gr_sem.var.multilemma(row)
-    assert result == {"C": "παρά"}
+    assert result == {"Cs": "παρά"}
 
     row = (
         ([""] * 3)
@@ -43,13 +43,13 @@ def test_basic():
         + ([""] * 3)
         + ["μὲν"]
         + ([""] * 4)
-        + ["με C", "ἐγώ"]
+        + ["με Cs", "ἐγώ"]
         + ([""] * 7)
     )
     result = sl_sem.multilemma(row)
     assert result == {"": "аꙁъ"}
     result = gr_sem.var.multilemma(row)
-    assert result == {"C": "ἐγώ"}
+    assert result == {"Cs": "ἐγώ"}
 
     dummy_sem = MainLangSemantics(
         FROM_LANG, 2, [3], VarLangSemantics(FROM_LANG, 0, [1])
@@ -76,8 +76,8 @@ def test_basic():
     assert result == {Source("WH"): "дноѧдъ"}
 
     dummy_sem2 = VarLangSemantics(TO_LANG, 0, [1])
-    result = dummy_sem2.multilemma(["με C", "ἐγώ"])
-    assert result == {"C": "ἐγώ"}
+    result = dummy_sem2.multilemma(["με Cs", "ἐγώ"])
+    assert result == {"Cs": "ἐγώ"}
 
 
 def test_std_sem():
@@ -132,11 +132,11 @@ def test_sub():
         + [""] * 3
         + ["om."]
         + [""] * 4
-        + ["παρ’ C", "παρά ", "παρά + Acc."]
+        + ["παρ’ Cs", "παρά ", "παρά + Acc."]
         + [""] * 6
     )
     result = gr_sem.var.multilemma(row, 1)
-    assert result == {"C": "παρά + Acc."}
+    assert result == {"Cs": "παρά + Acc."}
 
     result = sl_sem.var.multilemma(row, 1)
     assert result == {Source("WGH"): "въ + Loc."}
@@ -196,11 +196,11 @@ def test_paris():
         + [""] * 3
         + ["ἀνάκλισιν", "ἀνάκλισις"]
         + [""] * 3
-        + ["ἀνάκλησιν CMPcPa"]
+        + ["ἀνάκλησιν CsMPcPa"]
         + [""] * 10
     )
     result = gr_sem.var.multilemma(row)
-    assert result == {Source("CMPcPa"): "ἀνάκλησιν"}
+    assert result == {Source("CsMPcPa"): "ἀνάκλησιν"}
 
 
 def test_bozhii():

@@ -3,21 +3,19 @@
 Licensed under MIT License, detailed here: https://mit-license.org/
 
 Usage:
-  extractor.py [-dIcp] <docx>
-  extractor.py [--no-dehyphenate] [--integrate] [--no-condense] [--no-pause] <docx>
+  extractor.py [-d|--no-dehyphenate] [-I|--integrate] [-c|--no-condense] [-v|--verbose|-s|--silent] <docx>
 
 Options:
   -h --help                This information
-  -v --version             Print version
+  --version             Print version
   -d --no-dehyphenate   Disable removal of hyphens and word merging
   -I --integrate        Put together words that have been separated by comment selection
   -c --no-condense      Disable removal of words that are blank and have no annotation
-  -p --no-pause         Disable pause at end of execution
+  -s --silent           Remove output other than warnings and errors, also does not pause after completion
+  -v --verbose          Increase debug level
 
 """
 __version__ = "1.1.0"  # used also by build.sh script
-
-import logging as log
 
 from docopt import docopt  # type: ignore
 
@@ -29,8 +27,18 @@ from importer import import_chapter
 from processor import dehyphenate, condense, integrate_words
 from exporter import export_sheet
 
+import logging as log
+
+logger = log.getLogger()
+
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
+    if "--verbose" in args and args["--verbose"]:
+        log.basicConfig(level=log.DEBUG)
+    elif "--silent" in args and args["--silent"]:
+        log.basicConfig(level=log.WARNING)
+    else:
+        log.basicConfig(level=log.INFO)
     log.info(f"Extractor v{__version__}")
     log.debug(args)
     fname = args["<docx>"]
@@ -102,5 +110,5 @@ if __name__ == "__main__":
     export_sheet(lines, export_fname)
     log.info(f"Записване: {export_fname}")
 
-    if not args["--no-pause"]:
+    if logger.level < log.WARNING:
         input("Натиснете Enter, за да приключите изпълнението.")

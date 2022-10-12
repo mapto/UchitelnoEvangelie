@@ -24,8 +24,8 @@ def test_basic():
     assert result == {Source("WGH"): "дноеды"}
 
     gr_sem = VarLangSemantics(TO_LANG, 0, [1])
-    result = gr_sem.multiword(["με C", "ἐγώ"])
-    assert result == {"C": "με"}
+    result = gr_sem.multiword(["με Cs", "ἐγώ"])
+    assert result == {"Cs": "με"}
 
 
 def test_repeated():
@@ -60,11 +60,11 @@ def test_greek_paris():
         + [""] * 3
         + ["ἀνάκλισιν", "ἀνάκλισις"]
         + [""] * 3
-        + ["ἀνάκλησιν CMPcPa"]
+        + ["ἀνάκλησιν CsMPcPa"]
         + [""] * 10
     )
     result = gr_sem.var.multiword(row)
-    assert result == {Source("CMPcPa"): "ἀνάκλησιν"}
+    assert result == {Source("CsMPcPa"): "ἀνάκλησιν"}
 
 
 def test_bozhii():

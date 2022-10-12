@@ -22,7 +22,7 @@ def _hilited_col(row: List[str], col: int) -> Optional[str]:
     style = row[STYLE_COL]
     if f"hl{col:02d}" in style:
         pos = style.index(f"hl{col:02d}")
-        log.debug(style[pos + 5 : pos + 13])
+        # log.debug(style[pos + 5 : pos + 13])
         if style[pos + 5 : pos + 11] == "FFFFFF":
             return None
         return style[pos + 5 : pos + 13]
@@ -153,7 +153,7 @@ def _update_group(
             if i in merge_rows_main or c == trans.word:
                 if _hilited_union(orig, trans, group[i], c):
                     update = False
-            log.debug(trans.var, merge_rows_var)
+            # log.debug(trans.var, merge_rows_var)
             if trans.var and group[i][trans.var.word]:
                 if c in trans.var.lemmas and _hilited_gram(orig, trans.var, group[i]):
                     update = False

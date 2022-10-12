@@ -89,7 +89,7 @@ def test_build_paths():
         + [""] * 3
         + ["om."]
         + [""] * 4
-        + ["παρ’ C", "παρά", "παρά + Acc."]
+        + ["παρ’ Cs", "παρά", "παρά + Acc."]
         + [""] * 8
     )
     res = sl_sem.build_paths(row)

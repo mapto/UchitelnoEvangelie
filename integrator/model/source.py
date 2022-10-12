@@ -7,7 +7,7 @@ from config import FROM_LANG, TO_LANG
 def _values(src: str) -> List[str]:
     """
     >>> _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
-    ['W', 'G', 'H', 'C', 'A', 'Sp', 'Ca', 'Ch', 'Fa', 'Fb', 'L', 'M', 'Ma', 'B', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'R', 'Tb', 'V', 'Z', 'Nt']
+    ['W', 'G', 'H', 'Cs', 'A', 'Sp', 'Ca', 'Ch', 'Fa', 'Fb', 'L', 'M', 'Ma', 'B', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'R', 'Tb', 'V', 'Z', 'Za', 'Nt']
     >>> _values('MB')
     ['M', 'B']
     >>> _values('V')
@@ -28,7 +28,8 @@ def _values(src: str) -> List[str]:
     return split
 
 
-ORDERED_SOURCES = _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
+# ORDERED_SOURCES = _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
+ORDERED_SOURCES = VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG]
 
 
 class Source:
@@ -45,7 +46,9 @@ class Source:
     data: List[str] = []
 
     def __init__(self, other=None) -> None:
-        if type(other) == str:
+        if type(other) == list:
+            self.src = "".join(other)
+        elif type(other) == str:
             self.src = other
         elif type(other) == Source:
             self.src = other.src
@@ -63,12 +66,12 @@ class Source:
         'WGH'
         >>> Source('PbPa')._sort_vars()
         'PaPb'
-        >>> Source('CMBSpCh')._sort_vars()
-        'CSpChMB'
+        >>> Source('CsMBSpCh')._sort_vars()
+        'CsSpChMB'
         >>> Source('WH')._sort_vars()
         'WH'
-        >>> Source('CMBSpChHW')._sort_vars()
-        'WHCSpChMB'
+        >>> Source('CsMBSpChHW')._sort_vars()
+        'WHCsSpChMB'
         """
         return "".join(self.data)
 
@@ -114,7 +117,7 @@ class Source:
 
     def __len__(self) -> int:
         if not self.src:
-            return len("".join(VAR_SOURCES.values()))
+            return len("".join(VAR_SOURCES))
         l = 0
         for s in self:
             l += 1
@@ -132,10 +135,10 @@ class Source:
 
     def __iter__(self):
         """
-        >>> [x for x in Source('BCMSpCh')]
-        ['C', 'Sp', 'Ch', 'M', 'B']
-        >>> [x for x in Source('WGH-BCMSpCh')]
-        ['W', 'G', 'H', 'C', 'Sp', 'Ch', 'M', 'B']
+        >>> [x for x in Source('BCsMSpCh')]
+        ['Cs', 'Sp', 'Ch', 'M', 'B']
+        >>> [x for x in Source('WGH-BCsMSpCh')]
+        ['W', 'G', 'H', 'Cs', 'Sp', 'Ch', 'M', 'B']
         """
         return iter(self.data)
 
@@ -231,6 +234,8 @@ class Source:
         """
         if type(iterable) == str:
             iterable = Source(iterable)
+        if type(iterable) == list and all(type(e) == str for e in iterable):
+            iterable = Source(iterable)
         if type(iterable) == Source:
             iterable = [iterable]
         if not self.src:
@@ -273,10 +278,10 @@ class Source:
         Source('MPb')
         >>> Source("HG").by_lang("sl")
         Source('GH')
-        >>> Source("CMBSpChHW").by_lang("sl")
+        >>> Source("CsMBSpChHW").by_lang("sl")
         Source('WH')
-        >>> Source("CMBSpChHW").by_lang("gr")
-        Source('CSpChMB')
+        >>> Source("CsMBSpChHW").by_lang("gr")
+        Source('CsSpChMB')
         >>> Source("WGH").by_lang("sl")
         Source('WGH')
         >>> Source("GHW").by_lang("sl")

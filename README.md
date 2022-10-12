@@ -53,6 +53,8 @@ Alternative (also on Mac) is using pyinstaller, for example for integrator:
 
 The program can be compiled and/or used with a current version of python (3.6+).
 
+Make sure when using `integrator` and `indexgenerator` to provide the source list configuration files, see [`sl-sources.txt`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/sl-sources.txt) and [`gr-sources.txt`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py#L54).
+
 The font face <a href="https://www.starobulglit.eu/OC10U.ttf">*Cyrillica Ochrid 10U*</a> needs to be downloaded and installed on the host system for visualisation of the Cyrillic script. Alternatively, configure an alternative font for both [exporter](extractor/exporter.py#L23) and [integrator](integrator/wordproc.py#L12).
 
 ## Interpreted version

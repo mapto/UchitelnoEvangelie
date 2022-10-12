@@ -2,7 +2,6 @@ from typing import List
 from dataclasses import dataclass, field
 
 from config import other_lang
-from regex import source_regex
 
 from .address import Index
 from .source import Source

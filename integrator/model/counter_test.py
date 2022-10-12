@@ -16,7 +16,7 @@ def test_dict_ipercliso():
                                     Index("1/W168c17"),
                                     Usage(
                                         TO_LANG,
-                                        Source("C"),
+                                        Source("Cs"),
                                         alt=Alternative("ὑπερκλύζω"),
                                         word="ὑπερβλύζων",
                                         lemmas=["ὑπερβλύω"],
@@ -37,7 +37,7 @@ def test_dict_ipercliso():
                                     Index("1/W168c17"),
                                     Usage(
                                         TO_LANG,
-                                        Source("C"),
+                                        Source("Cs"),
                                         alt=Alternative("ὑπερκλύζω"),
                                         word="ὑπερβλύσαι",
                                         lemmas=["ὑπερβλύω"],
@@ -62,7 +62,7 @@ def test_dict_ipercliso():
                                     Index("1/W168c17"),
                                     Usage(
                                         TO_LANG,
-                                        alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
+                                        alt=Alternative(var_lemmas={"Cs": "ὑπερβλύω"}),
                                         word="ὑπερκλύζων",
                                         lemmas=["ὑπερκλύζω"],
                                     ),
@@ -82,7 +82,7 @@ def test_dict_ipercliso():
                                     Index("1/W168c17"),
                                     Usage(
                                         TO_LANG,
-                                        alt=Alternative(var_lemmas={"C": "ὑπερβλύω"}),
+                                        alt=Alternative(var_lemmas={"Cs": "ὑπερβλύω"}),
                                         word="ὑπερκλύσαι",
                                         lemmas=["ὑπερκλύζω"],
                                     ),

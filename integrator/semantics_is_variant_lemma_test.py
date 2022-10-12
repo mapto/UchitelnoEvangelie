@@ -19,18 +19,18 @@ def test_ipercliso():
         + [""] * 3
         + ["ὑπερκλύζων", "ὑπερκλύζω"]
         + [""] * 3
-        + ["ὑπερβλύζων C", "ὑπερβλύω"]
+        + ["ὑπερβλύζων Cs", "ὑπερβλύω"]
         + [""] * 9
     )
     exception = False
     try:
-        _is_variant_lemma(row, gr_sem, Source("C"), "ὑπερκλύζω")
+        _is_variant_lemma(row, gr_sem, Source("Cs"), "ὑπερκλύζω")
     except AssertionError:
         exception = True
     assert exception
 
     assert _is_variant_lemma(row, gr_sem, Source(""), "ὑπερκλύζω")
-    assert _is_variant_lemma(row, gr_sem.var, Source("C"), "ὑπερβλύω")
+    assert _is_variant_lemma(row, gr_sem.var, Source("Cs"), "ὑπερβλύω")
 
     assert not _is_variant_lemma(row, gr_sem.var, Source("M"), "ὑπερβλύω")
 

@@ -4,6 +4,7 @@ so to avoid circular references they cannot use it"""
 
 
 from typing import Dict, List, Set
+import logging as log
 import unicodedata
 from sortedcontainers import SortedSet  # type: ignore
 
@@ -80,7 +81,7 @@ def ord_word(w: str, max_len=MAX_LEN) -> int:
     a = base_word(w).lower()
     a.replace("оу", "ѹ")
     if max_len <= len(a):
-        print(a)
+        log.info(a)
     assert max_len > len(a)
     base = 2 * MAX_CHAR
     # if combined lemma, order after all other

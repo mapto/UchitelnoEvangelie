@@ -55,7 +55,7 @@ def _close(
                 idxline = i + 1
                 break
         if idxline:
-            log.warn(
+            log.info(
                 f"Липсва индекс в първия ред от група на {group[0][IDX_COL]}. Намерен в {idxline} ред"
             )
         else:

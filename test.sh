@@ -6,7 +6,7 @@ PARTS="docProps/app.xml xl/theme/theme1.xml xl/worksheets/sheet1.xml _rels/.rels
 #PARTS="docProps/app.xml xl/theme/theme1.xml xl/worksheets/sheet1.xml xl/styles.xml _rels/.rels xl/workbook.xml xl/_rels/workbook.xml.rels [Content_Types].xml"
 # SKIPPED: docProps/core.xml, as it contains no relevant information, but timestamps
 for FILENAME in *.docx; do
-    ../extractor.py -p $FILENAME
+    ../extractor.py -s $FILENAME
     STRIPPED="${FILENAME%.docx}"
     unzip -q "$STRIPPED.expected.xlsx" -d expected
     unzip -q "$STRIPPED.xlsx" -d out
@@ -31,7 +31,7 @@ VARIANTS="list-gre list-sla"
 PARTS="[Content_Types].xml _rels/.rels docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/stylesWithEffects.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml customXml/item1.xml customXml/_rels/item1.xml.rels customXml/itemProps1.xml word/numbering.xml docProps/thumbnail.jpeg"
 # SKIPPED: docProps/core.xml, as it contains no relevant information, but timestamps
 for FILENAME in *.xlsx; do
-    ../integrator.py -p $FILENAME
+    ../integrator.py -s $FILENAME
     for VAR in $VARIANTS; do
         STRIPPED="${FILENAME%.xlsx}"
         STRIPPED="$STRIPPED-$VAR"
@@ -60,7 +60,7 @@ VARIANTS="index-gre index-sla"
 PARTS="[Content_Types].xml _rels/.rels docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/stylesWithEffects.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml customXml/item1.xml customXml/_rels/item1.xml.rels customXml/itemProps1.xml word/numbering.xml docProps/thumbnail.jpeg"
 # SKIPPED: docProps/core.xml, as it contains no relevant information, but timestamps
 for FILENAME in *.xlsx; do
-    ../indexgenerator.py -p $FILENAME
+    ../indexgenerator.py -s $FILENAME
     for VAR in $VARIANTS; do
         STRIPPED="${FILENAME%.xlsx}"
         STRIPPED="$STRIPPED-$VAR"

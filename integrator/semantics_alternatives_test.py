@@ -57,13 +57,13 @@ def test_base():
         + ([""] * 3)
         + ["μὲν"]
         + ([""] * 4)
-        + ["με C", "ἐγώ"]
+        + ["με Cs", "ἐγώ"]
         + ([""] * 7)
         + ["1"] * 4
     )
     result = sl_sem.alternatives(row, "*IGNORED*")
     assert result == Alternative()
-    result == gr_sem.var.alternatives(row, Source("C"))
+    result == gr_sem.var.alternatives(row, Source("Cs"))
     # assert result == ("μὲν", {})
 
     row = (

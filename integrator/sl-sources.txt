@@ -1,0 +1,4 @@
+S   Synodal, main text
+W   Wiener, default variant
+G   Гильф.
+H   Hilendar

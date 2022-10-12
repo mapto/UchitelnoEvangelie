@@ -62,22 +62,22 @@ def test_para():
         + [""] * 3
         + ["om."]
         + [""] * 4
-        + ["παρ’ C", "παρά", "παρά + Acc."]
+        + ["παρ’ Cs", "παρά", "παρά + Acc."]
         + [""] * 8
         + ["1"] * 4
     )
     d3 = SortedDict()
-    d3 = gr_sem.var.compile_usages(sl_sem, row, d3, "παρά", "ѹ", Source("C"))
+    d3 = gr_sem.var.compile_usages(sl_sem, row, d3, "παρά", "ѹ", Source("Cs"))
     assert d3 == {
         "ѹ": {
-            ("παρ’ C", "оу"): SortedSet(
+            ("παρ’ Cs", "оу"): SortedSet(
                 [
                     Alignment(
                         Index("1/7d1"),
                         Usage(
                             "gr",
-                            Source("C"),
-                            word="παρ’ C",
+                            Source("Cs"),
+                            word="παρ’ Cs",
                             lemmas=["παρά", "παρά + Acc."],
                         ),
                         Usage(
@@ -108,7 +108,7 @@ def test_ipercliso():
         + [""] * 3
         + ["ὑπερκλύσαι", "ὑπερκλύζω", "inf."]
         + [""] * 2
-        + ["ὑπερβλύσαι C", "ὑπερβλύω", "inf."]
+        + ["ὑπερβλύσαι Cs", "ὑπερβλύω", "inf."]
         + [""] * 8
         + ["1"] * 4,
         [""] * 4
@@ -121,32 +121,32 @@ def test_ipercliso():
         + [""] * 3
         + ["ὑπερκλύζων", "ὑπερκλύζω"]
         + [""] * 3
-        + ["ὑπερβλύζων C", "ὑπερβλύω"]
+        + ["ὑπερβλύζων Cs", "ὑπερβλύω"]
         + [""] * 9
         + ["1"] * 4,
     ]
 
     d2 = SortedDict()
     d2 = gr_sem.var.compile_usages(
-        sl_sem, rows[0], d2, "ὑπερβλύω", "\ue205сто\ue20dен\ue205\ue201", Source("C")
+        sl_sem, rows[0], d2, "ὑπερβλύω", "\ue205сто\ue20dен\ue205\ue201", Source("Cs")
     )
     d2 = gr_sem.var.compile_usages(
-        sl_sem, rows[1], d2, "ὑπερβλύω", "прѣ\ue205сто\ue20d\ue205т\ue205", Source("C")
+        sl_sem, rows[1], d2, "ὑπερβλύω", "прѣ\ue205сто\ue20d\ue205т\ue205", Source("Cs")
     )
     assert d2 == {
         "прѣ\ue205сто\ue20d\ue205т\ue205": {
-            ("ὑπερβλύζων C", "прѣ\ue205сто\ue20dе"): SortedSet(
+            ("ὑπερβλύζων Cs", "прѣ\ue205сто\ue20dе"): SortedSet(
                 [
                     Alignment(
                         Index("1/W168c17"),
                         Usage(
                             "gr",
-                            Source("C"),
+                            Source("Cs"),
                             Alternative(
                                 main_lemma="ὑπερκλύζω",
                                 main_word="ὑπερκλύζων",
                             ),
-                            "ὑπερβλύζων C",
+                            "ὑπερβλύζων Cs",
                             ["ὑπερβλύω"],
                         ),
                         Usage(
@@ -159,18 +159,18 @@ def test_ipercliso():
             )
         },
         "\ue205сто\ue20dен\ue205\ue201": {
-            ("ὑπερβλύσαι C", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
+            ("ὑπερβλύσαι Cs", "\ue205сто\ue20dен\ue205\ue205"): SortedSet(
                 [
                     Alignment(
                         Index("1/W168c17"),
                         Usage(
                             "gr",
-                            Source("C"),
+                            Source("Cs"),
                             Alternative(
                                 main_lemma="ὑπερκλύζω",
                                 main_word="ὑπερκλύσαι",
                             ),
-                            "ὑπερβλύσαι C",
+                            "ὑπερβλύσαι Cs",
                             ["ὑπερβλύω", "inf."],
                         ),
                         Usage(
@@ -267,7 +267,7 @@ def test_mene():
         + [""] * 3
         + ["μὲν"]
         + [""] * 4
-        + ["με C", "ἐγώ"]
+        + ["με Cs", "ἐγώ"]
         + [""] * 9
         + ["1"] * 4
     )
@@ -276,26 +276,26 @@ def test_mene():
     d3 = sl_sem.compile_usages(gr_sem.var, row, d3, "аꙁъ", "ἐγώ")
     assert d3 == {
         "ἐγώ": {
-            ("мене", "με C"): SortedSet(
+            ("мене", "με Cs"): SortedSet(
                 [
                     Alignment(
                         Index("1/W168c7"),
                         Usage("sl", word="мене", lemmas=["аꙁъ"]),
-                        Usage("gr", Source("C"), word="με C", lemmas=["ἐγώ"]),
+                        Usage("gr", Source("Cs"), word="με Cs", lemmas=["ἐγώ"]),
                     )
                 ]
             )
         }
     }
     d4 = SortedDict()
-    d4 = gr_sem.var.compile_usages(sl_sem, row, d4, "ἐγώ", "аꙁъ", Source("C"))
+    d4 = gr_sem.var.compile_usages(sl_sem, row, d4, "ἐγώ", "аꙁъ", Source("Cs"))
     assert d4 == {
         "аꙁъ": {
-            ("με C", "мене"): SortedSet(
+            ("με Cs", "мене"): SortedSet(
                 [
                     Alignment(
                         Index("1/W168c7"),
-                        Usage(TO_LANG, var=Source("C"), word="με C", lemmas=["ἐγώ"]),
+                        Usage(TO_LANG, var=Source("Cs"), word="με Cs", lemmas=["ἐγώ"]),
                         Usage(lang="sl", word="мене", lemmas=["аꙁъ"]),
                     )
                 ]
