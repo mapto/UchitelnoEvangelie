@@ -1,16 +1,19 @@
 from typing import List
-import re
+
+import sys
 from os import path
+import re
 
 source_regex = r"^([A-Z][a-z]?)(.*)$"
 
 # languages
 FROM_LANG = "sl"
 TO_LANG = "gr"
+other_lang = {TO_LANG: FROM_LANG, FROM_LANG: TO_LANG}
 
-# first letter is main variant
 
-source_cfg = path.dirname(path.abspath(__file__)) + path.sep + "{}-sources.txt"
+bin_path = path.abspath(sys.executable if getattr(sys, "frozen", False) else __file__)
+source_cfg = path.join(path.dirname(bin_path), "{}-sources.txt")
 
 
 def parse_source_line(l: str) -> str:
@@ -54,7 +57,8 @@ assert DEFAULT_SL == "WGH"
 DEFAULT_GR: str = VAR_GR[0]
 assert DEFAULT_GR == "Cs"
 
-other_lang = {TO_LANG: FROM_LANG, FROM_LANG: TO_LANG}
+DEFAULT_SOURCES = {TO_LANG: DEFAULT_GR, FROM_LANG: DEFAULT_SL}
+VAR_SOURCES = {TO_LANG: VAR_GR, FROM_LANG: VAR_SL}
 
 
 if __name__ == "__main__":

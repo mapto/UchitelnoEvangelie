@@ -2,8 +2,8 @@ from config import FROM_LANG, TO_LANG
 from config import VAR_SL, VAR_GR
 from config import DEFAULT_SL, DEFAULT_GR
 
-IDX_COL = 4
-EXAMPLE_COL = 6
+IDX_COL = 4  # E
+EXAMPLE_COL = 6  # G
 STYLE_COL = 26  # at end of content columns
 
 PATH_SEP = " → "  # used to show path in hierarchy
@@ -27,6 +27,3 @@ NON_LEMMAS = ["gramm."]
 
 BRACE_OPEN = {FROM_LANG: "[", TO_LANG: "{"}
 BRACE_CLOSE = {FROM_LANG: "]", TO_LANG: "}"}
-
-VAR_SOURCES = {TO_LANG: VAR_GR, FROM_LANG: VAR_SL}
-DEFAULT_SOURCES = {TO_LANG: DEFAULT_GR, FROM_LANG: DEFAULT_SL}

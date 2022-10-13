@@ -1,7 +1,6 @@
 from sortedcontainers import SortedSet  # type: ignore
 
-from config import FROM_LANG, TO_LANG
-from const import VAR_SOURCES
+from config import FROM_LANG, TO_LANG, VAR_SOURCES
 from model import Alternative, Index, Source, Alignment, Usage
 
 

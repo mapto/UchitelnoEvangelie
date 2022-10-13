@@ -9,7 +9,7 @@ import re
 from const import H_LEMMA_SEP, IDX_COL, NON_COUNTABLE, NON_LEMMAS, STYLE_COL
 from const import EMPTY_CH, MISSING_CH
 from const import ERR_SUBLEMMA, SPECIAL_CHARS
-from const import DEFAULT_SOURCES
+from config import DEFAULT_SOURCES
 
 from regex import multiword_regex, multilemma_regex
 from .util import collect, remove_repetitions, regroup, _add_usage

@@ -12,8 +12,9 @@ Options:
   --version             Print version
 
 """
-__version__ = "1.3.1"  # used also by build.sh script
+__version__ = "1.3.2"  # used also by build.sh script
 
+import sys
 from os import path
 from glob import glob
 import shutil
@@ -44,7 +45,10 @@ if __name__ == "__main__":
     else:
         log.basicConfig(level=log.INFO)
     log.info(f"Integrator v{__version__}")
-    log.debug(args)
+    log.debug(
+        f"Detected binary path: {path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__)}"
+    )  # used in config.py
+    log.debug(f"CLI arguments: {args}")
     fnames = args["<xlsx>"]
 
     assert sl_sem.var  # for mypy

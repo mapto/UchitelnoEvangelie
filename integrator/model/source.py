@@ -1,7 +1,6 @@
 from typing import Dict, List, Optional, Set
 
-from const import VAR_SOURCES, VAR_SEP
-from config import FROM_LANG, TO_LANG
+from config import FROM_LANG, TO_LANG, VAR_SOURCES
 
 
 def _values(src: str) -> List[str]:

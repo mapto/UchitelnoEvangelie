@@ -15,7 +15,7 @@ Options:
   -v --verbose          Increase debug level
 
 """
-__version__ = "1.1.0"  # used also by build.sh script
+__version__ = "1.1.1"  # used also by build.sh script
 
 from docopt import docopt  # type: ignore
 
