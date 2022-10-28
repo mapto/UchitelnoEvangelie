@@ -6,7 +6,7 @@ from config import FROM_LANG, TO_LANG, VAR_SOURCES
 def _values(src: str) -> List[str]:
     """
     >>> _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
-    ['W', 'G', 'H', 'Cs', 'A', 'Sp', 'Ca', 'Ch', 'Fa', 'Fb', 'L', 'M', 'Ma', 'B', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'R', 'Tb', 'V', 'Z', 'Za', 'Nt']
+    ['W', 'G', 'H', 'Cs', 'A', 'Sp', 'Ca', 'Ch', 'Fa', 'Fb', 'L', 'M', 'Ma', 'Nt', 'B', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'R', 'Tb', 'V', 'Z', 'Za']
     >>> _values('MB')
     ['M', 'B']
     >>> _values('V')

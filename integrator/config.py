@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import sys
 from os import path
@@ -22,38 +22,46 @@ def parse_source_line(l: str) -> str:
     'S'
     >>> parse_source_line('Cs  Cramer supplementum, default variant')
     'Cs'
+    >>> parse_source_line(None)
+    ''
+    >>> parse_source_line('   ')
+    ''
     """
+    if not l or not l.strip():
+        return ""
     m = re.search(source_regex, l)
     if not m:
         raise ValueError(f"No valid source detected: {l}")
     return m.group(1).strip()
 
 
-if not path.exists(source_cfg.format(FROM_LANG)):
-    FileNotFoundError(f"File not found: {source_cfg.format(FROM_LANG)}")
-VAR_SL: List[str] = []
-with open(source_cfg.format(FROM_LANG), "r") as fcfg:
-    MAIN_SL = parse_source_line(fcfg.readline())
-    nxt = parse_source_line(fcfg.readline())
-    while nxt:
-        VAR_SL += [nxt]
-        l = fcfg.readline()
-        nxt = parse_source_line(l) if l else ""
+def parse_sources(lang: "str") -> Tuple[str, List[str]]:
+    fname = source_cfg.format(lang)
+    if not path.exists(fname):
+        FileNotFoundError(f"File not found: {fname}")
 
-if not path.exists(source_cfg.format(TO_LANG)):
-    FileNotFoundError(f"File not found: {source_cfg.format(TO_LANG)}")
-VAR_GR: List[str] = []
-with open(source_cfg.format(TO_LANG), "r") as fcfg:
-    MAIN_GR = parse_source_line(fcfg.readline())
-    nxt = parse_source_line(fcfg.readline())
-    while nxt:
-        VAR_GR += [nxt]
-        l = fcfg.readline()
-        nxt = parse_source_line(l) if l else ""
+    with open(fname, "r") as fcfg:
+        smain = ""
+        svar: List[str] = []
+        for l in fcfg:
+            if not smain:
+                smain = parse_source_line(l)
+                continue
+            nxt = parse_source_line(l)
+            if not nxt:
+                continue
+            if nxt not in svar:
+                svar += [nxt]
 
+    return smain, svar
+
+
+MAIN_SL, VAR_SL = parse_sources(FROM_LANG)
 ALT_SL = "W"  # for Wiener
 DEFAULT_SL: str = "".join(VAR_SL)
 assert DEFAULT_SL == "WGH"
+
+MAIN_GR, VAR_GR = parse_sources(TO_LANG)
 DEFAULT_GR: str = VAR_GR[0]
 assert DEFAULT_GR == "Cs"
 
