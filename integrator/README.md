@@ -19,7 +19,11 @@ This image shows what in the index is different from the list.
 
 See futher examples for both in [test](test/)
 
-The range of sources are provided in [`sl-sources.txt`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/sl-sources.txt) and [`gr-sources.txt`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py#L54).
+The range of sources are provided in [`sl-sources.txt`](sl-sources.txt) and [`gr-sources.txt`](gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](config.py#L54).
+
+Here is the data model that the aggregator embeds in the tree leaves of the dictionaries ([generated](../docs/usage.uxf) with [umlet](https://www.umlet.com)):
+
+![An image showing the aggregator data model](../docs/usage.png) 
 
 # Dependency Tree
 

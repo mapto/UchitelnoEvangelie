@@ -1,3 +1,5 @@
+"""ref to diagram ../docs/usage.png"""
+
 from typing import List
 from dataclasses import dataclass, field
 
