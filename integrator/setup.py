@@ -30,6 +30,7 @@ def address_less(a: Index, b: Index) -> bool:
 Index.maxlen = [2, 1, 3, 3, 2, 2]
 Index._less = address_less
 
+# see setup_test.py>test_ranges for interpretation of column indices
 sl_sem = MainLangSemantics(
     FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
 )
