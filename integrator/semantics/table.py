@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List
 from dataclasses import dataclass, field
 from sortedcontainers import SortedDict  # type: ignore
 
