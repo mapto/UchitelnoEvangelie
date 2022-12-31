@@ -47,7 +47,13 @@ graph LR
   lang --> usage
   
   subgraph Semantics
-    lang --> semantics_util
+    semantics_util --> semantics_const
+    semabs --> semantics_util
+    semmain --> semantics_util
+    semvar --> semantics_util
+    lang --> semabs
+    lang --> semmain
+    lang --> semvar
     table --> lang 
   end
   setup --> lang
