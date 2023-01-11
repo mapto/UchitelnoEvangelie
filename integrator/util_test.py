@@ -48,6 +48,11 @@ def test_ord_word():
     assert ord_word("om.") < ord_word("свѣтъ & на")
     assert ord_word("gram.") < ord_word("μαρτυρέω & διαλεγομαι")
 
+    assert ord_word("ὁ κατὰ τῆν χρείαν") == ord_word("ο κατα την χρειαν")
+    assert ord_word("ἐξερχόμενοι Nt") == ord_word("εξερχομενοι Nt")
+    assert ord_word("ἁμαρτιῶν") == ord_word("αμαρτιων")
+    assert ord_word("Ἀβραὰμ") == ord_word("Αβρααμ")
+
 
 def test_subscript():
     assert subscript(1, FROM_LANG) == ""

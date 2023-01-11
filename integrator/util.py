@@ -13,7 +13,7 @@ from config import MAIN_SL, MAIN_GR
 from config import ALT_SL
 from const import SPECIAL_CHARS, V_LEMMA_SEP
 
-from alphabet import remap, reduce
+from alphabet import gasps, remap, reduce
 
 
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
@@ -80,6 +80,8 @@ def ord_word(w: str, max_len=MAX_LEN) -> int:
     """
     a = base_word(w).lower()
     a.replace("оу", "ѹ")
+    for ch in gasps:
+        a.replace(ch, "")
     if max_len <= len(a):
         log.info(a)
     assert max_len > len(a)
