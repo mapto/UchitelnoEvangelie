@@ -171,6 +171,7 @@ def _close_group(
     orig: LangSemantics,
     trans: MainLangSemantics,
 ) -> List[List[str]]:
+    """Close a group formed by highlighting."""
     # populate variants equal to main
     assert orig.main  # for mypy
     variants = _group_variants(group, orig.main)

@@ -5,6 +5,8 @@ graph LR
   importer --> merger --> aggregator --> generator/exporter
 ```
 
+# Guide to the Generated Indices
+
 Below an explanation of the columns in a table, as documented in [setup.py](setup.py#L33).
 
 ![An image showing a explanation of the table columns](../docs/table-demo.gif)
@@ -19,7 +21,13 @@ This image shows what in the index is different from the list.
 
 See futher examples for both in [test](test/)
 
-The range of sources are provided in [`sl-sources.txt`](sl-sources.txt) and [`gr-sources.txt`](gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](config.py#L54).
+## Recognised Sources
+
+The range of sources are provided in [`sl-sources.txt`](sl-sources.txt) and [`gr-sources.txt`](gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](config.py#L54). The rest of the sources need to be ordered in order of importance, and this is the way they will be ordered when collocated in the produced indices.
+
+When unrecognised sources are encountered, the program reports an error.
+
+# Data Model
 
 Here is the data model that the aggregator embeds in the tree leaves of the dictionaries ([generated](../docs/usage.uxf) with [umlet](https://www.umlet.com)):
 
