@@ -20,14 +20,20 @@ def parse_source_line(l: str) -> str:
     """
     >>> parse_source_line('S   Synodal, main text')
     'S'
+    >>> parse_source_line('Ma   M208 München, BSB, Gr. 208, f. 60v ff ')
+    'Ma'
     >>> parse_source_line('Cs  Cramer supplementum, default variant')
     'Cs'
+    >>> parse_source_line('#Cs  Cramer supplementum, default variant')
+    ''
+    >>> parse_source_line(' Cs  Cramer supplementum, default variant')
+    ''
     >>> parse_source_line(None)
     ''
     >>> parse_source_line('   ')
     ''
     """
-    if not l or not l.strip():
+    if not l or not l[0].isalpha() or not l.strip():
         return ""
     m = re.search(source_regex, l)
     if not m:
