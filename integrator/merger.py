@@ -107,8 +107,8 @@ def merge(
 
             # if "19/94d08" in row[IDX_COL] or "2/W169a17" in row[IDX_COL]:
             # if "05/28c21" in row[IDX_COL] or "05/28d01" in row[IDX_COL]:
-            # if "14/72d1" in row[IDX_COL]:
-            # print(row)
+            if "18/89c21" in row[IDX_COL]:
+                print(row)
 
             if not row[IDX_COL] and any(row):
                 row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]

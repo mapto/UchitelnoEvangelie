@@ -129,6 +129,34 @@ def test_merge_rows():
     assert merge_rows_var == [1, 2]
 
 
+def test_merge_rows_raspatu():
+    rows = [
+        ["распетоу WG", "распѧт\ue205"]
+        + [""] * 2
+        + ["18/89c21", "пропѧтоу", "же пропѧтоу бꙑ-", "пропѧт\ue205"]
+        + [""] * 3
+        + ["σταυρωθῆναι", "σταυρόω"]
+        + [""] * 13
+        + ["hl05:FFFCD5B4"],
+        [""] * 4
+        + ["18/89c21-d01", "бꙑт\ue205•", "же пропѧтоу бꙑ-", "бꙑт\ue205", "", "gramm."]
+        + [""] * 2
+        + ["pass."]
+        + [""] * 13
+        + ["hl05:FFFCD5B4|hl08:FFFFFFFF|hl09:FFB8CCE4"],
+    ]
+
+    merge_rows_main = [
+        i for i, r in enumerate(rows) if not _hilited_gram(sl_sem, gr_sem, r)
+    ]
+    assert merge_rows_main == [0]
+
+    merge_rows_var = [
+        i for i, r in enumerate(rows) if not _hilited_gram(sl_sem, gr_sem.var, r)
+    ]
+    assert merge_rows_var == [0]
+
+
 def test_update_group_zemen():
     rows = [
         [""] * 4
@@ -421,7 +449,35 @@ def test_hilited_gram():
         + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     assert _hilited_gram(sl_sem, gr_sem, r)
-    assert not _hilited_gram(sl_sem.var, gr_sem, r)
+
+
+def test_hilited_gram_cross():
+    rows = [
+        ["распетоу WG", "распѧт\ue205"]
+        + [""] * 2
+        + ["18/89c21", "пропѧтоу", "же пропѧтоу бꙑ-", "пропѧт\ue205"]
+        + [""] * 3
+        + ["σταυρωθῆναι", "σταυρόω"]
+        + [""] * 13
+        + ["hl05:FFFCD5B4"],
+        [""] * 4
+        + ["18/89c21-d01", "бꙑт\ue205•", "же пропѧтоу бꙑ-", "бꙑт\ue205", "", "gramm."]
+        + [""] * 2
+        + ["pass."]
+        + [""] * 13
+        + ["hl05:FFFCD5B4|hl08:FFFFFFFF|hl09:FFB8CCE4"],
+    ]
+
+    assert (
+        False
+        == _hilited_gram(sl_sem, gr_sem, rows[0])
+        == _hilited_gram(sl_sem.var, gr_sem, rows[0])
+    )
+    assert (
+        True
+        == _hilited_gram(sl_sem, gr_sem, rows[1])
+        == _hilited_gram(sl_sem.var, gr_sem, rows[1])
+    )
 
 
 def test_collect_group():

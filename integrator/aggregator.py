@@ -138,9 +138,9 @@ def aggregate(
         if not row[IDX_COL]:
             continue
 
-        # if "05/028d18" in row[IDX_COL]:
-        # if "μονογεν" in row[orig.lemmas[0]]:
-        #    print(row)
+        if "18/89c21" in row[IDX_COL]:
+            # if "μονογεν" in row[orig.lemmas[0]]:
+            print(row)
 
         try:
             _expand_and_aggregate(row, orig, trans, result)

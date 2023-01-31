@@ -12,7 +12,7 @@ Options:
   --version             Print version
 
 """
-__version__ = "0.3.3"  # used also by build.sh script
+__version__ = "0.3.5"  # used also by build.sh script
 
 import sys
 from os import path

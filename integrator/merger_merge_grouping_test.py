@@ -1,6 +1,5 @@
-from const import IDX_COL, STYLE_COL
+from const import IDX_COL
 from setup import sl_sem, gr_sem
-from semantics import MainLangSemantics, VarLangSemantics
 from merger import merge, _close, _close_group
 
 raw = [

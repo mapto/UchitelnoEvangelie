@@ -85,7 +85,7 @@ class LangSemantics:
 
     def other(self) -> "LangSemantics":
         """For main returns variant, for variant returns main.
-        Be careful not to enter in infinite recursion"""
+        When implementing, be careful not to enter in infinite recursion"""
         raise NotImplementedError("abstract method")
 
     def is_variant(self) -> bool:
