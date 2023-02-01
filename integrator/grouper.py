@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 import logging as log
 
-from const import IDX_COL, STYLE_COL, V_LEMMA_SEP
+from const import IDX_COL, STYLE_COL, V_LEMMA_SEP, SAME_CH
 
 from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, present
@@ -74,7 +74,8 @@ def _collect_group(
     merge_rows_main: List[int],
     merge_rows_var: List[int],
 ) -> List[str]:
-    """Creates an combined line, based on lemma highlighting in group"""
+    """Creates an combined line, based on lemma highlighting in group.
+    This is later to be inserted in the lines making part of the group"""
     non_gram_group_main = [group[i] for i in merge_rows_main]
     non_gram_group_var = [group[i] for i in merge_rows_var]
     non_union_group_main = [
@@ -130,6 +131,7 @@ def _update_group(
     merge_rows_main: List[int],
     merge_rows_var: List[int],
 ) -> List[List[str]]:
+    """Update group content with the collected information"""
     idx = _merge_indices(g)
 
     group = g.copy()
@@ -166,6 +168,21 @@ def _update_group(
     return group
 
 
+def _unwrap_same(
+    group: List[List[str]],
+    orig: LangSemantics,
+    trans: LangSemantics,
+) -> List[List[str]]:
+    for i in range(len(group)):
+        if group[i][trans.word] == SAME_CH:
+            assert i
+            group[i][trans.word] = group[i - 1][trans.word]
+        if group[i][orig.word] == SAME_CH:
+            assert i
+            group[i][orig.word] = group[i - 1][orig.word]
+    return group
+
+
 def _close_group(
     group: List[List[str]],
     orig: LangSemantics,
@@ -191,10 +208,10 @@ def _close_group(
         else []
     )
 
-    # collect content
     line = _collect_group(group, orig, trans, merge_rows_main, merge_rows_var)
 
-    # update content
+    group = _unwrap_same(group, orig, trans)
+
     try:
         return _update_group(group, orig, trans, line, merge_rows_main, merge_rows_var)
     except Exception as e:

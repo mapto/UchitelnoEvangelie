@@ -5,7 +5,7 @@ import re
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from const import NON_COUNTABLE, H_LEMMA_SEP, ERR_SUBLEMMA
-from const import EMPTY_CH, SPECIAL_CHARS
+from const import EMPTY_CH, SPECIAL_CHARS, SAME_CH
 from config import DEFAULT_SOURCES
 from model import Source
 
@@ -22,7 +22,8 @@ def collect_word(self, group: List[List[str]]) -> str:
     collected: Dict[Source, List[str]] = SortedDict()
     for row in group:
         for k, v in self.multiword(row).items():
-            if not v.strip():
+            # TODO: Second part untested
+            if not v.strip() or v.strip() == SAME_CH:
                 continue
             if k not in collected:
                 collected[k] = []

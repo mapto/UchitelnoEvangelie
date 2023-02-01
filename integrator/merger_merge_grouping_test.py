@@ -1,8 +1,9 @@
 from const import IDX_COL, STYLE_COL
 from setup import sl_sem, gr_sem
-from semantics import MainLangSemantics, VarLangSemantics
+from model import Index
 from merger import merge, _close, _close_group
 
+Index.maxlen = [2, 1, 3, 3, 2, 2]
 raw = [
     [""] * 4
     + ["19/94d08", "\ue205", "", "\ue205 conj."]

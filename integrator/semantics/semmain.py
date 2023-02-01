@@ -3,7 +3,7 @@
 from typing import Dict, List, Tuple
 
 from const import NON_COUNTABLE, ERR_SUBLEMMA
-from const import MISSING_CH, SPECIAL_CHARS
+from const import MISSING_CH, SPECIAL_CHARS, SAME_CH
 from model import Source
 
 from .const import LAST_LEMMA
@@ -11,7 +11,7 @@ from .util import collect
 
 
 def collect_word(self, group: List[List[str]]) -> str:
-    return " ".join(collect(group, self.word))
+    return " ".join([x for x in collect(group, self.word) if x != SAME_CH])
 
 
 def collect_lemma(self, group: List[List[str]], cidx: int, separator: str = "") -> str:

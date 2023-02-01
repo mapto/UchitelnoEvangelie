@@ -22,18 +22,6 @@ def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
     return row
 
 
-def _close_same(
-    group: List[List[str]],
-    orig: LangSemantics,
-    trans: LangSemantics,
-) -> List[List[str]]:
-    if group[1][trans.word] == SAME_CH:
-        group[1][trans.word] = group[0][trans.word]
-    if group[1][orig.word] == SAME_CH:
-        group[1][orig.word] = group[0][orig.word]
-    return [group[1]]
-
-
 def _close(
     group: List[List[str]],
     orig: LangSemantics,
@@ -63,10 +51,7 @@ def _close(
                 log.info(row)
             log.error(f"Липсва индекс в групата.")
 
-    same = _same(group[-1], trans) or _same(group[-1], orig)
-    assert not same or len(group) == 2
-    close_fn = _close_same if same else _close_group
-    return close_fn(group, orig, trans)
+    return _close_group(group, orig, trans)
 
 
 def _same(row: List[str], sem: LangSemantics) -> bool:
@@ -117,6 +102,7 @@ def merge(
             row = _expand_special_char(orig, row)
             row = _expand_special_char(trans, row)
 
+            # initialize counters
             if cur_idx != row[IDX_COL]:
                 cur_idx = row[IDX_COL]
                 row_owords = {}
@@ -130,13 +116,17 @@ def merge(
             row_twords = trans.add_count(row, row_twords)
             row_twords_var = trans.other().add_count(row, row_twords_var)
 
+            # TODO: Include same indication in group triggers
+
+            # handle SAME_CH
             if _same(row, orig) or _same(row, trans):
-                if not group_triggers:
-                    group = [prev_row]
+                # if not group_triggers:
+                #     group = [prev_row]
                 group += [row]
                 prev_row = row
                 continue
 
+            # handle color highlighting
             hi = {**_hilited(row, orig), **_hilited(row, trans)}
             if hi:
                 if not any(t in hi.keys() for t in group_triggers):

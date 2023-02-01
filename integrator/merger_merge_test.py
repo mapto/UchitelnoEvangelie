@@ -1,8 +1,9 @@
 from const import STYLE_COL
 from setup import sl_sem, gr_sem
-from semantics import MainLangSemantics, VarLangSemantics
+from model import Index
 from merger import merge
 
+Index.maxlen = [2, 1, 3, 3, 2, 2]
 
 def test_gram():
     r1 = (
@@ -590,13 +591,13 @@ def test_same():
 
     assert res == [
         [""] * 4
-        + ["19/97d20", "нѣсть", "", "не"]
+        + ["19/097d20", "нѣсть", "", "не"]
         + [""] * 3
         + ["οὐκ", "οὐ"]
         + [""] * 14
         + ["1"] * 4,
         [""] * 4
-        + ["19/97d20", "нѣсть", "", "бꙑт"]
+        + ["19/097d20", "нѣсть", "", "бꙑт"]
         + [""] * 3
         + ["εἰμί", "εἰμί"]
         + [""] * 14
