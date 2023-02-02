@@ -56,7 +56,8 @@ def _close(
                 break
         if idxline:
             log.info(
-                f"Липсва индекс в първия ред от група на {group[0][IDX_COL]}. Намерен в {idxline} ред"
+                f"Липсва индекс в първия ред от група на {group[0][IDX_COL]}."
+                f" Намерен в {idxline} ред"
             )
         else:
             for row in group:
@@ -107,8 +108,8 @@ def merge(
 
             # if "19/94d08" in row[IDX_COL] or "2/W169a17" in row[IDX_COL]:
             # if "05/28c21" in row[IDX_COL] or "05/28d01" in row[IDX_COL]:
-            if "18/89c21" in row[IDX_COL]:
-                print(row)
+            # if "18/89c21" in row[IDX_COL]:
+            #     print(row)
 
             if not row[IDX_COL] and any(row):
                 row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
@@ -152,7 +153,9 @@ def merge(
             prev_row = row
         except Exception as e:
             log.error(
-                f"При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"
+                "При събиране възникна проблем в ред "
+                f"{row[IDX_COL]} ({row[orig.word]}/{row[trans.word]})"
+                " или групата му"
             )
             log.error(e)
             break

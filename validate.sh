@@ -24,8 +24,8 @@ mypy integrator/model
 
 echo '>>> Running Pytest'
 # processes also subdirectories
-pytest -vv --doctest-modules -s extractor # --disable-warnings
-pytest -vv --doctest-modules -s integrator # --disable-warnings
+pytest --doctest-modules -s extractor  #  -vv -o log_cli=true
+pytest --doctest-modules -s integrator #  -vv -o log_cli=true
 
 echo '>>> Running Black'
 # processes also subdirectories
