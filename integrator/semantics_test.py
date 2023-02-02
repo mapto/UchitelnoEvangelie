@@ -501,27 +501,50 @@ def test_compile_words_by_lemma():
 
 
 def test_add_count():
-    sem = MainLangSemantics(FROM_LANG, 5, [], VarLangSemantics(FROM_LANG, 0, []))
+    sem = MainLangSemantics(FROM_LANG, 5, [7], VarLangSemantics(FROM_LANG, 0, [1]))
     counts = {}
-    rows = [[""] * 5 + ["om."], [""] * 4 + ["1/1a1", "om."]]
+    rows = [[""] * 5 + ["om.", ""] * 2, [""] * 4 + ["1/1a1"] + ["om.", ""] * 2]
     for r in rows:
         counts = sem.add_count(r, counts)
     assert not counts
-    assert rows == [[""] * 5 + ["om.", "1"], [""] * 4 + ["1/1a1", "om.", "1"]]
+    assert rows == [
+        [""] * 5 + ["om.", ""] * 2 + ["1"],
+        [""] * 4 + ["1/1a1"] + ["om.", ""] * 2 + ["1"],
+    ]
 
     counts = {}
-    rows = [["om."], ["om."], ["om."]]
+    rows = [["om."] * 2] * 3
     for r in rows:
         counts = sem.var.add_count(r, counts)
     assert not counts
-    assert rows == [["om.", "1"], ["om.", "1"], ["om.", "1"]]
+    assert rows == [["om.", "om.", "1"]] * 3
 
     counts = {}
-    rows = [["om. WH"], ["om. WH"], ["om. WH"]]
+    rows = [["om. WH"] * 2] * 3
     for r in rows:
         counts = sem.var.add_count(r, counts)
     assert not counts
-    assert rows == [["om. WH", "1"], ["om. WH", "1"], ["om. WH", "1"]]
+    assert rows == [["om. WH", "om. WH", "1"]] * 3
+
+
+def test_add_count_mulitvariant():
+    sem = MainLangSemantics(FROM_LANG, 5, [7], VarLangSemantics(FROM_LANG, 0, [1]))
+    counts = {}
+    rows = [["om. WH om. G", "om. WH / om. G"]] * 3
+    for r in rows:
+        counts = sem.var.add_count(r, counts)
+    assert not counts
+    assert rows == [["om. WH om. G", "om. WH / om. G", "1"]] * 3
+
+    # TODO: Counting with multivariants is messed up
+    # rows = [["а WH б G", "а WH / б G"]] * 3
+    # for r in rows:
+    #     counts = sem.var.add_count(r, counts)
+    # assert rows == [
+    #     ["а WH б G", "а WH / б G", "1"],
+    #     ["а WH б G", "а WH / б G", "2"],
+    #     ["а WH б G", "а WH / б G", "3"],
+    # ]
 
 
 def test_compile_words_by_lemma_artos():

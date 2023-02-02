@@ -80,7 +80,7 @@ def compile_words_by_lemma(
 
 
 def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:
-    """based on word (in column) expand it with counter
+    """based on first lemma (in column) expand row with counter
     *IN PLACE*
     Updates both row and row_counts"""
     if not self.cnt_col:
@@ -88,12 +88,12 @@ def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int
     while len(row) < self.cnt_col + 1:
         row += ["1"]
 
-    if not row[self.word] or row[self.word] in NON_COUNTABLE:
+    if not row[self.lemmas[0]] or row[self.lemmas[0]] in NON_COUNTABLE:
         return row_counts
-    if row[self.word] in row_counts:
-        row_counts[row[self.word]] += 1
-        row[self.cnt_col] = str(row_counts[row[self.word]])
+    if row[self.lemmas[0]] in row_counts:
+        row_counts[row[self.lemmas[0]]] += 1
+        row[self.cnt_col] = str(row_counts[row[self.lemmas[0]]])
     else:
-        row_counts[row[self.word]] = 1
+        row_counts[row[self.lemmas[0]]] = 1
         # fallback to default value for cnt in Index
     return row_counts
