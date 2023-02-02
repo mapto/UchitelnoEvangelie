@@ -121,7 +121,7 @@ def test_merge_rows():
     merge_rows_main = [
         i for i, r in enumerate(rows) if not _hilited_gram(sl_sem, gr_sem, r)
     ]
-    assert merge_rows_main == [0, 1, 2]
+    assert merge_rows_main == [1, 2]
 
     merge_rows_var = [
         i for i, r in enumerate(rows) if not _hilited_gram(sl_sem, gr_sem.var, r)
@@ -153,6 +153,16 @@ def test_merge_rows_raspatu():
 
     merge_rows_var = [
         i for i, r in enumerate(rows) if not _hilited_gram(sl_sem, gr_sem.var, r)
+    ]
+    assert merge_rows_var == [0]
+
+    merge_rows_var = [
+        i for i, r in enumerate(rows) if not _hilited_gram(gr_sem, sl_sem, r)
+    ]
+    assert merge_rows_var == [0]
+
+    merge_rows_var = [
+        i for i, r in enumerate(rows) if not _hilited_gram(gr_sem, sl_sem.var, r)
     ]
     assert merge_rows_var == [0]
 
@@ -193,7 +203,7 @@ def test_update_group_zemen():
     res = _update_group(rows, sl_sem, gr_sem, line, merge_rows_main, merge_rows_var)
     assert res == [
         [""] * 4
-        + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "", "ₓ"]
+        + ["19/94d08", "ₓ ꙁемьнꙑ\ue205", "", "ₓ"]
         + [""] * 8
         + ["τῶν ἐπὶ γῆς Ch", "ὁ"]
         + [""] * 8

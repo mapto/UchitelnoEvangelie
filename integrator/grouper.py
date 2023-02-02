@@ -32,7 +32,12 @@ def _hilited_col(row: List[str], col: int) -> Optional[str]:
 def _hilited_gram(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
     """highlighting in third lemma and further.
     This highlighting has impact on variants. If undesired better create separate rows in variants."""
-    cols = [osem.lemmas[2], osem.other().lemmas[2], tsem.lemmas[2]]
+    cols = [
+        osem.lemmas[2],
+        osem.other().lemmas[2],
+        tsem.lemmas[2],
+        tsem.other().lemmas[2],
+    ]
     return any(_hilited_col(row, c) for c in cols)
 
 
@@ -89,6 +94,7 @@ def _collect_group(
 
     line = [""] * STYLE_COL
 
+    # Words from any type of highlighting are added to the merged line
     line[orig.word] = orig.collect_word(group)
     line[trans.word] = trans.collect_word(group)
 
