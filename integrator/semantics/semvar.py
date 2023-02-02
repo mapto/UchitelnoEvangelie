@@ -165,21 +165,21 @@ def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, str,
 
 
 def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:
-    """based on word (in column) expand it with counter
+    """based on first lemma (in column) expand row it with counter
     *IN PLACE*
     Updates both row and row_counts"""
-    # TODO: multiword counts need to distinguish between variants
+    # TODO: multilemma counts need to distinguish between variants
     if not self.cnt_col:
         self.cnt_col = len(row)
     while len(row) < self.cnt_col + 1:
         row += ["1"]
 
-    col = self.word
+    col = self.lemmas[0]
     # Counts should be ignored, as they clearly don't exist before coming here
-    if not row[self.word]:
+    if not row[self.lemmas[0]]:
         return row_counts
-    multiword = self.multiword(row)
-    for k, v in multiword.items():
+    multilemma = self.multilemma(row)
+    for k, v in multilemma.items():
         if v in NON_COUNTABLE:
             continue
         if v in row_counts:
@@ -189,5 +189,5 @@ def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int
             row_counts[v] = 1
             # result += [f"{v[0]}{' ' if k else ''}{k}"]
             # fallback to default value for cnt in Index
-    # row[self.word] = " ".join(result)
+    # row[self.lemmas[0]] = " ".join(result)
     return row_counts
