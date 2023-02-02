@@ -1,12 +1,13 @@
 from typing import List
 
 from model import Source
+from grouper import _merge_indices
 from grouper import _hilited, _hilited_gram
 from grouper import _group_variants, _update_group, _collect_group
 from setup import sl_sem, gr_sem
 
 
-def test_grouped():
+def test_hilited():
     row = (
         [
             "\ue201л\ue205ко WH",
@@ -95,7 +96,7 @@ def test_group_variants():
     assert res == Source("WH")
 
 
-def test_merge_rows():
+def test_hilited_gram_merge_rows():
     rows = [
         [""] * 4
         + ["19/94d08"]
@@ -129,7 +130,7 @@ def test_merge_rows():
     assert merge_rows_var == [1, 2]
 
 
-def test_merge_rows_raspatu():
+def test_hilited_gram_merge_rows_raspatu():
     rows = [
         ["распетоу WG", "распѧт\ue205"]
         + [""] * 2
@@ -286,7 +287,7 @@ def test_update_group_puteshestvie():
     ]
 
 
-def test_biti():
+def test_update_group_biti():
     g1 = (
         [""] * 4
         + [
@@ -368,7 +369,7 @@ def test_biti():
     assert res == expected
 
 
-def test_zemenu():
+def test_collect_group_zemenu():
     rows = [
         [""] * 4
         + ["19/94d08"]
@@ -523,3 +524,41 @@ def test_collect_group():
         + ["ὁδοιπορίας", "ὁδοιπορία"]
         + [""] * 13
     )
+
+
+def test_merge_indices():
+    rows = [
+        [""] * 4
+        + ["05/24c01"]
+        + ["ₓ", ""] * 2
+        + [""] * 2
+        + ["τοὺς", "ὁ"]
+        + [""] * 13
+        + ["hl05:FFC5E0B4|hl11:FFC5E0B4|hl14:FFB4C7E7"],
+        [""] * 4
+        + ["05/24b21", "авраамовоу", "н\ue205ша сѧ• авраа-", "авраамовъ"]
+        + [""] * 3
+        + ["περὶ", "περί", "περί + Acc.", "ὁ περὶ τὸν Ἀβραάμ"]
+        + [""] * 11
+        + ["hl05:FFC5E0B4|hl11:FFC5E0B4|hl13:FF92D050"],
+        [""] * 4
+        + ["", "ₓ"] * 2
+        + [""] * 3
+        + ["τὸν", "ὁ"]
+        + [""] * 13
+        + ["hl05:FFC5E0B4|hl11:FFC5E0B4|hl14:FFB4C7E7"],
+        [""] * 4
+        + [
+            "05/24c01",
+            "\ue20dадь",
+            "мовоу \ue20dадь г\ue010лю-",
+            "\ue20dѧдь",
+            "авраамова \ue20dѧдь",
+        ]
+        + [""] * 2
+        + ["Ἀβραὰμ", "Ἀβραάμ"]
+        + [""] * 13
+        + ["hl05:FFC5E0B4|hl11:FFC5E0B4"],
+    ]
+
+    assert _merge_indices(rows).longstr() == "05/024b21-c01"

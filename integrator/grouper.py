@@ -63,14 +63,18 @@ def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
 
 def _merge_indices(group: List[List[str]]) -> Index:
     """Merge the individual indices of a group into a group/multiline index"""
+    s_start = None
     s_end = None
-    for i in range(len(group) - 1, 0, -1):
-        s_end = group[i][IDX_COL]
-        if s_end:
-            break
-    if not s_end:
-        s_end = group[0][IDX_COL]
-    return Index(f"{group[0][IDX_COL]}-{s_end}")
+
+    for r in group:
+        if r[IDX_COL]:
+            if not s_start or r[IDX_COL] < s_start:
+                s_start = r[IDX_COL]
+            if not s_end or r[IDX_COL] > s_end:
+                s_end = r[IDX_COL]
+
+    assert s_start
+    return Index(f"{s_start}-{s_end}") if s_start != s_end else Index(s_start)
 
 
 def _collect_group(
@@ -137,6 +141,7 @@ def _update_group(
     merge_rows_main: List[int],
     merge_rows_var: List[int],
 ) -> List[List[str]]:
+
     idx = _merge_indices(g)
 
     group = g.copy()
