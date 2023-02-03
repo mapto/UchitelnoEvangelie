@@ -29,9 +29,35 @@ When unrecognised sources are encountered, the program reports an error.
 
 # Data Model
 
-Here is the data model that the aggregator embeds in the tree leaves of the dictionaries ([generated](../docs/usage.uxf) with [umlet](https://www.umlet.com)):
+```mermaid
+classDiagram
+direction LR
 
-![An image showing the aggregator data model](../docs/usage.png) 
+class Address
+Address : List[str|int] data
+class Alignment
+Alignment : bool quote
+class Usage
+Usage : str lang
+Usage : str word
+Usage : List[str] lemmas
+Usage : int count
+Usage : Dict[Source, Alternative] var
+Usage : 
+class Alternative
+Alternative: str word
+Alternative: str lemma
+Alternative: int count
+class Source
+Source: List[str] sources
+
+Alignment *-- "1" Address
+Address *-- "0..1" Address: end
+Alignment *-- "1" Usage: target
+Alignment *-- "1" Usage: source
+Usage *-- "1" Source
+Usage o-- "0..1" Alternative: main
+```
 
 # Dependency Tree
 
