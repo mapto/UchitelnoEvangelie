@@ -10,6 +10,7 @@ from const import IDX_COL, SAME_CH, SPECIAL_CHARS
 
 from semantics import LangSemantics, MainLangSemantics, present
 from util import clean_word
+from repetition import Repetitions
 from grouper import _close_group, _hilited
 
 TRIGGER_SAME = -1
@@ -75,6 +76,35 @@ def _same(row: List[str], sem: LangSemantics) -> bool:
     return row[sem.word].strip() == SAME_CH
 
 
+def preprocess(
+    row: List[str],
+    group: List[List[str]],
+    prev_row: List[str],
+    orig: LangSemantics,
+    trans: MainLangSemantics,
+    repetitions: Repetitions,
+) -> List[str]:
+    """repetitinos updated *IN_PLACE*"""
+
+    if not row[IDX_COL] and any(row):
+        # print(row, group)
+        if group and group[-1][IDX_COL]:
+            row[IDX_COL] = group[-1][IDX_COL]
+        elif prev_row and prev_row[IDX_COL]:
+            row[IDX_COL] = prev_row[IDX_COL]
+        else:
+            log.info(row)
+            log.error(f"Липсва индекс за ред.")
+
+    # in lemmas
+    row = _expand_special_char(orig, row)
+    row = _expand_special_char(trans, row)
+
+    repetitions.update(row)
+
+    return row
+
+
 def merge(
     corpus: List[List[str]],
     orig: LangSemantics,
@@ -93,11 +123,8 @@ def merge(
     group: List[List[str]] = []
     result: List[List[str]] = []
 
-    row_owords: Dict[str, int] = {}
-    row_owords_var: Dict[str, int] = {}
-    row_twords: Dict[str, int] = {}
-    row_twords_var: Dict[str, int] = {}
-    cur_idx = ""
+    # handles repeating lemmas with same address
+    repetitions = Repetitions(orig, trans)
     prev_row: List[str] = []
     # triggers ignore hiliting colours
     group_triggers: Set[int] = set()
@@ -111,25 +138,7 @@ def merge(
             # if "18/89c21" in row[IDX_COL]:
             #     print(row)
 
-            if not row[IDX_COL] and any(row):
-                row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
-
-            # in lemmas
-            row = _expand_special_char(orig, row)
-            row = _expand_special_char(trans, row)
-
-            if cur_idx != row[IDX_COL]:
-                cur_idx = row[IDX_COL]
-                row_owords = {}
-                row_owords_var = {}
-                row_twords = {}
-                row_twords_var = {}
-
-            # based on word column expand data with it with count in a column at the end
-            row_owords = orig.add_count(row, row_owords)
-            row_owords_var = orig.other().add_count(row, row_owords_var)
-            row_twords = trans.add_count(row, row_twords)
-            row_twords_var = trans.other().add_count(row, row_twords_var)
+            row = preprocess(row, group, prev_row, orig, trans, repetitions)
 
             if _same(row, orig) or _same(row, trans):
                 if not group_triggers:
