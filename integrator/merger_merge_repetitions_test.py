@@ -189,12 +189,13 @@ def test_repeated_velichanie():
         + [""] * 14,
     ]
 
-    r2 = [list(rows[0]), list(rows[1])]
+    r2 = [rows[0].copy(), rows[1].copy()]
     res = merge(r2, sl_sem, gr_sem)
     assert r2 == rows
-    assert sl_sem.cnt_col == STYLE_COL + 1
-    assert sl_sem.other().cnt_col == STYLE_COL + 2
-    assert gr_sem.cnt_col == STYLE_COL + 3
+    assert sl_sem.cnt_col == STYLE_COL + 3
+    assert sl_sem.var.cnt_col == STYLE_COL + 4
+    assert gr_sem.cnt_col == STYLE_COL + 1
+    assert gr_sem.var.cnt_col == STYLE_COL + 2
     assert res == [
         ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
         + [""] * 2
@@ -223,9 +224,10 @@ def test_repeated_velichanie():
     ]
 
     res = merge(rows, gr_sem, sl_sem.var)
-    assert sl_sem.cnt_col == STYLE_COL + 1
-    assert sl_sem.other().cnt_col == STYLE_COL + 2
-    assert gr_sem.cnt_col == STYLE_COL + 3
+    assert sl_sem.cnt_col == STYLE_COL + 3
+    assert sl_sem.var.cnt_col == STYLE_COL + 4
+    assert gr_sem.cnt_col == STYLE_COL + 1
+    assert gr_sem.var.cnt_col == STYLE_COL + 2
     assert res == [
         ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
         + [""] * 2
@@ -253,10 +255,11 @@ def test_repeated_velichanie():
         + ["2", "1"] * 2,
     ]
 
-    res = merge([list(rows[0]), list(rows[1])], sl_sem.var, gr_sem)
-    assert sl_sem.cnt_col == STYLE_COL + 1
-    assert sl_sem.other().cnt_col == STYLE_COL + 2
-    assert gr_sem.cnt_col == STYLE_COL + 3
+    res = merge([rows[0].copy(), rows[1].copy()], sl_sem.var, gr_sem)
+    assert sl_sem.cnt_col == STYLE_COL + 3
+    assert sl_sem.var.cnt_col == STYLE_COL + 4
+    assert gr_sem.cnt_col == STYLE_COL + 1
+    assert gr_sem.var.cnt_col == STYLE_COL + 2
     assert res == [
         ["вел\ue205\ue20dан\ue205е WGH", "вел\ue205\ue20dан\ue205\ue201"]
         + [""] * 2
@@ -321,5 +324,5 @@ def test_repeated_nareshti():
         + [""] * 3
         + ["καλεῖσθαι", "καλέω", "pass."]
         + [""] * 8
-        + ["2", "1", "1", "1"],
+        + ["1", "1", "2", "1"],
     ]

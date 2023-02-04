@@ -1,19 +1,22 @@
 from typing import Dict, List
 
 from const import IDX_COL
+from setup import sl_sem, gr_sem
 from semantics import LangSemantics, MainLangSemantics
 
 
 class Repetitions:
     """Manages counting of repetitions within a single address,
     i.e. distinguishing the different occurences of the same lemma (and possibly word) on the same line of the original document.
-    Done for first lemmas of all four groups"""
+    Done for first lemmas of all four groups.
+    Notice that order of counts is always the same, regardless of direction of merging.
+    Note: Repetitions might not be detected well if first instance does not have row number."""
 
-    def __init__(self, orig: LangSemantics, trans: MainLangSemantics) -> None:
+    orig = gr_sem
+    trans = sl_sem
+
+    def __init__(self) -> None:
         self.prev_idx = ""
-        self.orig = orig
-        self.trans = trans
-
         self.orig_main: Dict[str, int] = {}
         self.orig_var: Dict[str, int] = {}
         self.trans_main: Dict[str, int] = {}
@@ -36,3 +39,6 @@ class Repetitions:
         self.orig_var = self.orig.other().add_count(row, self.orig_var)
         self.trans_main = self.trans.add_count(row, self.trans_main)
         self.trans_var = self.trans.other().add_count(row, self.trans_var)
+
+    def __str__(self) -> str:
+        return f"{self.orig.lang}: [{self.orig_main}; {self.orig_var}]; {self.trans.lang}: [{self.trans_main}; {self.trans_var}]"

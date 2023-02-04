@@ -31,7 +31,7 @@ raw = [
 
 
 def test_i_az_sla():
-    rows = [r for r in raw[:2]]
+    rows = [r.copy() for r in raw[:2]]
     result = merge(rows, sl_sem, gr_sem)
 
     assert result == [
@@ -51,7 +51,7 @@ def test_i_az_sla():
 
 
 def test_miren_sla():
-    rows = [r for r in raw[2:]]
+    rows = [r.copy() for r in raw[2:]]
     result = merge(rows, sl_sem, gr_sem)
 
     assert result == [
@@ -85,7 +85,7 @@ def test_miren_sla():
 
 
 def test_same_and_hilited():
-    rows = [r for r in raw]
+    rows = [r.copy() for r in raw]
     res = merge(rows, sl_sem, gr_sem)
 
     assert res == [
@@ -131,7 +131,7 @@ def test_same_and_hilited():
 
 
 def test_hilited_and_same():
-    rows = [r for r in raw[2:] + raw[:2]]
+    rows = [r.copy() for r in raw[2:] + raw[:2]]
     res = merge(rows, sl_sem, gr_sem)
 
     assert res == [
@@ -177,7 +177,7 @@ def test_hilited_and_same():
 
 
 def test_close():
-    group = [r + ["1"] * 4 for r in raw[2:]]
+    group = [r.copy() + ["1"] * 4 for r in raw[2:]]
     for r in group:
         r[IDX_COL] = "02/W169a17"
 
@@ -213,7 +213,7 @@ def test_close():
 
 
 def test_close_group():
-    group = [r + ["1"] * 4 for r in raw[2:]]
+    group = [r.copy() + ["1"] * 4 for r in raw[2:]]
     for r in group:
         r[IDX_COL] = "02/W169a17"
 

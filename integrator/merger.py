@@ -47,7 +47,7 @@ def _close(
     if not group:
         return []
 
-    # locate index
+    # locate index in group
     if not group[0][IDX_COL]:
         idxline = 0
         for i, row in enumerate(group):
@@ -58,7 +58,8 @@ def _close(
         if idxline:
             log.info(
                 f"Липсва индекс в първия ред от група на {group[0][IDX_COL]}."
-                f" Намерен в {idxline} ред"
+                f" Намерен в {idxline} ред."
+                "Това може да не помогне за разграничаване на повтарящи се леми."
             )
         else:
             for row in group:
@@ -86,6 +87,7 @@ def preprocess(
 ) -> List[str]:
     """repetitinos updated *IN_PLACE*"""
 
+    # locate index in previous row
     if not row[IDX_COL] and any(row):
         # print(row, group)
         if group and group[-1][IDX_COL]:
@@ -94,7 +96,9 @@ def preprocess(
             row[IDX_COL] = prev_row[IDX_COL]
         else:
             log.info(row)
-            log.error(f"Липсва индекс за ред.")
+            log.error(
+                f"Липсва индекс за ред. Повтарящи се леми може да не бъдат разграничени."
+            )
 
     # in lemmas
     row = _expand_special_char(orig, row)
@@ -124,7 +128,7 @@ def merge(
     result: List[List[str]] = []
 
     # handles repeating lemmas with same address
-    repetitions = Repetitions(orig, trans)
+    repetitions = Repetitions()
     prev_row: List[str] = []
     # triggers ignore hiliting colours
     group_triggers: Set[int] = set()

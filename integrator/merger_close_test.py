@@ -1,15 +1,9 @@
 from typing import List
 
 from config import FROM_LANG, TO_LANG
+from setup import sl_sem, gr_sem
 from semantics import MainLangSemantics, VarLangSemantics
-from merger import _close, _hilited
-
-sl_sem = MainLangSemantics(
-    FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-)
-gr_sem = MainLangSemantics(
-    TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20])
-)
+from merger import _close
 
 
 def test_close():
