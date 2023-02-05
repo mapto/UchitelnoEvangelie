@@ -45,7 +45,12 @@ def _hilited_union(
     osem: LangSemantics, tsem: LangSemantics, row: List[str], col: int = -1
 ) -> bool:
     """highlighting in second lemma. Also checks if passed column is in second lemma, if passed at all"""
-    cols = [osem.lemmas[1], tsem.lemmas[1]]
+    cols = [
+        osem.lemmas[1],
+        osem.other().lemmas[2],
+        tsem.lemmas[1],
+        tsem.other().lemmas[1],
+    ]
     if col != -1 and col not in cols:
         return False
     return any(_hilited_col(row, c) for c in cols)
@@ -139,6 +144,8 @@ def _update_group(
     merge_rows_main: List[int],
     merge_rows_var: List[int],
 ) -> List[List[str]]:
+    """Update group content with the collected information"""
+    assert trans.var  # for mypy
 
     idx = _merge_indices(g)
 
@@ -164,7 +171,7 @@ def _update_group(
                 if _hilited_union(orig, trans, group[i], c):
                     update = False
             # log.debug(trans.var, merge_rows_var)
-            if trans.var and group[i][trans.var.word]:
+            if group[i][trans.var.word]:
                 if c in trans.var.lemmas and _hilited_gram(orig, trans.var, group[i]):
                     update = False
                 if i in merge_rows_var or c == trans.var.word:
