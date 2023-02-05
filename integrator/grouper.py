@@ -84,17 +84,18 @@ def _collect_group(
     merge_rows_main: List[int],
     merge_rows_var: List[int],
 ) -> List[str]:
-    """Creates an combined line, based on lemma highlighting in group"""
+    """Creates an combined line, based on lemma highlighting in group.
+    This is later to be inserted in the lines making part of the group"""
+    assert trans.var  # for mypy
+
     non_gram_group_main = [group[i] for i in merge_rows_main]
     non_gram_group_var = [group[i] for i in merge_rows_var]
     non_union_group_main = [
         r for r in non_gram_group_main if not _hilited_union(orig, trans, r)
     ]
-    non_union_group_var = (
-        [r for r in non_gram_group_var if not _hilited_union(orig, trans.var, r)]
-        if trans.var
-        else []
-    )
+    non_union_group_var = [
+        r for r in non_gram_group_var if not _hilited_union(orig, trans.var, r)
+    ]
 
     line = [""] * STYLE_COL
 
@@ -113,23 +114,20 @@ def _collect_group(
     line[trans.lemmas[0]] = trans.collect_lemma(
         non_gram_group_main, trans.lemmas[0], V_LEMMA_SEP
     )
-    if trans.var:
-        line[trans.var.lemmas[0]] = trans.var.collect_lemma(
-            non_gram_group_var, trans.var.lemmas[0], V_LEMMA_SEP
-        )
+    line[trans.var.lemmas[0]] = trans.var.collect_lemma(
+        non_gram_group_var, trans.var.lemmas[0], V_LEMMA_SEP
+    )
 
     for c in orig.lemn_cols()[1:] + trans.lemmas[1:]:
         line[c] = trans.collect_lemma(non_gram_group_main, c)
-    if trans.var:
-        for c in trans.var.lemmas[1:]:
-            line[c] = trans.var.collect_lemma(non_gram_group_var, c)
+    for c in trans.var.lemmas[1:]:
+        line[c] = trans.var.collect_lemma(non_gram_group_var, c)
 
     for c in [orig.lemmas[1], trans.lemmas[1]]:
         line[c] = trans.collect_lemma(non_union_group_main, c)
-    if trans.var:
-        line[trans.var.lemmas[1]] = trans.var.collect_lemma(
-            non_union_group_var, trans.var.lemmas[1]
-        )
+    line[trans.var.lemmas[1]] = trans.var.collect_lemma(
+        non_union_group_var, trans.var.lemmas[1]
+    )
     return line
 
 
