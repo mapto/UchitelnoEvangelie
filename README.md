@@ -75,6 +75,26 @@ If you posses a compiled version, it suffices to drag and drop the file to be pr
 
 The extractor tool also has a command line interface, whose parameters could be seen by starting the program without parameters or in the <a href="https://github.com/mapto/UchitelnoEvangelie/blob/master/extractor.py">inline documentation</a>.
 
+# Reporting errors
+
+For Windows, how to share the error from the program when it closes immediately:
+
+1. Press the Win+R key combination to run the program
+As a result, a small window should open with a single line text box.
+2. In the window that opens, type "cmd" and press the Enter key.
+As a result, a black window should open with the command line
+3. In the black window that opens, drag+drop the program
+The name of the program appears with its full path.
+4. Put the focus on the black window and press the space bar that appears between the program name and the cursor
+5. In the black window, drag+drop the word
+After the program and the space, the name of the word appears with its entire path
+6. Put the focus on the black window and press Enter
+As a result, the program is run in the black window and the error that is otherwise hidden remains visible
+7. Press the key combination Win+PrtScr to take a screenshot of the screen
+The screenshot is saved to the Pictures > Screenshot folder on your computer
+8. Open an <a href="https://github.com/mapto/UchitelnoEvangelie/issues">issue</a> in this project and attach the screenshot to it.
+
+
 # References
 
 Please cite as:
