@@ -6,7 +6,7 @@ from config import FROM_LANG, TO_LANG, VAR_SOURCES
 def _values(src: str) -> List[str]:
     """
     >>> _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
-    ['W', 'G', 'H', 'Cs', 'A', 'Ab', 'Ca', 'Ch', 'Fa', 'Fb', 'Fc', 'Fd', 'L', 'La', 'M', 'Ma', 'Mi', 'Md', 'B', 'P', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'Pp', 'R', 'Sp', 'T', 'V', 'Va', 'Vb', 'Vc', 'Vd', 'Ve', 'Y', 'Z', 'Za', 'Nt', 'S']
+    ['W', 'G', 'H', 'Cs', 'A', 'Ab', 'B', 'Ca', 'Ch', 'Fa', 'Fb', 'Fc', 'Fd', 'L', 'La', 'M', 'Ma', 'Mi', 'Md', 'P', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'Pp', 'R', 'Sp', 'T', 'V', 'Va', 'Vb', 'Vc', 'Vd', 'Y', 'Z', 'Za', 'Nt', 'S']
     >>> _values('MB')
     ['M', 'B']
     >>> _values('V')
@@ -34,7 +34,7 @@ ORDERED_SOURCES = VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG]
 class Source:
     """Represents a list of sources, could be one or two letter symbols
     >>> Source('MB').data
-    ['M', 'B']
+    ['B', 'M']
     >>> Source('D')
     Traceback (most recent call last):
     ...
@@ -65,19 +65,19 @@ class Source:
         'WGH'
         >>> Source('PbPa')._sort_vars()
         'PaPb'
-        >>> Source('CsChMBSp')._sort_vars()
-        'CsChMBSp'
+        >>> Source('CsMBSpCh')._sort_vars()
+        'CsBChMSp'
         >>> Source('WH')._sort_vars()
         'WH'
         >>> Source('CsMBSpChHW')._sort_vars()
-        'WHCsChMBSp'
+        'WHCsBChMSp'
         """
         return "".join(self.data)
 
     def values(self) -> List[str]:
         """
         >>> Source('MB').values()
-        ['M', 'B']
+        ['B', 'M']
         >>> Source('MPaPb').values()
         ['M', 'Pa', 'Pb']
         """
@@ -135,9 +135,9 @@ class Source:
     def __iter__(self):
         """
         >>> [x for x in Source('BCsMSpCh')]
-        ['Cs', 'Ch', 'M', 'B', 'Sp']
+        ['Cs', 'B', 'Ch', 'M', 'Sp']
         >>> [x for x in Source('WGH-BCsMSpCh')]
-        ['W', 'G', 'H', 'Cs', 'Ch', 'M', 'B', 'Sp']
+        ['W', 'G', 'H', 'Cs', 'B', 'Ch', 'M', 'Sp']
         """
         return iter(self.data)
 
@@ -280,7 +280,7 @@ class Source:
         >>> Source("CsMBSpChHW").by_lang("sl")
         Source('WH')
         >>> Source("CsMBSpChHW").by_lang("gr")
-        Source('CsChMBSp')
+        Source('CsBChMSp')
         >>> Source("WGH").by_lang("sl")
         Source('WGH')
         >>> Source("GHW").by_lang("sl")

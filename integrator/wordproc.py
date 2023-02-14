@@ -11,7 +11,7 @@ from config import FROM_LANG, TO_LANG
 GENERIC_FONT = "Times New Roman"
 
 fonts = {TO_LANG: GENERIC_FONT, FROM_LANG: "CyrillicaOchrid10U"}
-colors = {TO_LANG: RGBColor(0x55, 0x00, 0x00), FROM_LANG: RGBColor(0x00, 0x00, 0x55)}
+colors = {TO_LANG: RGBColor(0x90, 0x00, 0x00), FROM_LANG: RGBColor(0x00, 0x00, 0x90)}
 
 
 def _generate_text(
