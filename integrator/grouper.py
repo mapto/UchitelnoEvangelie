@@ -170,7 +170,9 @@ def _update_group(
                     update = False
             # log.debug(trans.var, merge_rows_var)
             if group[i][trans.other().word]:
-                if c in trans.other().lemmas and _hilited_gram(orig, trans.other(), group[i]):
+                if c in trans.other().lemmas and _hilited_gram(
+                    orig, trans.other(), group[i]
+                ):
                     update = False
                 if i in merge_rows_var or c == trans.other().word:
                     if _hilited_union(orig, trans.other(), group[i], c):
@@ -192,7 +194,11 @@ def _close_group(
     variants = _group_variants(group, orig.main)
     if variants:
         for row in group:
-            if present(row, orig.other()) and row[orig.word] and not row[orig.other().word]:
+            if (
+                present(row, orig.other())
+                and row[orig.word]
+                and not row[orig.other().word]
+            ):
                 row[orig.other().word] = f"{row[orig.word]} {variants}"
 
     # only lines without highlited lemmas, i.e. gramm. annotation or union annotation
@@ -200,9 +206,9 @@ def _close_group(
     merge_rows_main = [
         i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)
     ]
-    merge_rows_var = (
-        [i for i, r in enumerate(group) if not _hilited_gram(orig, trans.other(), r)]
-    )
+    merge_rows_var = [
+        i for i, r in enumerate(group) if not _hilited_gram(orig, trans.other(), r)
+    ]
 
     # collect content
     line = _collect_group(group, orig, trans, merge_rows_main, merge_rows_var)

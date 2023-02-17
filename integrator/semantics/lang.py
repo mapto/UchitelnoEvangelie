@@ -74,14 +74,14 @@ class LangSemantics:
         return c
 
     def word_cols(self) -> List[int]:
-        return [self.word]
+        return [self.word, self.other().word]
 
     def lem1_cols(self) -> List[int]:
-        return [self.lemmas[0]]
+        return [self.lemmas[0], self.other().lemmas[0]]
 
     def lemn_cols(self) -> List[int]:
         """sublemmas (excluding first lemma)"""
-        return self.lemmas[1:]
+        return self.lemmas[1:] + self.other().lemmas[1:]
 
     def other(self) -> "LangSemantics":
         """For main returns variant, for variant returns main.
@@ -181,18 +181,6 @@ class MainLangSemantics(LangSemantics):
         else:
             self.lemmas += [STYLE_COL - 4 + i for i in range(-delta)]
 
-    def word_cols(self) -> List[int]:
-        assert self.var  # for mypy
-        return super().word_cols() + [self.var.word]
-
-    def lem1_cols(self) -> List[int]:
-        assert self.var  # for mypy
-        return super().lem1_cols() + [self.var.lemmas[0]]
-
-    def lemn_cols(self) -> List[int]:
-        assert self.var  # for mypy
-        return super().lemn_cols() + self.var.lemmas[1:]
-
     def other(self) -> "VarLangSemantics":
         assert self.var  # for mypy
         return self.var
@@ -230,18 +218,6 @@ class MainLangSemantics(LangSemantics):
 class VarLangSemantics(LangSemantics):
     def __post_init__(self):
         self.var = self
-
-    def word_cols(self) -> List[int]:
-        assert self.main  # for mypy
-        return super().word_cols() + [self.main.word]
-
-    def lem1_cols(self) -> List[int]:
-        assert self.main  # for mypy
-        return super().lem1_cols() + [self.main.lemmas[0]]
-
-    def lemn_cols(self) -> List[int]:
-        assert self.main  # for mypy
-        return super().lemn_cols() + self.main.lemmas[1:]
 
     def other(self) -> "MainLangSemantics":
         assert self.main  # for mypy

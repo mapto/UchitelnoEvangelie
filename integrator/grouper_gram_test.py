@@ -231,6 +231,7 @@ def test_update_sloves_inverse():
         + ["hl11:FFFCD5B4"],
     ]
 
+
 def test_rechi():
     group = [
         ["бꙑше H", "бꙑт\ue205", "", "gramm.", "25/123b05"]
@@ -238,14 +239,16 @@ def test_rechi():
         + [""] * 3
         + ["gramm."]
         + [""] * 13
-        + ["hl00:FFF8CBAD|hl03:FFBDD7EE"]+ ["1"] * 4,
+        + ["hl00:FFF8CBAD|hl03:FFBDD7EE"]
+        + ["1"] * 4,
         ["рекл\ue205 H"]
         + [""] * 3
         + ["25/123b05", "рѣша", "ко г\ue010лще рѣша• ꙗ-", "рещ\ue205"]
         + [""] * 3
         + ["φασὶν", "φημί"]
         + [""] * 13
-        + ["hl00:FFF8CBAD"]+ ["1"] * 4,
+        + ["hl00:FFF8CBAD"]
+        + ["1"] * 4,
     ]
 
     res = _close_group(group, sl_sem, gr_sem)
@@ -284,6 +287,7 @@ def test_rechi():
         + ["1"] * 4,
     ]
 
+
 def test_collect_rechi():
     group = [
         ["бꙑше H", "бꙑт\ue205", "", "gramm.", "25/123b05"]
@@ -291,21 +295,24 @@ def test_collect_rechi():
         + [""] * 3
         + ["gramm."]
         + [""] * 13
-        + ["hl00:FFF8CBAD|hl03:FFBDD7EE"]+ ["1"] * 4,
+        + ["hl00:FFF8CBAD|hl03:FFBDD7EE"]
+        + ["1"] * 4,
         ["рекл\ue205 H"]
         + [""] * 3
         + ["25/123b05", "рѣша", "ко г\ue010лще рѣша• ꙗ-", "рещ\ue205"]
         + [""] * 3
         + ["φασὶν", "φημί"]
         + [""] * 13
-        + ["hl00:FFF8CBAD"]+ ["1"] * 4,
+        + ["hl00:FFF8CBAD"]
+        + ["1"] * 4,
     ]
 
     merge_rows_main = [1]
     merge_rows_var = [1]
     res = _collect_group(group, sl_sem, gr_sem, merge_rows_main, merge_rows_var)
 
-    assert res == ([
+    assert res == (
+        [
             "бꙑше рекл\ue205 H",
             "бꙑт\ue205",
             "",
@@ -319,4 +326,5 @@ def test_collect_rechi():
         + [""] * 2
         + ["φασὶν", "gramm. & φημί"]
         + [""] * 13
-        + ["hl00:FFF8CBAD|hl03:FFBDD7EE"])
+        + ["hl00:FFF8CBAD|hl03:FFBDD7EE"]
+    )
