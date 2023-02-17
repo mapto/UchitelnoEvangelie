@@ -31,7 +31,9 @@ def _hilited_col(row: List[str], col: int) -> Optional[str]:
 
 def _hilited_gram(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
     """highlighting in third lemma and further.
-    This highlighting has impact on variants. If undesired better create separate rows in variants."""
+    This highlighting has impact on variants. If undesired better create separate rows in variants.
+    TODO: do translation variants need to be considered separately or together, currentl together
+    """
     cols = [
         osem.lemmas[2],
         osem.other().lemmas[2],
@@ -199,6 +201,7 @@ def _close_group(
                 row[orig.var.word] = f"{row[orig.word]} {variants}"
 
     # only lines without highlited lemmas, i.e. gramm. annotation or union annotation
+    # TODO: do translation variants need to be considered separately or together, currentl together so this redundant
     merge_rows_main = [
         i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)
     ]
