@@ -93,15 +93,13 @@ def _collect_group(
 ) -> List[str]:
     """Creates an combined line, based on lemma highlighting in group.
     This is later to be inserted in the lines making part of the group"""
-    assert trans.var  # for mypy
-
     non_gram_group_main = [group[i] for i in merge_rows_main]
     non_gram_group_var = [group[i] for i in merge_rows_var]
     non_union_group_main = [
         r for r in non_gram_group_main if not _hilited_union(orig, trans, r)
     ]
     non_union_group_var = [
-        r for r in non_gram_group_var if not _hilited_union(orig, trans.var, r)
+        r for r in non_gram_group_var if not _hilited_union(orig, trans.other(), r)
     ]
 
     line = [""] * STYLE_COL
@@ -121,19 +119,19 @@ def _collect_group(
     line[trans.lemmas[0]] = trans.collect_lemma(
         non_gram_group_main, trans.lemmas[0], V_LEMMA_SEP
     )
-    line[trans.var.lemmas[0]] = trans.var.collect_lemma(
-        non_gram_group_var, trans.var.lemmas[0], V_LEMMA_SEP
+    line[trans.other().lemmas[0]] = trans.other().collect_lemma(
+        non_gram_group_var, trans.other().lemmas[0], V_LEMMA_SEP
     )
 
     for c in orig.lemn_cols()[1:] + trans.lemmas[1:]:
         line[c] = trans.collect_lemma(non_gram_group_main, c)
-    for c in trans.var.lemmas[1:]:
-        line[c] = trans.var.collect_lemma(non_gram_group_var, c)
+    for c in trans.other().lemmas[1:]:
+        line[c] = trans.other().collect_lemma(non_gram_group_var, c)
 
     for c in [orig.lemmas[1], trans.lemmas[1]]:
         line[c] = trans.collect_lemma(non_union_group_main, c)
-    line[trans.var.lemmas[1]] = trans.var.collect_lemma(
-        non_union_group_var, trans.var.lemmas[1]
+    line[trans.other().lemmas[1]] = trans.other().collect_lemma(
+        non_union_group_var, trans.other().lemmas[1]
     )
     return line
 
@@ -147,8 +145,6 @@ def _update_group(
     merge_rows_var: List[int],
 ) -> List[List[str]]:
     """Update group content with the collected information"""
-    assert trans.var  # for mypy
-
     idx = _merge_indices(g)
 
     group = g.copy()
@@ -173,11 +169,11 @@ def _update_group(
                 if _hilited_union(orig, trans, group[i], c):
                     update = False
             # log.debug(trans.var, merge_rows_var)
-            if group[i][trans.var.word]:
-                if c in trans.var.lemmas and _hilited_gram(orig, trans.var, group[i]):
+            if group[i][trans.other().word]:
+                if c in trans.other().lemmas and _hilited_gram(orig, trans.other(), group[i]):
                     update = False
-                if i in merge_rows_var or c == trans.var.word:
-                    if _hilited_union(orig, trans.var, group[i], c):
+                if i in merge_rows_var or c == trans.other().word:
+                    if _hilited_union(orig, trans.other(), group[i], c):
                         update = False
             if update:
                 group[i][c] = line[c]
@@ -194,11 +190,10 @@ def _close_group(
     # populate variants equal to main
     assert orig.main  # for mypy
     variants = _group_variants(group, orig.main)
-    assert orig.var  # for mypy
     if variants:
         for row in group:
-            if present(row, orig.var) and row[orig.word] and not row[orig.var.word]:
-                row[orig.var.word] = f"{row[orig.word]} {variants}"
+            if present(row, orig.other()) and row[orig.word] and not row[orig.other().word]:
+                row[orig.other().word] = f"{row[orig.word]} {variants}"
 
     # only lines without highlited lemmas, i.e. gramm. annotation or union annotation
     # TODO: do translation variants need to be considered separately or together, currentl together so this redundant
@@ -206,9 +201,7 @@ def _close_group(
         i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)
     ]
     merge_rows_var = (
-        [i for i, r in enumerate(group) if not _hilited_gram(orig, trans.var, r)]
-        if trans.var
-        else []
+        [i for i, r in enumerate(group) if not _hilited_gram(orig, trans.other(), r)]
     )
 
     # collect content
