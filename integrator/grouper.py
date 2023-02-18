@@ -84,17 +84,68 @@ def _merge_indices(group: List[List[str]]) -> Index:
     return Index(f"{s_start}-{s_end}") if s_start != s_end else Index(s_start)
 
 
+# TODO
+def _collect_main(
+    group: List[List[str]],
+    osem: LangSemantics,
+    non_gram: List[List[str]],
+    non_union: List[List[str]],
+    line: List[str],
+):
+    """*IN_PLACE*"""
+    line[osem.word] = osem.collect_word(group)
+    line[osem.lemmas[1]] = osem.collect_lemma(non_union, osem.lemmas[1])
+    for c in osem.lemmas[2:]:
+        line[c] = osem.collect_lemma(non_gram, c)
+
+
+# TODO
+def _collect_other(
+    group: List[List[str]],
+    orig: LangSemantics,
+    non_gram: List[List[str]],
+    non_union: List[List[str]],
+    line: List[str],
+):
+    """*IN_PLACE*"""
+    line[orig.other().word] = orig.other().collect_word(group)
+    # TODO: which trans should orig other depend on?
+    # TODO: first lemma should be with V_LEMMA_SEP?
+    line[orig.other().lemmas[0]] = orig.other().collect_lemma(
+        non_gram, orig.other().lemmas[0]
+    )
+    for c in orig.other().lemmas[1:]:
+        line[c] = orig.collect_lemma(non_gram, c)
+
+
+def _collect_trans(
+    group: List[List[str]],
+    tsem: LangSemantics,
+    non_gram: List[List[str]],
+    non_union: List[List[str]],
+    line: List[str],
+):
+    """*IN_PLACE*"""
+    line[tsem.word] = tsem.collect_word(group)
+    line[tsem.lemmas[0]] = tsem.collect_lemma(non_gram, tsem.lemmas[0], V_LEMMA_SEP)
+    line[tsem.lemmas[1]] = tsem.collect_lemma(non_union, tsem.lemmas[1])
+    for c in tsem.lemmas[2:]:
+        line[c] = tsem.collect_lemma(non_gram, c)
+    return line
+
+
 def _collect_group(
     group: List[List[str]],
     orig: LangSemantics,
     trans: MainLangSemantics,
-    merge_rows_main: List[int],
-    merge_rows_var: List[int],
+    main_rows: List[int],
+    var_rows: List[int],
 ) -> List[str]:
     """Creates an combined line, based on lemma highlighting in group.
     This is later to be inserted in the lines making part of the group"""
-    non_gram_group_main = [group[i] for i in merge_rows_main]
-    non_gram_group_var = [group[i] for i in merge_rows_var]
+    # TODO: create aux object Hiliting that manages main/var_rows and non_*_group_*
+    non_gram_group_main = [group[i] for i in main_rows]
+    non_gram_group_var = [group[i] for i in var_rows]
     non_union_group_main = [
         r for r in non_gram_group_main if not _hilited_union(orig, trans, r)
     ]
@@ -105,34 +156,28 @@ def _collect_group(
     line = [""] * STYLE_COL
 
     # Words from any type of highlighting are added to the merged line
+    # line = _collect_main(group, orig, non_gram_group_main, non_union_group_main, line)
     line[orig.word] = orig.collect_word(group)
-    line[trans.word] = trans.collect_word(group)
+    line[orig.lemmas[1]] = trans.collect_lemma(non_union_group_main, orig.lemmas[1])
+    for c in orig.lemmas[2:]:
+        line[c] = trans.collect_lemma(non_gram_group_main, c)
 
+    # line = _collect_other(group, orig.other(), non_gram_group_main, non_union_group_main, line)
     line[orig.other().word] = orig.other().collect_word(group)
-    line[trans.other().word] = trans.other().collect_word(group)
-
     # TODO: which trans should orig other depend on?
+    # TODO: first lemma should be with V_LEMMA_SEP?
     line[orig.other().lemmas[0]] = orig.other().collect_lemma(
         non_gram_group_main, orig.other().lemmas[0]
     )
-
-    line[trans.lemmas[0]] = trans.collect_lemma(
-        non_gram_group_main, trans.lemmas[0], V_LEMMA_SEP
-    )
-    line[trans.other().lemmas[0]] = trans.other().collect_lemma(
-        non_gram_group_var, trans.other().lemmas[0], V_LEMMA_SEP
-    )
-
-    for c in orig.lemn_cols()[1:] + trans.lemmas[1:]:
+    for c in orig.other().lemmas[1:]:
         line[c] = trans.collect_lemma(non_gram_group_main, c)
-    for c in trans.other().lemmas[1:]:
-        line[c] = trans.other().collect_lemma(non_gram_group_var, c)
 
-    for c in [orig.lemmas[1], trans.lemmas[1]]:
-        line[c] = trans.collect_lemma(non_union_group_main, c)
-    line[trans.other().lemmas[1]] = trans.other().collect_lemma(
-        non_union_group_var, trans.other().lemmas[1]
+    line = _collect_trans(group, trans, non_gram_group_main, non_union_group_main, line)
+
+    line = _collect_trans(
+        group, trans.other(), non_gram_group_var, non_union_group_var, line
     )
+
     return line
 
 
