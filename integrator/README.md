@@ -67,7 +67,9 @@ graph LR
   setup --> lang
 
   grouper --> lang
+  grouper --> hiliting
   merger --> grouper
+  merger --> repetition
 
   aggregator --> source
   aggregator --> lang
