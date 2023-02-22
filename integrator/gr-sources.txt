@@ -1,48 +1,52 @@
-﻿#Основна катена (catena prima, C110.1):  
-#Да се отделят катена аукта и интегра със съотв. ръкописи
+C   	Cramer, main text
+Cs  	Cramer supplementum, default variant
 
- 
-C	Cramer - основен текст
-Cs	Cramer - Supplementum 
+Ab	Athina, EBE, 56
+Fa	F6/5 Firenze, BML, Plut.6.5
+Fb	F8/29 Firenze, BML, Plut.8.29
+Fc	Firenze, BML, Plut. 8.14
+La	London, BL, Harley 5540
+M	München, Universitätsbibliothek, 2° 30 (Cim. 16)
+Mi	Milano
+Md	Madrid
+Pb	P191 Paris, BnF, Grec 191
+Pc	P199 Paris, BnF, Grec 199
+Pd	P200 Paris, BnF, Grec 200
+Pe	P201 Paris, BnF, Grec 201
+Pf	P203 Paris, BnF, Grec 203, f. 196r ff
+Pg	P231 Paris, BnF, Grec 231
+Ph	P701 Paris, BnF, Grec 701
+Pi	P702 Paris, BnF, Grec 702
+Pk	P704 Paris, BnF, Grec 704
+Pl	PC71 Paris, BnF, Coislin 71
+Pp	P700
+R	Roma, Biblioteca Angelica, Gr. 67, f. 14r ff
+T	Cambridge
+V	VC444 Città del Vaticano, BAV, Barb. gr. 444, f. 95r 
+Va	Città del Vaticano, BAV, Vat. gr. 1804
+Vb	Ross. 211
+Vc	Ottob. gr. 113
+Vd	Ottob. gr. 237
+Y	New Haven, Yale University, Beinecke Library, 235
+Za  	BNM, Cl. I. 34
 
-A 	Athina, EBE, 56, f. 47r ff 
-Ab	Athina, EBE, 98
-Sp	ASP Città del Vaticano, BAV, Archivio di S. Pietro B 59, f. 132r ff  
-Ca 	Кирил Александрийски
-Ch 	Chrysostomos….
-Fa	F6/5 Firenze, BML, Plut.6.5 (CPG C110.1, CPG C140.1)
-Fb	F8/29 Firenze, BML, Plut.8.29  (само CPG C110.1)
-Fc	Firenze, BML, Plut.8.14 (21r-27v - CPG C110.1/Мт 1.1-2.21, другите катени са нерелевантни) 
-L 	Oxford, Bodl., Laud 33, f. 29v ff  - разширена CPG C110.2
-M 	München, Universitätsbibliothek, 2° 30 (Cim. 16) 
-Ma	M208 München, BSB, Gr. 208, f. 60v ff 
-Mi	Milano, Biblioteca Ambrosiana, C 255 inf., ff. 1–90, chart., s. XVI: (1r–90r) CPG C140.1
-Md	Madrid, BNE, 4777, ff. 1–182, chart., s. XVI: (16r–182r) CPG C110.1.
-B	Oxford, Bodleian Library, Auct. T.1.4 
-P	P186 Paris, BnF, Grec 186 
-Pa	P188 Paris, BnF, Grec 188, f. 43r ff 
-Pb	P191 Paris, BnF, Grec 191  
-Pc	P199 Paris, BnF, Grec 199 
-Pd	P200 Paris, BnF, Grec 200 
-Pe	P201 Paris, BnF, Grec 201 
-Pf	P203 Paris, BnF, Grec 203, f. 196r ff 
-Pg	P231 Paris, BnF, Grec 231 
-Ph	P701 Paris, BnF, Grec 701 
-Pi	P702 Paris, BnF, Grec 702 
-Pk	P704 Paris, BnF, Grec 704 
-Pl	PC71 Paris, BnF, Coislin 71 
-Pm	PC23 Paris, BnF, Coislin 23 - catena integra, ръкопис на Крамер
-Pn	PC195 Paris, BnF, Coislin 195 
-Po	PC206 Paris, BnF, Coislin 206, f. 85r ff 
-Pp	P700 Paris, BNF, Grec 700
-R 	Roma, Biblioteca Angelica, Gr. 67, f. 14r ff  
-T	Cambridge, Trinity College, B.VII.1, s. X/1
-Tb 	Тит Востронски
-V	VC444 Città del Vaticano, BAV, Barb. gr. 444, f. 95r ff 
-Va	Città del Vaticano, BAV, Vat. gr. 1804 (само CPG C140.1)
-Vb	Città del Vaticano, BAV, Ross. 211, s. XII/1 (4r-85v) CPG C140.1, (86r-127v) CPG C130
-Vc		Città del Vaticano, BAV, Ottob. gr. 113, chart., 117 ff., s. XVI
-Z	Venezia, BNM, Z.544, f. 54v ff 
-Za	Venezia, BNM, Cl. I. 34
+A   	Athina, EBE, 56, f. 47r ff
+Fd	Firenze, BML, Plut. 8.24
+L	Oxford, Bodl., Laud 33, f. 29v ff
+Ma	M208 München, BSB, Gr. 208, f. 60v ff
+B	Oxford, Bodleian Library, Auct. T.1.4
+P	P186
+Pa	P188 Paris, BnF, Grec 188, f. 43r ff
+Po	PC206 Paris, BnF, Coislin 206, f. 85r ff
+Sp	ASP Città del Vaticano, BAV, Archivio di S. Pietro B 59, f. 132r ff
+Z	Venezia, BNM, Z.544, f. 54v ff
 
-Nt	Nestle-Aland 
+Pm	PC23 Paris, BnF, Coislin 23
+Pn	PC195 Paris, BnF, Coislin 195
+
+Ve	Vat. gr. 1611 
+
+Ch	Chrysostomos
+
+Nt	NA
+S	Septuaginta
