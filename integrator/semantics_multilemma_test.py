@@ -183,7 +183,7 @@ def test_paris():
         + [""] * 9
     )
     result = gr_sem.var.multilemma(row)
-    assert result == {"MPaPb": "τιμᾷ"}
+    assert result == {Source("MPaPb"): "τιμᾷ"}
 
     row = (
         [""] * 4

@@ -1,4 +1,5 @@
 from setup import sl_sem, gr_sem
+from hiliting import Hiliting
 from grouper import _close_group, _collect_group, _update_group, _hilited_gram
 
 # INFO:root:Събиране на многоредови преводи от славянски основен към гръцки...
@@ -49,26 +50,11 @@ def test_close_raspetou_inverse():
     ]
 
 
-def test_hilited_gram():
-    rows = [r.copy() for r in raw]
-
-    merge_rows_main = [
-        i for i, r in enumerate(rows) if not _hilited_gram(gr_sem, sl_sem, r)
-    ]
-    assert merge_rows_main == [0]
-
-    merge_rows_var = [
-        i for i, r in enumerate(rows) if not _hilited_gram(gr_sem, sl_sem.var, r)
-    ]
-    assert merge_rows_var == [0]
-
-
 def test_collect_raspetou_inverse():
     rows = [r.copy() for r in raw]
-    merge_rows_main = [0]
-    merge_rows_var = [0]
+    h = Hiliting(rows, gr_sem, sl_sem)
 
-    result = _collect_group(rows, gr_sem, sl_sem, merge_rows_main, merge_rows_var)
+    result = _collect_group(rows, gr_sem, sl_sem, h)
 
     assert (
         result
@@ -83,8 +69,7 @@ def test_collect_raspetou_inverse():
 
 def test_update_raspetou_inverse():
     rows = [r.copy() for r in raw]
-    merge_rows_main = [0]
-    merge_rows_var = [0]
+    h = Hiliting(rows, gr_sem, sl_sem)
     line = (
         ["распетоу WG", "распѧт\ue205 WG"]
         + [""] * 3
@@ -94,7 +79,7 @@ def test_update_raspetou_inverse():
         + [""] * 14
     )
 
-    result = _update_group(rows, gr_sem, sl_sem, line, merge_rows_main, merge_rows_var)
+    result = _update_group(rows, gr_sem, sl_sem, line, h)
 
     assert result == [
         ["распетоу WG", "распѧт\ue205 WG"]
@@ -172,10 +157,9 @@ def test_collect_sloves_inverse():
         + ["hl11:FFFCD5B4"],
     ]
 
-    merge_rows_main = [1]
-    merge_rows_var = [1]
+    h = Hiliting(rows, gr_sem, sl_sem)
 
-    result = _collect_group(rows, gr_sem, sl_sem, merge_rows_main, merge_rows_var)
+    result = _collect_group(rows, gr_sem, sl_sem, h)
 
     assert (
         result
@@ -204,8 +188,7 @@ def test_update_sloves_inverse():
         + ["hl11:FFFCD5B4"],
     ]
 
-    merge_rows_main = [1]
-    merge_rows_var = [1]
+    h = Hiliting(rows, gr_sem, sl_sem)
     line = (
         [""] * 5
         + ["ₓ словесъ", "", "слово"]
@@ -214,7 +197,7 @@ def test_update_sloves_inverse():
         + [""] * 12
     )
 
-    result = _update_group(rows, gr_sem, sl_sem, line, merge_rows_main, merge_rows_var)
+    result = _update_group(rows, gr_sem, sl_sem, line, h)
 
     assert result == [
         [""] * 4
@@ -263,16 +246,15 @@ def test_rechi():
             "om. рѣша",
             "",
             "om.",
-            "",
         ]
-        + [""] * 2
-        + ["φασὶν", "gramm. & φημί"]
+        + [""] * 3
+        + ["φασὶν", "gramm."]
         + [""] * 13
         + ["hl00:FFF8CBAD|hl03:FFBDD7EE"]
         + ["1"] * 4,
         [
             "бꙑше рекл\ue205 H",
-            "бꙑт\ue205",
+            "бꙑт\ue205 H",
             "",
             "",
             "25/123b05",
@@ -281,7 +263,7 @@ def test_rechi():
             "рещ\ue205",
         ]
         + [""] * 3
-        + ["φασὶν", "gramm. & φημί"]
+        + ["φασὶν", "φημί"]
         + [""] * 13
         + ["hl00:FFF8CBAD"]
         + ["1"] * 4,
@@ -297,8 +279,8 @@ def test_collect_rechi():
         + [""] * 13
         + ["hl00:FFF8CBAD|hl03:FFBDD7EE"]
         + ["1"] * 4,
-        ["рекл\ue205 H"]
-        + [""] * 3
+        ["рекл\ue205 H", "рещ\ue205"]
+        + [""] * 2
         + ["25/123b05", "рѣша", "ко г\ue010лще рѣша• ꙗ-", "рещ\ue205"]
         + [""] * 3
         + ["φασὶν", "φημί"]
@@ -307,24 +289,22 @@ def test_collect_rechi():
         + ["1"] * 4,
     ]
 
-    merge_rows_main = [1]
-    merge_rows_var = [1]
-    res = _collect_group(group, sl_sem, gr_sem, merge_rows_main, merge_rows_var)
+    h = Hiliting(group, sl_sem, gr_sem)
+    res = _collect_group(group, sl_sem, gr_sem, h)
 
     assert res == (
         [
             "бꙑше рекл\ue205 H",
-            "бꙑт\ue205",
+            "бꙑт\ue205 рещ\ue205 H",
             "",
-            "gramm.",
+            "",
             "",
             "om. рѣша",
             "",
-            "om.",
+            "",
             "",
         ]
         + [""] * 2
-        + ["φασὶν", "gramm. & φημί"]
+        + ["φασὶν", "φημί"]
         + [""] * 13
-        + ["hl00:FFF8CBAD|hl03:FFBDD7EE"]
     )

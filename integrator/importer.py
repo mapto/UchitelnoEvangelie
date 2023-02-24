@@ -6,7 +6,7 @@ from openpyxl import load_workbook  # type: ignore
 from openpyxl.styles import Font, colors  # type: ignore
 
 from config import FROM_LANG, TO_LANG
-from const import IDX_COL, STYLE_COL
+from const import HILITE_PREFIX, IDX_COL, STYLE_COL, STYLE_SEP
 
 from semantics import TableSemantics, MainLangSemantics, VarLangSemantics
 
@@ -36,7 +36,9 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
         if blank and not [l for l in line if l]:
             break
         bgs = {
-            f"hl{v:02d}:{row[v].fill.start_color.rgb}": row[v].fill.patternType
+            f"{HILITE_PREFIX}{v:02d}{STYLE_SEP}{row[v].fill.start_color.rgb}": row[
+                v
+            ].fill.patternType
             for v in sem.cols()
             if row[v].fill and row[v].fill.start_color != colors.WHITE
         }

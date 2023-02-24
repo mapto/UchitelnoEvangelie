@@ -47,7 +47,7 @@ def test_greek_paris():
         + [""] * 9
     )
     result = gr_sem.var.multiword(row)
-    assert result == {"MPaPb": "τιμᾷ"}
+    assert result == {Source("MPaPb"): "τιμᾷ"}
 
     row = (
         [""] * 4

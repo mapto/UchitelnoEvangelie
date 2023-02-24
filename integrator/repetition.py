@@ -2,7 +2,6 @@ from typing import Dict, List
 
 from const import IDX_COL
 from setup import sl_sem, gr_sem
-from semantics import LangSemantics, MainLangSemantics
 
 
 class Repetitions:

@@ -4,6 +4,7 @@ from typing import Dict, List, Tuple
 
 from const import NON_COUNTABLE, ERR_SUBLEMMA
 from const import MISSING_CH, SPECIAL_CHARS
+from const import OMMIT_SUBLEMMA
 from model import Source
 
 from .const import LAST_LEMMA
@@ -16,6 +17,11 @@ def collect_word(self, group: List[List[str]]) -> str:
 
 def collect_lemma(self, group: List[List[str]], cidx: int, separator: str = "") -> str:
     g = [e for e in collect(group, cidx) if e.strip() != MISSING_CH]
+    # do not repeat om.
+    if g.count(OMMIT_SUBLEMMA) > 1:
+        g = [
+            e for i, e in enumerate(g) if e != OMMIT_SUBLEMMA or i > 0 or e != g[i - 1]
+        ]
     if separator:
         return f" {separator} ".join(g)
     return f" ".join(g)

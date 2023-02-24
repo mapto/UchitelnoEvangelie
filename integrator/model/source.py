@@ -6,7 +6,7 @@ from config import FROM_LANG, TO_LANG, VAR_SOURCES
 def _values(src: str) -> List[str]:
     """
     >>> _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
-    ['W', 'G', 'H', 'Cs', 'A', 'Ab', 'Sp', 'Ca', 'Ch', 'Fa', 'Fb', 'Fc', 'L', 'M', 'Ma', 'Mi', 'Md', 'B', 'P', 'Pa', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pm', 'Pn', 'Po', 'Pp', 'R', 'T', 'Tb', 'V', 'Va', 'Vb', 'Vc', 'Z', 'Za', 'Nt']
+    ['W', 'G', 'H', 'Cs', 'Ab', 'Fa', 'Fb', 'Fc', 'La', 'M', 'Mi', 'Md', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pp', 'R', 'T', 'V', 'Va', 'Vb', 'Vc', 'Vd', 'Y', 'Za', 'A', 'Fd', 'L', 'Ma', 'B', 'P', 'Pa', 'Po', 'Sp', 'Z', 'Pm', 'Pn', 'Ve', 'Ch', 'Nt', 'S']
     >>> _values('MB')
     ['M', 'B']
     >>> _values('V')
@@ -63,14 +63,14 @@ class Source:
         'Ch'
         >>> Source('GHW')._sort_vars()
         'WGH'
-        >>> Source('PbPa')._sort_vars()
-        'PaPb'
+        >>> Source('PaPb')._sort_vars()
+        'PbPa'
         >>> Source('CsMBSpCh')._sort_vars()
-        'CsSpChMB'
+        'CsMBSpCh'
         >>> Source('WH')._sort_vars()
         'WH'
         >>> Source('CsMBSpChHW')._sort_vars()
-        'WHCsSpChMB'
+        'WHCsMBSpCh'
         """
         return "".join(self.data)
 
@@ -79,7 +79,7 @@ class Source:
         >>> Source('MB').values()
         ['M', 'B']
         >>> Source('MPaPb').values()
-        ['M', 'Pa', 'Pb']
+        ['M', 'Pb', 'Pa']
         """
         return self.data
 
@@ -135,9 +135,9 @@ class Source:
     def __iter__(self):
         """
         >>> [x for x in Source('BCsMSpCh')]
-        ['Cs', 'Sp', 'Ch', 'M', 'B']
+        ['Cs', 'M', 'B', 'Sp', 'Ch']
         >>> [x for x in Source('WGH-BCsMSpCh')]
-        ['W', 'G', 'H', 'Cs', 'Sp', 'Ch', 'M', 'B']
+        ['W', 'G', 'H', 'Cs', 'M', 'B', 'Sp', 'Ch']
         """
         return iter(self.data)
 
@@ -280,7 +280,7 @@ class Source:
         >>> Source("CsMBSpChHW").by_lang("sl")
         Source('WH')
         >>> Source("CsMBSpChHW").by_lang("gr")
-        Source('CsSpChMB')
+        Source('CsMBSpCh')
         >>> Source("WGH").by_lang("sl")
         Source('WGH')
         >>> Source("GHW").by_lang("sl")
