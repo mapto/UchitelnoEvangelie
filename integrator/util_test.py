@@ -54,6 +54,15 @@ def test_ord_word():
     assert ord_word("Ἀβραὰμ") == ord_word("Αβρααμ")
 
 
+def test_ord_numbers():
+    assert ord_word("ѳтꙑ\ue205") == ord_word("ѳ҃тꙑ\ue205")
+    assert ord_word("на") == ord_word("н\ue010а")
+    assert ord_word("ѵ") > ord_word("н\ue010а") > ord_word("а")
+    assert ord_word("аї") == ord_word("а\ue010ї")
+    assert ord_word("ѵ") > ord_word("а\ue010ї") > ord_word("а")
+    assert ord_word("т҃") < ord_word("тана")
+
+
 def test_subscript():
     assert subscript(1, FROM_LANG) == ""
     assert subscript(1, TO_LANG) == ""

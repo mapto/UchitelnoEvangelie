@@ -1,6 +1,4 @@
 from config import FROM_LANG, TO_LANG
-from config import VAR_SL, VAR_GR
-from config import DEFAULT_SL, DEFAULT_GR
 
 IDX_COL = 4  # E
 EXAMPLE_COL = 6  # G
