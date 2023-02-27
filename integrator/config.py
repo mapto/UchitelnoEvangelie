@@ -3,6 +3,7 @@ from typing import List, Tuple
 import sys
 from os import path
 import re
+import logging as log
 
 source_regex = r"^([A-Z][a-z]?)(.*)$"
 
@@ -11,8 +12,8 @@ FROM_LANG = "sl"
 TO_LANG = "gr"
 other_lang = {TO_LANG: FROM_LANG, FROM_LANG: TO_LANG}
 
-
 bin_path = path.abspath(sys.executable if getattr(sys, "frozen", False) else __file__)
+log.debug(f"Detected binary path: {bin_path}")
 source_cfg = path.join(path.dirname(bin_path), "{}-sources.txt")
 
 

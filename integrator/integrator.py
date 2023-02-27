@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Index integrator for Uchitelno Evangelie.
+"""List integrator for Uchitelno Evangelie.
 Licensed under MIT License, detailed here: https://mit-license.org/
 
 Usage:
@@ -14,13 +14,16 @@ Options:
 """
 __version__ = "1.3.5"  # used also by build.sh script
 
-import sys
-from os import path
-from glob import glob
-import shutil
-import tempfile
+from cli import expand_names, init, wrapup
 
-from docopt import docopt  # type: ignore
+if __name__ == "__main__":
+    fnames = init(__doc__, __version__)
+
+from os import path
+import logging as log
+
+logger = log.getLogger()
+
 from sortedcontainers import SortedDict  # type: ignore
 
 from config import FROM_LANG, TO_LANG
@@ -32,25 +35,7 @@ from merger import merge
 from aggregator import aggregate
 from exporter import export_docx
 
-import logging as log
-
-logger = log.getLogger()
-
 if __name__ == "__main__":
-    args = docopt(__doc__, version=__version__)
-    if "--verbose" in args and args["--verbose"]:
-        log.basicConfig(level=log.DEBUG)
-    elif "--silent" in args and args["--silent"]:
-        log.basicConfig(level=log.WARNING)
-    else:
-        log.basicConfig(level=log.INFO)
-    log.info(f"Integrator v{__version__}")
-    log.debug(
-        f"Detected binary path: {path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__)}"
-    )  # used in config.py
-    log.debug(f"CLI arguments: {args}")
-    fnames = args["<xlsx>"]
-
     assert sl_sem.var  # for mypy
     assert gr_sem.var  # for mypy
 
@@ -73,31 +58,7 @@ if __name__ == "__main__":
     ]
     sem = pairs[0]
 
-    expanded_fnames = []
-    to_clean = []
-    for fname in fnames:
-        log.info(f"Преглеждане: {fname}")
-
-        if path.isdir(fname):
-            expanded_fnames += glob(path.join(fname, "*.xlsx"))
-        elif len(fname) < 6 or "." not in fname[2:]:
-            expanded_fnames += [fname + ".xlsx"]
-        elif not fname.lower().endswith(".xlsx"):
-            dest_dir = path.join(tempfile.gettempdir(), fname)
-            if path.exists(dest_dir):
-                shutil.rmtree(dest_dir)
-            try:
-                shutil.unpack_archive(fname, dest_dir)
-                to_clean += [dest_dir]
-            except ValueError as ve:
-                log.critical(
-                    f"Файлът {fname} трябва да е във формат .xlsx. Като алтернатива, може да е директория или архив. Моля конвертирайте го"
-                )
-                exit()
-            expanded_fnames += glob(path.join(dest_dir, "*.xlsx"))
-        else:
-            expanded_fnames += [fname]
-    expanded_fnames.sort()
+    expanded_fnames, to_clean = expand_names(fnames)
 
     for fname in expanded_fnames:
         log.info(f"Прочитане: {fname}")
@@ -149,8 +110,4 @@ if __name__ == "__main__":
     export_docx(gre, TO_LANG, export_fname)
     log.info(f"Записване: {export_fname}")
 
-    for d in to_clean:
-        shutil.rmtree(d)
-
-    if logger.level < log.WARNING:
-        input("Натиснете Enter, за да приключите изпълнението.")
+    wrapup(to_clean)

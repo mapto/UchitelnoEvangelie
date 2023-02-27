@@ -9,3 +9,6 @@ __pycache__/
 
 *.docx
 *.xlsx
+
+log.txt
+*.log
