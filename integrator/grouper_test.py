@@ -1,12 +1,15 @@
 from typing import List
 
 from model import Source
+from setup import sl_sem, gr_sem
+from hiliting import Hiliting
+
+from grouper import _merge_indices
 from grouper import _hilited, _hilited_gram
 from grouper import _group_variants, _update_group, _collect_group
-from setup import sl_sem, gr_sem
 
 
-def test_grouped():
+def test_hilited():
     row = (
         [
             "\ue201л\ue205ко WH",
@@ -95,40 +98,6 @@ def test_group_variants():
     assert res == Source("WH")
 
 
-def test_merge_rows():
-    rows = [
-        [""] * 4
-        + ["19/94d08"]
-        + ["ₓ", ""] * 2
-        + [""] * 7
-        + ["τῶν Ch", "ὁ"]
-        + [""] * 8
-        + ["hl16:AAAAAAAA|hl19:AAAAAAAA"],
-        [""] * 4
-        + ["19/94d08", "ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
-        + [""] * 8
-        + ["ἐπὶ Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
-        + [""] * 6
-        + ["hl16:AAAAAAAA|hl18:AAAAAAAA"],
-        [""] * 4
-        + ["19/94d08"]
-        + [""] * 11
-        + ["γῆς Ch", "γῆ"]
-        + [""] * 8
-        + ["hl16:AAAAAAAA"],
-    ]
-
-    merge_rows_main = [
-        i for i, r in enumerate(rows) if not _hilited_gram(sl_sem, gr_sem, r)
-    ]
-    assert merge_rows_main == [0, 1, 2]
-
-    merge_rows_var = [
-        i for i, r in enumerate(rows) if not _hilited_gram(sl_sem, gr_sem.var, r)
-    ]
-    assert merge_rows_var == [1, 2]
-
-
 def test_update_group_zemen():
     rows = [
         [""] * 4
@@ -151,8 +120,7 @@ def test_update_group_zemen():
         + [""] * 8
         + ["hl16:AAAAAAAA"],
     ]
-    merge_rows_main = [0, 1, 2]
-    merge_rows_var = [1, 2]
+    h = Hiliting(rows, sl_sem, gr_sem)
 
     line = (
         [""] * 5
@@ -162,10 +130,10 @@ def test_update_group_zemen():
         + [""] * 6
     )
 
-    res = _update_group(rows, sl_sem, gr_sem, line, merge_rows_main, merge_rows_var)
+    res = _update_group(rows, sl_sem, gr_sem, line, h)
     assert res == [
         [""] * 4
-        + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "", "ₓ"]
+        + ["19/94d08", "ₓ ꙁемьнꙑ\ue205", "", "ₓ"]
         + [""] * 8
         + ["τῶν ἐπὶ γῆς Ch", "ὁ"]
         + [""] * 8
@@ -215,9 +183,8 @@ def test_update_group_puteshestvie():
         + ["ὁδοιπορίας", "ὁδοιπορία"]
         + [""] * 13
     )
-    merge_rows_main = [0, 1]
-    merge_rows_var = [0, 1]
-    result = _update_group(rows, sl_sem, gr_sem, merge, merge_rows_main, merge_rows_var)
+    h = Hiliting(rows, sl_sem, gr_sem)
+    result = _update_group(rows, sl_sem, gr_sem, merge, h)
     assert result == [
         [
             "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
@@ -248,7 +215,7 @@ def test_update_group_puteshestvie():
     ]
 
 
-def test_biti():
+def test_update_group_biti():
     g1 = (
         [""] * 4
         + [
@@ -294,7 +261,8 @@ def test_biti():
         + [""] * 13
     )
 
-    res = _update_group(group, sl_sem, gr_sem, line, [0], [])
+    h = Hiliting(group, sl_sem, gr_sem)
+    res = _update_group(group, sl_sem, gr_sem, line, h)
     e1 = (
         [""] * 4
         + [
@@ -330,7 +298,7 @@ def test_biti():
     assert res == expected
 
 
-def test_zemenu():
+def test_collect_group_zemenu():
     rows = [
         [""] * 4
         + ["19/94d08"]
@@ -338,7 +306,7 @@ def test_zemenu():
         + [""] * 7
         + ["τῶν Ch", "ὁ"]
         + [""] * 8
-        + ["hl16|hl19"],
+        + ["hl16:AAAAAAAA|hl19:AAAAAAAA"],
         [""] * 4
         + ["19/94d08", "ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
         + [""] * 8
@@ -353,10 +321,8 @@ def test_zemenu():
         + ["hl16:AAAAAAAA"],
     ]
 
-    merge_rows_main = [0, 1, 2]
-    merge_rows_var = [1, 2]
-
-    res = _collect_group(rows.copy(), sl_sem, gr_sem, merge_rows_main, merge_rows_var)
+    h = Hiliting(rows, sl_sem, gr_sem)
+    res = _collect_group(rows, sl_sem, gr_sem, h)
     assert (
         res
         == [""] * 5
@@ -421,7 +387,35 @@ def test_hilited_gram():
         + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
     assert _hilited_gram(sl_sem, gr_sem, r)
-    assert not _hilited_gram(sl_sem.var, gr_sem, r)
+
+
+def test_hilited_gram_cross():
+    rows = [
+        ["распетоу WG", "распѧт\ue205"]
+        + [""] * 2
+        + ["18/89c21", "пропѧтоу", "же пропѧтоу бꙑ-", "пропѧт\ue205"]
+        + [""] * 3
+        + ["σταυρωθῆναι", "σταυρόω"]
+        + [""] * 13
+        + ["hl05:FFFCD5B4"],
+        [""] * 4
+        + ["18/89c21-d01", "бꙑт\ue205•", "же пропѧтоу бꙑ-", "бꙑт\ue205", "", "gramm."]
+        + [""] * 2
+        + ["pass."]
+        + [""] * 13
+        + ["hl05:FFFCD5B4|hl08:FFFFFFFF|hl09:FFB8CCE4"],
+    ]
+
+    assert (
+        False
+        == _hilited_gram(sl_sem, gr_sem, rows[0])
+        == _hilited_gram(sl_sem.var, gr_sem, rows[0])
+    )
+    assert (
+        True
+        == _hilited_gram(sl_sem, gr_sem, rows[1])
+        == _hilited_gram(sl_sem.var, gr_sem, rows[1])
+    )
 
 
 def test_collect_group():
@@ -442,9 +436,8 @@ def test_collect_group():
         + ["hl00"],
         ["пꙋт\ue205 GH", "пѫть GH"] + [""] * 24 + ["hl00:AAAAAAAA"],
     ]
-    merge_rows_main = [0, 1]
-    merge_rows_var = [0, 1]
-    result = _collect_group(rows, sl_sem, gr_sem, merge_rows_main, merge_rows_var)
+    h = Hiliting(rows, sl_sem, gr_sem)
+    result = _collect_group(rows, sl_sem, gr_sem, h)
     assert result == (
         [
             "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
@@ -457,3 +450,41 @@ def test_collect_group():
         + ["ὁδοιπορίας", "ὁδοιπορία"]
         + [""] * 13
     )
+
+
+def test_merge_indices():
+    rows = [
+        [""] * 4
+        + ["05/24c01"]
+        + ["ₓ", ""] * 2
+        + [""] * 2
+        + ["τοὺς", "ὁ"]
+        + [""] * 13
+        + ["hl05:FFC5E0B4|hl11:FFC5E0B4|hl14:FFB4C7E7"],
+        [""] * 4
+        + ["05/24b21", "авраамовоу", "н\ue205ша сѧ• авраа-", "авраамовъ"]
+        + [""] * 3
+        + ["περὶ", "περί", "περί + Acc.", "ὁ περὶ τὸν Ἀβραάμ"]
+        + [""] * 11
+        + ["hl05:FFC5E0B4|hl11:FFC5E0B4|hl13:FF92D050"],
+        [""] * 4
+        + ["", "ₓ"] * 2
+        + [""] * 3
+        + ["τὸν", "ὁ"]
+        + [""] * 13
+        + ["hl05:FFC5E0B4|hl11:FFC5E0B4|hl14:FFB4C7E7"],
+        [""] * 4
+        + [
+            "05/24c01",
+            "\ue20dадь",
+            "мовоу \ue20dадь г\ue010лю-",
+            "\ue20dѧдь",
+            "авраамова \ue20dѧдь",
+        ]
+        + [""] * 2
+        + ["Ἀβραὰμ", "Ἀβραάμ"]
+        + [""] * 13
+        + ["hl05:FFC5E0B4|hl11:FFC5E0B4"],
+    ]
+
+    assert _merge_indices(rows).longstr() == "05/024b21-c01"

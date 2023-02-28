@@ -76,24 +76,20 @@ graph LR
     counter --> usage
   end
   semantics_util --> usage
-  lang --> regex
-  lang --> util
-  lang --> usage
+  lang --> regex & util & usage
   
   subgraph Semantics
     semantics_util --> semantics_const
-    semabs --> semantics_util
-    semmain --> semantics_util
-    semvar --> semantics_util
-    lang --> semabs
-    lang --> semmain
-    lang --> semvar
+    semabs & semmain & semvar --> semantics_util
+    lang --> semabs & semmain & semvar
     table --> lang 
   end
   setup --> lang
 
   grouper --> lang
-  merger --> grouper
+  grouper --> hiliting
+  merger --> grouper 
+  merger --> repetition
 
   aggregator --> source
   aggregator --> lang
@@ -107,5 +103,5 @@ graph LR
   integrator --> exporter
   generator --> counter
   indexgenerator --> generator
-  indexgenerator & integrator -->  setup & importer & merger & aggregator
+  integrator & indexgenerator -->  setup & importer & merger & aggregator & cli
 ```

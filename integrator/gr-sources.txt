@@ -1,22 +1,14 @@
-C   Cramer, main text
-Cs  Cramer supplementum, default variant
-A   Athina, EBE, 56, f. 47r ff
+C   	Cramer, main text
+Cs  	Cramer supplementum, default variant
+
 Ab	Athina, EBE, 56
-B	Oxford, Bodleian Library, Auct. T.1.4
-Ca	Кирил Александрийски
-Ch	Chrysostomos….
 Fa	F6/5 Firenze, BML, Plut.6.5
 Fb	F8/29 Firenze, BML, Plut.8.29
 Fc	Firenze, BML, Plut. 8.14
-Fd	Firenze, BML, Plut. 8.24
-L	Oxford, Bodl., Laud 33, f. 29v ff
 La	London, BL, Harley 5540
 M	München, Universitätsbibliothek, 2° 30 (Cim. 16)
-Ma	M208 München, BSB, Gr. 208, f. 60v ff
 Mi	Milano
 Md	Madrid
-P	P186
-Pa	P188 Paris, BnF, Grec 188, f. 43r ff
 Pb	P191 Paris, BnF, Grec 191
 Pc	P199 Paris, BnF, Grec 199
 Pd	P200 Paris, BnF, Grec 200
@@ -27,21 +19,34 @@ Ph	P701 Paris, BnF, Grec 701
 Pi	P702 Paris, BnF, Grec 702
 Pk	P704 Paris, BnF, Grec 704
 Pl	PC71 Paris, BnF, Coislin 71
-Pm	PC23 Paris, BnF, Coislin 23
-Pn	PC195 Paris, BnF, Coislin 195
-Po	PC206 Paris, BnF, Coislin 206, f. 85r ff
 Pp	P700
 R	Roma, Biblioteca Angelica, Gr. 67, f. 14r ff
-Sp	ASP Città del Vaticano, BAV, Archivio di S. Pietro B 59, f. 132r ff
 T	Cambridge
 V	VC444 Città del Vaticano, BAV, Barb. gr. 444, f. 95r 
 Va	Città del Vaticano, BAV, Vat. gr. 1804
 Vb	Ross. 211
 Vc	Ottob. gr. 113
 Vd	Ottob. gr. 237
-Va	Vat. gr. 1611 
 Y	New Haven, Yale University, Beinecke Library, 235
-Z	Venezia, BNM, Z.544, f. 54v ff
 Za  	BNM, Cl. I. 34
+
+A   	Athina, EBE, 56, f. 47r ff
+Fd	Firenze, BML, Plut. 8.24
+L	Oxford, Bodl., Laud 33, f. 29v ff
+Ma	M208 München, BSB, Gr. 208, f. 60v ff
+B	Oxford, Bodleian Library, Auct. T.1.4
+P	P186
+Pa	P188 Paris, BnF, Grec 188, f. 43r ff
+Po	PC206 Paris, BnF, Coislin 206, f. 85r ff
+Sp	ASP Città del Vaticano, BAV, Archivio di S. Pietro B 59, f. 132r ff
+Z	Venezia, BNM, Z.544, f. 54v ff
+
+Pm	PC23 Paris, BnF, Coislin 23
+Pn	PC195 Paris, BnF, Coislin 195
+
+Ve	Vat. gr. 1611 
+
+Ch	Chrysostomos
+
 Nt	NA
 S	Septuaginta

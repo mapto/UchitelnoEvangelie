@@ -4,7 +4,7 @@
 
 old а б в г д е ж ꙃ(ꙅ,ѕ) ꙁ (і,и) к л м н о п р с т ѹ(ꙋ) ф х ш ц  щ ъ ꙑ(ы) ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ у(ѵ)
 """
-
+number_postfix = "\ue010\u0483"
 gasps = "’῞῟῝῏῎"
 
 # used for visual representation and ordering

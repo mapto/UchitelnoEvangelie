@@ -204,7 +204,7 @@ def test_na():
         ]
         + ["ιβʹ"] * 2
         + [""] * 3
-        + ["δώδεκα MPaPh"] * 2
+        + ["δώδεκα MPhPa"] * 2
         + [""] * 8
         + ["hl05:AAAAAAAA|bold|italic"]
         + ["1"] * 4,
@@ -220,7 +220,7 @@ def test_na():
         ]
         + ["ιβʹ"] * 2
         + [""] * 3
-        + ["δώδεκα MPaPh"] * 2
+        + ["δώδεκα MPhPa"] * 2
         + [""] * 8
         + ["hl05:AAAAAAAA|hl08:AAAAAAAA|bold|italic"]
         + ["1"] * 4,
@@ -236,7 +236,7 @@ def test_na():
         ]
         + ["ιβʹ"] * 2
         + [""] * 3
-        + ["δώδεκα MPaPh"] * 2
+        + ["δώδεκα MPhPa"] * 2
         + [""] * 8
         + ["hl05:AAAAAAAA|bold|italic"]
         + ["1"] * 4,
@@ -256,7 +256,7 @@ def test_na():
         ]
         + ["ιβʹ"] * 2
         + [""] * 3
-        + ["δώδεκα MPaPh"] * 2
+        + ["δώδεκα MPhPa"] * 2
         + [""] * 8
         + ["hl05:AAAAAAAA|bold|italic"]
         + ["1"] * 4,
@@ -272,7 +272,7 @@ def test_na():
             "ιβʹ",
         ]
         + [""] * 4
-        + ["δώδεκα MPaPh"] * 2
+        + ["δώδεκα MPhPa"] * 2
         + [""] * 8
         + ["hl05:AAAAAAAA|hl08:AAAAAAAA|bold|italic"]
         + ["1"] * 4,
@@ -288,7 +288,7 @@ def test_na():
             "ιβʹ",
         ]
         + [""] * 4
-        + ["δώδεκα MPaPh"] * 2
+        + ["δώδεκα MPhPa"] * 2
         + [""] * 8
         + ["hl05:AAAAAAAA|bold|italic"]
         + ["1"] * 4,

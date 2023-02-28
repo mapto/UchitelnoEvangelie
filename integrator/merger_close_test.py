@@ -1,15 +1,9 @@
 from typing import List
 
 from config import FROM_LANG, TO_LANG
+from setup import sl_sem, gr_sem
 from semantics import MainLangSemantics, VarLangSemantics
-from merger import _close, _hilited
-
-sl_sem = MainLangSemantics(
-    FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
-)
-gr_sem = MainLangSemantics(
-    TO_LANG, 11, [12, 13, 14], VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20])
-)
+from merger import _close
 
 
 def test_close():
@@ -855,7 +849,7 @@ def test_vidit():
             "12/067c10",
             "в\ue205дѣл\ue205 бꙑхомъ•",
             "в\ue205дѣл\ue205 бꙑхо-",
-            "в\ue205дѣт\ue205",
+            "в\ue205дѣт\ue205 бꙑт\ue205",
         ]
         + [""] * 3
         + ["ἔγνωμεν", "γιγνώσκω"]
@@ -924,7 +918,7 @@ def test_vidit():
             "в\ue205дѣт\ue205",
         ]
         + [""] * 3
-        + ["ἔγνωμεν", "γιγνώσκω"]
+        + ["ἔγνωμεν", "γιγνώσκω gramm."]
         + [""] * 13
         + ["hl05:AAAAAAAA"]
     )
@@ -983,13 +977,13 @@ def test_zemenu():
         [""] * 4
         + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
         + [""] * 8
-        + ["τῶν ἐπὶ γῆς Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
+        + ["τῶν ἐπὶ γῆς Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς Ch"]
         + [""] * 6
         + ["hl16:AAAAAAAA|hl18:AAAAAAAA"],
         [""] * 4
         + ["19/094d08", "ₓ ꙁемьнꙑ\ue205", "", "ꙁемьнъ"]
         + [""] * 8
-        + ["τῶν ἐπὶ γῆς Ch", "γῆ", "", "ὁ ἐπὶ γῆς"]
+        + ["τῶν ἐπὶ γῆς Ch", "γῆ", "", "ὁ ἐπὶ γῆς Ch"]
         + [""] * 6
         + ["hl16:AAAAAAAA"],
     ]

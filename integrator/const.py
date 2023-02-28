@@ -1,6 +1,4 @@
 from config import FROM_LANG, TO_LANG
-from config import VAR_SL, VAR_GR
-from config import DEFAULT_SL, DEFAULT_GR
 
 IDX_COL = 4  # E
 EXAMPLE_COL = 6  # G
@@ -11,6 +9,8 @@ CF_SEP = "»"  # used to indicate details about alternatives to a usage
 H_LEMMA_SEP = "/"  # indicates multiple variants provided together
 V_LEMMA_SEP = "&"  # indicates lemmas merged from several rows
 VAR_SEP = "-"  # used to separate the two language in variant source annotation
+HILITE_PREFIX = "hl"
+STYLE_SEP = ":"
 
 INDENT_CH = "|"
 BULLET_CH = "∙"  # or ●

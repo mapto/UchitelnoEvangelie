@@ -10,6 +10,7 @@ from const import IDX_COL, SAME_CH, SPECIAL_CHARS
 
 from semantics import LangSemantics, MainLangSemantics, present
 from util import clean_word
+from repetition import Repetitions
 from grouper import _close_group, _hilited
 
 TRIGGER_SAME = -1
@@ -46,7 +47,7 @@ def _close(
     if not group:
         return []
 
-    # locate index
+    # locate index in group
     if not group[0][IDX_COL]:
         idxline = 0
         for i, row in enumerate(group):
@@ -56,7 +57,9 @@ def _close(
                 break
         if idxline:
             log.info(
-                f"Липсва индекс в първия ред от група на {group[0][IDX_COL]}. Намерен в {idxline} ред"
+                f"Липсва индекс в първия ред от група на {group[0][IDX_COL]}."
+                f" Намерен в {idxline} ред."
+                "Това може да не помогне за разграничаване на повтарящи се леми."
             )
         else:
             for row in group:
@@ -72,6 +75,39 @@ def _close(
 def _same(row: List[str], sem: LangSemantics) -> bool:
     """Returns if the word is "=", meaning that it is the same as the previous row (for this direction of translation)"""
     return row[sem.word].strip() == SAME_CH
+
+
+def preprocess(
+    row: List[str],
+    group: List[List[str]],
+    prev_row: List[str],
+    orig: LangSemantics,
+    trans: MainLangSemantics,
+    repetitions: Repetitions,
+) -> List[str]:
+    """repetitinos updated *IN_PLACE*"""
+
+    # locate index in previous row
+    if not row[IDX_COL] and any(row):
+        # print(row, group)
+        if group and group[-1][IDX_COL]:
+            row[IDX_COL] = group[-1][IDX_COL]
+        elif prev_row and prev_row[IDX_COL]:
+            row[IDX_COL] = prev_row[IDX_COL]
+        else:
+            log.info(row)
+            log.error(
+                "Липсва индекс за ред."
+                "Повтарящи се леми може да не бъдат разграничени."
+            )
+
+    # in lemmas
+    row = _expand_special_char(orig, row)
+    row = _expand_special_char(trans, row)
+
+    repetitions.update(row)
+
+    return row
 
 
 def merge(
@@ -92,11 +128,8 @@ def merge(
     group: List[List[str]] = []
     result: List[List[str]] = []
 
-    row_owords: Dict[str, int] = {}
-    row_owords_var: Dict[str, int] = {}
-    row_twords: Dict[str, int] = {}
-    row_twords_var: Dict[str, int] = {}
-    cur_idx = ""
+    # handles repeating lemmas with same address
+    repetitions = Repetitions()
     prev_row: List[str] = []
     # triggers ignore hiliting colours
     group_triggers: Set[int] = set()
@@ -107,28 +140,10 @@ def merge(
 
             # if "19/94d08" in row[IDX_COL] or "2/W169a17" in row[IDX_COL]:
             # if "05/28c21" in row[IDX_COL] or "05/28d01" in row[IDX_COL]:
-            # if "14/72d1" in row[IDX_COL]:
-            # print(row)
+            # if "18/89c21" in row[IDX_COL]:
+            #     print(row)
 
-            if not row[IDX_COL] and any(row):
-                row[IDX_COL] = group[-1][IDX_COL] if group else result[-1][IDX_COL]
-
-            # in lemmas
-            row = _expand_special_char(orig, row)
-            row = _expand_special_char(trans, row)
-
-            if cur_idx != row[IDX_COL]:
-                cur_idx = row[IDX_COL]
-                row_owords = {}
-                row_owords_var = {}
-                row_twords = {}
-                row_twords_var = {}
-
-            # based on word column expand data with it with count in a column at the end
-            row_owords = orig.add_count(row, row_owords)
-            row_owords_var = orig.other().add_count(row, row_owords_var)
-            row_twords = trans.add_count(row, row_twords)
-            row_twords_var = trans.other().add_count(row, row_twords_var)
+            row = preprocess(row, group, prev_row, orig, trans, repetitions)
 
             if _same(row, orig) or _same(row, trans):
                 if not group_triggers:
@@ -152,7 +167,9 @@ def merge(
             prev_row = row
         except Exception as e:
             log.error(
-                f"При събиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]}) или групата му"
+                "При събиране възникна проблем в ред "
+                f"{row[IDX_COL]} ({row[orig.word]}/{row[trans.word]})"
+                " или групата му"
             )
             log.error(e)
             break

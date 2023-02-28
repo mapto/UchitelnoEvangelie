@@ -2,8 +2,9 @@
 """These utilities are also used by the object-oriented model,
 so to avoid circular references they cannot use it"""
 
-
 from typing import Dict, List, Set
+
+import re
 import logging as log
 import unicodedata
 from sortedcontainers import SortedSet  # type: ignore
@@ -13,7 +14,7 @@ from config import MAIN_SL, MAIN_GR
 from config import ALT_SL
 from const import SPECIAL_CHARS, V_LEMMA_SEP
 
-from alphabet import gasps, remap, reduce
+from alphabet import gasps, number_postfix, remap, reduce
 
 
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
@@ -79,11 +80,11 @@ def ord_word(w: str, max_len=MAX_LEN) -> int:
     3. Combined lemmas in Greek or Cyrilic
     """
     a = base_word(w).lower()
-    a.replace("оу", "ѹ")
-    for ch in gasps:
-        a.replace(ch, "")
+    a = a.replace("оу", "ѹ")
+    for ch in gasps + number_postfix:
+        a = a.replace(ch, "")
     if max_len <= len(a):
-        log.info(a)
+        log.info(f"Unexpectedly long word: {a}")
     assert max_len > len(a)
     base = 2 * MAX_CHAR
     # if combined lemma, order after all other
