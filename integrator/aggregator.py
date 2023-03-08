@@ -19,9 +19,7 @@ FIRST_LEMMA = -1
 LAST_LEMMA = -2
 
 
-def _multilemma(
-    row: List[str], sem: Optional[LangSemantics], lidx: int = 0
-) -> Dict[Source, str]:
+def _multilemma(row: List[str], sem: LangSemantics, lidx: int = 0) -> Dict[Source, str]:
     if not present(row, sem):
         return {}
     assert sem
@@ -34,7 +32,6 @@ def _agg_lemma(
     trans: LangSemantics,
     d: SortedDict,
     col: int = FIRST_LEMMA,
-    olemma: str = "",
     olemvar: Source = Source(),
     tlemma: str = "",
 ) -> SortedDict:
@@ -44,10 +41,8 @@ def _agg_lemma(
         row (List[str]): spreadsheet row
         orig (LangSemantics): original language to iterate through lemma columns, do nothing if absent
         trans (LangSemantics): translation for lemma columns, do nothing if absent
-        key (Tuple[str, str]): word pair
         d (SortedDict): see return value
         col (int): lemma column being currently processed, -1 for autodetect/first, -2 for exhausted/last,
-        olemma: the processed original first lemma, potentially from variant multilemma
         tlemma: the translation first lemma being considered, potentially from variant multilemma
 
     Returns:
@@ -62,32 +57,46 @@ def _agg_lemma(
         tmultilemmas = _multilemma(row, trans)
     elif col == LAST_LEMMA:  # exhausted
         assert row[IDX_COL]
-        return orig.compile_usages(trans, row, d, olemma, tlemma, olemvar)
+        return orig.compile_usages(trans, row, d, tlemma, olemvar)
     lidx = lem_cols.index(col)
     omultilemmas = _multilemma(row, orig, lidx)
 
-    # if orig.is_variant() and row[col]:
-    #     row[col] = row[col].replace(H_LEMMA_SEP, V_LEMMA_SEP)
-    # lemmas = row[col].split(V_LEMMA_SEP) if row[col] else [""]
     if not omultilemmas:
         omultilemmas[Source("")] = row[col]
     if not tmultilemmas:
         tmultilemmas[Source("")] = tlemma
 
+    # if a source was indicated in previous lemmas, but not in this one,
+    # just add empties to fill rest of lemma hierarchy for it
+    next_idx = lem_cols.index(col) + 1
+    next_c = lem_cols[next_idx] if next_idx < len(lem_cols) else LAST_LEMMA
+    if lidx > 0 and olemvar:
+        missing = olemvar.remainder(omultilemmas.keys())
+        if missing:
+            if "" not in d:
+                d[""] = SortedDict(ord_word)
+            d[""] = _agg_lemma(
+                row,
+                orig,
+                trans,
+                d[""],
+                next_c,
+                missing,
+                tlemma,
+            )
+
+    # process sources indicated in this lemma
     for oliv, oli in omultilemmas.items():
+        if oli.strip() == MISSING_CH:
+            continue
+        if oliv and olemvar and oliv not in olemvar:
+            continue
+        nxt = base_word(oli)
+        if nxt not in d:
+            d[nxt] = SortedDict(ord_word)
+        # pick last present lemma source
+        olv = oliv if oliv else olemvar
         for tli in tmultilemmas.values():
-            if oli.strip() == MISSING_CH:
-                continue
-            if oliv and olemvar and oliv not in olemvar:
-                continue
-            nxt = base_word(oli)
-            if nxt not in d:
-                d[nxt] = SortedDict(ord_word)
-            next_idx = lem_cols.index(col) + 1
-            next_c = lem_cols[next_idx] if next_idx < len(lem_cols) else LAST_LEMMA
-            ol = olemma if olemma else oli
-            # pick last present lemma source
-            olv = oliv if oliv else olemvar
             tl = tlemma if tlemma else tli
             d[nxt] = _agg_lemma(
                 row,
@@ -95,7 +104,6 @@ def _agg_lemma(
                 trans,
                 d[nxt],
                 next_c,
-                ol,
                 olv,
                 tl,
             )
@@ -104,8 +112,8 @@ def _agg_lemma(
 
 def _expand_and_aggregate(
     row: List[str],
-    orig: Optional[LangSemantics],
-    trans: Optional[LangSemantics],
+    orig: LangSemantics,
+    trans: LangSemantics,
     d: SortedDict,
 ) -> SortedDict:
     if not present(row, orig) or not present(row, trans):
@@ -144,6 +152,7 @@ def aggregate(
 
         try:
             _expand_and_aggregate(row, orig, trans, result)
+            assert trans.var
             _expand_and_aggregate(row, orig, trans.var, result)
         except Exception as e:
             log.error(

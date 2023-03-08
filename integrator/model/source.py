@@ -247,6 +247,30 @@ class Source:
                 return Source(i)
         return None
 
+    def remainder(self, iterable) -> Optional["Source"]:
+        """
+        >> Source('GH').remainder([Source('G'), Source('H')])
+        None
+        >>> Source('GH').remainder([])
+        Source('GH')
+        >>> Source('WGH').remainder([Source('WH')])
+        Source('G')
+        >>> Source('WG').remainder([Source('H')])
+        Source('WG')
+        """
+        result = []
+        for before in self:
+            inside = False
+            for after in iterable:
+                if Source(before).inside(after):
+                    inside = True
+                    break
+            if not inside:
+                result += [before]
+        if len(result) > 0:
+            return Source(result)
+        return None
+
     def has_lang(self, lang: str) -> bool:
         """
         >>> Source("WPb").has_lang("sl")

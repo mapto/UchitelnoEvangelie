@@ -37,7 +37,7 @@ def test_para():
     )
 
     d2 = SortedDict()
-    d2 = gr_sem.compile_usages(sl_sem, row, d2, "παρά", "Instr.")
+    d2 = gr_sem.compile_usages(sl_sem, row, d2, "Instr.")
     # print(d2)
     assert d2 == {
         "Instr.": {
@@ -67,7 +67,7 @@ def test_para():
         + ["1"] * 4
     )
     d3 = SortedDict()
-    d3 = gr_sem.var.compile_usages(sl_sem, row, d3, "παρά", "ѹ", Source("Cs"))
+    d3 = gr_sem.var.compile_usages(sl_sem, row, d3, "ѹ", Source("Cs"))
     assert d3 == {
         "ѹ": {
             ("παρ’ Cs", "оу"): SortedSet(
@@ -128,10 +128,10 @@ def test_ipercliso():
 
     d2 = SortedDict()
     d2 = gr_sem.var.compile_usages(
-        sl_sem, rows[0], d2, "ὑπερβλύω", "\ue205сто\ue20dен\ue205\ue201", Source("Cs")
+        sl_sem, rows[0], d2, "\ue205сто\ue20dен\ue205\ue201", Source("Cs")
     )
     d2 = gr_sem.var.compile_usages(
-        sl_sem, rows[1], d2, "ὑπερβλύω", "прѣ\ue205сто\ue20d\ue205т\ue205", Source("Cs")
+        sl_sem, rows[1], d2, "прѣ\ue205сто\ue20d\ue205т\ue205", Source("Cs")
     )
     assert d2 == {
         "прѣ\ue205сто\ue20d\ue205т\ue205": {
@@ -208,7 +208,7 @@ def test_verovat():
     )
 
     d1 = SortedDict()
-    d1 = sl_sem.compile_usages(gr_sem, row, d1, "вѣроват_", "πιστεύω")
+    d1 = sl_sem.compile_usages(gr_sem, row, d1, "πιστεύω")
     assert d1 == {
         "πιστεύω": {
             ("вѣроують", "πιστεύσωσι"): SortedSet(
@@ -232,7 +232,7 @@ def test_verovat():
     }
 
     d2 = SortedDict()
-    d2 = gr_sem.compile_usages(sl_sem, row, d2, "πιστεύω", "вѣроват_")
+    d2 = gr_sem.compile_usages(sl_sem, row, d2, "вѣроват_")
     assert d2 == {
         "вѣроват_": {
             ("πιστεύσωσι", "вѣроують"): SortedSet(
@@ -273,7 +273,7 @@ def test_mene():
     )
 
     d3 = SortedDict()
-    d3 = sl_sem.compile_usages(gr_sem.var, row, d3, "аꙁъ", "ἐγώ")
+    d3 = sl_sem.compile_usages(gr_sem.var, row, d3, "ἐγώ")
     assert d3 == {
         "ἐγώ": {
             ("мене", "με Cs"): SortedSet(
@@ -288,7 +288,7 @@ def test_mene():
         }
     }
     d4 = SortedDict()
-    d4 = gr_sem.var.compile_usages(sl_sem, row, d4, "ἐγώ", "аꙁъ", Source("Cs"))
+    d4 = gr_sem.var.compile_usages(sl_sem, row, d4, "аꙁъ", Source("Cs"))
     assert d4 == {
         "аꙁъ": {
             ("με Cs", "мене"): SortedSet(
@@ -321,7 +321,7 @@ def test_monogenis():
     )
 
     d0 = SortedDict()
-    d0 = sl_sem.compile_usages(gr_sem, row, d0, "\ue205но\ue20dѧдъ", "μονογενής")
+    d0 = sl_sem.compile_usages(gr_sem, row, d0, "μονογενής")
     assert d0 == {
         "μονογενής": {
             ("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"): SortedSet(
@@ -350,7 +350,7 @@ def test_monogenis():
     # d01 = gr_sem.compile_usages(sl_sem.var, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
     # assert d01 == SortedDict()
 
-    d01 = gr_sem.compile_usages(sl_sem, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
+    d01 = gr_sem.compile_usages(sl_sem, row, d01, "\ue205но\ue20dѧдъ")
     assert d01 == {
         "\ue205но\ue20dѧдъ": {
             ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
@@ -397,9 +397,7 @@ def test_monogenis2():
     )
 
     d1 = SortedDict()
-    d1 = sl_sem.var.compile_usages(
-        gr_sem, row, d1, "\ue205но\ue20dѧдъ", "μονογενής", Source("G")
-    )
+    d1 = sl_sem.var.compile_usages(gr_sem, row, d1, "μονογενής", Source("G"))
     assert d1 == {
         "μονογενής": {
             ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
@@ -428,9 +426,7 @@ def test_monogenis2():
     }
 
     d2 = SortedDict()
-    d2 = sl_sem.var.compile_usages(
-        gr_sem, row, d2, "\ue201д\ue205нородъ", "μονογενής", Source("H")
-    )
+    d2 = sl_sem.var.compile_usages(gr_sem, row, d2, "μονογενής", Source("H"))
     assert d2 == {
         "μονογενής": {
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
@@ -479,9 +475,7 @@ def test_monogenis3():
     )
 
     d = SortedDict()
-    d = sl_sem.var.compile_usages(
-        gr_sem, row, d, "\ue205но\ue20dѧдъ", "μονογενής", Source("G")
-    )
+    d = sl_sem.var.compile_usages(gr_sem, row, d, "μονογενής", Source("G"))
     # print(d)
     assert d == {
         "μονογενής": {
@@ -509,9 +503,7 @@ def test_monogenis3():
     }
 
     d = SortedDict()
-    d = sl_sem.var.compile_usages(
-        gr_sem, row, d, "\ue201д\ue205нородъ", "μονογενής", Source("H")
-    )
+    d = sl_sem.var.compile_usages(gr_sem, row, d, "μονογενής", Source("H"))
     assert d == {
         "μονογενής": {
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
@@ -538,7 +530,7 @@ def test_monogenis3():
     }
 
     d = SortedDict()
-    d = gr_sem.compile_usages(sl_sem, row, d, "μονογενής", "\ue201д\ue205но\ue20dѧдъ")
+    d = gr_sem.compile_usages(sl_sem, row, d, "\ue201д\ue205но\ue20dѧдъ")
     assert d == {
         "\ue201д\ue205но\ue20dѧдъ": {
             ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
@@ -568,7 +560,7 @@ def test_monogenis3():
     }
 
     d = SortedDict()
-    d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue201д\ue205нородъ")
+    d = gr_sem.compile_usages(sl_sem.var, row, d, "\ue201д\ue205нородъ")
     assert d == {
         "\ue201д\ue205нородъ": {
             ("μονογενοῦς", "\ue201д\ue205нородоу H"): SortedSet(
@@ -599,7 +591,7 @@ def test_monogenis3():
     }
 
     d = SortedDict()
-    d = gr_sem.compile_usages(sl_sem.var, row, d, "μονογενής", "\ue205но\ue20dѧдъ")
+    d = gr_sem.compile_usages(sl_sem.var, row, d, "\ue205но\ue20dѧдъ")
     assert d == {
         "\ue205но\ue20dѧдъ": {
             ("μονογενοῦς", "\ue205но\ue20dедаго G"): SortedSet(
@@ -642,9 +634,7 @@ def test_bozhii():
     )
 
     result = SortedDict()
-    result = sl_sem.var.compile_usages(
-        gr_sem, r, result, "бож\ue205\ue205", "θεός", Source("H")
-    )
+    result = sl_sem.var.compile_usages(gr_sem, r, result, "θεός", Source("H"))
     assert result == {
         "θεός Gen.": {
             ("б\ue010жї\ue205 H", "Θεοῦ",): SortedSet(
@@ -681,9 +671,7 @@ def test_artos():
         + ["1"] * 4
     )
     result = SortedDict()
-    result = gr_sem.var.compile_usages(
-        sl_sem, row, result, "ἄρτος", "хлѣбъ", Source("Ch")
-    )
+    result = gr_sem.var.compile_usages(sl_sem, row, result, "хлѣбъ", Source("Ch"))
     assert result == {
         "хлѣбъ": {
             ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
@@ -742,7 +730,7 @@ def test_est_in_var_no_main():
         + ["1"] * 4
     )
     result = SortedDict()
-    result = sl_sem.var.compile_usages(gr_sem, row, result, "бꙑт", "Ø", Source("GH"))
+    result = sl_sem.var.compile_usages(gr_sem, row, result, "Ø", Source("GH"))
     assert result == {
         "Ø": {
             ("\ue201сть GH", "Ø"): SortedSet(
@@ -790,7 +778,7 @@ def test_hodom_spiti():
     )
 
     result = SortedDict()
-    result = gr_sem.compile_usages(sl_sem.var, row, result, "προβαίνω", "ходъ")
+    result = gr_sem.compile_usages(sl_sem.var, row, result, "ходъ")
     assert result == {
         "ходомь спѣт\ue205 → ходъ": {
             ("προβαίνοντες", "хⷪ҇домь WG"): SortedSet(
@@ -835,9 +823,7 @@ def test_put():
     )
 
     result = SortedDict()
-    result = sl_sem.var.compile_usages(
-        gr_sem, row, result, "пѫть", "ὁδοιπορία", Source("H")
-    )
+    result = sl_sem.var.compile_usages(gr_sem, row, result, "ὁδοιπορία", Source("H"))
     assert result == {
         "ὁδοιπορία": {
             ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(

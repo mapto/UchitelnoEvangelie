@@ -94,11 +94,6 @@ def multiword(self, row: List[str]) -> Dict[Source, str]:
 
 
 def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
-    if lidx == LAST_LEMMA:
-        lidx = len(self.lemmas) - 1
-        while lidx > 0 and not row[self.lemmas[lidx]]:
-            lidx -= 1
-        return self.multilemma(row, lidx)
     result = SortedDict()
     m = re.search(multilemma_regex, row[self.lemmas[lidx]].strip())
     while m:

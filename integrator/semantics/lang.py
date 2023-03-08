@@ -132,7 +132,6 @@ class LangSemantics:
         trans: "LangSemantics",
         row: List[str],
         d: SortedDict,
-        rolemma: str,
         rtlemma: str,
         rolv: Source = Source(),
     ) -> SortedDict:

@@ -15,12 +15,11 @@ def init(doc: str, version: str) -> List[str]:
     args = docopt(doc, version=version)
 
     logfile = "log.txt"
-
     logger.setLevel(logging.DEBUG)
 
     logformat = "%(asctime)s:%(name)s:%(levelname)s: %(message)s"
     logFormatter = logging.Formatter(logformat)
-    fileHandler = logging.FileHandler(logfile, mode='w')
+    fileHandler = logging.FileHandler(logfile, mode="w")
     fileHandler.setFormatter(logFormatter)
     fileHandler.setLevel(logging.DEBUG)
     logger.addHandler(fileHandler)

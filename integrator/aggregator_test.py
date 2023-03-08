@@ -168,7 +168,7 @@ def test_agg_lemma_missing_gr_main():
 
     result = SortedDict()
     result = _agg_lemma(
-        row, gr_sem.var, sl_sem, result, LAST_LEMMA, "ἄρτος", Source("Ch"), "хлѣбъ"
+        row, gr_sem.var, sl_sem, result, LAST_LEMMA, Source("Ch"), "хлѣбъ"
     )
     assert result == {
         "хлѣбъ": {
@@ -219,7 +219,6 @@ def test_agg_lemma_est_in_var_no_main():
         gr_sem,
         result,
         LAST_LEMMA,
-        olemma="бꙑт\ue205",
         olemvar=Source("GH"),
         tlemma="Ø",
     )
@@ -248,8 +247,7 @@ def test_agg_lemma_est_in_var_no_main():
 
 
 def test_agg_lemma_hodom_spiti():
-    # TODO: verify inputs, variant seems to be wrong
-    row_main = (
+    row = (
         [
             "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
             "ходъ WG",
@@ -268,30 +266,10 @@ def test_agg_lemma_hodom_spiti():
         + ["1"] * 4
     )
 
-    row_var = (
-        [
-            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
-            "",
-            "ходомь спѣт\ue205 WG",
-            "",
-            "14/072d18-19",
-            "ход\ue205мъ спѣюще•",
-            "д\ue205мъ спѣюще•",
-            "ход\ue205т\ue205 спѣт\ue205",
-            "≈ ход\ue205т\ue205 спѣѭще",
-        ]
-        + [""] * 2
-        + ["προβαίνοντες", "προβαίνω"]
-        + [""] * 13
-        + ["hl05"]
-        + ["1"] * 4
-    )
-
     result = SortedDict()
-    _agg_lemma(row_main, sl_sem, gr_sem, result)
+    _agg_lemma(row, sl_sem, gr_sem, result)
     # _agg_lemma(row_var, sl_sem.var, gr_sem, result)
     assert result == {
-        # "": {"ходомь спѣт\ue205 WG": {"": {"": {}}}},
         "спѣт\ue205": {
             "≈ ход\ue205т\ue205 спѣѭще": {
                 "": {
@@ -332,7 +310,70 @@ def test_agg_lemma_hodom_spiti():
                     }
                 }
             }
-        },
+        }
+    }
+
+
+def test_agg_lemma_hodom_spiti_var():
+    row = (
+        [
+            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
+            "",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/072d18-19",
+            "ход\ue205мъ спѣюще•",
+            "д\ue205мъ спѣюще•",
+            "ход\ue205т\ue205 спѣт\ue205",
+            "≈ ход\ue205т\ue205 спѣѭще",
+        ]
+        + [""] * 2
+        + ["προβαίνοντες", "προβαίνω"]
+        + [""] * 13
+        + ["hl05"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    _agg_lemma(row, sl_sem.var, gr_sem, result)
+    # _agg_lemma(row_var, sl_sem.var, gr_sem, result)
+    assert result == {
+        "": {
+            "ходомь спѣт\ue205 WG": {
+                "": {
+                    "": {
+                        "προβαίνω": {
+                            ("", "προβαίνοντες"): SortedSet(
+                                [
+                                    Alignment(
+                                        Index("14/72d18-19"),
+                                        Usage(
+                                            "sl",
+                                            alt=Alternative(
+                                                var_lemmas={
+                                                    Source("WG"): "ходомь спѣт\ue205"
+                                                },
+                                                var_words={
+                                                    Source("WG"): (
+                                                        "хⷪ҇домь спѣюще WG",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                        ),
+                                        Usage(
+                                            lang="gr",
+                                            word="προβαίνοντες",
+                                            lemmas=["προβαίνω"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -362,7 +403,6 @@ def test_agg_lemma_monogenis():
         gr_sem,
         result,
         LAST_LEMMA,
-        "днородъ",
         Source("H"),
         "μονογενής",
     )
@@ -537,7 +577,6 @@ def test_agg_lemma_shestvie_1():
         gr_sem,
         result,
         sl_sem.var.lemmas[0],
-        "шьст\ue205\ue201",
         Source("G"),
         "ὁδοιπορία",
     )
@@ -597,7 +636,6 @@ def test_agg_lemma_shestvie_1():
         gr_sem,
         result,
         sl_sem.var.lemmas[0],
-        "шьств\ue205\ue201",
         Source("H"),
         "ὁδοιπορία",
     )
@@ -677,7 +715,6 @@ def test_agg_lemma_shestvie_2():
         gr_sem,
         result,
         sl_sem.var.lemmas[1],
-        "шьст\ue205\ue201",
         Source("G"),
         "ὁδοιπορία",
     )
@@ -735,7 +772,6 @@ def test_agg_lemma_shestvie_2():
         gr_sem,
         result,
         sl_sem.var.lemmas[1],
-        "шьств\ue205\ue201",
         Source("H"),
         "ὁδοιπορία",
     )
@@ -813,7 +849,6 @@ def test_agg_lemma_shestvie_last():
         gr_sem,
         result,
         LAST_LEMMA,
-        "шьст\ue205\ue201",
         Source("G"),
         "ὁδοιπορία",
     )
@@ -851,7 +886,6 @@ def test_agg_lemma_shestvie_last():
         gr_sem,
         result,
         LAST_LEMMA,
-        "шьств\ue205\ue201",
         Source("H"),
         "ὁδοιπορία",
     )
@@ -902,7 +936,7 @@ def test_agg_lemma_put():
 
     result = SortedDict()
     result = _agg_lemma(
-        row, sl_sem.var, gr_sem, result, LAST_LEMMA, "пѫть", Source("H"), "ὁδοιπορία"
+        row, sl_sem.var, gr_sem, result, LAST_LEMMA, Source("H"), "ὁδοιπορία"
     )
     assert result == {
         "ὁδοιπορία": {

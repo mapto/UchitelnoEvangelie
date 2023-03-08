@@ -2,7 +2,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from const import FROM_LANG, TO_LANG
 from config import FROM_LANG
-from const import IDX_COL, STYLE_COL
+from const import STYLE_COL
 
 from model import Alternative, Index, Source, Alignment, Usage
 from semantics import MainLangSemantics, VarLangSemantics
@@ -838,7 +838,7 @@ def test_puteshestvie_sl_var():
                 "": {
                     "": {
                         "ὁδοιπορία": {
-                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
+                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Alignment(
                                         Index("5/28d18"),
@@ -846,18 +846,18 @@ def test_puteshestvie_sl_var():
                                             "sl",
                                             var=Source("H"),
                                             alt=Alternative(
-                                                main_lemma="пѫтошьств",
+                                                main_lemma="пѫтошьств\ue205\ue201",
                                                 var_lemmas={
                                                     Source(
                                                         "G"
-                                                    ): "шьст\ue205\ue201 пѫт\ue205",
+                                                    ): "шьст\ue205\ue201 пѫт\ue205"
                                                 },
-                                                main_word="поутошьствꙗ",
+                                                main_word="поутошьств\ue205ꙗ",
                                                 var_words={
                                                     Source("G"): (
                                                         "шьст\ue205ꙗ пꙋт\ue205 G",
                                                         1,
-                                                    ),
+                                                    )
                                                 },
                                             ),
                                             word="шьств\ue205ꙗ пꙋт\ue205 H",
@@ -882,26 +882,26 @@ def test_puteshestvie_sl_var():
                 "": {
                     "": {
                         "ὁδοιπορία": {
-                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας",): SortedSet(
+                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
                                 [
                                     Alignment(
                                         Index("5/28d18"),
                                         Usage(
-                                            "sl",
+                                            lang="sl",
                                             var=Source("G"),
                                             alt=Alternative(
-                                                main_lemma="пѫтошьств",
+                                                main_lemma="пѫтошьств\ue205\ue201",
                                                 var_lemmas={
                                                     Source(
                                                         "H"
-                                                    ): "шьств\ue205\ue201 пѫт\ue205",
+                                                    ): "шьств\ue205\ue201 пѫт\ue205"
                                                 },
-                                                main_word="поутошьствꙗ",
+                                                main_word="поутошьств\ue205ꙗ",
                                                 var_words={
                                                     Source("H"): (
                                                         "шьств\ue205ꙗ пꙋт\ue205 H",
                                                         1,
-                                                    ),
+                                                    )
                                                 },
                                             ),
                                             word="шьст\ue205ꙗ пꙋт\ue205 G",
