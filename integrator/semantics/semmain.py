@@ -49,7 +49,7 @@ def level_var_alternatives(
                     break
 
     aw = {l: self.var.compile_words_by_lemma(row, l) for l in alt_lemmas.keys()}
-    alt_words = {l: (v[0], v[2]) for l, v in aw.items()}
+    alt_words = {l: (v[0], v[1]) for l, v in aw.items()}
     if Source() in alt_lemmas:
         alt_lemmas[Source("".join(str(s) for s in alt_words.keys()))] = alt_lemmas[
             Source()
@@ -81,8 +81,8 @@ def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
 
 def compile_words_by_lemma(
     self, row: List[str], var: Source = Source()
-) -> Tuple[str, str, int]:
-    return (row[self.word], row[self.lemmas[0]], int(row[self.cnt_col]))
+) -> Tuple[str, int]:
+    return (row[self.word], int(row[self.cnt_col]))
 
 
 def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:

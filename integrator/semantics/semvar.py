@@ -73,7 +73,7 @@ def level_var_alternatives(
         for k, v in self.multiword(row).items()
         if k.inside(alt_lemmas)
     }
-    alt_words = {k: (v[0], v[2]) for k, v in aw.items()}
+    alt_words = {k: (v[0], v[1]) for k, v in aw.items()}
 
     return alt_lemmas, alt_words
 
@@ -133,7 +133,7 @@ def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
     return result
 
 
-def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, str, int]:
+def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, int]:
     """returns:
     1. concatenated pairs (word, variant)
     2. lemmas without variants
@@ -156,7 +156,7 @@ def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, str,
                         lemmas.add(multilemma[m])
                         break
     # TODO: multiword counts need to distinguish between variants
-    return (" ".join(vars), " ".join(lemmas), int(row[self.cnt_col]))
+    return (" ".join(vars), int(row[self.cnt_col]))
 
 
 def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:

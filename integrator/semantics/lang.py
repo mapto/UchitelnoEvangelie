@@ -122,9 +122,7 @@ class LangSemantics:
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
         raise NotImplementedError("abstract method")
 
-    def compile_words_by_lemma(
-        self, row: List[str], var: Source
-    ) -> Tuple[str, str, int]:
+    def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, int]:
         raise NotImplementedError("abstract method")
 
     def compile_usages(
@@ -140,8 +138,8 @@ class LangSemantics:
                 tvl = _is_variant_lemma(row, trans, tvar, rtlemma)
                 if not tvl or rtlemma not in nxt:
                     continue
-                (oword, olemma, ocnt) = self.compile_words_by_lemma(row, rolv)
-                (tword, tlemma, tcnt) = trans.compile_words_by_lemma(row, tvar)
+                (oword, ocnt) = self.compile_words_by_lemma(row, rolv)
+                (tword, tcnt) = trans.compile_words_by_lemma(row, tvar)
                 idx = Index(row[IDX_COL])
                 ocontent = _build_content(row, self, rolv, oword, ocnt)
                 tcontent = _build_content(row, trans, tvar, tword, tcnt)
