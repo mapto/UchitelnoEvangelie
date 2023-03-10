@@ -30,7 +30,11 @@ def collect_lemma(self, group: List[List[str]], cidx: int, separator: str = "") 
 def level_var_alternatives(
     self, row: List[str], my_var: Source, lidx: int = 0
 ) -> Tuple[Dict[Source, str], Dict[Source, Tuple[str, int]]]:
-    """Get alternative lemmas, ignoring variants that coincide with main"""
+    """
+    Get alternative words and lemmas, ignoring variants that coincide with main.
+    my_var is ignored, because it is MainLangSemantics.
+    """
+    # print(my_var, lidx)
     assert self.var  # for mypy
     alt_lemmas = {
         k: v
@@ -56,6 +60,8 @@ def level_var_alternatives(
         ]
         alt_lemmas.pop(Source())
         alt_words.pop(Source())
+
+    # print(alt_lemmas, alt_words)
     return alt_lemmas, alt_words
 
 

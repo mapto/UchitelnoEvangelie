@@ -185,6 +185,10 @@ class MainLangSemantics(LangSemantics):
     def level_main_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
     ) -> Tuple[str, str, int]:
+        """
+        Main variant does not contain alternatives to itself.
+        As part of this, my_var is ignored, because it is MainLangSemantics.
+        """
         return "", "", 1
 
     def build_keys(self, row: List[str]) -> List[str]:
