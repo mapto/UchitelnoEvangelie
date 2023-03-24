@@ -4,8 +4,8 @@
 
 old а б в г д е ж ꙃ(ꙅ,ѕ) ꙁ (і,и) к л м н о п р с т ѹ(ꙋ) ф х ш ц  щ ъ ꙑ(ы) ь ѣ ю ꙗ  ѧ ѫ ѩ ѭ ѯ ѱ ѳ у(ѵ)
 """
-number_postfix = "\ue010\u0483"
-gasps = "’῞῟῝῏῎"
+number_postfix = ["\ue010", "\u0483", "҃", chr(1155)]
+gasps = [c for c in "’῞῟῝῏῎"]
 
 # used for visual representation and ordering
 reduce = {"ά": "ά", "ἀ": "ἀ", "έ": "έ", "ί": "ί", "ό": "ό"}
@@ -21,6 +21,7 @@ remap = {
     "": ord("и"),
     "": ord("и"),
     "і": ord("и"),
+    "ї": ord("и"),
     "ѡ": ord("о"),
     "ꙋ": ord("т") + 0.5,
     "ѹ": ord("т") + 0.5,

@@ -53,8 +53,19 @@ def test_ord_word():
     assert ord_word("ἁμαρτιῶν") == ord_word("αμαρτιων")
     assert ord_word("Ἀβραὰμ") == ord_word("Αβρααμ")
 
+    assert ord_word("давꙑдъ") == ord_word("Давꙑдъ")
+
 
 def test_ord_numbers():
+
+    assert ord_word("аї") == ord_word("аї")
+    assert ord_word("а҃") == ord_word("а")
+    assert ord_word("в҃") == ord_word("в")
+    assert ord_word("вї") == ord_word("вї")
+    assert ord_word("вї҃") == ord_word("вї")
+    assert ord_word("ѕ҃") == ord_word("ѕ")
+    assert ord_word("ѕ҃и") == ord_word("ѕї") == ord_word("ꙃи")
+
     assert ord_word("ѳтꙑ\ue205") == ord_word("ѳ҃тꙑ\ue205")
     assert ord_word("на") == ord_word("н\ue010а")
     assert ord_word("ѵ") > ord_word("н\ue010а") > ord_word("а")

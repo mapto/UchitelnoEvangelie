@@ -11,10 +11,10 @@ from docopt import docopt  # type: ignore
 logger = logging.getLogger()
 
 
-def init(doc: str, version: str) -> List[str]:
+def init(name: str, doc: str, version: str) -> List[str]:
     args = docopt(doc, version=version)
 
-    logfile = "log.txt"
+    logfile = f"{name}-log.txt"
     logger.setLevel(logging.DEBUG)
 
     logformat = "%(asctime)s:%(name)s:%(levelname)s: %(message)s"
@@ -22,6 +22,7 @@ def init(doc: str, version: str) -> List[str]:
     fileHandler = logging.FileHandler(logfile, mode="w")
     fileHandler.setFormatter(logFormatter)
     fileHandler.setLevel(logging.DEBUG)
+    fileHandler.set_name("file")  # type: ignore
     logger.addHandler(fileHandler)
 
     consoleHandler = logging.StreamHandler(sys.stdout)
@@ -31,9 +32,9 @@ def init(doc: str, version: str) -> List[str]:
         consoleHandler.setLevel(logging.WARNING)
     else:
         consoleHandler.setLevel(logging.INFO)
+    consoleHandler.set_name("console")  # type: ignore
     logger.addHandler(consoleHandler)
 
-    name = doc.split("\n")[0]
     logging.info(f"{name} v{version}")
     logging.debug(f"CLI arguments: {args}")
     return args["<xlsx>"]
@@ -72,5 +73,6 @@ def wrapup(to_clean: List[str]):
     for d in to_clean:
         shutil.rmtree(d)
 
-    if logger.level < logging.WARNING:
+    consoleHandler = next(h for h in logger.handlers if h.name == "console")
+    if consoleHandler.level < logging.WARNING:
         input("Натиснете Enter, за да приключите изпълнението.")

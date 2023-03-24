@@ -12,12 +12,12 @@ Options:
   --version             Print version
 
 """
-__version__ = "0.3.5"  # used also by build.sh script
+__version__ = "0.3.6"  # used also by build.sh script
 
 from cli import init, expand_names, wrapup
 
 if __name__ == "__main__":
-    fnames = init(__doc__, __version__)
+    fnames = init("indexgenerator", __doc__, __version__)
 
 from os import path
 import logging as log

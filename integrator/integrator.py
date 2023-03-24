@@ -12,12 +12,12 @@ Options:
   --version             Print version
 
 """
-__version__ = "1.3.5"  # used also by build.sh script
+__version__ = "1.3.6"  # used also by build.sh script
 
 from cli import expand_names, init, wrapup
 
 if __name__ == "__main__":
-    fnames = init(__doc__, __version__)
+    fnames = init("integrator", __doc__, __version__)
 
 from os import path
 import logging as log
