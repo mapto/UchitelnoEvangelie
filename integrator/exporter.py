@@ -221,7 +221,9 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             any_of_any = any_grandchild(next_d)
         except AssertionError as ae:
             log.error(
-                f"При експортиране възникна проблем с една от {len(next_d)} употреби на {li}"
+                f"При експортиране възникна проблем с една от {len(next_d)} употреби на '{li}'. "
+                f"Няма намерени съответствия за лема на ниво {level}. "
+                "Тази лема ще бъде прескочена."
             )
             log.error(ae)
             return
@@ -233,7 +235,9 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
                 _export_line(level + 1, lang, next_d, doc)
             except AssertionError as ae:
                 log.error(
-                    f"При експортиране възникна проблем с една от {len(next_d)} употреби на {li}"
+                    f"При експортиране възникна проблем с една от {len(next_d)} употреби на '{li}'. "
+                    f"Неуспешно генериране на речниковия запис на лема на ниво {level}. "
+                    "Тази лема ще бъде прескочена."
                 )
 
 
