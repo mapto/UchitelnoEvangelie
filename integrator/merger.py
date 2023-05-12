@@ -67,7 +67,9 @@ def _close(
             log.error(f"Липсва индекс в групата.")
 
     same = _same(group[-1], trans) or _same(group[-1], orig)
-    assert not same or len(group) == 2
+    if same and len(group) != 2:
+        log.error("Комбинацията от = и група все още не е поддържана"
+                f" Намерена в {group[0][IDX_COL]} ред. "        )
     close_fn = _close_same if same else _close_group
     return close_fn(group, orig, trans)
 
