@@ -1,8 +1,4 @@
-from typing import List
-
-from config import FROM_LANG, TO_LANG
 from setup import sl_sem, gr_sem
-from semantics import MainLangSemantics, VarLangSemantics
 from merger import _close
 
 
@@ -1043,7 +1039,7 @@ def test_prichatnik_biti():
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem.var, gr_sem)
     assert res == [
         [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W"
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H"
             "",
             "пр\ue205\ue20dѧстьн\ue205къ GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
@@ -1059,7 +1055,7 @@ def test_prichatnik_biti():
         + [""] * 12
         + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W",
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
             "бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
@@ -1078,8 +1074,7 @@ def test_prichatnik_biti():
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem, gr_sem)
     assert res == [
         [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H "
-            "боудемь W",
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
@@ -1098,8 +1093,7 @@ def test_prichatnik_biti():
         + [""] * 12
         + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H "
-            "боудемь W",
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
@@ -1121,7 +1115,7 @@ def test_prichatnik_biti():
     res = _close([rows[0].copy(), rows[1].copy()], gr_sem, sl_sem)
     assert res == [
         [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W",
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
             "пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
@@ -1139,7 +1133,7 @@ def test_prichatnik_biti():
         + [""] * 12
         + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W",
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
             "пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",

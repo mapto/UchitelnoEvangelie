@@ -23,8 +23,7 @@ def address_less(a: Index, b: Index) -> bool:
             return False
     if a.end:
         return a.end < b.end if b.end else True
-    else:
-        return b.end is not None
+    return b.end is not None
 
 
 Index.maxlen = [2, 1, 3, 3, 2, 2]

@@ -123,7 +123,50 @@ class Source:
         return l
 
     def __add__(self, other) -> "Source":
+        """
+        >>> (Source('G') + 'W')._sort_vars()
+        'WG'
+        """
+        # this if serves only to enable the sum() function
+        if type(other) == int and other == 0:
+            return self
         return Source(self.src + str(other))
+
+    def __radd__(self, other) -> "Source":
+        return self + other
+
+    def __sub__(self, other) -> "Source":
+        """
+        >>> Source("WGH") - "G"
+        Source('WH')
+        >>> Source("PPaPb") - "Pa"
+        Source('PbP')
+        >>> Source("PPaPb") - "P"
+        Source('PbPa')
+        >>> Source("PPaPb") - "M"
+        Source('PbPPa')
+        >>> Source("WGHPPaPb") - "GP"
+        Source('WHPbPa')
+        """
+        result = ""
+        sother = Source(other)
+        for lang in [FROM_LANG, TO_LANG]:
+            # print(lang)
+            if self.has_lang(lang) and sother.has_lang(lang):
+                mine = self.by_lang(lang)
+                # print(mine, sother.by_lang(lang))
+                for s in mine:
+                    if s not in sother.by_lang(lang):
+                        result += s
+                # print(result)
+        return Source(result)
+
+    def __invert__(self):
+        """
+        >>> ~Source('WG')
+        Source('H')
+        """
+        return Source(ORDERED_SOURCES) - self
 
     def __hash__(self) -> int:
         """
@@ -315,3 +358,8 @@ class Source:
             if s in self:
                 res += str(s)
         return Source(res)
+
+    def key(self) -> int:
+        """Sorting key for SortedDict"""
+        return ORDERED_SOURCES.index(self.data[0])
+        # return len(ORDERED_SOURCES) - ORDERED_SOURCES.index(self.data[0])
