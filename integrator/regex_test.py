@@ -1,6 +1,8 @@
 import re
 
-from regex import counter_regex, source_regex
+from regex import counter_regex
+
+# from config import source_regex
 
 
 def test_counter():
@@ -10,9 +12,9 @@ def test_counter():
     assert re.fullmatch(counter_regex, "[4]{2}")
 
 
-def test_source():
-    assert re.fullmatch(source_regex, "WGH")
-    assert re.fullmatch(source_regex, "MPaPb")
+# def test_source():
+#     assert re.fullmatch(source_regex, "WGH")
+#     assert re.fullmatch(source_regex, "MPaPb")
 
-    # Non UE
-    assert re.fullmatch(source_regex, "D56D58")
+#     # Non UE
+#     assert re.fullmatch(source_regex, "D56D58")

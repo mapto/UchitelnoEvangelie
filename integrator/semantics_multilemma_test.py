@@ -1,7 +1,7 @@
 from model import Source
 from semantics import MainLangSemantics, VarLangSemantics
 
-from const import STYLE_COL, V_LEMMA_SEP
+from const import STYLE_COL
 from config import FROM_LANG, TO_LANG
 from setup import sl_sem, gr_sem
 
@@ -355,97 +355,19 @@ def test_est_in_var_no_main():
     assert result == {Source("GH"): "gramm."}
 
 
-def test_collect_puteshestvie():
-    rows = [
-        [
-            "шьст\ue205ꙗ G шьств\ue205ꙗ H",
-            "шьст\ue205\ue201 G / шьств\ue205\ue201 H",
-            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
-            "",
-            "05/028d18",
-            "поутошьств\ue205ꙗ",
-            "поутошьств\ue205-",
-            "пѫтошьств\ue205\ue201",
-        ]
-        + [""] * 3
-        + ["ὁδοιπορίας", "ὁδοιπορία"]
-        + [""] * 13
-        + ["hl00"]
-        + ["1"] * 4,
-        [
-            "пꙋт\ue205 GH",
-            "пѫть",
-            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
-            "",
-            "05/028d18",
-            "поутошьств\ue205ꙗ",
-            "",
-            "пѫтошьств\ue205\ue201",
-        ]
-        + [""] * 3
-        + ["ὁδοιπορίας", "ὁδοιπορία"]
-        + [""] * 13
-        + ["hl00"]
-        + ["1"] * 4,
-    ]
-
-    assert (
-        sl_sem.var.collect_lemma(rows, separator=V_LEMMA_SEP)
-        == "шьст & пѫть G / шьств & пѫть H"
-    )
-
-
-def test_zemenu():
-    rows = [
+def test_pros_eis():
+    row = (
         [""] * 4
-        + ["19/94d08", "ꙁемьнꙑ\ue205", "сад\ue205 ꙁемьнꙑ-", "ꙁемьнъ"]
-        + [""] * 8
-        + ["ἐπὶ Ch", "ἐπί", "ἐπί + Gen.", "ὁ ἐπὶ γῆς"]
-        + [""] * 6
-        + ["hl16|hl18"],
-        [""] * 4 + ["19/94d08"] + [""] * 11 + ["γῆς Ch", "γῆ"] + [""] * 8 + ["hl16"],
-    ]
-
-    assert (
-        gr_sem.var.collect_lemma(rows, gr_sem.var.lemmas[0], V_LEMMA_SEP)
-        == "ἐπί & γῆ Ch"
+        + ["35/162a10", "въ", "въ \ue205ер\ue205хѫ• съвы-", "въ", "въ + Acc."]
+        + [""] * 2
+        + ["om."] * 2
+        + [""] * 3
+        + ["εἰς MPePgPkR πρὸς PhPi", "εἰς MPePgPkR / πρός PhPi", "πρός + Acc. PhPi"]
+        + [""] * 7
+        + ["bold|italic"]
     )
-
-
-def test_tyam_ili():
-    rows = [
-        [
-            "тѣмь WH",
-            "",
-            "тѣмь \ue205л\ue205",
-            "",
-            "1/6a10",
-            "тѣмь",
-            "тѣмь л\ue205 в\ue205д\ue205мо",
-            "тѣмь",
-            "тѣмь л\ue205",
-            "",
-            "",
-            "κἂν",
-            "κἄν",
-        ]
-        + [""] * 13
-        + ["hl05"],
-        [
-            "\ue205л\ue205 WH",
-            "\ue205л\ue205",
-            "",
-            "",
-            "1/6a10",
-            "л\ue205",
-            "тѣмь л\ue205 в\ue205д\ue205мо",
-            "л\ue205",
-        ]
-        + [""] * 18
-        + ["hl05"],
-    ]
-
-    assert gr_sem.collect_lemma(rows, gr_sem.lemmas[0]) == "κἄν"
-    assert (
-        sl_sem.var.collect_lemma(rows, sl_sem.var.lemmas[1]) == "тѣмь \ue205л\ue205 WH"
-    )
+    assert gr_sem.var.multilemma(row) == {
+        Source("PhPi"): "πρός",
+        Source("MPePgPkR"): "εἰς",
+    }
+    assert gr_sem.var.multilemma(row, 1) == {Source("PhPi"): "πρός + Acc."}

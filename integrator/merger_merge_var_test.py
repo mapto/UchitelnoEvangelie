@@ -19,7 +19,7 @@ raw = [
 ]
 
 
-def test_merge_raspetou():
+def test_raspetou():
     rows = [r.copy() for r in raw]
     result = merge(rows, sl_sem, gr_sem)
 
@@ -51,7 +51,7 @@ def test_merge_raspetou():
     ]
 
 
-def test_merge_raspetou_var():
+def test_raspetou_var():
     rows = [r.copy() for r in raw]
     result = merge(rows, sl_sem.var, gr_sem)
 
@@ -88,7 +88,7 @@ def test_merge_raspetou_var():
     ]
 
 
-def test_merge_raspetou_inverse():
+def test_raspetou_inverse():
     rows = [r.copy() for r in raw]
     result = merge(rows, gr_sem, sl_sem)
 

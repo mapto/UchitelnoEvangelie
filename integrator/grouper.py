@@ -94,7 +94,7 @@ def _collect_group(
     # Words from any type of highlighting are added to the merged line
     # line = _collect_main(group, orig, non_gram_group_main, non_union_group_main, line)
     line[orig.word] = orig.collect_word(group)
-    line[orig.lemmas[1]] = trans.collect_lemma(h.non_union_group, orig.lemmas[1])
+    line[orig.lemmas[1]] = orig.collect_lemma(h.non_union_group, orig.lemmas[1])
     for c in orig.lemmas[2:]:
         line[c] = orig.collect_lemma(h.non_gram_group, c)
 

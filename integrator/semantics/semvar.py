@@ -4,32 +4,52 @@ from typing import Dict, List, Tuple
 import re
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
-from const import NON_COUNTABLE, H_LEMMA_SEP, ERR_SUBLEMMA
+from const import NON_COUNTABLE, H_LEMMA_SEP, ERR_SUBLEMMA, OMMIT_SUBLEMMA
 from const import EMPTY_CH, SPECIAL_CHARS
 from config import DEFAULT_SOURCES
 from model import Source
 
 from regex import multiword_regex, multilemma_regex
 
-from .const import LAST_LEMMA, UNSPECIFIED
-from .util import remove_repetitions, regroup
+from .const import UNSPECIFIED
+from .util import regroup
 
 
-def collect_word(self, group: List[List[str]]) -> str:
+def collect_word(self, group: List[List[str]], grouped=False) -> str:
     """Collects the content of the multiwords for a variant in a group into a single string.
     The output is conformant with the multiword syntax.
-    Yet it might contain redundancies, due to the normalisation process (split of equal variants)"""
-    collected: Dict[Source, List[str]] = SortedDict()
+    Yet it might contain redundancies, due to the normalisation process (split of equal variants).
+    If part of a group, implicit variants interpreted as equal to main. Otherwise ommitted.
+    """
+    collected: Dict[Source, List[str]] = {}
     for row in group:
         for k, v in self.multiword(row).items():
             if not v.strip():
                 continue
-            if k not in collected:
-                collected[k] = []
-            collected[k] += [v.strip()]
-    result = regroup(
-        {k: " ".join(collected[k]) for k in collected if any(collected[k])}
-    )
+            for s in k:
+                # print(s, type(s), v)
+                if s not in collected:
+                    collected[s] = []
+                collected[s] += [v.strip()]
+    if grouped:
+        flipped = {}
+        for k, v in collected.items():
+            t = tuple(v)
+            if t not in flipped:
+                flipped[t] = Source(k)
+            else:
+                flipped[t] += k
+        result = regroup(
+            {
+                v: " ".join(k)
+                for k, v in sorted(flipped.items(), key=lambda e: e[1])
+                if any(k)
+            }
+        )
+    else:
+        result = regroup(
+            {k: " ".join(collected[k]) for k in collected if any(collected[k])}
+        )
     return " ".join([f"{v} {k}" if k else v for k, v in result.items() if v])
 
 
@@ -40,14 +60,32 @@ def collect_lemma(
         cidx = self.lemmas[0]
     multis = [self.multilemma(r, self.lemmas.index(cidx)) for r in group]
     collected: Dict[Source, List[str]] = SortedDict()
+
+    # for each row in group
     for m in multis:
+        # for each variants group in lemma
         for k, v in m.items():
-            if k not in collected:
-                collected[k] = []
-            collected[k] += [v]
+            current = list(iter(k))
+            # for each source in variants group
+            for cur_s in current:
+                found = False
+                # for each of the previously detected variant sources
+                for src in collected:
+                    if cur_s in src:
+                        found = True
+                        if cur_s != src:
+                            collected[cur_s] = collected[src]
+                            collected[src - cur_s] = collected[src]
+                            collected.pop(src)
+
+                if not found:
+                    collected[cur_s] = []
+                collected[cur_s] += [v]
+
     glue = f" {separator} " if separator else " "
     result = regroup({k: glue.join(collected[k]).strip() for k in collected}, glue)
     g = [f"{v} {k}" if k else v for k, v in result.items() if v]
+
     return f" {H_LEMMA_SEP} ".join(g)
 
 
@@ -90,6 +128,13 @@ def multiword(self, row: List[str]) -> Dict[Source, str]:
     if not result:
         return {Source(DEFAULT_SOURCES[self.lang]): row[self.word].strip()}
         # return {'': row[self.word].strip()}
+
+    # for k in result:
+    #     if result[k] == OMMIT_SUBLEMMA:
+    #         result[Source(~sum(result.keys()))] = row[self.main.word]
+    #         result.pop(k)
+    #         break
+
     return regroup(result)
 
 
@@ -109,15 +154,18 @@ def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
     # When lemma in variant does not have source, read source from word or previous lemma
     # When in some variants word is missing, get lemma for this variant from main
     # When different variants have same lemma, unite. Case present only when deduced from different multiwords
+    # TODO: When sublemma for some variants missing...
     if len(result) == 1 and next(iter(result.keys())) == "":
         previdx = lidx - 1
+        # find previous level with content
         while not row[self.lemmas[previdx]] and previdx >= 0:
             previdx -= 1
+        # get lemmas for previous level
         prev_multi = (
             self.multilemma(row, previdx) if previdx >= 0 else self.multiword(row)
         )
-        s = {str(k) for k, v in prev_multi.items() if v != EMPTY_CH}
-        keys = Source(remove_repetitions("".join(s)))
+        s = [str(k) for k, v in prev_multi.items() if v != EMPTY_CH]
+        keys = Source(s)
         # keys = ""
         # for k, v in self.multiword(row).items():
         #     if v != EMPTY_CH:

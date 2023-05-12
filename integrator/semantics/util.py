@@ -7,8 +7,6 @@ from typing import Dict, List, Set, Tuple
 import unicodedata
 from sortedcontainers import SortedSet, SortedDict  # type: ignore
 
-from config import VAR_SOURCES
-
 from model import Path, Source, Alignment
 
 
@@ -94,24 +92,8 @@ def collect(group: List[List[str]], col: int) -> List[str]:
     return [group[i][col] for i in range(len(group)) if group[i][col]]
 
 
-def remove_repetitions(src: str = "") -> str:
-    split = set()
-    prev = ""
-    for c in src:
-        if c == c.lower():
-            split.add(prev + c)
-            prev = ""
-        else:
-            split.add(prev)
-            prev = c
-    if prev:
-        split.add(prev)
-    return "".join(split)
-
-
 def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
     """
-    Result is SortedDict so that order in string recomposition in caller could be deterministic and reproducible in tests
     >>> regroup({Source('H'): 'шьств\ue205ꙗ', Source('G'): 'шьст\ue205ꙗ', Source('GH'): 'пꙋт\ue205'})
     {Source('G'): 'шьст\ue205ꙗ пꙋт\ue205', Source('H'): 'шьств\ue205ꙗ пꙋт\ue205'}
     >>> regroup({Source('H'): 'шьств\ue205\ue201', Source('G'): 'шьст\ue205\ue201', Source('GH'): 'пѫть'}, " & ")
