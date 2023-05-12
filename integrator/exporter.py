@@ -221,8 +221,9 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
             any_of_any = any_grandchild(next_d)
         except AssertionError as ae:
             log.error(
-                f"При обособяване на речника възникна проблем с една от {len(next_d)} употреби на {li} "
-                f"в лема номер {level}, част от {d}"
+                f"При обособяване на речника възникна проблем с една от {len(next_d)} употреби на '{li}'. "
+                f"в лема на ниво {level}, част от {d}"
+                "Тази лема ще бъде прескочена."
             )
             log.error(ae)
             return
@@ -234,8 +235,9 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
                 _export_line(level + 1, lang, next_d, doc)
             except AssertionError as ae:
                 log.error(
-                    f"При генериране на ред в речника възникна проблем с една от {len(next_d)} употреби на {li} "
+                    f"При генериране на ред в речника възникна проблем с една от {len(next_d)} употреби на {li}"
                     f"в лема номер {level}, част от {d}"
+                    "Тази лема ще бъде прескочена."
                 )
 
 

@@ -19,7 +19,7 @@ def init(name: str, doc: str, version: str) -> List[str]:
 
     logformat = "%(asctime)s:%(name)s:%(levelname)s: %(message)s"
     logFormatter = logging.Formatter(logformat)
-    fileHandler = logging.FileHandler(logfile, mode="w", encoding="utf-8")
+    fileHandler = logging.FileHandler(logfile, mode="w", encoding='utf-8')
     fileHandler.setFormatter(logFormatter)
     fileHandler.setLevel(logging.DEBUG)
     fileHandler.set_name("file")  # type: ignore
