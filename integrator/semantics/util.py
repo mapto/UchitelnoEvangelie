@@ -89,7 +89,7 @@ def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
 
 def collect(group: List[List[str]], col: int) -> List[str]:
     """Collects the actual content in the group column"""
-    return [group[i][col] for i in range(len(group)) if group[i][col]]
+    return [group[i][col].strip() for i in range(len(group)) if group[i][col]]
 
 
 def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:

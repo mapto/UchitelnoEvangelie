@@ -163,9 +163,7 @@ def _update_group(
 
 
 def _close_group(
-    group: List[List[str]],
-    orig: LangSemantics,
-    trans: MainLangSemantics,
+    group: List[List[str]], orig: LangSemantics, trans: MainLangSemantics, h: Hiliting
 ) -> List[List[str]]:
     """Close a group formed by highlighting."""
     # populate variants equal to main
@@ -180,7 +178,6 @@ def _close_group(
             ):
                 row[orig.other().word] = f"{row[orig.word]} {variants}"
 
-    h = Hiliting(group, orig, trans)
     line = _collect_group(group, orig, trans, h)
     try:
         return _update_group(group, orig, trans, line, h)
