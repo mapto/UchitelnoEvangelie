@@ -647,7 +647,7 @@ def test_monogenes():
                                         italic=True,
                                     )
                                 ]
-                            ),
+                            )
                         }
                     }
                 }
@@ -690,7 +690,7 @@ def test_monogenes():
                                         italic=True,
                                     )
                                 ]
-                            ),
+                            )
                         }
                     }
                 }
@@ -780,7 +780,7 @@ def test_puteshestvie_sl_var():
                         }
                     }
                 }
-            },
+            }
         },
         "шьст\ue205\ue201": {
             "шьст\ue205\ue201 пѫт\ue205": {
@@ -826,7 +826,7 @@ def test_puteshestvie_sl_var():
                         }
                     }
                 }
-            },
+            }
         },
     }
 
@@ -1206,34 +1206,77 @@ def test_mirno_sl():
                                         idx=Index("2/W169a17"),
                                         orig=Usage(
                                             lang="sl",
-                                            var=Source(""),
-                                            alt=Alternative(
-                                                main_lemma="",
-                                                var_lemmas={},
-                                                main_word="",
-                                                var_words={},
-                                                main_cnt=1,
-                                            ),
                                             word="м\ue205рно\ue201•",
                                             lemmas=["м\ue205рьнъ"],
-                                            cnt=1,
                                         ),
                                         trans=Usage(
                                             lang="gr",
-                                            var=Source(""),
-                                            alt=Alternative(
-                                                main_lemma="",
-                                                var_lemmas={},
-                                                main_word="",
-                                                var_words={},
-                                                main_cnt=1,
-                                            ),
                                             word="ἐκ",
                                             lemmas=["ἐκ", "ἐκ τῆς εἰρήνης"],
-                                            cnt=1,
                                         ),
-                                        bold=False,
-                                        italic=False,
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+def test_prichatnik():
+    row = (
+        [
+            "пр\ue205\ue20dестьн\ue205ц\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 H",
+            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "",
+            "05/28c21",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ",
+            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+        ]
+        + [""] * 2
+        + ["ποιῆσαι", "ποιέω", "ποιέω κοινωνόν"]
+        + [""] * 12
+        + ["hl05:FFFCD5B4|hl11:FFFCD5B4"]
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = aggregate([row], sl_sem.var, gr_sem, result)
+    assert result == {
+        "пр\ue205\ue20dѧстьн\ue205къ": {
+            "пр\ue205\ue20dѧстьн\ue205къ": {
+                "": {
+                    "": {
+                        "ποιέω κοινωνόν → ποιέω": {
+                            (
+                                "пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
+                                "ποιῆσαι",
+                            ): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("5/28c21"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            var=Source("GH"),
+                                            alt=Alternative(
+                                                main_lemma="пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                                main_word="пр\ue205\ue20dьтьн\ue205ц\ue205",
+                                            ),
+                                            word="пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
+                                            lemmas=[
+                                                "пр\ue205\ue20dѧстьн\ue205къ",
+                                                "пр\ue205\ue20dѧстьн\ue205къ",
+                                            ],
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            word="ποιῆσαι",
+                                            lemmas=["ποιέω", "ποιέω κοινωνόν"],
+                                        ),
                                     )
                                 ]
                             )

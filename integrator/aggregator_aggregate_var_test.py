@@ -1,8 +1,7 @@
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
-from const import FROM_LANG, TO_LANG
-from config import FROM_LANG
 from const import STYLE_COL
+from config import FROM_LANG, TO_LANG
 
 from model import Alternative, Index, Source, Alignment, Usage
 from semantics import MainLangSemantics, VarLangSemantics
@@ -530,78 +529,53 @@ def test_sumeromadrost_slvar1_grvar():
     }
 
 
-from aggregator import _agg_lemma
-
-
-def test_agg_lemma_first():
+def test_pros_eis():
     row = (
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "съмѣрѹмѫдрость WG / съмѣр\ue201нъ H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-            "съмѣромоудро-",
-            "съмѣромѫдрость",
-        ]
-        + [""] * 3
+        [""] * 4
+        + ["35/162a10", "въ", "въ \ue205ер\ue205хѫ• съвы-", "въ", "въ + Acc."]
+        + [""] * 2
         + ["om."] * 2
         + [""] * 3
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
+        + ["εἰς MPePgPkR πρὸς PhPi", "εἰς MPePgPkR / πρός PhPi", "πρός + Acc. PhPi"]
+        + [""] * 7
+        + ["bold|italic"]
         + ["1"] * 4
     )
     result = SortedDict()
-    _agg_lemma(row, sl_sem.var, gr_sem, result)
+    result = aggregate([row], gr_sem.var, sl_sem, result)
     assert result == {
-        "съмѣрѹмѫдрость": {
+        "εἰς": {
             "": {
                 "": {
                     "": {
-                        "om.": {
-                            ("смѣроумоудрост\ue205 WG", "om."): SortedSet(
+                        "въ + Acc. → въ": {
+                            ("εἰς MPePgPkR", "въ"): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
+                                        idx=Index("35/162a10"),
                                         orig=Usage(
-                                            lang="sl",
-                                            var=Source("WG"),
+                                            lang="gr",
+                                            var=Source("MPePgPkR"),
                                             alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
+                                                main_lemma="om.",
                                                 var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость"
+                                                    Source("PhPi"): "πρός + Acc."
                                                 },
-                                                main_word="съмѣромоудрост\ue205",
+                                                main_word="om.",
                                                 var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    )
+                                                    Source("PhPi"): ("πρὸς PhPi", 1)
                                                 },
                                             ),
-                                            word="смѣроумоудрост\ue205 WG",
-                                            lemmas=["съмѣрѹмѫдрость"],
+                                            word="εἰς MPePgPkR",
+                                            lemmas=["εἰς"],
                                         ),
                                         trans=Usage(
-                                            lang="gr",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source("Ch"): "ταπεινοφροσύνη"
-                                                },
-                                                var_words={
-                                                    Source("Ch"): (
-                                                        "ταπεινοφροσύνην Ch",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="om.",
-                                            lemmas=["om."],
+                                            lang="sl",
+                                            word="въ",
+                                            lemmas=["въ", "въ + Acc."],
                                         ),
+                                        bold=True,
+                                        italic=True,
                                     )
                                 ]
                             )
@@ -610,53 +584,39 @@ def test_agg_lemma_first():
                 }
             }
         },
-        "съмѣр\ue201нъ": {
-            "съмѣр\ue201наꙗ мѫдрость": {
+        "πρός": {
+            "πρός + Acc.": {
                 "": {
                     "": {
-                        "om.": {
-                            ("смѣрены\ue201 моудрост\ue205 H", "om."): SortedSet(
+                        "въ + Acc. → въ": {
+                            ("πρὸς PhPi", "въ"): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
+                                        idx=Index("35/162a10"),
                                         orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
+                                            lang="gr",
+                                            var=Source("PhPi"),
                                             alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source("WG"): "съмѣрѹмѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
+                                                main_lemma="om.",
+                                                var_lemmas={Source("MPePgPkR"): "εἰς"},
+                                                main_word="om.",
                                                 var_words={
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
+                                                    Source("MPePgPkR"): (
+                                                        "εἰς MPePgPkR",
                                                         1,
                                                     )
                                                 },
                                             ),
-                                            word="смѣрены\ue201 моудрост\ue205 H",
-                                            lemmas=[
-                                                "съмѣр\ue201нъ",
-                                                "съмѣр\ue201наꙗ мѫдрость",
-                                            ],
+                                            word="πρὸς PhPi",
+                                            lemmas=["πρός", "πρός + Acc."],
                                         ),
                                         trans=Usage(
-                                            lang="gr",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source("Ch"): "ταπεινοφροσύνη"
-                                                },
-                                                var_words={
-                                                    Source("Ch"): (
-                                                        "ταπεινοφροσύνην Ch",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="om.",
-                                            lemmas=["om."],
+                                            lang="sl",
+                                            word="въ",
+                                            lemmas=["въ", "въ + Acc."],
                                         ),
+                                        bold=True,
+                                        italic=True,
                                     )
                                 ]
                             )
@@ -665,76 +625,4 @@ def test_agg_lemma_first():
                 }
             }
         },
-    }
-
-
-def test_agg_lemma_2_H():
-    row = (
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "съмѣрѹмѫдрость WG / съмѣр\ue201нъ H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-            "съмѣромоудро-",
-            "съмѣромѫдрость",
-        ]
-        + [""] * 3
-        + ["om."] * 2
-        + [""] * 3
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
-        + ["1"] * 4
-    )
-    result = SortedDict()
-    result = _agg_lemma(row, sl_sem.var, gr_sem, result, 2, Source("H"), "om.")
-    assert result == {
-        "съмѣр\ue201наꙗ мѫдрость": {
-            "": {
-                "": {
-                    "om.": {
-                        ("смѣрены\ue201 моудрост\ue205 H", "om."): SortedSet(
-                            [
-                                Alignment(
-                                    idx=Index("25/125a3"),
-                                    orig=Usage(
-                                        lang="sl",
-                                        var=Source("H"),
-                                        alt=Alternative(
-                                            main_lemma="съмѣромѫдрость",
-                                            var_lemmas={Source("WG"): "съмѣрѹмѫдрость"},
-                                            main_word="съмѣромоудрост\ue205",
-                                            var_words={
-                                                Source("WG"): (
-                                                    "смѣроумоудрост\ue205 WG",
-                                                    1,
-                                                )
-                                            },
-                                        ),
-                                        word="смѣрены\ue201 моудрост\ue205 H",
-                                        lemmas=[
-                                            "съмѣр\ue201нъ",
-                                            "съмѣр\ue201наꙗ мѫдрость",
-                                        ],
-                                    ),
-                                    trans=Usage(
-                                        lang="gr",
-                                        alt=Alternative(
-                                            var_lemmas={Source("Ch"): "ταπεινοφροσύνη"},
-                                            var_words={
-                                                Source("Ch"): ("ταπεινοφροσύνην Ch", 1)
-                                            },
-                                        ),
-                                        word="om.",
-                                        lemmas=["om."],
-                                    ),
-                                )
-                            ]
-                        )
-                    }
-                }
-            }
-        }
     }

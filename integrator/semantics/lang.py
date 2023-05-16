@@ -256,9 +256,7 @@ class VarLangSemantics(LangSemantics):
 
     def __repr__(self):
         """main ignored to avoid recursion"""
-        return (
-            f"VarLangSemantics(lang={self.lang},word={self.word},lemmas={self.lemmas})"
-        )
+        return f"VarLangSemantics(lang='{self.lang}',word={self.word},lemmas={self.lemmas})"
 
     from .semvar import (
         collect_word as var_collect_word,

@@ -89,22 +89,7 @@ def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
 
 def collect(group: List[List[str]], col: int) -> List[str]:
     """Collects the actual content in the group column"""
-    return [group[i][col] for i in range(len(group)) if group[i][col]]
-
-
-def remove_repetitions(src: str = "") -> str:
-    split = set()
-    prev = ""
-    for c in src:
-        if c == c.lower():
-            split.add(prev + c)
-            prev = ""
-        else:
-            split.add(prev)
-            prev = c
-    if prev:
-        split.add(prev)
-    return "".join(split)
+    return [group[i][col].strip() for i in range(len(group)) if group[i][col]]
 
 
 def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
@@ -114,11 +99,13 @@ def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
     >>> regroup({Source('H'): 'шьств\ue205\ue201', Source('G'): 'шьст\ue205\ue201', Source('GH'): 'пѫть'}, " & ")
     {Source('G'): 'шьст\ue205\ue201 & пѫть', Source('H'): 'шьств\ue205\ue201 & пѫть'}
     >>> regroup({Source('G'): 'престьнц б•', Source('H'): 'престнц б•', Source('W'): 'боудемь W'})
-    {Source('G'): 'пр\ue205\ue20dестьн\ue205ц\ue205 б•', Source('H'): 'пр\ue205\ue20dестн\ue205ц\ue205 б•', Source('W'): 'боудемь W'}
+    {Source('W'): 'боудемь W', Source('G'): 'пр\ue205\ue20dестьн\ue205ц\ue205 б•', Source('H'): 'пр\ue205\ue20dестн\ue205ц\ue205 б•'}
     >>> regroup({Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь', Source('WG'): 'хⷪ҇домь спѣюще'})
     {Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'}
     >>> regroup({Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'})
     {Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'}
+    >>> regroup({Source('G'): 'ꙗко обраꙁомь', Source('H'): 'ꙗко \ue205 обраꙁомь', Source('W'): 'ꙗко обраꙁомь'})
+    {Source('WG'): 'ꙗко обраꙁомь', Source('H'): 'ꙗко \ue205 обраꙁомь'}
     """
     if not d:
         return d
@@ -134,12 +121,25 @@ def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
         else:
             compound += [l]
 
-    result: Dict[Source, List[str]] = SortedDict({s: [d[s]] for s in basic})
+    listed: Dict[Source, List[str]] = {s: [d[s]] for s in basic}
     for l in compound:
         for s in basic:
             if s in l and d[l]:
-                result[s] += [d[l]]
-    return {k: glue.join(result[k]) for k in reversed(result) if result[k]}
+                listed[s] += [d[l]]
+    result = {k: glue.join(listed[k]) for k in reversed(listed) if listed[k]}
+
+    # merge variants that are equal
+    flipped: Dict[str, Source] = {}
+    for k, v in result.items():
+        if v not in flipped:
+            flipped[v] = k
+        else:
+            flipped[v] += k
+
+    return {
+        Source(v): k
+        for k, v in sorted(flipped.items(), key=lambda x: Source(x[1]).key())
+    }
 
 
 def _add_usage(

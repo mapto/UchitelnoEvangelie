@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.3">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>150</x>
+      <y>500</y>
+      <w>260</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>пѫтошьствиѥ/ὁδοιπορία:Alignment
+--
+quote=False
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>150</x>
+      <y>380</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>5/28d18:Address
+--
+data=(5,28,'d',18)
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>210</x>
+      <y>400</y>
+      <w>112</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+address</panel_attributes>
+    <additional_attributes>80;100;50;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>460</x>
+      <y>370</y>
+      <w>220</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>ὁδοιπορία:Usage
+--
+lang='gr'
+word='ὁδοιπορίας'
+lemmas=['ὁδοιπορία']
+count = 1
+var = None
+source='C'
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>380</x>
+      <y>500</y>
+      <w>104</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+source</panel_attributes>
+    <additional_attributes>30;30;80;120</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>380</x>
+      <y>390</y>
+      <w>102</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+target</panel_attributes>
+    <additional_attributes>30;120;80;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>650</x>
+      <y>550</y>
+      <w>70</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+</panel_attributes>
+    <additional_attributes>30;30;50;60</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>460</x>
+      <y>540</y>
+      <w>220</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>пѫтошьствиѥ:Usage
+--
+lang='sl'
+word='поутошьствиꙗ'
+lemmas=['пѫтошьствиѥ']
+count=1
+source='S'
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>700</x>
+      <y>560</y>
+      <w>320</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>G:Alternative
+--
+word='шьстѥꙗ пꙋти'
+lemmas=['шьстиѥ пѫть', 'шьстиѥ пѫти']
+count=1
+source='G'
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>700</x>
+      <y>450</y>
+      <w>320</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>H:Alternative
+--
+word='шьств_ꙗ пꙋти'
+lemmas=['шьствиѥ пѫть', 'шьствиѥ пѫти']
+count=1
+source='H'
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>650</x>
+      <y>470</y>
+      <w>70</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+</panel_attributes>
+    <additional_attributes>30;80;50;30</additional_attributes>
+  </element>
+</diagram>

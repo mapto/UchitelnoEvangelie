@@ -852,3 +852,58 @@ def test_put():
             )
         }
     }
+
+
+def test_prichatnik():
+    row = (
+        [
+            "пр\ue205\ue20dестьн\ue205ц\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 H",
+            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "",
+            "05/28c21",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ",
+            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+        ]
+        + [""] * 2
+        + ["ποιῆσαι", "ποιέω", "ποιέω κοινωνόν"]
+        + [""] * 12
+        + ["hl05:FFFCD5B4|hl11:FFFCD5B4"]
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = sl_sem.var.compile_usages(gr_sem, row, result, "ποιέω", Source("GH"))
+    assert result == {
+        "ποιέω κοινωνόν → ποιέω": {
+            (
+                "пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
+                "ποιῆσαι",
+            ): SortedSet(
+                [
+                    Alignment(
+                        idx=Index("5/28c21"),
+                        orig=Usage(
+                            lang="sl",
+                            var=Source("GH"),
+                            alt=Alternative(
+                                main_lemma="пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                main_word="пр\ue205\ue20dьтьн\ue205ц\ue205",
+                            ),
+                            word="пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
+                            lemmas=[
+                                "пр\ue205\ue20dѧстьн\ue205къ",
+                                "пр\ue205\ue20dѧстьн\ue205къ",
+                            ],
+                        ),
+                        trans=Usage(
+                            lang="gr",
+                            word="ποιῆσαι",
+                            lemmas=["ποιέω", "ποιέω κοινωνόν"],
+                        ),
+                    )
+                ]
+            )
+        }
+    }

@@ -22,7 +22,8 @@ raw = [
 
 def test_close_raspetou_inverse():
     rows = [r.copy() for r in raw]
-    result = _close_group(rows, gr_sem, sl_sem)
+    h = Hiliting(rows, gr_sem, sl_sem)
+    result = _close_group(rows, gr_sem, sl_sem, h)
 
     assert result == [
         ["распетоу WG", "распѧт\ue205 WG"]
@@ -53,7 +54,6 @@ def test_close_raspetou_inverse():
 def test_collect_raspetou_inverse():
     rows = [r.copy() for r in raw]
     h = Hiliting(rows, gr_sem, sl_sem)
-
     result = _collect_group(rows, gr_sem, sl_sem, h)
 
     assert (
@@ -123,7 +123,8 @@ def test_close_sloves_inverse():
         + [""] * 12
         + ["hl11:FFFCD5B4"],
     ]
-    result = _close_group(rows, gr_sem, sl_sem)
+    h = Hiliting(rows, gr_sem, sl_sem)
+    result = _close_group(rows, gr_sem, sl_sem, h)
 
     assert result == [
         [""] * 4
@@ -234,7 +235,8 @@ def test_rechi():
         + ["1"] * 4,
     ]
 
-    res = _close_group(group, sl_sem, gr_sem)
+    h = Hiliting(group, sl_sem, gr_sem)
+    res = _close_group(group, sl_sem, gr_sem, h)
 
     assert res == [
         [

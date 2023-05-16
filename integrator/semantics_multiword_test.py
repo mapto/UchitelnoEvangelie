@@ -7,9 +7,10 @@ from setup import sl_sem, gr_sem
 def test_basic():
     sem = VarLangSemantics(FROM_LANG, 0, [1])
     result = sem.multiword(["ноедаго G  днородоу H", "днородъ H / ноѧдъ G"])
-    assert len(result) == 2
-    assert result["G"] == ("\ue205но\ue20dедаго")
-    assert result["H"] == ("\ue201д\ue205нородоу")
+    assert result == {
+        Source("H"): "\ue201д\ue205нородоу",
+        Source("G"): "\ue205но\ue20dедаго",
+    }
 
     result = sem.multiword(["ноедаго G", "днородъ H / ноѧдъ G"])
     assert result == {"G": ("\ue205но\ue20dедаго")}
@@ -110,109 +111,41 @@ def test_puteshestive():
     }
 
 
-def test_collect_puteshestive():
-    rows = [
+def test_iako_obrazom():
+    row = (
         [
-            "шьст\ue205ꙗ G шьств\ue205ꙗ H",
-            "шьст\ue205\ue201 G / шьств\ue205\ue201 H",
-            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "om. WG",
+            "\ue205 conj. H",
+            "\ue205 H",
             "",
-            "05/028d18",
-            "поутошьств\ue205ꙗ",
-            "поутошьств\ue205-",
-            "пѫтошьств\ue205\ue201",
+            "51/232d03",
+            "\ue205",
+            "ꙗкоже \ue205 обра-",
+            "\ue205 conj.",
         ]
         + [""] * 3
-        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + ["μὲν", "μέν"]
         + [""] * 13
-        + ["hl00"]
-        + ["1"] * 4,
-        [
-            "пꙋт\ue205 GH",
-            "пѫть",
-            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
-            "",
-            "05/028d18",
-            "поутошьств\ue205ꙗ",
-            "",
-            "пѫтошьств\ue205\ue201",
-        ]
-        + [""] * 3
-        + ["ὁδοιπορίας", "ὁδοιπορία"]
-        + [""] * 13
-        + ["hl00"]
-        + ["1"] * 4,
-    ]
-
-    assert (
-        sl_sem.var.collect_word(rows)
-        == "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H"
+        + ["hl05:FFFCD5B4"]
     )
+    result = sl_sem.var.multiword(row)
+    # assert result == {Source("H"): ""}
+    assert result == {Source("WG"): "om."}
 
 
-def test_collect_prichatnik_biti():
-    rows = [
-        [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G  пр\ue205\ue20dестн\ue205ц\ue205 б• H",
-            "пр\ue205\ue20dѧстьн\ue205къ GH",
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
-            "",
-            "05/28c21",
-            "пр\ue205\ue20dьтьн\ue205ц\ue205",
-            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
-            "пр\ue205\ue20dьтьн\ue205къ",
-            "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-            "",
-            "",
-            "ποιῆσαι",
-            "ποιέω",
-            "ποιέω κοινωνόν",
-        ]
-        + [""] * 12
-        + ["hl05|hl11"],
-        ["боудемь W"]
-        + ["бꙑт"]
+def test_gr_dat():
+    row = (
+        ["к WGH", "къ"]
         + [""] * 2
-        + ["05/28d01", "боудоуть", "боудоуть• \ue201же", "бꙑт\ue205"]
-        + [""] * 3
-        + ["κοινωνοὺς", "κοινωνός"]
-        + [""] * 13
-        + ["hl05|hl11"],
-    ]
-
-    assert (
-        sl_sem.var.collect_word(rows)
-        == "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W"
+        + ["13/69a30"]
+        + ["om.", ""] * 2
+        + [""] * 2
+        + ["om."]
+        + [""] * 4
+        + ["Dat. Nt", "Dat."]
+        + [""] * 8
+        + ["bold|italic"]
+        + ["1"] * 4
     )
-
-
-def test_collect_hoditi_spiti():
-    rows = [
-        [
-            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
-            "ходъ WG",
-            "ходомь спѣт\ue205 WG",
-            "",
-            "14/72d18",
-            "ход\ue205мъ",
-            "себе• по поут\ue205 хо-",
-            "ход\ue205т\ue205",
-            "≈ ход\ue205т\ue205 спѣѭще",
-            "",
-            "",
-            "προβαίνοντες",
-            "προβαίνω",
-        ]
-        + [""] * 13
-        + ["hl05"],
-        [""] * 4
-        + ["14/72d19", "спѣюще•", "д\ue205мъ спѣюще•", "спѣт\ue205"]
-        + [""] * 18
-        + ["hl05"],
-    ]
-
-    assert (
-        sl_sem.var.collect_word(rows)
-        == "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H"
-    )
-    assert gr_sem.collect_word(rows) == "προβαίνοντες"
+    result = gr_sem.var.multiword(row)
+    assert result == {Source("Nt"): "Dat."}

@@ -11,6 +11,7 @@ from const import IDX_COL, SAME_CH, SPECIAL_CHARS
 from semantics import LangSemantics, MainLangSemantics, present
 from util import clean_word
 from repetition import Repetitions
+from hiliting import Hiliting
 from grouper import _close_group, _hilited
 
 TRIGGER_SAME = -1
@@ -66,10 +67,10 @@ def _close(
                 log.info(row)
             log.error(f"Липсва индекс в групата.")
 
-    same = _same(group[-1], trans) or _same(group[-1], orig)
-    assert not same or len(group) == 2
-    close_fn = _close_same if same else _close_group
-    return close_fn(group, orig, trans)
+    h = Hiliting(group, orig, trans)
+    if h.hilited:
+        return _close_group(group, orig, trans, h)
+    return _close_same(group, orig, trans)
 
 
 def _same(row: List[str], sem: LangSemantics) -> bool:
@@ -97,8 +98,9 @@ def preprocess(
         else:
             log.info(row)
             log.error(
-                "Липсва индекс за ред. "
-                "Повтарящи се леми може да не бъдат разграничени."
+                "Липсва адрес за ред с горепосоченото съдържание. "
+                "Повтарящи се леми може да не бъдат разграничени. "
+                "Препоръчително е въвеждането на адрес в първия ред на всяка група, дори когато словоупотребата не присъства в основния славянски текст. "
             )
 
     # in lemmas

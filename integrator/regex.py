@@ -13,16 +13,23 @@ address_regex = (
     + r")?"
 )
 
-from config import source_regex
+# uppercase Latin letters and + have special function,
+# thus used as delimiters in regex, even if reading continues in lemmas
+word_regex = r"(\S[^A-Z\+]*)"
 
 sources_regex = r"([A-Z]\w*)"
 
-multiword_regex = r"^([^A-Z]+)(" + sources_regex + r"+)(.*)$"
+# multiword_regex = r"^([^A-Z]+)(" + sources_regex + r"+)(.*)$"
+# multiword_regex = r"^(\w[^A-Z]*)(" + sources_regex + r"+)(.*)$"
+multiword_regex = r"^" + word_regex + "(" + sources_regex + r"+)(.*)$"
 
 # TODO: accepting both & and / as separators is not neccessary
 # TODO: & is not expected to be used
 multilemma_regex = (
-    r"^([^A-Z\+]+)(\+\s\w+\.)?("
+    # r"^([^A-Z\+]+)(\+\s\w+\.\s?)?("
+    r"^"
+    + word_regex
+    + r"(\+\s\w+\.\s?)?("
     + sources_regex
     + r"+)?(\s*["
     + f"\\{V_LEMMA_SEP}\\{H_LEMMA_SEP}"

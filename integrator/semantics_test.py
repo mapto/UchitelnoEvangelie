@@ -441,64 +441,6 @@ def test_add_usage_puteshestvie():
     }
 
 
-def test_compile_words_by_lemma():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 1),
-    )
-    row = (
-        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
-        + [""] * 2
-        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
-        + [""] * 2
-        + ["Θεοῦ", "θεός", "Gen."]
-        + [""] * 13
-        + ["1"]
-    )
-
-    result = sl_sem.var.compile_words_by_lemma(row, "WGH")
-    assert result == (
-        "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
-        1,
-    )
-
-    row = (
-        ["ѿ WG  ѡ H", "отъ"]
-        + [""] * 2
-        + ["1/5d11"]
-        + ["om.", ""] * 2
-        + [""] * 2
-        + ["ἐπὶ", "ἐπί", "ἐπί + Gen."]
-        + [""] * 13
-        + ["1"]
-    )
-
-    result = sl_sem.var.compile_words_by_lemma(row, "WGH")
-    assert result == ("ѡ H ѿ WG", 1)
-
-    row = (
-        [
-            "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
-            "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
-        ]
-        + [""] * 2
-        + [
-            "1/W168a25",
-            "\ue201д\ue205но\ue20dедоу",
-            "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
-            "\ue201д\ue205но\ue20dѧдъ",
-        ]
-        + [""] * 3
-        + ["μονογενοῦς", "μονογενής"]
-        + [""] * 14
-        + ["2"]
-    )
-    result = sl_sem.var.compile_words_by_lemma(row, "H")
-    assert result == ("днородоу H", 2)
-
-
 def test_add_count():
     sem = MainLangSemantics(FROM_LANG, 5, [7], VarLangSemantics(FROM_LANG, 0, [1]))
     counts = {}
@@ -546,27 +488,6 @@ def test_add_count_mulitvariant():
     # ]
 
 
-def test_compile_words_by_lemma_artos():
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 1),
-    )
-    row = (
-        [""] * 4
-        + ["16/80a08", "хлѣбꙑ•", "ре\ue20dе хлѣбꙑ• не", "хлѣбъ"]
-        + [""] * 3
-        + ["om."] * 2
-        + [""] * 3
-        + ["ἄρτους Ch", "ἄρτος"]
-        + [""] * 9
-        + ["1"] * 4
-    )
-    res = gr_sem.var.compile_words_by_lemma(row, Source("Ch"))
-    assert res == ("ἄρτους Ch", 1)
-
-
 def test_build_content():
     sl_sem = MainLangSemantics(
         FROM_LANG,
@@ -608,3 +529,24 @@ def test_build_content():
         word="\ue201сть GH",
         lemmas=["бꙑт\ue205", "", "gramm."],
     )
+
+
+def test_collect_word_same():
+    rows = [
+        [""] * 4
+        + ["35/163a07", "въспꙗть", "\ue205 в\ue205дѣвъ• въ-", "въспѧть"]
+        + [""] * 3
+        + ["εἰς"] * 2
+        + ["εἰς τοὐπίσω"]
+        + [""] * 12
+        + ["hl11:FFFCD5B4"],
+        [""] * 5
+        + ["ₓ", ""] * 2
+        + [""] * 2
+        + ["τοὐπίσω", "ὁ"]
+        + [""] * 13
+        + ["hl11:FFFCD5B4|hl14:FFB8CCE4"],
+        [""] * 11 + ["=", "ὀπίσω"] + [""] * 13 + ["hl11:FFFCD5B4"],
+    ]
+
+    assert gr_sem.collect_word(rows) == "εἰς τοὐπίσω"

@@ -97,3 +97,9 @@ class Hiliting:
         # self.non_union_group_other = [
         #     r for r in self.non_gram_group_other if not _hilited_union(orig.other(), trans.other(), r)
         # ]
+
+        # if not hilited, means grouping is caused by SAME_CH
+        self.hilited = bool(self.group[0][STYLE_COL])
+
+    def __str__(self) -> str:
+        return f"Grouping is due to {'hiliting' if self.hilited else 'sameness'}"

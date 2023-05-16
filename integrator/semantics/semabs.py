@@ -5,8 +5,6 @@ from const import NON_LEMMAS
 from config import DEFAULT_SOURCES
 from model import Alternative, Path, Source
 
-from .util import remove_repetitions
-
 
 def alternatives(self, row: List[str], my_var: Source = Source()) -> Alternative:
     """
@@ -61,8 +59,8 @@ def build_paths(self, row: List[str]) -> List[Path]:
             and len(multilemmas) == 1
             and next(iter(multilemmas.keys())) == ""
         ):
-            s = {str(k) for k in paths.keys()}
-            keys = Source(remove_repetitions("".join(s)))
+            s = [str(k) for k in paths.keys()]
+            keys = Source(s)
             multilemmas = {keys: next(iter(multilemmas.values()))}
 
         for k, v in multilemmas.items():

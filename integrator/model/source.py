@@ -31,6 +31,21 @@ def _values(src: str) -> List[str]:
 ORDERED_SOURCES = VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG]
 
 
+def remove_repetitions(src: str = "") -> str:
+    split = set()
+    prev = ""
+    for c in src:
+        if c == c.lower():
+            split.add(prev + c)
+            prev = ""
+        else:
+            split.add(prev)
+            prev = c
+    if prev:
+        split.add(prev)
+    return "".join(split)
+
+
 class Source:
     """Represents a list of sources, could be one or two letter symbols
     >>> Source('MB').data
@@ -45,10 +60,10 @@ class Source:
     data: List[str] = []
 
     def __init__(self, other=None) -> None:
-        if type(other) == list:
-            self.src = "".join(other)
+        if type(other) == list or type(other) == set:
+            self.src = remove_repetitions("".join(other))
         elif type(other) == str:
-            self.src = other
+            self.src = remove_repetitions(other)
         elif type(other) == Source:
             self.src = other.src
         raw_values = _values(self.src.replace("-", ""))
@@ -111,7 +126,7 @@ class Source:
         return self._sort_vars()
 
     def __repr__(self) -> str:
-        return f"Source('{self.src}')"
+        return f"Source('{self}')"
         # return f"'{self.src}'"
 
     def __len__(self) -> int:
@@ -123,7 +138,50 @@ class Source:
         return l
 
     def __add__(self, other) -> "Source":
+        """
+        >>> (Source('G') + 'W')._sort_vars()
+        'WG'
+        """
+        # this if serves only to enable the sum() function
+        if type(other) == int and other == 0:
+            return self
         return Source(self.src + str(other))
+
+    def __radd__(self, other) -> "Source":
+        return self + other
+
+    def __sub__(self, other) -> "Source":
+        """
+        >>> Source("WGH") - "G"
+        Source('WH')
+        >>> Source("PPaPb") - "Pa"
+        Source('PbP')
+        >>> Source("PPaPb") - "P"
+        Source('PbPa')
+        >>> Source("PPaPb") - "M"
+        Source('PbPPa')
+        >>> Source("WGHPPaPb") - "GP"
+        Source('WHPbPa')
+        """
+        result = ""
+        sother = Source(other)
+        for lang in [FROM_LANG, TO_LANG]:
+            # print(lang)
+            if self.has_lang(lang) and sother.has_lang(lang):
+                mine = self.by_lang(lang)
+                # print(mine, sother.by_lang(lang))
+                for s in mine:
+                    if s not in sother.by_lang(lang):
+                        result += s
+                # print(result)
+        return Source(result)
+
+    def __invert__(self):
+        """
+        >>> ~Source('WG')
+        Source('H')
+        """
+        return Source(ORDERED_SOURCES) - self
 
     def __hash__(self) -> int:
         """
@@ -220,13 +278,13 @@ class Source:
         >>> Source("G").inside({Source("GH"): 1, Source("W"): 2})
         Source('GH')
         >>> Source("Pf").inside("PaPbPcPdPePf")
-        Source('PaPbPcPdPePf')
+        Source('PbPcPdPePfPa')
         >>> Source("PaPf").inside(["PaPbPcPdPePf"])
-        Source('PaPbPcPdPePf')
+        Source('PbPcPdPePfPa')
         >>> Source("Pa").inside([Source("PaPb"), Source("Pc")])
-        Source('PaPb')
+        Source('PbPa')
         >>> Source("Pk").inside(Source("PkPmPnPo"))
-        Source('PkPmPnPo')
+        Source('PkPoPmPn')
         >>> Source("").inside([Source("")])
         Source('')
         >>> Source("").inside([Source("G")])
@@ -315,3 +373,10 @@ class Source:
             if s in self:
                 res += str(s)
         return Source(res)
+
+    def key(self) -> int:
+        """Sorting key for SortedDict"""
+        if not self.data:
+            return 0
+        return ORDERED_SOURCES.index(self.data[0])
+        # return len(ORDERED_SOURCES) - ORDERED_SOURCES.index(self.data[0])
