@@ -50,7 +50,8 @@ def collect_word(self, group: List[List[str]], grouped=False) -> str:
         result = regroup(
             {k: " ".join(collected[k]) for k in collected if any(collected[k])}
         )
-    return " ".join([f"{v} {k}" if k else v for k, v in result.items() if v])
+    final = " ".join([f"{v} {k}" if k else v for k, v in result.items() if v])
+    return final
 
 
 def collect_lemma(

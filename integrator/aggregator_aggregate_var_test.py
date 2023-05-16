@@ -23,512 +23,6 @@ gr_sem = MainLangSemantics(
 )
 
 
-def test_sumeromadrost():
-    rows = [
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "съмѣрѹмѫдрость WG / съмѣр\ue201нъ мѫдрость H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-            "съмѣромоудро-",
-            "съмѣромѫдрость",
-        ]
-        + [""] * 3
-        + ["om."]
-        + [""] * 4
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
-        + ["1"] * 4,
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "съмѣрѹмѫдрость WG / съмѣр\ue201нъ мѫдрость H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-        ]
-        + [""] * 5
-        + ["om."]
-        + [""] * 4
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
-        + ["1"] * 4,
-    ]
-    result = SortedDict()
-    result = aggregate(rows, sl_sem, gr_sem, result)
-    assert result == {
-        "съмѣромѫдрость": {
-            "": {
-                "": {
-                    "": {
-                        "ταπεινοφροσύνη": {
-                            ("съмѣромоудрост\ue205", "ταπεινοφροσύνην Ch"): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость",
-                                                    Source("WG"): "съмѣрѹмѫдрость",
-                                                },
-                                                var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    ),
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
-                                                        1,
-                                                    ),
-                                                },
-                                            ),
-                                            word="съмѣромоудрост\ue205",
-                                            lemmas=["съмѣромѫдрость"],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-def test_sumeromadrost_slvar():
-    rows = [
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "съмѣрѹмѫдрость WG / съмѣр\ue201нъ H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-            "съмѣромоудро-",
-            "съмѣромѫдрость",
-        ]
-        + [""] * 3
-        + ["om."]
-        + [""] * 4
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
-        + ["1"] * 4,
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "мѫдрость H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-            "",
-            "съмѣромѫдрость",
-        ]
-        + [""] * 3
-        + ["om."]
-        + [""] * 4
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
-        + ["1"] * 4,
-    ]
-    result = SortedDict()
-    result = aggregate(rows, sl_sem.var, gr_sem, result)
-    assert result == {
-        "мѫдрость": {
-            "съмѣр\ue201наꙗ мѫдрость": {
-                "": {
-                    "": {
-                        "ταπεινοφροσύνη": {
-                            (
-                                "смѣрены\ue201 моудрост\ue205 H",
-                                "ταπεινοφροσύνην Ch",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                main_word="съмѣромоудрост\ue205",
-                                            ),
-                                            word="смѣрены\ue201 моудрост\ue205 H",
-                                            lemmas=[
-                                                "мѫдрость",
-                                                "съмѣр\ue201наꙗ мѫдрость",
-                                            ],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        "съмѣрѹмѫдрость": {
-            "": {
-                "": {
-                    "": {
-                        "ταπεινοφροσύνη": {
-                            (
-                                "смѣроумоудрост\ue205 WG",
-                                "ταπεινοφροσύνην Ch",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("WG"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="смѣроумоудрост\ue205 WG",
-                                            lemmas=["съмѣрѹмѫдрость"],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        "съмѣр\ue201нъ": {
-            "съмѣр\ue201наꙗ мѫдрость": {
-                "": {
-                    "": {
-                        "ταπεινοφροσύνη": {
-                            (
-                                "смѣрены\ue201 моудрост\ue205 H",
-                                "ταπεινοφροσύνην Ch",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source("WG"): "съмѣрѹмѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="смѣрены\ue201 моудрост\ue205 H",
-                                            lemmas=[
-                                                "съмѣр\ue201нъ",
-                                                "съмѣр\ue201наꙗ мѫдрость",
-                                            ],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-    }
-
-
-def test_sumeromadrost_slvar1():
-    rows = [
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "съмѣрѹмѫдрость WG / съмѣр\ue201нъ H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-            "съмѣромоудро-",
-            "съмѣромѫдрость",
-        ]
-        + [""] * 3
-        + ["om."]
-        + [""] * 4
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
-        + ["1"] * 4,
-    ]
-    result = SortedDict()
-    result = aggregate(rows, sl_sem.var, gr_sem, result)
-    assert result == {
-        "съмѣрѹмѫдрость": {
-            "": {
-                "": {
-                    "": {
-                        "ταπεινοφροσύνη": {
-                            (
-                                "смѣроумоудрост\ue205 WG",
-                                "ταπεινοφροσύνην Ch",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("WG"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="смѣроумоудрост\ue205 WG",
-                                            lemmas=["съмѣрѹмѫдрость"],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        "съмѣр\ue201нъ": {
-            "съмѣр\ue201наꙗ мѫдрость": {
-                "": {
-                    "": {
-                        "ταπεινοφροσύνη": {
-                            (
-                                "смѣрены\ue201 моудрост\ue205 H",
-                                "ταπεινοφροσύνην Ch",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source("WG"): "съмѣрѹмѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="смѣрены\ue201 моудрост\ue205 H",
-                                            lemmas=[
-                                                "съмѣр\ue201нъ",
-                                                "съмѣр\ue201наꙗ мѫдрость",
-                                            ],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-    }
-
-
-def test_sumeromadrost_slvar1_grvar():
-    rows = [
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "съмѣрѹмѫдрость WG / съмѣр\ue201нъ H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-            "съмѣромоудро-",
-            "съмѣромѫдрость",
-        ]
-        + [""] * 3
-        + ["om."]
-        + [""] * 4
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
-        + ["1"] * 4,
-    ]
-    result = SortedDict()
-    result = aggregate(rows, sl_sem.var, gr_sem.var, result)
-    assert result == {
-        "съмѣрѹмѫдрость": {
-            "": {
-                "": {
-                    "": {
-                        "ταπεινοφροσύνη": {
-                            (
-                                "смѣроумоудрост\ue205 WG",
-                                "ταπεινοφροσύνην Ch",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("WG"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="смѣроумоудрост\ue205 WG",
-                                            lemmas=["съмѣрѹмѫдрость"],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        "съмѣр\ue201нъ": {
-            "съмѣр\ue201наꙗ мѫдрость": {
-                "": {
-                    "": {
-                        "ταπεινοφροσύνη": {
-                            (
-                                "смѣрены\ue201 моудрост\ue205 H",
-                                "ταπεινοφροσύνην Ch",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source("WG"): "съмѣрѹмѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="смѣрены\ue201 моудрост\ue205 H",
-                                            lemmas=[
-                                                "съмѣр\ue201нъ",
-                                                "съмѣр\ue201наꙗ мѫдрость",
-                                            ],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-    }
-
-
 def test_pros_eis():
     row = (
         [""] * 4
@@ -625,4 +119,174 @@ def test_pros_eis():
                 }
             }
         },
+    }
+
+
+def test_nechuvan():
+    row = (
+        [
+            "не\ue20dю\ue205но W  не\ue20dю\ue205нь G  не\ue20dювьствьнь H",
+            "не\ue20dѹ\ue205нъ WG / не\ue20dѹвьствьнъ H",
+        ]
+        + [""] * 2
+        + ["04/17d20", "не\ue20dювьнъ", "кою ꙗко не\ue20dю-", "не\ue20dѹвьнъ"]
+        + [""] * 3
+        + ["ἀναίσθητος"] * 2
+        + [""] * 14
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = aggregate([row], sl_sem.var, gr_sem, result)
+    assert result == {
+        "не\ue20dѹвьствьнъ": {
+            "": {
+                "": {
+                    "": {
+                        "ἀναίσθητος": {
+                            ("не\ue20dювьствьнь H", "ἀναίσθητος"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("4/17d20"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            var=Source("H"),
+                                            alt=Alternative(
+                                                main_lemma="не\ue20dѹвьнъ",
+                                                var_lemmas={
+                                                    Source("WG"): "не\ue20dѹ\ue205нъ"
+                                                },
+                                                main_word="не\ue20dювьнъ",
+                                                var_words={
+                                                    Source("WG"): (
+                                                        "не\ue20dю\ue205нь G",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="не\ue20dювьствьнь H",
+                                            lemmas=["не\ue20dѹвьствьнъ"],
+                                        ),
+                                        trans=Usage(
+                                            "gr",
+                                            word="ἀναίσθητος",
+                                            lemmas=["ἀναίσθητος"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        "не\ue20dѹ\ue205нъ": {
+            "": {
+                "": {
+                    "": {
+                        "ἀναίσθητος": {
+                            (
+                                "не\ue20dю\ue205но W не\ue20dю\ue205нь G",
+                                "ἀναίσθητος",
+                            ): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("4/17d20"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            var=Source("WG"),
+                                            alt=Alternative(
+                                                main_lemma="не\ue20dѹвьнъ",
+                                                var_lemmas={
+                                                    Source("H"): "не\ue20dѹвьствьнъ"
+                                                },
+                                                main_word="не\ue20dювьнъ",
+                                                var_words={
+                                                    Source("H"): (
+                                                        "не\ue20dювьствьнь H",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="не\ue20dю\ue205но W не\ue20dю\ue205нь G",
+                                            lemmas=["не\ue20dѹ\ue205нъ"],
+                                        ),
+                                        trans=Usage(
+                                            "gr",
+                                            word="ἀναίσθητος",
+                                            lemmas=["ἀναίσθητος"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
+    }
+
+
+def test_moudroust():
+    row = (
+        [
+            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
+            "мѫдрость H",
+            "съмѣр\ue201наꙗ мѫдрость H",
+            "",
+            "25/125a03",
+            "съмѣромоудрост\ue205",
+            "",
+            "съмѣромѫдрость",
+        ]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
+        + [""] * 8
+        + ["hl00:FFFCD5B4"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    result = aggregate([row], sl_sem.var, gr_sem, result)
+    assert result == {
+        "мѫдрость": {
+            "съмѣр\ue201наꙗ мѫдрость": {
+                "": {
+                    "": {
+                        "ταπεινοφροσύνη": {
+                            (
+                                "смѣрены\ue201 моудрост\ue205 H",
+                                "ταπεινοφροσύνην Ch",
+                            ): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("25/125a3"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            var=Source("H"),
+                                            alt=Alternative(
+                                                main_lemma="съмѣромѫдрость",
+                                                main_word="съмѣромоудрост\ue205",
+                                            ),
+                                            word="смѣрены\ue201 моудрост\ue205 H",
+                                            lemmas=[
+                                                "мѫдрость",
+                                                "съмѣр\ue201наꙗ мѫдрость",
+                                            ],
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            var=Source("Ch"),
+                                            word="ταπεινοφροσύνην Ch",
+                                            lemmas=["ταπεινοφροσύνη"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }

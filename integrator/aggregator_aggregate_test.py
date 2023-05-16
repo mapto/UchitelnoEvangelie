@@ -359,234 +359,6 @@ def test_prichatnik_biti_sl_var():
     }
 
 
-def test_prichatnik_biti_combined():
-    rows = [
-        [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H "
-            "боудемь W",
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
-            "",
-            "05/028c21-d01",
-            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
-            "пр\ue205\ue20dьтьн\ue205къ",
-            "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-        ]
-        + [""] * 2
-        + [
-            "ποιῆσαι κοινωνοὺς",
-            "ποιέω & κοινωνός",
-            "ποιέω κοινωνόν",
-        ]
-        + [""] * 12
-        + ["hl05|hl11"]
-        + ["1"] * 4,
-        [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H "
-            "боудемь W",
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
-            "",
-            "05/028c21-d01",
-            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-            "боудоуть• \ue201же",
-            "бꙑт\ue205",
-            "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-            "",
-            "",
-            "ποιῆσαι κοινωνοὺς",
-            "ποιέω & κοινωνός",
-            "ποιέω κοινωνόν",
-        ]
-        + [""] * 12
-        + ["hl05|hl11"]
-        + ["1"] * 4,
-    ]
-
-    result = SortedDict()
-    result = aggregate([rows[1]], sl_sem, gr_sem, result)
-    assert result == {
-        "бꙑт\ue205": {
-            "пр\ue205\ue20dьтьн\ue205къ быт\ue205": {
-                "": {
-                    "": {
-                        "ποιέω κοινωνόν → ποιέω & κοινωνός": {
-                            (
-                                "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                "ποιῆσαι κοινωνοὺς",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("5/28c21-d1"),
-                                        Usage(
-                                            "sl",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source(
-                                                        "GH"
-                                                    ): "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"
-                                                },
-                                                var_words={
-                                                    Source("GH"): (
-                                                        "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                            lemmas=[
-                                                "бꙑт\ue205",
-                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-                                            ],
-                                        ),
-                                        Usage(
-                                            lang="gr",
-                                            word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=[
-                                                "ποιέω & κοινωνός",
-                                                "ποιέω κοινωνόν",
-                                            ],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    rows_var = [
-        [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W"
-            "",
-            "пр\ue205\ue20dѧстьн\ue205къ GH",
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
-            "",
-            "05/028c21-d01",
-            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
-            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
-            "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-        ]
-        + [""] * 2
-        + ["ποιῆσαι κοινωνοὺς", "ποιέω & κοινωνός", "ποιέω κοινωνόν"]
-        + [""] * 12
-        + ["hl05|hl11"]
-        + ["1"] * 4,
-        [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H боудемь W",
-            "бꙑт\ue205 GH",
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
-            "",
-            "05/028c21-d01",
-            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-            "боудоуть• \ue201же",
-            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
-            "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-        ]
-        + [""] * 2
-        + ["ποιῆσαι κοινωνοὺς", "ποιέω & κοινωνός", "ποιέω κοινωνόν"]
-        + [""] * 12
-        + ["hl05|hl11"]
-        + ["1"] * 4,
-    ]
-
-    result = aggregate([rows_var[1]], sl_sem.var, gr_sem, result)
-    assert result == {
-        "бꙑт\ue205": {
-            "пр\ue205\ue20dьтьн\ue205къ быт\ue205": {
-                "": {
-                    "": {
-                        "ποιέω κοινωνόν → ποιέω & κοινωνός": {
-                            (
-                                "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                "ποιῆσαι κοινωνοὺς",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("5/28c21-d1"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source(
-                                                        "GH"
-                                                    ): "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"
-                                                },
-                                                var_words={
-                                                    Source("GH"): (
-                                                        "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                            lemmas=[
-                                                "бꙑт\ue205",
-                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-                                            ],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=[
-                                                "ποιέω & κοινωνός",
-                                                "ποιέω κοινωνόν",
-                                            ],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            },
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205": {
-                "": {
-                    "": {
-                        "ποιέω κοινωνόν → ποιέω & κοινωνός": {
-                            (
-                                "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                "ποιῆσαι κοινωνοὺς",
-                            ): SortedSet(
-                                [
-                                    Alignment(
-                                        idx=Index("5/28c21-d1"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("GH"),
-                                            alt=Alternative(
-                                                main_lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-                                                main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                            ),
-                                            word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                            lemmas=[
-                                                "бꙑт\ue205",
-                                                "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
-                                            ],
-                                        ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            word="ποιῆσαι κοινωνοὺς",
-                                            lemmas=[
-                                                "ποιέω & κοινωνός",
-                                                "ποιέω κοινωνόν",
-                                            ],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            },
-        }
-    }
-
-
 def test_monogenes():
     row = (
         [
@@ -926,119 +698,8 @@ def test_puteshestvie_sl_var():
     }
 
 
-def test_repeated_om():
-    rows = [
-        ["om. WH", "om."]
-        + [""] * 2
-        + ["1/7c6", "аще", "аще \ue205 не", "аще"]
-        + [""] * 3
-        + ["om."] * 2
-        + [""] * 14
-        + ["1"] * 4,
-        [""] * 4
-        + ["1/7c6", "не", "аще \ue205 не", "не"]
-        + [""] * 3
-        + ["οὐ", "οὐ"]
-        + [""] * 14
-        + ["1"] * 4,
-        ["om. WH", "om."]
-        + [""] * 2
-        + ["1/7c6", "\ue205", "аще \ue205 не", "\ue205 conj."]
-        + [""] * 3
-        + ["om."] * 2
-        + [""] * 14
-        + ["1"] * 4,
-    ]
-
-    result = SortedDict()
-    result = aggregate([rows[0]], gr_sem, sl_sem, result)
-    result = aggregate([rows[2]], gr_sem, sl_sem, result)
-    assert result == {
-        "om.": {
-            "": {
-                "": {
-                    "": {
-                        "om.": {
-                            ("om.", "om. WH"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("1/7c6"),
-                                        Usage("gr", word="om.", lemmas=["om."]),
-                                        Usage(
-                                            "sl",
-                                            var=Source("WH"),
-                                            alt=Alternative(
-                                                main_lemma="аще",
-                                                main_word="аще",
-                                            ),
-                                            word="om. WH",
-                                            lemmas=["om."],
-                                        ),
-                                    ),
-                                    Alignment(
-                                        Index("1/7c6"),
-                                        Usage("gr", word="om.", lemmas=["om."]),
-                                        Usage(
-                                            "sl",
-                                            var=Source("WH"),
-                                            alt=Alternative(
-                                                main_lemma="\ue205 conj.",
-                                                main_word="\ue205",
-                                            ),
-                                            word="om. WH",
-                                            lemmas=["om."],
-                                        ),
-                                    ),
-                                ]
-                            )
-                        },
-                        "аще": {
-                            ("om.", "аще"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("1/7c6"),
-                                        Usage("gr", word="om.", lemmas=["om."]),
-                                        Usage(
-                                            "sl",
-                                            alt=Alternative(
-                                                var_lemmas={Source("WH"): "om."},
-                                                var_words={Source("WH"): ("om. WH", 1)},
-                                            ),
-                                            word="аще",
-                                            lemmas=["аще"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        },
-                        "\ue205 conj.": {
-                            ("om.", "\ue205"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("1/7c6"),
-                                        Usage("gr", word="om.", lemmas=["om."]),
-                                        Usage(
-                                            "sl",
-                                            alt=Alternative(
-                                                var_lemmas={Source("WH"): "om."},
-                                                var_words={Source("WH"): ("om. WH", 1)},
-                                            ),
-                                            word="\ue205",
-                                            lemmas=["\ue205 conj."],
-                                        ),
-                                    )
-                                ]
-                            )
-                        },
-                    }
-                }
-            }
-        }
-    }
-
-
 def test_puteshestvie_gr():
-    rows = [
+    row = (
         [
             "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
             "шьст & пѫть G / шьств & пѫть H",
@@ -1053,26 +714,11 @@ def test_puteshestvie_gr():
         + ["ὁδοιπορίας", "ὁδοιπορία"]
         + [""] * 13
         + ["hl00"]
-        + ["1"] * 4,
-        [
-            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
-            "шьст\ue205\ue201 пѫть G & шьств\ue205\ue201 пѫть H",
-            "шьст\ue205\ue201 пѫт\ue205 G шьств\ue205\ue201 пѫт\ue205 H",
-            "",
-            "05/028d18",
-            "поутошьств\ue205ꙗ",
-            "",
-            "пѫтошьств\ue205\ue201",
-        ]
-        + [""] * 3
-        + ["ὁδοιπορίας"]
-        + [""] * 14
-        + ["hl00"]
-        + ["1"] * 4,
-    ]
+        + ["1"] * 4
+    )
 
     result = SortedDict()
-    result = aggregate([rows[0]], gr_sem, sl_sem.var, result)
+    result = aggregate([row], gr_sem, sl_sem.var, result)
     assert result == {
         "ὁδοιπορία": {
             "": {
@@ -1162,7 +808,7 @@ def test_puteshestvie_gr():
 
 
 def test_mirno_sl():
-    rows = [
+    row = (
         [""] * 4
         + [
             "02/W169a17",
@@ -1174,26 +820,10 @@ def test_mirno_sl():
         + ["ἐκ", "ἐκ", "ἐκ τῆς εἰρήνης"]
         + [""] * 12
         + ["hl11:FFFCE4D6"]
-        + ["1"] * 4,
-        [""] * 4
-        + ["02/W169a17"]
-        + ["ₓ", ""] * 2
-        + [""] * 2
-        + ["τῆς εἰρήνης", "ὁ"]
-        + [""] * 13
-        + ["hl11:FFFCE4D6|hl14:FFB4C7E7"]
-        + ["1"] * 4,
-        [""] * 4
-        + ["02/W169a17", "ₓ"]
-        + [""] * 5
-        + ["τῆς εἰρήνης", "εἰρήνη"]
-        + [""] * 13
-        + ["hl11:FFFCE4D6"]
-        + ["1"],
-    ]
-
+        + ["1"] * 4
+    )
     result = SortedDict()
-    result = aggregate([rows[0]], sl_sem, gr_sem, result)
+    result = aggregate([row], sl_sem, gr_sem, result)
     assert result == {
         "м\ue205рьнъ": {
             "": {

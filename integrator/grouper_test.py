@@ -1,4 +1,4 @@
-from typing import List
+from const import IDX_COL
 
 from model import Source
 from setup import sl_sem, gr_sem
@@ -6,7 +6,7 @@ from hiliting import Hiliting
 
 from grouper import _merge_indices
 from grouper import _hilited, _hilited_gram
-from grouper import _group_variants, _update_group, _collect_group
+from grouper import _group_variants, _update_group, _collect_group, _close_group
 
 
 def test_hilited():
@@ -488,3 +488,66 @@ def test_merge_indices():
     ]
 
     assert _merge_indices(rows).longstr() == "05/024b21-c01"
+
+
+def test_close_group():
+    raw = [
+        [""] * 4
+        + ["19/94d08", "\ue205", "", "\ue205 conj."]
+        + [""] * 3
+        + ["κάγω", "καί"]
+        + [""] * 14,
+        [""] * 5 + ["аꙁ", "", "аꙁъ"] + [""] * 3 + ["=", "ἐγώ"] + [""] * 14,
+        [""] * 4
+        + [
+            "02/W169a17",
+            "м\ue205рно\ue201•",
+            "да\ue201 бран\ue205• ꙋтѣшен\ue205\ue201 м\ue205-",
+            "м\ue205рьнъ",
+        ]
+        + [""] * 3
+        + ["ἐκ", "ἐκ", "ἐκ τῆς εἰρήνης"]
+        + [""] * 12
+        + ["hl11:AAAAAAAA"],
+        [""] * 5
+        + ["ₓ", ""] * 2
+        + [""] * 2
+        + ["τῆς", "ὁ"]
+        + [""] * 13
+        + ["hl11:AAAAAAAA|hl14:AAAAAAAA"],
+        [""] * 11 + ["εἰρήνης", "εἰρήνη"] + [""] * 13 + ["hl11:AAAAAAAA"],
+    ]
+    group = [r.copy() + ["1"] * 4 for r in raw[2:]]
+    for r in group:
+        r[IDX_COL] = "02/W169a17"
+
+    h = Hiliting(group, sl_sem, gr_sem)
+    res = _close_group(group, sl_sem, gr_sem, h)
+    assert res == [
+        [""] * 4
+        + [
+            "02/W169a17",
+            "м\ue205рно\ue201• ₓ",
+            "да\ue201 бран\ue205• ꙋтѣшен\ue205\ue201 м\ue205-",
+            "м\ue205рьнъ",
+        ]
+        + [""] * 3
+        + ["ἐκ τῆς εἰρήνης", "ἐκ & εἰρήνη", "ἐκ τῆς εἰρήνης"]
+        + [""] * 12
+        + ["hl11:AAAAAAAA"]
+        + ["1"] * 4,
+        [""] * 4
+        + ["02/W169a17", "м\ue205рно\ue201• ₓ", "", "ₓ"]
+        + [""] * 3
+        + ["ἐκ τῆς εἰρήνης", "ὁ"]
+        + [""] * 13
+        + ["hl11:AAAAAAAA|hl14:AAAAAAAA"]
+        + ["1"] * 4,
+        [""] * 4
+        + ["02/W169a17", "м\ue205рно\ue201• ₓ"]
+        + [""] * 5
+        + ["ἐκ τῆς εἰρήνης", "ἐκ & εἰρήνη", "ἐκ τῆς εἰρήνης"]
+        + [""] * 12
+        + ["hl11:AAAAAAAA"]
+        + ["1"] * 4,
+    ]

@@ -32,7 +32,10 @@ def alternatives(self, row: List[str], my_var: Source = Source()) -> Alternative
             rem = v.remainder(alt_var[0].keys())
             if rem:
                 alt_var[0][rem] = new_var[0][v]
-                alt_var[1][rem] = new_var[1][v]
+                # iterate over sources in words, to catch all that are covered by this lemma
+                for lv in new_var[1].keys():
+                    if lv in v:
+                        alt_var[1][rem] = new_var[1][lv]
 
     return Alternative(alt_main[0], alt_var[0], alt_main[1], alt_var[1], alt_main[2])
 

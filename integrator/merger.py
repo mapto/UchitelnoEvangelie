@@ -140,8 +140,6 @@ def merge(
         try:
             row = [clean_word(v) if v else "" for v in raw]
 
-            # if "19/94d08" in row[IDX_COL] or "2/W169a17" in row[IDX_COL]:
-            # if "05/28c21" in row[IDX_COL] or "05/28d01" in row[IDX_COL]:
             # if "18/89c21" in row[IDX_COL]:
             #     print(row)
 

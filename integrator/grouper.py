@@ -166,17 +166,29 @@ def _close_group(
     group: List[List[str]], orig: LangSemantics, trans: MainLangSemantics, h: Hiliting
 ) -> List[List[str]]:
     """Close a group formed by highlighting."""
-    # populate variants equal to main
     assert orig.main  # for mypy
     variants = _group_variants(group, orig.main)
     if variants:
         for row in group:
+            # populate variants equal to main
             if (
                 present(row, orig.other())
                 and row[orig.word]
                 and not row[orig.other().word]
             ):
                 row[orig.other().word] = f"{row[orig.word]} {variants}"
+            # populate variants in lemma from word, if left implicit
+            elif orig == orig.var and row[orig.lemmas[0]]:
+                ml = orig.multiword(row).keys()
+                mw = orig.multiword(row).keys()
+                lv = str(next(iter(ml)))
+                wv = str(next(iter(mw)))
+                if (
+                    len(mw) == len(ml) == 1
+                    and ml == mw
+                    and not row[orig.lemmas[0]].endswith(lv)
+                ):
+                    row[orig.lemmas[0]] = f"{row[orig.lemmas[0]]} {wv}"
 
     line = _collect_group(group, orig, trans, h)
     try:

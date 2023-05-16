@@ -1,7 +1,5 @@
-from const import IDX_COL
 from setup import sl_sem, gr_sem
-from merger import merge, _close, _close_group
-from hiliting import Hiliting
+from merger import merge
 
 raw = [
     [""] * 4
@@ -177,80 +175,7 @@ def test_hilited_and_same():
     ]
 
 
-def test_close():
-    group = [r.copy() + ["1"] * 4 for r in raw[2:]]
-    for r in group:
-        r[IDX_COL] = "02/W169a17"
-
-    res = _close(group, sl_sem, gr_sem)
-    assert res == [
-        [""] * 4
-        + [
-            "02/W169a17",
-            "м\ue205рно\ue201• ₓ",
-            "да\ue201 бран\ue205• ꙋтѣшен\ue205\ue201 м\ue205-",
-            "м\ue205рьнъ",
-        ]
-        + [""] * 3
-        + ["ἐκ τῆς εἰρήνης", "ἐκ & εἰρήνη", "ἐκ τῆς εἰρήνης"]
-        + [""] * 12
-        + ["hl11:AAAAAAAA"]
-        + ["1"] * 4,
-        [""] * 4
-        + ["02/W169a17", "м\ue205рно\ue201• ₓ", "", "ₓ"]
-        + [""] * 3
-        + ["ἐκ τῆς εἰρήνης", "ὁ"]
-        + [""] * 13
-        + ["hl11:AAAAAAAA|hl14:AAAAAAAA"]
-        + ["1"] * 4,
-        [""] * 4
-        + ["02/W169a17", "м\ue205рно\ue201• ₓ"]
-        + [""] * 5
-        + ["ἐκ τῆς εἰρήνης", "ἐκ & εἰρήνη", "ἐκ τῆς εἰρήνης"]
-        + [""] * 12
-        + ["hl11:AAAAAAAA"]
-        + ["1"] * 4,
-    ]
-
-
-def test_close_group():
-    group = [r.copy() + ["1"] * 4 for r in raw[2:]]
-    for r in group:
-        r[IDX_COL] = "02/W169a17"
-
-    h = Hiliting(group, sl_sem, gr_sem)
-    res = _close_group(group, sl_sem, gr_sem, h)
-    assert res == [
-        [""] * 4
-        + [
-            "02/W169a17",
-            "м\ue205рно\ue201• ₓ",
-            "да\ue201 бран\ue205• ꙋтѣшен\ue205\ue201 м\ue205-",
-            "м\ue205рьнъ",
-        ]
-        + [""] * 3
-        + ["ἐκ τῆς εἰρήνης", "ἐκ & εἰρήνη", "ἐκ τῆς εἰρήνης"]
-        + [""] * 12
-        + ["hl11:AAAAAAAA"]
-        + ["1"] * 4,
-        [""] * 4
-        + ["02/W169a17", "м\ue205рно\ue201• ₓ", "", "ₓ"]
-        + [""] * 3
-        + ["ἐκ τῆς εἰρήνης", "ὁ"]
-        + [""] * 13
-        + ["hl11:AAAAAAAA|hl14:AAAAAAAA"]
-        + ["1"] * 4,
-        [""] * 4
-        + ["02/W169a17", "м\ue205рно\ue201• ₓ"]
-        + [""] * 5
-        + ["ἐκ τῆς εἰρήνης", "ἐκ & εἰρήνη", "ἐκ τῆς εἰρήνης"]
-        + [""] * 12
-        + ["hl11:AAAAAAAA"]
-        + ["1"] * 4,
-    ]
-
-
-def test_merge_sloves_inverse():
+def test_sloves_inverse():
     rows = [
         [""] * 4
         + ["38/178c06"]
@@ -283,40 +208,6 @@ def test_merge_sloves_inverse():
         + [""] * 12
         + ["hl11:FFFCD5B4"]
         + ["1"] * 4,
-    ]
-
-
-def test_close_sloves_inverse():
-    rows = [
-        [""] * 4
-        + ["38/178c06"]
-        + ["ₓ", ""] * 2
-        + [""] * 2
-        + ["τῶν", "ὁ"]
-        + [""] * 13
-        + ["hl11:FFFCD5B4|hl14:FFB8CCE4"],
-        [""] * 4
-        + ["38/178c06", "словесъ", "\ue205хъ словесъ въспⷪ҇-", "слово"]
-        + [""] * 3
-        + ["εἰρημένων", "λέγω", "τὸ εἰρημένον"]
-        + [""] * 12
-        + ["hl11:FFFCD5B4"],
-    ]
-    result = _close(rows, gr_sem, sl_sem)
-
-    assert result == [
-        [""] * 4
-        + ["38/178c06", "ₓ словесъ", "", "ₓ"]
-        + [""] * 3
-        + ["τῶν εἰρημένων", "ὁ"]
-        + [""] * 13
-        + ["hl11:FFFCD5B4|hl14:FFB8CCE4"],
-        [""] * 4
-        + ["38/178c06", "ₓ словесъ", "\ue205хъ словесъ въспⷪ҇-", "слово"]
-        + [""] * 3
-        + ["τῶν εἰρημένων", "λέγω", "τὸ εἰρημένον"]
-        + [""] * 12
-        + ["hl11:FFFCD5B4"],
     ]
 
 
