@@ -19,7 +19,7 @@ raw = [
 ]
 
 
-def test_merge_raspetou():
+def test_raspetou():
     rows = [r.copy() for r in raw]
     result = merge(rows, sl_sem, gr_sem)
 
@@ -51,7 +51,7 @@ def test_merge_raspetou():
     ]
 
 
-def test_merge_raspetou_var():
+def test_raspetou_var():
     rows = [r.copy() for r in raw]
     result = merge(rows, sl_sem.var, gr_sem)
 
@@ -88,7 +88,7 @@ def test_merge_raspetou_var():
     ]
 
 
-def test_merge_raspetou_inverse():
+def test_raspetou_inverse():
     rows = [r.copy() for r in raw]
     result = merge(rows, gr_sem, sl_sem)
 
@@ -117,4 +117,48 @@ def test_merge_raspetou_inverse():
         + [""] * 13
         + ["hl05:FFFCD5B4|hl08:FFFFFFFF|hl09:FFB8CCE4"]
         + ["1"] * 4,
+    ]
+
+
+def test_v():
+    row = [
+        "",
+        "",
+        "",
+        "",
+        "35/162a10",
+        "въ",
+        "въ \ue205ер\ue205хѫ• съвы-",
+        "въ",
+        "въ + Acc.",
+        "",
+        "",
+        "om.",
+        "om.",
+        "",
+        "",
+        "",
+        "εἰς MPePgPkR πρὸς PhPi",
+        "εἰς MPePgPkR / πρός PhPi",
+        "πρός + Acc. PhPi",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "bold|italic",
+    ]
+    result = merge([row], gr_sem.var, sl_sem)
+    assert result == [
+        [""] * 4
+        + ["35/162a10", "въ", "въ \ue205ер\ue205хѫ• съвы-", "въ", "въ + Acc."]
+        + [""] * 2
+        + ["om."] * 2
+        + [""] * 3
+        + ["εἰς MPePgPkR πρὸς PhPi", "εἰς MPePgPkR / πρός PhPi", "πρός + Acc. PhPi"]
+        + [""] * 7
+        + ["bold|italic"]
+        + ["1"] * 4
     ]
