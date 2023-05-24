@@ -177,3 +177,47 @@ def test_smeromoudroust():
         + ["hl00:FFFCD5B4"]
         + ["1"] * 4,
     ]
+
+
+def test_v():
+    row = [
+        "",
+        "",
+        "",
+        "",
+        "35/162a10",
+        "въ",
+        "въ \ue205ер\ue205хѫ• съвы-",
+        "въ",
+        "въ + Acc.",
+        "",
+        "",
+        "om.",
+        "om.",
+        "",
+        "",
+        "",
+        "εἰς MPePgPkR πρὸς PhPi",
+        "εἰς MPePgPkR / πρός PhPi",
+        "πρός + Acc. PhPi",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "bold|italic",
+    ]
+    result = merge([row], gr_sem.var, sl_sem)
+    assert result == [
+        [""] * 4
+        + ["35/162a10", "въ", "въ \ue205ер\ue205хѫ• съвы-", "въ", "въ + Acc."]
+        + [""] * 2
+        + ["om."] * 2
+        + [""] * 3
+        + ["εἰς MPePgPkR πρὸς PhPi", "εἰς MPePgPkR / πρός PhPi", "πρός + Acc. PhPi"]
+        + [""] * 7
+        + ["bold|italic"]
+        + ["1"] * 4
+    ]

@@ -171,12 +171,12 @@ def _collect_missing_var_lemma(
         for s, l in r.items():
             if s in v:
                 addition.add(f"{l} {s}")
-
-    syntetic_rows = [[""] * STYLE_COL for i in range(len(addition) + 1)]
+    # TODO: refactor to not have to create a whole synthetic group
+    synth_rows = [[""] * STYLE_COL for i in range(len(addition) + 1)]
     for i, a in enumerate(addition):
-        syntetic_rows[i][orig.lemmas[0]] = a
-    syntetic_rows[-1][orig.lemmas[0]] = row[orig.lemmas[0]]
-    return orig.collect_lemma(syntetic_rows, orig.lemmas[0], H_LEMMA_SEP)
+        synth_rows[i][orig.lemmas[0]] = a
+    synth_rows[-1][orig.lemmas[0]] = row[orig.lemmas[0]]
+    return orig.collect_lemma(synth_rows, orig.lemmas[0], H_LEMMA_SEP)
 
 
 def _close_group(
