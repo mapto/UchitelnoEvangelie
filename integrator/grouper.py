@@ -1,7 +1,7 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Set
 import logging as log
 
-from const import IDX_COL, STYLE_COL, V_LEMMA_SEP
+from const import H_LEMMA_SEP, IDX_COL, STYLE_COL, V_LEMMA_SEP
 
 from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, present
@@ -162,6 +162,23 @@ def _update_group(
     return group
 
 
+def _collect_missing_var_lemma(
+    group: List[List[str]], orig: LangSemantics, row: List[str], v: Source
+) -> str:
+    collected = [orig.multilemma(r) for r in group]
+    addition: Set[str] = set()
+    for r in collected:
+        for s, l in r.items():
+            if s in v:
+                addition.add(f"{l} {s}")
+
+    syntetic_rows = [[""] * STYLE_COL for i in range(len(addition) + 1)]
+    for i, a in enumerate(addition):
+        syntetic_rows[i][orig.lemmas[0]] = a
+    syntetic_rows[-1][orig.lemmas[0]] = row[orig.lemmas[0]]
+    return orig.collect_lemma(syntetic_rows, orig.lemmas[0], H_LEMMA_SEP)
+
+
 def _close_group(
     group: List[List[str]], orig: LangSemantics, trans: MainLangSemantics, h: Hiliting
 ) -> List[List[str]]:
@@ -179,7 +196,7 @@ def _close_group(
                 row[orig.other().word] = f"{row[orig.word]} {variants}"
             # populate variants in lemma from word, if left implicit
             elif orig == orig.var and row[orig.lemmas[0]]:
-                ml = orig.multiword(row).keys()
+                ml = orig.multilemma(row).keys()
                 mw = orig.multiword(row).keys()
                 lv = str(next(iter(ml)))
                 wv = str(next(iter(mw)))
@@ -189,6 +206,13 @@ def _close_group(
                     and not row[orig.lemmas[0]].endswith(lv)
                 ):
                     row[orig.lemmas[0]] = f"{row[orig.lemmas[0]]} {wv}"
+                    ml = orig.multilemma(row).keys()
+                mls = Source([str(s) for s in ml])
+                if mls in variants:
+                    v = variants - mls
+                    row[orig.lemmas[0]] = _collect_missing_var_lemma(
+                        group, orig, row, v
+                    )
 
     line = _collect_group(group, orig, trans, h)
     try:

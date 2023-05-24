@@ -395,3 +395,107 @@ def test_gr_dat():
             }
         }
     }
+
+
+def test_nechuvstven():
+    row = (
+        [
+            "не\ue20dю\ue205но W  не\ue20dю\ue205нь G  не\ue20dювьствьнь H",
+            "не\ue20dѹ\ue205нъ WG / не\ue20dѹвьствьнъ H",
+        ]
+        + [""] * 2
+        + ["04/17d20", "не\ue20dювьнъ", "кою ꙗко не\ue20dю-", "не\ue20dѹвьнъ"]
+        + [""] * 3
+        + ["ἀναίσθητος", "ἀναίσθητος"]
+        + [""] * 14
+        + [1] * 4
+    )
+    result = SortedDict()
+    result = _agg_lemma(row, sl_sem.var, gr_sem, result)
+    assert result == {
+        "не\ue20dѹвьствьнъ": {
+            "": {
+                "": {
+                    "": {
+                        "ἀναίσθητος": {
+                            ("не\ue20dювьствьнь H", "ἀναίσθητος"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("4/17d20"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            var=Source("H"),
+                                            alt=Alternative(
+                                                main_lemma="не\ue20dѹвьнъ",
+                                                var_lemmas={
+                                                    Source("WG"): "не\ue20dѹ\ue205нъ"
+                                                },
+                                                main_word="не\ue20dювьнъ",
+                                                var_words={
+                                                    Source("WG"): (
+                                                        "не\ue20dю\ue205но W не\ue20dю\ue205нь G",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="не\ue20dювьствьнь H",
+                                            lemmas=["не\ue20dѹвьствьнъ"],
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            word="ἀναίσθητος",
+                                            lemmas=["ἀναίσθητος"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        "не\ue20dѹ\ue205нъ": {
+            "": {
+                "": {
+                    "": {
+                        "ἀναίσθητος": {
+                            (
+                                "не\ue20dю\ue205но W не\ue20dю\ue205нь G",
+                                "ἀναίσθητος",
+                            ): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("4/17d20"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            var=Source("WG"),
+                                            alt=Alternative(
+                                                main_lemma="не\ue20dѹвьнъ",
+                                                var_lemmas={
+                                                    Source("H"): "не\ue20dѹвьствьнъ"
+                                                },
+                                                main_word="не\ue20dювьнъ",
+                                                var_words={
+                                                    Source("H"): (
+                                                        "не\ue20dювьствьнь H",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="не\ue20dю\ue205но W не\ue20dю\ue205нь G",
+                                            lemmas=["не\ue20dѹ\ue205нъ"],
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            word="ἀναίσθητος",
+                                            lemmas=["ἀναίσθητος"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        },
+    }

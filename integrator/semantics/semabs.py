@@ -35,7 +35,15 @@ def alternatives(self, row: List[str], my_var: Source = Source()) -> Alternative
                 # iterate over sources in words, to catch all that are covered by this lemma
                 for lv in new_var[1].keys():
                     if lv in v:
-                        alt_var[1][rem] = new_var[1][lv]
+                        if rem in alt_var[1]:
+                            # TODO: what to do with repetitions
+                            assert alt_var[1][rem][1] == new_var[1][lv][1]
+                            alt_var[1][rem] = (
+                                f"{alt_var[1][rem][0]} {new_var[1][lv][0]}",
+                                alt_var[1][rem][1],
+                            )
+                        else:
+                            alt_var[1][rem] = new_var[1][lv]
 
     return Alternative(alt_main[0], alt_var[0], alt_main[1], alt_var[1], alt_main[2])
 

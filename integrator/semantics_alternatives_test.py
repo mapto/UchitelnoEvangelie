@@ -388,3 +388,30 @@ def test_main_level_alternatives_sumeromadrost():
             Source("WG"): ("смѣроумоудрост\ue205 WG", 1),
         },
     )
+
+
+def test_nechuvstven():
+    row = (
+        [
+            "не\ue20dю\ue205но W  не\ue20dю\ue205нь G  не\ue20dювьствьнь H",
+            "не\ue20dѹ\ue205нъ WG / не\ue20dѹвьствьнъ H",
+        ]
+        + [""] * 2
+        + ["04/17d20", "не\ue20dювьнъ", "кою ꙗко не\ue20dю-", "не\ue20dѹвьнъ"]
+        + [""] * 3
+        + ["ἀναίσθητος", "ἀναίσθητος"]
+        + [""] * 14
+        + [1] * 4
+    )
+    result = sl_sem.var.alternatives(row, Source("H"))
+    assert result == Alternative(
+        main_lemma="не\ue20dѹвьнъ",
+        var_lemmas={Source("WG"): "не\ue20dѹ\ue205нъ"},
+        main_word="не\ue20dювьнъ",
+        var_words={
+            Source("WG"): (
+                "не\ue20dю\ue205но W не\ue20dю\ue205нь G",
+                1,
+            )
+        },
+    )

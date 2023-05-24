@@ -158,7 +158,7 @@ def test_nechuvan():
                                                 main_word="не\ue20dювьнъ",
                                                 var_words={
                                                     Source("WG"): (
-                                                        "не\ue20dю\ue205нь G",
+                                                        "не\ue20dю\ue205но W не\ue20dю\ue205нь G",
                                                         1,
                                                     )
                                                 },

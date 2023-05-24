@@ -8,7 +8,7 @@ from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
 from config import FROM_LANG, TO_LANG, other_lang
-from const import INDENT_CH, SPECIAL_CHARS
+from const import BULLET_CH, INDENT_CH, SPECIAL_CHARS
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 from util import main_source, subscript
@@ -161,13 +161,14 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         #    return
 
         par = doc.add_paragraph()
-        par.style = doc.styles[BULLET_STYLE]
+        # par.style = doc.styles[BULLET_STYLE]
         par.style.font.name = GENERIC_FONT
         par.paragraph_format.space_before = Cm(0)
         par.paragraph_format.space_after = Cm(0)
-        par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 4)
+        par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 3)
+        ft = t if t[0] in SPECIAL_CHARS else f"{BULLET_CH} {t}"
 
-        _generate_text(par, t, fonts[trans_lang])
+        _generate_text(par, ft, fonts[trans_lang])
         _generate_counts(par, bottom_d, True)
 
         run = par.add_run()
