@@ -106,6 +106,8 @@ def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
     {Source('WG'): 'хⷪ҇домь спѣюще', Source('H'): 'ход\ue205т\ue205 с пѣн\ue205\ue201мь'}
     >>> regroup({Source('G'): 'ꙗко обраꙁомь', Source('H'): 'ꙗко \ue205 обраꙁомь', Source('W'): 'ꙗко обраꙁомь'})
     {Source('WG'): 'ꙗко обраꙁомь', Source('H'): 'ꙗко \ue205 обраꙁомь'}
+    >>> regroup({Source('Mi'): 'τὰ ἑξῆς', Source('Pc'): 'τὰ ἑξῆς', Source('Pd'): 'τὰ ἑξῆς', Source('Pe'): 'τὰ ἑξῆς', Source('Pg'): 'τὰ ἑξῆς', Source('Ph'): 'τὰ ἑξῆς', Source('Pi'): 'τὰ ἑξῆς', Source('Pk'): 'τὰ ἑξῆς', Source('Pp'): 'τὰ ἑξῆς', Source('T'): 'τὰ ἑξῆς', Source('V'): 'τὰ ἑξῆς', Source('Va'): 'τὰ ἑξῆς', Source('Vb'): 'τὰ ἑξῆς', Source('Vd'): 'τὰ ἑξῆς', Source('Y'): 'τὰ ἑξῆς', Source('Za'): 'τὰ ἑξῆς', Source('A'): 'τὰ ἑξῆς', Source('Fd'): 'τὰ ἑξῆς', Source('L'): 'τὰ ἑξῆς', Source('B'): 'τὰ ἑξῆς', Source('Pa'): 'τὰ ἑξῆς', Source('Po'): 'τὰ ἑξῆς', Source('Sp'): 'τὰ ἑξῆς'})
+    {Source('MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp'): 'τὰ ἑξῆς'}
     """
     if not d:
         return d

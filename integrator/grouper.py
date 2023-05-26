@@ -210,6 +210,8 @@ def _close_group(
                 mls = Source([str(s) for s in ml])
                 if mls in variants:
                     v = variants - mls
+                    if not v:
+                        continue
                     row[orig.lemmas[0]] = _collect_missing_var_lemma(
                         group, orig, row, v
                     )

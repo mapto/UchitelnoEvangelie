@@ -26,17 +26,18 @@ def collect_word(self, group: List[List[str]], grouped=False) -> str:
         for k, v in self.multiword(row).items():
             if not v.strip():
                 continue
-            for s in k:
-                # print(s, type(s), v)
+            for si in k:
+                s = Source(si)
                 if s not in collected:
                     collected[s] = []
                 collected[s] += [v.strip()]
     if grouped:
         flipped = {}
-        for k, v in collected.items():
+        for ki, v in collected.items():
+            k = Source(ki)
             t = tuple(v)
             if t not in flipped:
-                flipped[t] = Source(k)
+                flipped[t] = k
             else:
                 flipped[t] += k
         result = regroup(
@@ -48,7 +49,7 @@ def collect_word(self, group: List[List[str]], grouped=False) -> str:
         )
     else:
         result = regroup(
-            {k: " ".join(collected[k]) for k in collected if any(collected[k])}
+            {Source(k): " ".join(collected[k]) for k in collected if any(collected[k])}
         )
     final = " ".join([f"{v} {k}" if k else v for k, v in result.items() if v])
     return final
@@ -68,10 +69,12 @@ def collect_lemma(
         for k, v in m.items():
             current = list(iter(k))
             # for each source in variants group
-            for cur_s in current:
+            for cur_si in current:
+                cur_s = Source(cur_si)
                 found = False
                 # for each of the previously detected variant sources
-                for src in collected:
+                for srci in collected:
+                    src = Source(srci)
                     if cur_s in src:
                         found = True
                         if cur_s != src:

@@ -197,6 +197,9 @@ class Source:
         >>> [x for x in Source('WGH-BCsMSpCh')]
         ['W', 'G', 'H', 'Cs', 'M', 'B', 'Sp', 'Ch']
         """
+        # if not self.data:
+        #     return ()
+        # return (Source(i) for i in self.data)
         return iter(self.data)
 
     def __contains__(self, other) -> bool:
@@ -212,6 +215,8 @@ class Source:
         >> Source('PaPb') in Source('MPaPb')
         True
         >> Source('MP') in Source('MPaPb')
+        False
+        >>> Source('V') in Source('Vd')
         False
         >>> Source('M') in Source('GWH')
         False
@@ -254,7 +259,7 @@ class Source:
 
         s = list(self)
         o = list(other)
-        for i, x in enumerate(self):
+        for i in range(len(s)):
             if o[i] > s[i]:
                 return False
             if o[i] < s[i]:

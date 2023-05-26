@@ -221,3 +221,77 @@ def test_v():
         + ["bold|italic"]
         + ["1"] * 4
     ]
+
+
+def test_i_procii():
+    rows = [
+        [""] * 4
+        + ["05/29d09", "\ue205", "\ue205 жьнѧ\ue205 • \ue205 про-", "\ue205 conj."]
+        + [""] * 3
+        + ["om."]
+        + [""] * 15,
+        [""] * 4
+        + ["05/29d09"]
+        + ["ₓ", ""] * 2
+        + [""] * 2
+        + ["om."]
+        + [""] * 4
+        + ["τὰ MiPcPdPePgPhPiPkPpTVaVbVdYZaBSpPaLAVPoFd", "ὁ"]
+        + [""] * 8
+        + ["hl16:FFFCD5B4|hl19:FFB8CCE4"],
+        [""] * 4
+        + [
+            "05/29d09",
+            "про\ue20dе\ue201•",
+            "\ue205 жьнѧ\ue205 • \ue205 про-",
+            "про\ue20d\ue205\ue205",
+        ]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + ["ἑξῆς MiPcPdPePgPhPiPkPpTVaVbVdYZaBSpPaLAVPoFd", "ἑξῆς", "ὁ ἑξῆς"]
+        + [""] * 7
+        + ["hl16:FFFCD5B4"],
+    ]
+    result = merge(rows, gr_sem.var, sl_sem)
+    assert result == [
+        # ['',  '',  '',  '',  '05/29d09',  '\ue205',  '\ue205 жьнѧ\ue205 • \ue205 про-',  '\ue205 conj.',  '',  '',  '',  'om.',  '',  '',  '',  '',  '',  '',  '',  '',  '',  '',  '',  '',  '',  '',  '',  '1',  '1',  '1',  '1'],
+        [""] * 4
+        + ["05/29d09", "\ue205", "\ue205 жьнѧ\ue205 • \ue205 про-", "\ue205 conj."]
+        + [""] * 3
+        + ["om."]
+        + [""] * 15
+        + ["1"] * 4,
+        # ['τὰ ἑξῆς MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp',  'ὁ MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp',  '',  '',  '',  '',  '',  '',  '',  '',  'hl16:FFFCD5B4|hl19:FFB8CCE4',  '1',  '1',  '1',  '1'],
+        [""] * 4
+        + ["05/29d09"]
+        + ["ₓ про\ue20dе\ue201•", "", "ₓ"]
+        + [""] * 3
+        + ["om. om."]
+        + [""] * 4
+        + [
+            "τὰ ἑξῆς MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp",
+            "ὁ MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp",
+        ]
+        + [""] * 8
+        + ["hl16:FFFCD5B4|hl19:FFB8CCE4"]
+        + ["1"] * 4,
+        [""] * 4
+        + ["05/029d09"]
+        + [
+            "ₓ про\ue20dе\ue201•",
+            "\ue205 жьнѧ\ue205 • \ue205 про-",
+            "про\ue20d\ue205\ue205",
+        ]
+        + [""] * 3
+        + ["om. om."]
+        + [""] * 4
+        + [
+            "τὰ ἑξῆς MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp",
+            "ἑξῆς MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp",
+            "ὁ ἑξῆς MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp",
+        ]
+        + [""] * 7
+        + ["hl16:FFFCD5B4"]
+        + ["1"] * 4,
+    ]

@@ -216,3 +216,53 @@ def test_smeromoudrost():
         + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
         + [""] * 8
     )
+
+
+def test_i_procii():
+    rows = [
+        [""] * 4
+        + ["05/029d09"]
+        + ["ₓ", ""] * 2
+        + [""] * 2
+        + ["om."]
+        + [""] * 4
+        + [
+            "τὰ MiPcPdPePgPhPiPkPpTVaVbVdYZaBSpPaLAVPoFd",
+            "ὁ MiPcPdPePgPhPiPkPpTVaVbVdYZaBSpPaLAVPoFd",
+        ]
+        + [""] * 8
+        + ["hl16:FFFCD5B4|hl19:FFB8CCE4"],
+        [""] * 4
+        + [
+            "05/29d09",
+            "про\ue20dе\ue201•",
+            "\ue205 жьнѧ\ue205 • \ue205 про-",
+            "про\ue20d\ue205\ue205",
+        ]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + [
+            "ἑξῆς MiPcPdPePgPhPiPkPpTVaVbVdYZaBSpPaLAVPoFd",
+            "ἑξῆς MiPcPdPePgPhPiPkPpTVaVbVdYZaBSpPaLAVPoFd",
+            "ὁ ἑξῆς",
+        ]
+        + [""] * 7
+        + ["hl16:FFFCD5B4"],
+    ]
+    h = Hiliting(rows, sl_sem.var, gr_sem)
+    result = _collect_group(rows, gr_sem.var, sl_sem, h)
+    assert (
+        result
+        == [""] * 5
+        + ["ₓ про\ue20dе\ue201•", "", "про\ue20d\ue205\ue205"]
+        + [""] * 3
+        + ["om. om."]
+        + [""] * 4
+        + [
+            "τὰ ἑξῆς MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp",
+            "",
+            "ὁ ἑξῆς MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp",
+        ]
+        + [""] * 7
+    )
