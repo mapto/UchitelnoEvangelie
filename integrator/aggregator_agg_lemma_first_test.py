@@ -158,75 +158,298 @@ def test_first():
     }
 
 
-def test_2_H():
+def test_missing_gr_main():
     row = (
-        [
-            "смѣроумоудрост\ue205 WG смѣрены\ue201 моудрост\ue205 H",
-            "съмѣрѹмѫдрость WG / съмѣр\ue201нъ H",
-            "съмѣр\ue201наꙗ мѫдрость H",
-            "",
-            "25/125a03",
-            "съмѣромоудрост\ue205",
-            "съмѣромоудро-",
-            "съмѣромѫдрость",
-        ]
+        [""] * 4
+        + ["16/80a08", "хлѣбꙑ•", "ре\ue20dе хлѣбꙑ• не", "хлѣбъ"]
         + [""] * 3
         + ["om."] * 2
         + [""] * 3
-        + ["ταπεινοφροσύνην Ch", "ταπεινοφροσύνη Ch"]
-        + [""] * 8
-        + ["hl00:FFFCD5B4"]
+        + ["ἄρτους Ch", "ἄρτος"]
+        + [""] * 9
         + ["1"] * 4
     )
     result = SortedDict()
-    result = _agg_lemma(row, sl_sem.var, gr_sem, result, 2, Source("H"), "om.")
+    result = _agg_lemma(row, gr_sem.var, sl_sem, result)
     assert result == {
-        "съмѣр\ue201наꙗ мѫдрость": {
+        "ἄρτος": {
             "": {
                 "": {
-                    "om.": {
-                        ("смѣрены\ue201 моудрост\ue205 H", "om."): SortedSet(
-                            [
-                                Alignment(
-                                    idx=Index("25/125a3"),
-                                    orig=Usage(
-                                        lang="sl",
-                                        var=Source("H"),
-                                        alt=Alternative(
-                                            main_lemma="съмѣромѫдрость",
-                                            var_lemmas={Source("WG"): "съмѣрѹмѫдрость"},
-                                            main_word="съмѣромоудрост\ue205",
-                                            var_words={
-                                                Source("WG"): (
-                                                    "смѣроумоудрост\ue205 WG",
-                                                    1,
-                                                )
-                                            },
+                    "": {
+                        "хлѣбъ": {
+                            ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
+                                [
+                                    Alignment(
+                                        Index("16/80a8"),
+                                        Usage(
+                                            "gr",
+                                            var=Source("Ch"),
+                                            alt=Alternative(
+                                                main_lemma="om.",
+                                                main_word="om.",
+                                            ),
+                                            word="ἄρτους Ch",
+                                            lemmas=["ἄρτος"],
                                         ),
-                                        word="смѣрены\ue201 моудрост\ue205 H",
-                                        lemmas=[
-                                            "съмѣр\ue201нъ",
-                                            "съмѣр\ue201наꙗ мѫдрость",
-                                        ],
-                                    ),
-                                    trans=Usage(
-                                        lang="gr",
-                                        alt=Alternative(
-                                            var_lemmas={Source("Ch"): "ταπεινοφροσύνη"},
-                                            var_words={
-                                                Source("Ch"): ("ταπεινοφροσύνην Ch", 1)
-                                            },
+                                        Usage(
+                                            lang="sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]
                                         ),
-                                        word="om.",
-                                        lemmas=["om."],
-                                    ),
-                                )
-                            ]
-                        )
+                                    )
+                                ]
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+
+
+def test_hodom_spiti():
+    row = (
+        [
+            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
+            "ходъ WG",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/072d18-19",
+            "ход\ue205мъ спѣюще•",
+            "д\ue205мъ спѣюще•",
+            "спѣт\ue205",
+            "≈ ход\ue205т\ue205 спѣѭще",
+        ]
+        + [""] * 2
+        + ["προβαίνοντες", "προβαίνω"]
+        + [""] * 13
+        + ["hl05"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    _agg_lemma(row, sl_sem, gr_sem, result)
+    # _agg_lemma(row_var, sl_sem.var, gr_sem, result)
+    assert result == {
+        "спѣт\ue205": {
+            "≈ ход\ue205т\ue205 спѣѭще": {
+                "": {
+                    "": {
+                        "προβαίνω": {
+                            ("ход\ue205мъ спѣюще•", "προβαίνοντες"): SortedSet(
+                                [
+                                    Alignment(
+                                        Index("14/72d18-19"),
+                                        Usage(
+                                            "sl",
+                                            alt=Alternative(
+                                                var_lemmas={
+                                                    Source("WG"): "ходомь спѣт\ue205"
+                                                },
+                                                var_words={
+                                                    Source("WG"): (
+                                                        "хⷪ҇домь спѣюще WG",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="ход\ue205мъ спѣюще•",
+                                            lemmas=[
+                                                "спѣт\ue205",
+                                                "≈ ход\ue205т\ue205 спѣѭще",
+                                            ],
+                                        ),
+                                        Usage(
+                                            lang="gr",
+                                            word="προβαίνοντες",
+                                            lemmas=["προβαίνω"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+def test_hodom_spiti_var():
+    row = (
+        [
+            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
+            "",
+            "ходомь спѣт\ue205 WG",
+            "",
+            "14/072d18-19",
+            "ход\ue205мъ спѣюще•",
+            "д\ue205мъ спѣюще•",
+            "ход\ue205т\ue205 спѣт\ue205",
+            "≈ ход\ue205т\ue205 спѣѭще",
+        ]
+        + [""] * 2
+        + ["προβαίνοντες", "προβαίνω"]
+        + [""] * 13
+        + ["hl05"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    _agg_lemma(row, sl_sem.var, gr_sem, result)
+    # _agg_lemma(row_var, sl_sem.var, gr_sem, result)
+    assert result == {
+        "": {
+            "ходомь спѣт\ue205 WG": {
+                "": {
+                    "": {
+                        "προβαίνω": {
+                            ("", "προβαίνοντες"): SortedSet(
+                                [
+                                    Alignment(
+                                        Index("14/72d18-19"),
+                                        Usage(
+                                            "sl",
+                                            alt=Alternative(
+                                                var_lemmas={
+                                                    Source("WG"): "ходомь спѣт\ue205"
+                                                },
+                                                var_words={
+                                                    Source("WG"): (
+                                                        "хⷪ҇домь спѣюще WG",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                        ),
+                                        Usage(
+                                            lang="gr",
+                                            word="προβαίνοντες",
+                                            lemmas=["προβαίνω"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+def test_shestvie_first():
+    row = (
+        [
+            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
+            "шьст\ue205\ue201 G / шьств\ue205\ue201 H",
+            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
+            "",
+            "05/028d18",
+            "поутошьств\ue205ꙗ",
+            "поутошьств\ue205-",
+            "пѫтошьств\ue205\ue201",
+        ]
+        + [""] * 3
+        + ["ὁδοιπορίας", "ὁδοιπορία"]
+        + [""] * 13
+        + ["hl00"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    result = _agg_lemma(row, sl_sem.var, gr_sem, result)
+    assert result == {
+        "шьств\ue205\ue201": {
+            "шьств\ue205\ue201 пѫт\ue205": {
+                "": {
+                    "": {
+                        "ὁδοιπορία": {
+                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
+                                [
+                                    Alignment(
+                                        Index("5/28d18"),
+                                        Usage(
+                                            "sl",
+                                            Source("H"),
+                                            Alternative(
+                                                main_lemma="пѫтошьств\ue205\ue201",
+                                                var_lemmas={
+                                                    Source(
+                                                        "G"
+                                                    ): "шьст\ue205\ue201 пѫт\ue205"
+                                                },
+                                                main_word="поутошьств\ue205ꙗ",
+                                                var_words={
+                                                    Source("G"): (
+                                                        "шьст\ue205ꙗ пꙋт\ue205 G",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="шьств\ue205ꙗ пꙋт\ue205 H",
+                                            lemmas=[
+                                                "шьств\ue205\ue201",
+                                                "шьств\ue205\ue201 пѫт\ue205",
+                                            ],
+                                        ),
+                                        Usage(
+                                            lang="gr",
+                                            word="ὁδοιπορίας",
+                                            lemmas=["ὁδοιπορία"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+        },
+        "шьст\ue205\ue201": {
+            "шьст\ue205\ue201 пѫт\ue205": {
+                "": {
+                    "": {
+                        "ὁδοιπορία": {
+                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
+                                [
+                                    Alignment(
+                                        Index("5/28d18"),
+                                        Usage(
+                                            "sl",
+                                            var=Source("G"),
+                                            alt=Alternative(
+                                                main_lemma="пѫтошьств\ue205\ue201",
+                                                var_lemmas={
+                                                    Source(
+                                                        "H"
+                                                    ): "шьств\ue205\ue201 пѫт\ue205"
+                                                },
+                                                main_word="поутошьств\ue205ꙗ",
+                                                var_words={
+                                                    Source("H"): (
+                                                        "шьств\ue205ꙗ пꙋт\ue205 H",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="шьст\ue205ꙗ пꙋт\ue205 G",
+                                            lemmas=[
+                                                "шьст\ue205\ue201",
+                                                "шьст\ue205\ue201 пѫт\ue205",
+                                            ],
+                                        ),
+                                        Usage(
+                                            lang="gr",
+                                            word="ὁδοιπορίας",
+                                            lemmas=["ὁδοιπορία"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+        },
     }
 
 
@@ -498,4 +721,46 @@ def test_nechuvstven():
                 }
             }
         },
+    }
+
+
+def test_greh():
+    row = (
+        [""] * 4
+        + ["05/17b12", "грѣхъм\ue205", "оубо ꙗко грѣ-", "грѣхъ", "#"]
+        + [""] * 2
+        + ["υἱός"] * 2
+        + [""] * 14
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = _agg_lemma(row, sl_sem, gr_sem, result)
+    assert result == {
+        "грѣхъ": {
+            "": {
+                "": {
+                    "": {
+                        "# υἱός": {
+                            ("грѣхъм\ue205", "υἱός"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("5/17b12"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            word="грѣхъм\ue205",
+                                            lemmas=["грѣхъ"],
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            word="υἱός",
+                                            lemmas=["# υἱός"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }

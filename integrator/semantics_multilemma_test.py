@@ -371,3 +371,15 @@ def test_pros_eis():
         Source("MPePgPkR"): "εἰς",
     }
     assert gr_sem.var.multilemma(row, 1) == {Source("PhPi"): "πρός + Acc."}
+
+
+def test_greh_reorganised():
+    row = (
+        [""] * 4
+        + ["05/17b12", "грѣхъм\ue205", "оубо ꙗко грѣ-", "грѣхъ"]
+        + [""] * 3
+        + ["υἱός", "# υἱός"]
+        + [""] * 14
+        + ["1"] * 4
+    )
+    assert gr_sem.multilemma(row) == {Source(""): "# υἱός"}

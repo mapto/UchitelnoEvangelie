@@ -1,11 +1,11 @@
 # rm -rf dist && mkdir dist
 
+VARIANT=cdrx
+# VARIANT=batonogov
+
 cd extractor
 
 VER=`cat extractor.py | grep "__version__ = " | awk -F "\"" '{print $2}'`
-# VARIANT=cdrx
-VARIANT=batonogov
-
 printf "\n\n>> Building extractor for windows\n\n"
 docker run -v "$(pwd):/src/" "$VARIANT/pyinstaller-windows"
 mv dist/windows/extractor.exe ../dist/extractor-$VER.exe

@@ -17,6 +17,9 @@ BULLET_CH = "∙"  # or ●
 SAME_CH = "="
 MISSING_CH = "ₓ"  # used when untranslatable
 EMPTY_CH = "Ø"  # used when text has intended to have no translation
+
+# TODO: These special characters are actually semantic annotation,
+# so it makes sense to have them represented in the Alignment model
 SPECIAL_CHARS = ["*", "≠", "≈", "#"]  # # - for contextual translation
 
 ERR_SUBLEMMA = "err. pro"

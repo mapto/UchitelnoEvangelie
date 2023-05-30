@@ -6,7 +6,7 @@ from typing import List, Optional, Dict
 import logging as log
 from sortedcontainers import SortedDict  # type: ignore
 
-from const import IDX_COL, MISSING_CH
+from const import IDX_COL, MISSING_CH, SPECIAL_CHARS
 
 from util import ord_word, base_word
 
@@ -24,6 +24,30 @@ def _multilemma(row: List[str], sem: LangSemantics, lidx: int = 0) -> Dict[Sourc
         return {}
     assert sem
     return sem.multilemma(row, lidx)
+
+
+def reorganise_special(
+    row: List[str], orig: LangSemantics, trans: LangSemantics
+) -> List[str]:
+    """In cases when a sublemma contains only a special character,
+    this should not show up as a level in the lemma hierarchy,
+    but appended to the translation word usage"""
+    # remove sublemma
+    olast = next(
+        iter(i for i in range(len(orig.lemmas) - 1, -1, -1) if row[orig.lemmas[i]])
+    )
+    special = row[orig.lemmas[olast]]
+    row[orig.lemmas[olast]] = ""
+    # add special_char sublemma to translation
+    tlast = next(
+        iter(i for i in range(len(trans.lemmas) - 1, -1, -1) if row[trans.lemmas[i]])
+    )
+    # print(tlast)
+    # if not tlast:
+    #     row[trans.lemmas[1]] = f"{special} {row[trans.lemmas[0]]}"
+    # else:
+    row[trans.lemmas[tlast]] = f"{special} {row[trans.lemmas[tlast]]}"
+    return row
 
 
 def _agg_lemma(
@@ -92,6 +116,14 @@ def _agg_lemma(
         if oliv and olemvar and oliv not in olemvar:
             continue
         nxt = base_word(oli)
+        if nxt in SPECIAL_CHARS:
+            row = reorganise_special(row, orig, trans)
+            nxt = ""
+            # TODO: combination of multilemmas and standalone special symbols not implemented
+            assert trans == trans.main
+            multilemma = trans.multilemma(row)
+            assert len(multilemma) == 1
+            tlemma = next(iter(multilemma.values()))
         if nxt not in d:
             d[nxt] = SortedDict(ord_word)
         # pick last present lemma source

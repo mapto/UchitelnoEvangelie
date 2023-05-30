@@ -128,7 +128,9 @@ def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
         for s in basic:
             if s in l and d[l]:
                 listed[s] += [d[l]]
-    result = {k: glue.join(listed[k]) for k in reversed(listed) if listed[k]}
+    # Complicated for backwards compatibility with python3.7 (see build.sh -> cdrx)
+    reversed_sources = reversed(list(listed.keys()))
+    result = {k: glue.join(listed[k]) for k in reversed_sources if listed[k]}
 
     # merge variants that are equal
     flipped: Dict[str, Source] = {}

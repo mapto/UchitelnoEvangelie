@@ -110,6 +110,27 @@ def test_hoditi_spiti():
     assert gr_sem.collect_word(rows) == "προβαίνοντες"
 
 
+def test_collect_word_same():
+    rows = [
+        [""] * 4
+        + ["35/163a07", "въспꙗть", "\ue205 в\ue205дѣвъ• въ-", "въспѧть"]
+        + [""] * 3
+        + ["εἰς"] * 2
+        + ["εἰς τοὐπίσω"]
+        + [""] * 12
+        + ["hl11:FFFCD5B4"],
+        [""] * 5
+        + ["ₓ", ""] * 2
+        + [""] * 2
+        + ["τοὐπίσω", "ὁ"]
+        + [""] * 13
+        + ["hl11:FFFCD5B4|hl14:FFB8CCE4"],
+        [""] * 11 + ["=", "ὀπίσω"] + [""] * 13 + ["hl11:FFFCD5B4"],
+    ]
+
+    assert gr_sem.collect_word(rows) == "εἰς τοὐπίσω"
+
+
 """
 def test_iako_obrazom():
     rows = [

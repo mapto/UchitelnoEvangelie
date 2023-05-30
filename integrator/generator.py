@@ -166,7 +166,7 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         par.paragraph_format.space_before = Cm(0)
         par.paragraph_format.space_after = Cm(0)
         par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 4)
-        #ft = t if t[0] in SPECIAL_CHARS else f"{BULLET_CH} {t}"
+        # ft = t if t[0] in SPECIAL_CHARS else f"{BULLET_CH} {t}"
 
         _generate_text(par, t, fonts[trans_lang])
         _generate_counts(par, bottom_d, True)

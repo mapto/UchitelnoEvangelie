@@ -674,8 +674,8 @@ def test_vidit():
 def test_prichatnik_biti():
     rows = [
         [
-            "пр\ue205\ue20dестьн\ue205ц\ue205 б• G  пр\ue205\ue20dестн\ue205ц\ue205 б• H",
-            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "престьнц G  престнц H прьтьнц W",
+            "прѧстьнкъ GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
             "05/28c21",
@@ -688,7 +688,7 @@ def test_prichatnik_biti():
         + ["ποιῆσαι", "ποιέω", "ποιέω κοινωνόν"]
         + [""] * 12
         + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
-        ["боудемь W", ""]
+        ["боудемь W боудоть GH", "бꙑт\ue205 GH"]
         + [""] * 2
         + ["05/28d01", "боудоуть", "боудоуть• \ue201же", "бꙑт\ue205"]
         + [""] * 3
@@ -700,8 +700,7 @@ def test_prichatnik_biti():
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem.var, gr_sem)
     assert res == [
         [
-            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H"
-            "",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 боудоть G пр\ue205\ue20dестн\ue205ц\ue205 боудоть H",
             "пр\ue205\ue20dѧстьн\ue205къ GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
@@ -716,8 +715,8 @@ def test_prichatnik_biti():
         + [""] * 12
         + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
-            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
-            "",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 боудоть G пр\ue205\ue20dестн\ue205ц\ue205 боудоть H",
+            "бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
             "05/028c21-d01",
@@ -735,8 +734,8 @@ def test_prichatnik_biti():
     res = _close([rows[0].copy(), rows[1].copy()], sl_sem, gr_sem)
     assert res == [
         [
-            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
-            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 боудоть G пр\ue205\ue20dестн\ue205ц\ue205 боудоть H",
+            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
             "05/028c21-d01",
@@ -750,8 +749,8 @@ def test_prichatnik_biti():
         + [""] * 12
         + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
-            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
-            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 боудоть G пр\ue205\ue20dестн\ue205ц\ue205 боудоть H",
+            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
             "05/028c21-d01",
@@ -769,8 +768,9 @@ def test_prichatnik_biti():
     res = _close([rows[0].copy(), rows[1].copy()], gr_sem, sl_sem)
     assert res == [
         [
-            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
-            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 "
+            "боудоть G пр\ue205\ue20dестн\ue205ц\ue205 боудоть H",
+            "пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
             "05/028c21-d01",
@@ -784,8 +784,8 @@ def test_prichatnik_biti():
         + [""] * 12
         + ["hl05:AAAAAAAA|hl11:AAAAAAAA"],
         [
-            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 б• G пр\ue205\ue20dестн\ue205ц\ue205 б• H",
-            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 боудоть G пр\ue205\ue20dестн\ue205ц\ue205 боудоть H",
+            "пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205 GH",
             "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
             "",
             "05/028c21-d01",

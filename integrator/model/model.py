@@ -75,6 +75,14 @@ class Alternative:
 class Path:
     """The full collection of lemmas is considered a backtracking path in the final usage hierarchy.
     Gramatical annotation is handled exceptionally.
+    >>> Path(['# υἱός'])
+    Path(parts=['# υἱός'], annotation='')
+    >>> str(Path(['# υἱός']))
+    '# υἱός'
+    >>> Path(["θεός", "Gen."])
+    Path(parts=['θεός', 'Gen.'], annotation='')
+    >>> str(Path(["θεός", "Gen."]))
+    'Gen. → θεός'
     """
 
     parts: List[str] = field(default_factory=lambda: [])
@@ -92,13 +100,16 @@ class Path:
 
     def __str__(self):
         """We want to see results in reverse order.
-        Also, if last part is special character, display it smarter"""
+        Also, if last part is special character, display it smarter
+        """
         parts = self.parts.copy()
-        if parts:
+        if len(parts) > 1:
             if parts[-1][0] in SPECIAL_CHARS and parts[-1].endswith(parts[-2]):
                 parts.pop(-2)
             content = PATH_SEP.join(parts[::-1])
             return f"{content} {self.annotation}" if self.annotation else content
+        elif len(parts) == 1:
+            return f"{parts[0]} {self.annotation}" if self.annotation else parts[0]
         return self.annotation if self.annotation else ""
 
     def compile(self):

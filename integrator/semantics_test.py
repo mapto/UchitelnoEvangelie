@@ -1,6 +1,6 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
-from config import FROM_LANG, TO_LANG
+from config import FROM_LANG
 from const import STYLE_COL
 from model import Alternative, Index, Path, Source, Alignment, Usage
 from semantics import MainLangSemantics, VarLangSemantics
@@ -148,13 +148,6 @@ def test_build_paths_puteshestive():
         VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
 
     rows = [
         [
@@ -194,6 +187,20 @@ def test_build_paths_puteshestive():
         Path(parts=["шьств\ue205\ue201", "шьств\ue205\ue201 пѫт\ue205"]),
         Path(parts=["шьст\ue205\ue201", "шьст\ue205\ue201 пѫт\ue205"]),
     ]
+
+
+def test_build_paths_bozhii():
+    row = (
+        ["б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H", "бож\ue205\ue205"]
+        + [""] * 2
+        + ["1/7a4", "боꙁѣ", "о боꙁѣ словес\ue205•", "богъ", "Dat."]
+        + [""] * 2
+        + ["Θεοῦ", "θεός", "Gen."]
+        + [""] * 13
+        + ["1"] * 4
+    )
+    assert sl_sem.build_paths(row) == [Path(parts=["богъ"], annotation="Dat.")]
+    assert gr_sem.build_paths(row) == [Path(parts=["θεός"], annotation="Gen.")]
 
 
 def test_add_usage():
@@ -496,13 +503,6 @@ def test_build_content():
         VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
         cnt_col=STYLE_COL + 1,
     )
-    gr_sem = MainLangSemantics(
-        TO_LANG,
-        11,
-        [12, 13, 14, 15],
-        VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20], cnt_col=STYLE_COL + 4),
-        cnt_col=STYLE_COL + 3,
-    )
 
     row = (
         [
@@ -529,24 +529,3 @@ def test_build_content():
         word="\ue201сть GH",
         lemmas=["бꙑт\ue205", "", "gramm."],
     )
-
-
-def test_collect_word_same():
-    rows = [
-        [""] * 4
-        + ["35/163a07", "въспꙗть", "\ue205 в\ue205дѣвъ• въ-", "въспѧть"]
-        + [""] * 3
-        + ["εἰς"] * 2
-        + ["εἰς τοὐπίσω"]
-        + [""] * 12
-        + ["hl11:FFFCD5B4"],
-        [""] * 5
-        + ["ₓ", ""] * 2
-        + [""] * 2
-        + ["τοὐπίσω", "ὁ"]
-        + [""] * 13
-        + ["hl11:FFFCD5B4|hl14:FFB8CCE4"],
-        [""] * 11 + ["=", "ὀπίσω"] + [""] * 13 + ["hl11:FFFCD5B4"],
-    ]
-
-    assert gr_sem.collect_word(rows) == "εἰς τοὐπίσω"

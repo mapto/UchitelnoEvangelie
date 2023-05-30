@@ -907,3 +907,37 @@ def test_prichatnik():
             )
         }
     }
+
+
+def test_greh():
+    row = (
+        [""] * 4
+        + ["05/17b12", "грѣхъм\ue205", "оубо ꙗко грѣ-", "грѣхъ"]
+        + [""] * 3
+        + ["υἱός", "# υἱός"]
+        + [""] * 14
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = sl_sem.compile_usages(gr_sem, row, result, "# υἱός")
+    assert result == {
+        "# υἱός": {
+            ("грѣхъм\ue205", "υἱός"): SortedSet(
+                [
+                    Alignment(
+                        idx=Index("5/17b12"),
+                        orig=Usage(
+                            lang="sl",
+                            word="грѣхъм\ue205",
+                            lemmas=["грѣхъ"],
+                        ),
+                        trans=Usage(
+                            lang="gr",
+                            word="υἱός",
+                            lemmas=["# υἱός"],
+                        ),
+                    )
+                ]
+            )
+        }
+    }
