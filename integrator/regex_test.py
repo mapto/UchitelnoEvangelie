@@ -1,6 +1,6 @@
 import re
 
-from regex import counter_regex
+from regex import counter_regex, multilemma_regex
 
 # from config import source_regex
 
@@ -18,3 +18,13 @@ def test_counter():
 
 #     # Non UE
 #     assert re.fullmatch(source_regex, "D56D58")
+
+
+def test_multilemma():
+    m = re.search(multilemma_regex, "διά + Gen")
+    assert m.group(1) == "διά "
+    assert m.group(2) == "+ Gen"
+
+    m = re.search(multilemma_regex, "διά + Gen.")
+    assert m.group(1) == "διά "
+    assert m.group(2) == "+ Gen."

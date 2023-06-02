@@ -250,7 +250,7 @@ def test_i_procii():
         + [""] * 7
         + ["hl16:FFFCD5B4"],
     ]
-    h = Hiliting(rows, sl_sem.var, gr_sem)
+    h = Hiliting(rows, gr_sem.var, sl_sem)
     result = _collect_group(rows, gr_sem.var, sl_sem, h)
     assert (
         result
@@ -265,4 +265,32 @@ def test_i_procii():
             "ὁ ἑξῆς MiPcPdPePgPhPiPkPpTVVaVbVdYZaAFdLBPaPoSp",
         ]
         + [""] * 7
+    )
+
+
+def test_gen_lemma2():
+    rows = [
+        [""] * 4
+        + ["14/71c11", "въ\ue205ноу", "ща въ\ue205ноу• по-", "въ\ue205нѫ"]
+        + [""] * 3
+        + ["διηνεκῶς"] * 2
+        + [""] * 3
+        + ["διὰ MVPa", "διά", "διά + Gen", "διὰ παντός"]
+        + [""] * 6
+        + ["hl16:FFFCD5B5|hl18:FF92D050"],
+        [""] * 16 + ["παντός MVPa", "πᾶς"] + [""] * 8 + ["hl16:FFFCD5B5"],
+    ]
+
+    h = Hiliting(rows, gr_sem.var, sl_sem)
+    result = _collect_group(rows, gr_sem.var, sl_sem, h)
+
+    assert (
+        result
+        == [""] * 5
+        + ["въ\ue205ноу", "", "въ\ue205нѫ"]
+        + [""] * 3
+        + ["διηνεκῶς"] * 2
+        + [""] * 3
+        + ["διὰ παντός MVPa", "", "", "διὰ παντός MVPa"]
+        + [""] * 6
     )

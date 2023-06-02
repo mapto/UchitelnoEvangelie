@@ -383,3 +383,18 @@ def test_greh_reorganised():
         + ["1"] * 4
     )
     assert gr_sem.multilemma(row) == {Source(""): "# υἱός"}
+
+
+def test_gen_lemma2():
+    row = (
+        [""] * 4
+        + ["14/71c11", "въ\ue205ноу", "ща въ\ue205ноу• по-", "въ\ue205нѫ"]
+        + [""] * 3
+        + ["διηνεκῶς"] * 2
+        + [""] * 3
+        + ["διὰ MVPa", "διά", "διά + Gen", "διὰ παντός"]
+        + [""] * 6
+        + ["hl16:FFFCD5B5|hl18:FF92D050"]
+    )
+
+    assert gr_sem.var.multilemma(row, 1) == {Source("MVPa"): "διά + Gen"}

@@ -29,7 +29,7 @@ multilemma_regex = (
     # r"^([^A-Z\+]+)(\+\s\w+\.\s?)?("
     r"^"
     + word_regex
-    + r"(\+\s\w+\.\s?)?("
+    + r"(\+\s\w+\.?\s?)?("
     + sources_regex
     + r"+)?(\s*["
     + f"\\{V_LEMMA_SEP}\\{H_LEMMA_SEP}"
