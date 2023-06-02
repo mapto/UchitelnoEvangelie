@@ -8,7 +8,7 @@ OIFS="$IFS"
 IFS=$'\n'
 
 cd $1
-for FILENAME in `find . -type f -name "*.xlsx"`; do
+for FILENAME in `find . -type f -name "*.xlsx" | sort`; do
     echo $FILENAME
     $SCRIPT_DIR/integrator/integrator.py -s $FILENAME
 done
