@@ -764,3 +764,94 @@ def test_greh():
             }
         }
     }
+
+
+def test_sakazati():
+    row = (
+        [""] * 4
+        + [
+            "28/133a04",
+            "съкаꙁа\ue201мо•",
+            "влѧ\ue201ть съка-",
+            "съкаꙁат\ue205",
+            "съкаꙁа\ue201мо",
+            "≈",
+            "",
+            "om.",
+        ]
+        + [""] * 4
+        + ["μυστικῶς"] * 2
+        + [""] * 8
+        + ["hl22:FFA9A9A9|hl20:FFA9A9A9"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    result = _agg_lemma(row.copy(), sl_sem, gr_sem.var, result)
+    assert result == {
+        "съкаꙁат\ue205": {
+            "съкаꙁа\ue201мо": {
+                "": {
+                    "": {
+                        "≈ μυστικῶς": {
+                            ("съкаꙁа\ue201мо•", "μυστικῶς Cs"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("28/133a4"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            word="съкаꙁа\ue201мо•",
+                                            lemmas=["съкаꙁат\ue205", "съкаꙁа\ue201мо"],
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            var=Source("Cs"),
+                                            word="μυστικῶς Cs",
+                                            lemmas=["≈ μυστικῶς"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    result = SortedDict()
+    result = _agg_lemma(row.copy(), gr_sem.var, sl_sem, result)
+    assert result == {
+        "μυστικῶς": {
+            "": {
+                "": {
+                    "": {
+                        "≈ съкаꙁа\ue201мо → съкаꙁат\ue205": {
+                            ("μυστικῶς Cs", "съкаꙁа\ue201мо•"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("28/133a4"),
+                                        orig=Usage(
+                                            lang="gr",
+                                            var=Source("Cs"),
+                                            word="μυστικῶς Cs",
+                                            lemmas=["μυστικῶς"],
+                                        ),
+                                        trans=Usage(
+                                            lang="sl",
+                                            word="съкаꙁа\ue201мо•",
+                                            lemmas=[
+                                                "съкаꙁат\ue205",
+                                                "съкаꙁа\ue201мо",
+                                                "≈",
+                                            ],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }

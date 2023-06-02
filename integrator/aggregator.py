@@ -120,7 +120,6 @@ def _agg_lemma(
             row = reorganise_special(row, orig, trans)
             nxt = ""
             # TODO: combination of multilemmas and standalone special symbols not implemented
-            assert trans == trans.main
             multilemma = trans.multilemma(row)
             assert len(multilemma) == 1
             tlemma = next(iter(multilemma.values()))

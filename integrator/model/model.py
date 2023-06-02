@@ -77,12 +77,8 @@ class Path:
     Gramatical annotation is handled exceptionally.
     >>> Path(['# υἱός'])
     Path(parts=['# υἱός'], annotation='')
-    >>> str(Path(['# υἱός']))
-    '# υἱός'
     >>> Path(["θεός", "Gen."])
     Path(parts=['θεός', 'Gen.'], annotation='')
-    >>> str(Path(["θεός", "Gen."]))
-    'Gen. → θεός'
     """
 
     parts: List[str] = field(default_factory=lambda: [])
@@ -101,11 +97,21 @@ class Path:
     def __str__(self):
         """We want to see results in reverse order.
         Also, if last part is special character, display it smarter
+        >>> str(Path(["θεός", "Gen."]))
+        'Gen. → θεός'
+        >>> str(Path(['съкаꙁат\ue205', 'съкаꙁа\ue201мо', '≈']))
+        '≈ съкаꙁа\ue201мо → съкаꙁат\ue205'
+        >>> str(Path(['# υἱός']))
+        '# υἱός'
         """
         parts = self.parts.copy()
         if len(parts) > 1:
-            if parts[-1][0] in SPECIAL_CHARS and parts[-1].endswith(parts[-2]):
-                parts.pop(-2)
+            if parts[-1][0] in SPECIAL_CHARS:
+                if len(parts[-1]) == 1:
+                    parts[-2] = f"{parts[-1]} {parts[-2]}"
+                    parts.pop(-1)
+                elif parts[-1].endswith(parts[-2]):
+                    parts.pop(-2)
             content = PATH_SEP.join(parts[::-1])
             return f"{content} {self.annotation}" if self.annotation else content
         elif len(parts) == 1:

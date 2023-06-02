@@ -28,3 +28,7 @@ def test_multilemma():
     m = re.search(multilemma_regex, "διά + Gen.")
     assert m.group(1) == "διά "
     assert m.group(2) == "+ Gen."
+
+    m = re.search(multilemma_regex, "πρός +Acc.")
+    assert m.group(1) == "πρός "
+    assert m.group(2) == "+Acc."
