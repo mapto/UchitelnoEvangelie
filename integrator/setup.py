@@ -9,9 +9,19 @@ from semantics import MainLangSemantics, VarLangSemantics
 
 def address_less(a: Index, b: Index) -> bool:
     """
+
+    >>> address_less(Index("24/119a04"), Index("24/W211d20"))
+    True
+    >>> address_less(Index("24/119a05"), Index("24/W211d20"))
+    False
     >>> address_less(Index("37/169b09"), Index("37/W234b17"))
     True
     >>> address_less(Index("37/169b10"), Index("37/W234b17"))
+    False
+
+    >>> address_less(Index("46/208c13"), Index("46/W256d26"))
+    True
+    >>> address_less(Index("46/208c14"), Index("46/W256d26"))
     False
     >>> address_less(Index("47/211b01"), Index("47/W258b17"))
     True
@@ -33,6 +43,30 @@ def address_less(a: Index, b: Index) -> bool:
             return True
         if a.data[2] != "W" and b.data[2] == "W":
             return False
+
+    if a.data[0] == b.data[0] == 24:
+        if a.data[2] == "W" and b.data[2] != "W":
+            assert type(b.data[2]) == type(b.data[4]) == int  # for mypy
+            assert type(b.data[3]) == str  # for mypy
+            return (
+                b.data[2] > 119
+                or b.data[2] == 119
+                and b.data[3] > "a"
+                or b.data[2] == 119
+                and b.data[3] == "a"
+                and b.data[4] > 4
+            )
+        if a.data[2] != "W" and b.data[2] == "W":
+            assert type(a.data[2]) == type(a.data[4]) == int  # for mypy
+            assert type(a.data[3]) == str  # for mypy
+            return (
+                a.data[2] < 119
+                or a.data[2] == 119
+                and a.data[3] < "a"
+                or a.data[2] == 119
+                and a.data[3] == "a"
+                and a.data[4] < 5
+            )  # type: ignore
 
     if a.data[0] == b.data[0] == 37:
         if a.data[2] == "W" and b.data[2] != "W":
@@ -57,6 +91,30 @@ def address_less(a: Index, b: Index) -> bool:
                 and a.data[3] == "b"
                 and a.data[4] < 10
             )  # type: ignore
+
+    if a.data[0] == b.data[0] == 46:
+        if a.data[2] == "W" and b.data[2] != "W":
+            assert type(b.data[2]) == type(b.data[4]) == int  # for mypy
+            assert type(b.data[3]) == str  # for mypy
+            return (
+                b.data[2] > 208
+                or b.data[2] == 208
+                and b.data[3] > "c"
+                or b.data[2] == 208
+                and b.data[3] == "c"
+                and b.data[4] > 13
+            )
+        if a.data[2] != "W" and b.data[2] == "W":
+            assert type(a.data[2]) == type(a.data[4]) == int  # for mypy
+            assert type(a.data[3]) == str  # for mypy
+            return (
+                a.data[2] < 208
+                or a.data[2] == 208
+                and a.data[3] < "c"
+                or a.data[2] == 208
+                and a.data[3] == "c"
+                and a.data[4] < 14
+            )
 
     if a.data[0] == b.data[0] == 47:
         if a.data[2] == "W" and b.data[2] != "W":
