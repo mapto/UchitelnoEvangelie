@@ -6,6 +6,11 @@ Three software tools (used from the command line interface or via drag & drop) a
 2. [integrator](integrator/) - for the interpretation of the lexicographic annotations from that database and the creation of indexes used for validation. These are indices for both Slavonic to Greek and Greek to Slavonic and include annotations for variations in copies. This tool allows the language expert to iteratively correct possible mistakes in the annotation.
 3. [indexgenerator](integrator/) (also in the integrator directory, due to shared codebase) - for the generation of final bilingual indices to be published.
 
+There are further two auxiliary instruments:
+
+4. [demonstrator](/integrator/demonstrator.ipynb) - allows inspecting how the integrator and indexgenerator work on particular phrases
+5. [statistics](/integrator/statistics.py) - a counter of content in tables
+
 The programs use the <a href="https://en.wikipedia.org/wiki/Office_Open_XML">Office Open XML</a> file format, and the <a href="https://github.com/python-openxml/python-docx">python-docx</a> and <a href="https://pypi.org/project/openpyxl">openpyxl</a> programming libraries.
 The tools are used within the following workflow using only freely available instruments (including <a href= "https://transkribus.eu/">Transkribus</a> and the <a href="https://www.libreoffice.org/">LibreOffice package</a>):
 
