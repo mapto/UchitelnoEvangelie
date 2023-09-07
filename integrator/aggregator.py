@@ -50,6 +50,32 @@ def reorganise_special(
     return row
 
 
+def breakdown_multilemmas(
+    multilemmas: Dict[Source, str], olemvar: Source
+) -> Optional[Dict[Source, str]]:
+    """If two upper lemmas have one sublemma, separate them to make operations easier
+
+    >>> breakdown_multilemmas({Source('CsFbMdPcPePgPhPiVZaAPaSpCh'): 'Gen.'}, Source('CsMdSp'))
+    {Source('CsMdSp'): 'Gen.', Source('FbPcPePgPhPiVZaAPaCh'): 'Gen.'}
+    >>> breakdown_multilemmas({Source('CsFbMdPcPePgPhPiVZaAPaSpCh'): 'Gen.'}, Source())
+    >>> breakdown_multilemmas({Source('PcPePgPhPiPa'): 'Gen.'}, Source('CsCh'))
+    """
+    if not olemvar:
+        return None
+    change = False
+    cp = multilemmas.copy()
+    for oliv, oli in multilemmas.items():
+        if olemvar in oliv and olemvar != oliv:
+            change = True
+            val = cp.pop(oliv)
+            cp[olemvar] = val
+            rem = oliv.remainder(olemvar)
+            assert rem  # for mypy
+            cp[rem] = val
+
+    return cp if change else None
+
+
 def _agg_lemma(
     row: List[str],
     orig: LangSemantics,
@@ -72,7 +98,6 @@ def _agg_lemma(
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
     """
-
     lem_cols = orig.lemmas
     omultilemmas = {}
     tmultilemmas = {}
@@ -90,10 +115,11 @@ def _agg_lemma(
     if not tmultilemmas:
         tmultilemmas[Source("")] = tlemma
 
+    next_idx = lem_cols.index(col) + 1
+    next_col = lem_cols[next_idx] if next_idx < len(lem_cols) else LAST_LEMMA
+
     # if a source was indicated in previous lemmas, but not in this one,
     # just add empties to fill rest of lemma hierarchy for it
-    next_idx = lem_cols.index(col) + 1
-    next_c = lem_cols[next_idx] if next_idx < len(lem_cols) else LAST_LEMMA
     if lidx > 0 and olemvar:
         missing = olemvar.remainder(omultilemmas.keys())
         if missing:
@@ -104,10 +130,12 @@ def _agg_lemma(
                 orig,
                 trans,
                 d[""],
-                next_c,
+                next_col,
                 missing,
                 tlemma,
             )
+    breakdown = breakdown_multilemmas(omultilemmas, olemvar)
+    omultilemmas = breakdown if breakdown else omultilemmas
 
     # process sources indicated in this lemma
     for oliv, oli in omultilemmas.items():
@@ -134,7 +162,7 @@ def _agg_lemma(
                 orig,
                 trans,
                 d[nxt],
-                next_c,
+                next_col,
                 olv,
                 tl,
             )
@@ -190,6 +218,6 @@ def aggregate(
                 f"При кондензиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]})"
             )
             log.error(e)
-            break
+            continue
 
     return result

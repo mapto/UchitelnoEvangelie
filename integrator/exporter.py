@@ -189,7 +189,7 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
                     f"При експортиране възникна проблем в ред {usage.idx} ({key}) или групата му"
                 )
                 log.error(e)
-                break
+                continue
             first = False
 
 
@@ -227,7 +227,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
                 "Тази лема ще бъде прескочена."
             )
             log.error(ae)
-            return
+            continue
 
         if type(any_of_any) is SortedSet:  # bottom of structure
             _generate_usage_line(lang, next_d, doc)

@@ -172,7 +172,7 @@ def merge(
                 " или групата му"
             )
             log.error(e)
-            break
+            continue
     result += _close(group, orig, trans)
 
     return result

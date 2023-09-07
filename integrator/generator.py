@@ -118,7 +118,7 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
                 f"При генериране възникна проблем в ред {next.idx} или групата му"
             )
             log.error(e)
-            break
+            continue
 
 
 def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> None:

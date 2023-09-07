@@ -365,3 +365,144 @@ def test_2_H():
             }
         }
     }
+
+
+def test_junotichisk():
+    row = (
+        ["юнотьско\ue201 WG юноть\ue20dьско\ue201 H", "юнотьскъ WG"]
+        + [""] * 2
+        + [
+            "38/179d17",
+            "ꙋноть\ue20dьско\ue201",
+            "боудеть• \ue205 ꙋно-",
+            "юноть\ue20dьскъ",
+        ]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + [
+            "νεότητος CsMdSp / νεανιότητος FbPcPePgPhPiZaAPaVCh",
+            "νεότης CsMdSp / νεανιότης FbPcPePgPhPiZaAPaVCh",
+            "Gen.",
+        ]
+        + [""] * 7
+        + ["hl22:FFA9A9A9|hl20:FFA9A9A9"]
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = _agg_lemma(
+        row.copy(), gr_sem.var, sl_sem, result, 18, Source("CsMdSp"), "юнотььскъ"
+    )
+    assert result == {
+        "Gen.": {
+            "": {
+                "": {
+                    "юноть\ue20dьскъ": {
+                        (
+                            "νεότητος CsMdSp",
+                            "ꙋноть\ue20dьско\ue201",
+                        ): SortedSet(
+                            [
+                                Alignment(
+                                    idx=Index("38/179d17"),
+                                    orig=Usage(
+                                        lang="gr",
+                                        var=Source("CsMdSp"),
+                                        alt=Alternative(
+                                            var_lemmas={
+                                                Source(
+                                                    "FbPcPePgPhPiVZaAPaCh"
+                                                ): "νεανιότης"
+                                            },
+                                            var_words={
+                                                Source("FbPcPePgPhPiVZaAPaCh"): (
+                                                    "/ νεανιότητος FbPcPePgPhPiVZaAPaCh",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                        word="νεότητος CsMdSp",
+                                        lemmas=["νεότης", "Gen."],
+                                    ),
+                                    trans=Usage(
+                                        lang="sl",
+                                        alt=Alternative(
+                                            var_lemmas={Source("WG"): "юнотьскъ"},
+                                            var_words={
+                                                Source("WG"): (
+                                                    "юнотьско\ue201 WG",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                        word="ꙋноть\ue20dьско\ue201",
+                                        lemmas=["юноть\ue20dьскъ"],
+                                    ),
+                                )
+                            ]
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    result = SortedDict()
+    result = _agg_lemma(
+        row.copy(),
+        gr_sem.var,
+        sl_sem,
+        result,
+        18,
+        Source("FbPcPePgPhPiZaAPaVCh"),
+        "юнотььскъ",
+    )
+    assert result == {
+        "Gen.": {
+            "": {
+                "": {
+                    "юноть\ue20dьскъ": {
+                        (
+                            "/ νεανιότητος FbPcPePgPhPiVZaAPaCh",
+                            "ꙋноть\ue20dьско\ue201",
+                        ): SortedSet(
+                            [
+                                Alignment(
+                                    idx=Index("38/179d17"),
+                                    orig=Usage(
+                                        lang="gr",
+                                        var=Source("FbPcPePgPhPiVZaAPaCh"),
+                                        alt=Alternative(
+                                            var_lemmas={Source("CsMdSp"): "νεότης"},
+                                            var_words={
+                                                Source("CsMdSp"): (
+                                                    "νεότητος CsMdSp",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                        word="/ νεανιότητος FbPcPePgPhPiVZaAPaCh",
+                                        lemmas=["νεανιότης", "Gen."],
+                                    ),
+                                    trans=Usage(
+                                        lang="sl",
+                                        alt=Alternative(
+                                            var_lemmas={Source("WG"): "юнотьскъ"},
+                                            var_words={
+                                                Source("WG"): (
+                                                    "юнотьско\ue201 WG",
+                                                    1,
+                                                )
+                                            },
+                                        ),
+                                        word="ꙋноть\ue20dьско\ue201",
+                                        lemmas=["юноть\ue20dьскъ"],
+                                    ),
+                                )
+                            ]
+                        )
+                    }
+                }
+            }
+        }
+    }
