@@ -16,8 +16,8 @@ __version__ = "1.3.8"  # used also by build.sh script
 
 from cli import expand_names, init, wrapup
 
-if __name__ == "__main__":
-    fnames = init("integrator", __doc__, __version__)
+
+fnames = init("integrator", __doc__, __version__) if __name__ == "__main__" else []
 
 from os import path
 import logging as log

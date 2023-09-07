@@ -9,7 +9,8 @@ class Repetitions:
     i.e. distinguishing the different occurences of the same lemma (and possibly word) on the same line of the original document.
     Done for first lemmas of all four groups.
     Notice that order of counts is always the same, regardless of direction of merging.
-    Note: Repetitions might not be detected well if first instance does not have row number."""
+    Note: Repetitions might not be detected well if first instance does not have row number.
+    """
 
     orig = gr_sem
     trans = sl_sem

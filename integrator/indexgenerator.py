@@ -16,8 +16,7 @@ __version__ = "0.3.8"  # used also by build.sh script
 
 from cli import init, expand_names, wrapup
 
-if __name__ == "__main__":
-    fnames = init("indexgenerator", __doc__, __version__)
+fnames = init("indexgenerator", __doc__, __version__) if __name__ == "__main__" else []
 
 from os import path
 import logging as log

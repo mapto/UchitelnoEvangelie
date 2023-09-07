@@ -57,7 +57,6 @@ def test_ord_word():
 
 
 def test_ord_numbers():
-
     assert ord_word("аї") == ord_word("аї")
     assert ord_word("а҃") == ord_word("а")
     assert ord_word("в҃") == ord_word("в")

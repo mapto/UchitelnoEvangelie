@@ -10,7 +10,10 @@ def test_dict_ipercliso():
             "ὑπερβλύω": SortedDict(
                 {
                     "прѣ\ue205сто\ue20d\ue205т\ue205": {
-                        ("ὑπερβλύζων", "прѣ\ue205сто\ue20dе",): SortedSet(
+                        (
+                            "ὑπερβλύζων",
+                            "прѣ\ue205сто\ue20dе",
+                        ): SortedSet(
                             [
                                 Alignment(
                                     Index("1/W168c17"),
@@ -31,7 +34,10 @@ def test_dict_ipercliso():
                         )
                     },
                     "\ue205сто\ue20dен\ue205\ue201": {
-                        ("ὑπερβλύσαι", "\ue205сто\ue20dен\ue205\ue205",): SortedSet(
+                        (
+                            "ὑπερβλύσαι",
+                            "\ue205сто\ue20dен\ue205\ue205",
+                        ): SortedSet(
                             [
                                 Alignment(
                                     Index("1/W168c17"),
@@ -56,7 +62,10 @@ def test_dict_ipercliso():
             "ὑπερκλύζω": SortedDict(
                 {
                     "прѣ\ue205сто\ue20d\ue205т\ue205": {
-                        ("ὑπερκλύζων", "прѣ\ue205сто\ue20dе",): SortedSet(
+                        (
+                            "ὑπερκλύζων",
+                            "прѣ\ue205сто\ue20dе",
+                        ): SortedSet(
                             [
                                 Alignment(
                                     Index("1/W168c17"),
@@ -76,7 +85,10 @@ def test_dict_ipercliso():
                         )
                     },
                     "\ue205сто\ue20dен\ue205\ue201": {
-                        ("ὑπερκλύσαι", "\ue205сто\ue20dен\ue205\ue205",): SortedSet(
+                        (
+                            "ὑπερκλύσαι",
+                            "\ue205сто\ue20dен\ue205\ue205",
+                        ): SortedSet(
                             [
                                 Alignment(
                                     Index("1/W168c17"),

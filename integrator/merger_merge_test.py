@@ -163,7 +163,6 @@ def test_special():
 
 
 def test_na():
-
     rows = [
         [""] * 4
         + [

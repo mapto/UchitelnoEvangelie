@@ -637,7 +637,10 @@ def test_bozhii():
     result = sl_sem.var.compile_usages(gr_sem, r, result, "θεός", Source("H"))
     assert result == {
         "θεός Gen.": {
-            ("б\ue010жї\ue205 H", "Θεοῦ",): SortedSet(
+            (
+                "б\ue010жї\ue205 H",
+                "Θεοῦ",
+            ): SortedSet(
                 [
                     Alignment(
                         Index("1/7a4"),
@@ -826,7 +829,10 @@ def test_put():
     result = sl_sem.var.compile_usages(gr_sem, row, result, "ὁδοιπορία", Source("H"))
     assert result == {
         "ὁδοιπορία": {
-            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
+            (
+                "шьств\ue205ꙗ пꙋт\ue205 H",
+                "ὁδοιπορίας",
+            ): SortedSet(
                 [
                     Alignment(
                         Index("5/28d18"),

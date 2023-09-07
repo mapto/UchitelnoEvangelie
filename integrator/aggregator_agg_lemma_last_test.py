@@ -289,7 +289,10 @@ def test_put():
     )
     assert result == {
         "ὁδοιπορία": {
-            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας",): SortedSet(
+            (
+                "шьств\ue205ꙗ пꙋт\ue205 H",
+                "ὁδοιπορίας",
+            ): SortedSet(
                 [
                     Alignment(
                         Index("5/28d18"),

@@ -153,7 +153,7 @@ class LangSemantics:
     def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:
         raise NotImplementedError("abstract method")
 
-    from .semabs import alternatives as abs_alternatives, build_paths as abs_build_paths
+    from .semabs import alternatives as abs_alternatives, build_paths as abs_build_paths  # type: ignore
 
     alternatives = abs_alternatives
     build_paths = abs_build_paths
@@ -196,7 +196,7 @@ class MainLangSemantics(LangSemantics):
             return [base_word(row[self.word])]
         return [""]
 
-    from .semmain import (
+    from .semmain import (  # type: ignore
         collect_word as main_collect_word,
         collect_lemma as main_collect_lemma,
         level_var_alternatives as main_level_var_alternatives,
@@ -258,7 +258,7 @@ class VarLangSemantics(LangSemantics):
         """main ignored to avoid recursion"""
         return f"VarLangSemantics(lang='{self.lang}',word={self.word},lemmas={self.lemmas})"
 
-    from .semvar import (
+    from .semvar import (  # type: ignore
         collect_word as var_collect_word,
         collect_lemma as var_collect_lemma,
         level_var_alternatives as var_level_var_alternatives,
