@@ -1,7 +1,7 @@
 # rm -rf dist && mkdir dist
 
-VARIANT=cdrx
-# VARIANT=batonogov
+# VARIANT=cdrx
+VARIANT=batonogov
 
 cd extractor
 

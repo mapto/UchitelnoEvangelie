@@ -12,7 +12,7 @@ Options:
   --version             Print version
 
 """
-__version__ = "0.3.8"  # used also by build.sh script
+__version__ = "0.3.9"  # used also by build.sh script
 
 from cli import init, expand_names, wrapup
 
