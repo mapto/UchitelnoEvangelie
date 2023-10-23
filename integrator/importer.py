@@ -32,9 +32,6 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
     blank = False
     for row in ws.iter_rows(max_col=STYLE_COL):
         line = [str(cell.value).strip() if cell.value else cell.value for cell in row]
-        # Two consequent blank lines
-        if blank and not [l for l in line if l]:
-            break
         bgs = {
             f"{HILITE_PREFIX}{v:02d}{STYLE_SEP}{row[v].fill.start_color.rgb}": row[
                 v

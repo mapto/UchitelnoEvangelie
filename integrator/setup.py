@@ -31,13 +31,18 @@ def address_less(a: Index, b: Index) -> bool:
     True
     >>> address_less(Index("48/216b13"), Index("48/W260c26"))
     False
+
+    >>> address_less(Index("38/182b04"), Index("38/W235c21"))
+    True
     """
+    # W after S
     if a.data[0] == b.data[0] == 1:
         if a.data[2] == "W" and b.data[2] != "W":
             return False
         if a.data[2] != "W" and b.data[2] == "W":
             return True
 
+    # W before S
     if a.data[0] == b.data[0] == 2:
         if a.data[2] == "W" and b.data[2] != "W":
             return True
@@ -91,6 +96,13 @@ def address_less(a: Index, b: Index) -> bool:
                 and a.data[3] == "b"
                 and a.data[4] < 10
             )  # type: ignore
+
+    # W after S
+    if a.data[0] == b.data[0] == 38:
+        if a.data[2] == "W" and b.data[2] != "W":
+            return False
+        if a.data[2] != "W" and b.data[2] == "W":
+            return True
 
     if a.data[0] == b.data[0] == 46:
         if a.data[2] == "W" and b.data[2] != "W":
@@ -190,6 +202,7 @@ Index.maxlen = [2, 1, 3, 3, 2, 2]
 Index._less = address_less
 
 # see setup_test.py>test_ranges for interpretation of column indices
+# last used column is U (index 20, i.e. 21st letter of the alphabet)
 sl_sem = MainLangSemantics(
     FROM_LANG, 5, [7, 8, 9, 10], VarLangSemantics(FROM_LANG, 0, [1, 2, 3])
 )

@@ -398,3 +398,20 @@ def test_gen_lemma2():
     )
 
     assert gr_sem.var.multilemma(row, 1) == {Source("MVPa"): "διά + Gen"}
+
+
+def test_mutliple_gen_lemma2():
+    row = (
+        [""] * 4
+        + ["38/176a15", "по", "слоужꙗщоу по", "по", "по + Loc."]
+        + [""] * 2
+        + ["om."]
+        + [""] * 4
+        + ["μετὰ Cs κατὰ Fb", "μετά Cs / κατά Fb", "μετά + Acc. Cs / κατά + Gen. Fb"]
+        + [""] * 8
+    )
+
+    assert gr_sem.var.multilemma(row, 1) == {
+        Source("Fb"): "κατά + Gen.",
+        Source("Cs"): "μετά + Acc.",
+    }

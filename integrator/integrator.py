@@ -12,7 +12,7 @@ Options:
   --version             Print version
 
 """
-__version__ = "1.3.9"  # used also by build.sh script
+__version__ = "1.3.10"  # used also by build.sh script
 
 from cli import expand_names, init, wrapup
 
@@ -93,6 +93,7 @@ if __name__ == "__main__":
             after = len(p.result)
             log.info(f"{after-before} леми")
 
+    # TODO: Directories do not work well
     fname_prefix = ""
     if len(fnames) == 1:
         if fnames[0].lower().endswith(".xlsx"):

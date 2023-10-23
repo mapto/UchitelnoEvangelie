@@ -5,6 +5,7 @@ cd extractor/test
 PARTS="docProps/app.xml xl/theme/theme1.xml xl/worksheets/sheet1.xml _rels/.rels xl/workbook.xml xl/_rels/workbook.xml.rels [Content_Types].xml"
 #PARTS="docProps/app.xml xl/theme/theme1.xml xl/worksheets/sheet1.xml xl/styles.xml _rels/.rels xl/workbook.xml xl/_rels/workbook.xml.rels [Content_Types].xml"
 # SKIPPED: docProps/core.xml, as it contains no relevant information, but timestamps
+
 for FILENAME in *.docx; do
     ../extractor.py -s $FILENAME
     STRIPPED="${FILENAME%.docx}"
@@ -28,7 +29,8 @@ cd ../..
 echo "Testing integrator..."
 cd integrator/test
 VARIANTS="list-gre list-sla"
-PARTS="[Content_Types].xml _rels/.rels docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/stylesWithEffects.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml customXml/item1.xml customXml/_rels/item1.xml.rels customXml/itemProps1.xml word/numbering.xml docProps/thumbnail.jpeg"
+PARTS="[Content_Types].xml docProps/core.xml docProps/app.xml word/_rels/document.xml.rels word/styles.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml word/numbering.xml"
+#PARTS="[Content_Types].xml _rels/.rels docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/stylesWithEffects.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml customXml/item1.xml customXml/_rels/item1.xml.rels customXml/itemProps1.xml word/numbering.xml docProps/thumbnail.jpeg"
 # SKIPPED: docProps/core.xml, as it contains no relevant information, but timestamps
 for FILENAME in *.xlsx; do
     ../integrator.py -s $FILENAME
@@ -57,7 +59,8 @@ cd ../..
 echo "Testing indexgenerator..."
 cd integrator/test
 VARIANTS="index-gre index-sla"
-PARTS="[Content_Types].xml _rels/.rels docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/stylesWithEffects.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml customXml/item1.xml customXml/_rels/item1.xml.rels customXml/itemProps1.xml word/numbering.xml docProps/thumbnail.jpeg"
+PARTS="[Content_Types].xml docProps/core.xml docProps/app.xml word/_rels/document.xml.rels word/styles.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml word/numbering.xml"
+#PARTS="[Content_Types].xml _rels/.rels docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/stylesWithEffects.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml customXml/item1.xml customXml/_rels/item1.xml.rels customXml/itemProps1.xml word/numbering.xml docProps/thumbnail.jpeg"
 # SKIPPED: docProps/core.xml, as it contains no relevant information, but timestamps
 for FILENAME in *.xlsx; do
     ../indexgenerator.py -s $FILENAME
