@@ -739,9 +739,7 @@ def test_junotichisk():
                                             lang="gr",
                                             var=Source("FbPcPePgPhPiVZaAPaCh"),
                                             alt=Alternative(
-                                                main_lemma="",
                                                 var_lemmas={Source("CsMdSp"): "νεότης"},
-                                                main_word="",
                                                 var_words={
                                                     Source("CsMdSp"): (
                                                         "νεότητος CsMdSp",
@@ -752,29 +750,21 @@ def test_junotichisk():
                                             ),
                                             word="/ νεανιότητος FbPcPePgPhPiVZaAPaCh",
                                             lemmas=["νεανιότης", "Gen."],
-                                            cnt=1,
                                         ),
                                         trans=Usage(
                                             lang="sl",
-                                            var=Source(""),
                                             alt=Alternative(
-                                                main_lemma="",
                                                 var_lemmas={Source("WG"): "юнотьскъ"},
-                                                main_word="",
                                                 var_words={
                                                     Source("WG"): (
                                                         "юнотьско\ue201 WG",
                                                         1,
                                                     )
                                                 },
-                                                main_cnt=1,
                                             ),
                                             word="ꙋноть\ue20dьско\ue201",
                                             lemmas=["юноть\ue20dьскъ"],
-                                            cnt=1,
                                         ),
-                                        bold=False,
-                                        italic=False,
                                     )
                                 ]
                             )
@@ -796,46 +786,35 @@ def test_junotichisk():
                                             lang="gr",
                                             var=Source("CsMdSp"),
                                             alt=Alternative(
-                                                main_lemma="",
                                                 var_lemmas={
                                                     Source(
                                                         "FbPcPePgPhPiVZaAPaCh"
                                                     ): "νεανιότης"
                                                 },
-                                                main_word="",
                                                 var_words={
                                                     Source("FbPcPePgPhPiVZaAPaCh"): (
                                                         "/ νεανιότητος FbPcPePgPhPiVZaAPaCh",
                                                         1,
                                                     )
                                                 },
-                                                main_cnt=1,
                                             ),
                                             word="νεότητος CsMdSp",
                                             lemmas=["νεότης", "Gen."],
-                                            cnt=1,
                                         ),
                                         trans=Usage(
                                             lang="sl",
-                                            var=Source(""),
                                             alt=Alternative(
-                                                main_lemma="",
                                                 var_lemmas={Source("WG"): "юнотьскъ"},
-                                                main_word="",
                                                 var_words={
                                                     Source("WG"): (
                                                         "юнотьско\ue201 WG",
                                                         1,
                                                     )
                                                 },
-                                                main_cnt=1,
                                             ),
                                             word="ꙋноть\ue20dьско\ue201",
                                             lemmas=["юноть\ue20dьскъ"],
-                                            cnt=1,
                                         ),
-                                        bold=False,
-                                        italic=False,
                                     )
                                 ]
                             )
@@ -844,4 +823,62 @@ def test_junotichisk():
                 }
             }
         },
+    }
+
+
+def test_special():
+    row = (
+        [
+            "проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H",
+            "проꙁьрѣт\ue205",
+            "#",
+            "",
+            "06/38b11",
+            "\ue205сцѣленоумоу",
+            "сповѣдат\ue205• нъ \ue205-",
+            "\ue205цѣл\ue205т\ue205",
+        ]
+        + [""] * 3
+        + ["τεθαραπευμένον", "θεραπεύω"]
+        + [""] * 14
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = _agg_lemma(row, sl_sem.var, gr_sem, result)
+    assert result == {
+        "проꙁьрѣт\ue205": {
+            "": {
+                "": {
+                    "": {
+                        "# θεραπεύω": {
+                            (
+                                "проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
+                                "τεθαραπευμένον",
+                            ): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("6/38b11"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            var=Source("GH"),
+                                            alt=Alternative(
+                                                main_lemma="\ue205цѣл\ue205т\ue205",
+                                                main_word="\ue205сцѣленоумоу",
+                                            ),
+                                            word="проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
+                                            lemmas=["проꙁьрѣт\ue205"],
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            word="τεθαραπευμένον",
+                                            lemmas=["# θεραπεύω"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }

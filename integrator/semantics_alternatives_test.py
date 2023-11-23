@@ -390,6 +390,33 @@ def test_main_level_alternatives_sumeromadrost():
     )
 
 
+def test_main_level_alternatives_special():
+    row = (
+        [
+            "проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H",
+            "проꙁьрѣт\ue205",
+            "#",
+            "",
+            "06/38b11",
+            "\ue205сцѣленоумоу",
+            "сповѣдат\ue205• нъ \ue205-",
+            "\ue205цѣл\ue205т\ue205",
+        ]
+        + [""] * 3
+        + ["τεθαραπευμένον", "θεραπεύω"]
+        + [""] * 14
+        + ["1"] * 4
+    )
+
+    alt = sl_sem.level_var_alternatives(row, Source(), 0)
+    assert alt == (
+        {Source("GH"): "# проꙁьрѣт\ue205"},
+        {Source("GH"): ("проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G", 1)},
+    )
+    alt = sl_sem.level_var_alternatives(row, Source(), 1)
+    assert alt == ({}, {})
+
+
 def test_nechuvstven():
     row = (
         [

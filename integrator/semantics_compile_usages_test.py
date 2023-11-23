@@ -947,3 +947,48 @@ def test_greh():
             )
         }
     }
+
+
+def test_special_mulitword():
+    row = (
+        ["проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H", "проꙁьрѣт\ue205"]
+        + [""] * 2
+        + [
+            "06/38b11",
+            "\ue205сцѣленоумоу",
+            "сповѣдат\ue205• нъ \ue205-",
+            "\ue205цѣл\ue205т\ue205",
+        ]
+        + [""] * 3
+        + ["τεθαραπευμένον", "# θεραπεύω"]
+        + [""] * 14
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = sl_sem.var.compile_usages(gr_sem, row, result, "# θεραπεύω", Source("GH"))
+    assert result == {
+        "# θεραπεύω": {
+            ("проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G", "τεθαραπευμένον"): SortedSet(
+                [
+                    Alignment(
+                        idx=Index("6/38b11"),
+                        orig=Usage(
+                            lang="sl",
+                            var=Source("GH"),
+                            alt=Alternative(
+                                main_lemma="\ue205цѣл\ue205т\ue205",
+                                main_word="\ue205сцѣленоумоу",
+                            ),
+                            word="проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
+                            lemmas=["проꙁьрѣт\ue205"],
+                        ),
+                        trans=Usage(
+                            lang="gr",
+                            word="τεθαραπευμένον",
+                            lemmas=["# θεραπεύω"],
+                        ),
+                    )
+                ]
+            )
+        }
+    }

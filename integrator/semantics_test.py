@@ -495,15 +495,16 @@ def test_add_count_mulitvariant():
     # ]
 
 
-def test_build_content():
-    sl_sem = MainLangSemantics(
-        FROM_LANG,
-        5,
-        [7, 8, 9, 10],
-        VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
-        cnt_col=STYLE_COL + 1,
-    )
+sl_sem = MainLangSemantics(
+    FROM_LANG,
+    5,
+    [7, 8, 9, 10],
+    VarLangSemantics(FROM_LANG, 0, [1, 2, 3], cnt_col=STYLE_COL + 2),
+    cnt_col=STYLE_COL + 1,
+)
 
+
+def test_build_content():
     row = (
         [
             "\ue201сть GH",
@@ -528,4 +529,33 @@ def test_build_content():
         alt=Alternative(main_lemma="om.", main_word="om."),
         word="\ue201сть GH",
         lemmas=["бꙑт\ue205", "", "gramm."],
+    )
+
+
+def test_build_content_special():
+    row = (
+        [
+            "проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H",
+            "проꙁьрѣт\ue205",
+            "#",
+            "",
+            "06/38b11",
+            "\ue205сцѣленоумоу",
+            "сповѣдат\ue205• нъ \ue205-",
+            "\ue205цѣл\ue205т\ue205",
+        ]
+        + [""] * 3
+        + ["τεθαραπευμένον", "θεραπεύω"]
+        + [""] * 14
+        + ["1"] * 4
+    )
+    result = _build_content(row, sl_sem, Source(), "\ue205сцѣленоумоу", 1)
+    assert result == Usage(
+        lang="sl",
+        alt=Alternative(
+            var_lemmas={Source("GH"): "# проꙁьрѣт\ue205"},
+            var_words={Source("GH"): ("проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G", 1)},
+        ),
+        word="\ue205сцѣленоумоу",
+        lemmas=["\ue205цѣл\ue205т\ue205"],
     )

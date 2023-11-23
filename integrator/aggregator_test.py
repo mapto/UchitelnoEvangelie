@@ -3,8 +3,6 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 
-from model import Alternative, Index, Source, Alignment, Usage
-
 from semantics import MainLangSemantics, VarLangSemantics
 from aggregator import present, _expand_and_aggregate, _agg_lemma, reorganise_special
 from aggregator import LAST_LEMMA
@@ -137,4 +135,37 @@ def test_reorganise_special():
         + ["υἱός", "# υἱός"]
         + [""] * 14
         + ["1"] * 4
+    )
+
+
+def test_reorganise_special_var():
+    row = (
+        [
+            "проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H",
+            "проꙁьрѣт\ue205",
+            "#",
+            "",
+            "06/38b11",
+            "\ue205сцѣленоумоу",
+            "сповѣдат\ue205• нъ \ue205-",
+            "\ue205цѣл\ue205т\ue205",
+        ]
+        + [""] * 3
+        + ["τεθαραπευμένον", "θεραπεύω"]
+        + [""] * 14
+    )
+    row = reorganise_special(row, sl_sem.var, gr_sem)
+    assert (
+        row
+        == ["проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H", "проꙁьрѣт\ue205"]
+        + [""] * 2
+        + [
+            "06/38b11",
+            "\ue205сцѣленоумоу",
+            "сповѣдат\ue205• нъ \ue205-",
+            "\ue205цѣл\ue205т\ue205",
+        ]
+        + [""] * 3
+        + ["τεθαραπευμένον", "# θεραπεύω"]
+        + [""] * 14
     )

@@ -52,6 +52,8 @@ def level_var_alternatives(
                         if k1.inside(k2):
                             alt_lemmas[k1] = f"{prefix} {alt_lemmas[k1]}"
                     break
+    elif lidx > 0:
+        alt_lemmas = {k: v for k, v in alt_lemmas.items() if v not in SPECIAL_CHARS}
 
     aw = {l: self.var.compile_words_by_lemma(row, l) for l in alt_lemmas.keys()}
     alt_words = {l: (v[0], v[1]) for l, v in aw.items()}

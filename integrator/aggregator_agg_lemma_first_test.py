@@ -180,3 +180,64 @@ def test_greh():
             }
         }
     }
+
+
+def test_special_var():
+    row = (
+        [
+            "проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H",
+            "проꙁьрѣт\ue205",
+            "#",
+            "",
+            "06/38b11",
+            "\ue205сцѣленоумоу",
+            "сповѣдат\ue205• нъ \ue205-",
+            "\ue205цѣл\ue205т\ue205",
+        ]
+        + [""] * 3
+        + ["τεθαραπευμένον", "θεραπεύω"]
+        + [""] * 14
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = _agg_lemma(row, sl_sem, gr_sem, result)
+    assert result == {
+        "\ue205цѣл\ue205т\ue205": {
+            "": {
+                "": {
+                    "": {
+                        "θεραπεύω": {
+                            ("\ue205сцѣленоумоу", "τεθαραπευμένον"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("6/38b11"),
+                                        orig=Usage(
+                                            lang="sl",
+                                            alt=Alternative(
+                                                var_lemmas={
+                                                    Source("GH"): "# проꙁьрѣт\ue205"
+                                                },
+                                                var_words={
+                                                    Source("GH"): (
+                                                        "проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
+                                                        1,
+                                                    )
+                                                },
+                                            ),
+                                            word="\ue205сцѣленоумоу",
+                                            lemmas=["\ue205цѣл\ue205т\ue205"],
+                                        ),
+                                        trans=Usage(
+                                            lang="gr",
+                                            word="τεθαραπευμένον",
+                                            lemmas=["θεραπεύω"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }

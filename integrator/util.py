@@ -109,6 +109,8 @@ def extract_letters(corpus: List[List[str]], col: int) -> Dict[str, int]:
 
 
 def main_source(lang: str, alt: bool):
+    """Returns the main source according to language, i.e. S for sl and C for gr.
+    In cases where address is 1/W168a34, the main source needs to become W."""
     if lang == TO_LANG:
         return MAIN_GR
     assert lang == FROM_LANG
