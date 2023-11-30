@@ -27,10 +27,10 @@ def _hilited_col(row: List[str], col: int) -> Optional[str]:
     return None
 
 
-def _hilited_gram(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
+def _hilited_local(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
     """highlighting in third lemma and further.
     This highlighting has impact on variants. If undesired better create separate rows in variants.
-    TODO: do translation variants need to be considered separately or together, currently together
+    This highlighted sublemma is relevant only to this usage and not to the whole phrase.
     """
     cols = [
         osem.lemmas[2],
@@ -41,10 +41,12 @@ def _hilited_gram(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> b
     return any(_hilited_col(row, c) for c in cols)
 
 
-def _hilited_union(
+def _hilited_irrelevant(
     osem: LangSemantics, tsem: LangSemantics, row: List[str], col: int = -1
 ) -> bool:
-    """highlighting in second lemma. Also checks if passed column is in second lemma, if passed at all"""
+    """highlighting in second lemma. Also checks if passed column is in second lemma, if passed at all.
+    The usage is part of to the phrase, but is lexicographically irrelevant (i.e. does not need to show up in the phrase).
+    """
     cols = [
         osem.lemmas[1],
         osem.other().lemmas[1],
@@ -67,7 +69,7 @@ class Hiliting:
 
         # Numbers of rows that are not indicated as grammatical
         self.merge_rows = set(
-            i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)
+            i for i, r in enumerate(group) if not _hilited_local(orig, trans, r)
         )
         # self.merge_rows_main = set(
         #     i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)
@@ -85,7 +87,7 @@ class Hiliting:
 
         # Rows that are not indicated as grammatical or union
         self.non_union_group = [
-            r for r in self.non_gram_group if not _hilited_union(orig, trans, r)
+            r for r in self.non_gram_group if not _hilited_irrelevant(orig, trans, r)
         ]
         # self.non_union_group_main = [
         #     r for r in self.non_gram_group_main if not _hilited_union(orig, trans, r)

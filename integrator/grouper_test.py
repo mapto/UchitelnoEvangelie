@@ -3,7 +3,7 @@ from setup import sl_sem, gr_sem
 from hiliting import Hiliting
 
 from grouper import _merge_indices
-from grouper import _hilited, _hilited_gram
+from grouper import _hilited, _hilited_local
 from grouper import _group_variants
 
 
@@ -110,8 +110,8 @@ def test_hilited_gram():
         + [""] * 16
         + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
-    assert _hilited_gram(sl_sem, gr_sem, r)
-    assert _hilited_gram(gr_sem, sl_sem, r)
+    assert _hilited_local(sl_sem, gr_sem, r)
+    assert _hilited_local(gr_sem, sl_sem, r)
     r = (
         [""] * 4
         + [
@@ -125,8 +125,8 @@ def test_hilited_gram():
         + [""] * 12
         + ["hl05:AAAAAAAA"]
     )
-    assert not _hilited_gram(sl_sem, gr_sem, r)
-    assert not _hilited_gram(gr_sem, sl_sem, r)
+    assert not _hilited_local(sl_sem, gr_sem, r)
+    assert not _hilited_local(gr_sem, sl_sem, r)
     r = (
         [
             "+ \ue201сть GH",
@@ -141,7 +141,7 @@ def test_hilited_gram():
         + [""] * 18
         + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
-    assert _hilited_gram(sl_sem, gr_sem, r)
+    assert _hilited_local(sl_sem, gr_sem, r)
     r = (
         [""] * 4
         + ["12/67c10", "бꙑхомъ•", "в\ue205дѣл\ue205 бꙑхо-", "бꙑт\ue205"]
@@ -149,7 +149,7 @@ def test_hilited_gram():
         + [""] * 12
         + ["hl05:AAAAAAAA|hl09:AAAAAAAA"]
     )
-    assert _hilited_gram(sl_sem, gr_sem, r)
+    assert _hilited_local(sl_sem, gr_sem, r)
 
 
 def test_hilited_gram_cross():
@@ -171,13 +171,13 @@ def test_hilited_gram_cross():
 
     assert (
         False
-        == _hilited_gram(sl_sem, gr_sem, rows[0])
-        == _hilited_gram(sl_sem.var, gr_sem, rows[0])
+        == _hilited_local(sl_sem, gr_sem, rows[0])
+        == _hilited_local(sl_sem.var, gr_sem, rows[0])
     )
     assert (
         True
-        == _hilited_gram(sl_sem, gr_sem, rows[1])
-        == _hilited_gram(sl_sem.var, gr_sem, rows[1])
+        == _hilited_local(sl_sem, gr_sem, rows[1])
+        == _hilited_local(sl_sem.var, gr_sem, rows[1])
     )
 
 

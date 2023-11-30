@@ -5,7 +5,7 @@ from const import H_LEMMA_SEP, IDX_COL, STYLE_COL, V_LEMMA_SEP
 
 from model import Index, Source
 from semantics import LangSemantics, MainLangSemantics, present
-from hiliting import Hiliting, _hilited_col, _hilited_gram, _hilited_union
+from hiliting import Hiliting, _hilited_col, _hilited_local, _hilited_irrelevant
 
 
 def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
@@ -120,10 +120,10 @@ def _needs_update(
     c: int,
     h: Hiliting,
 ):
-    if c in trans.lemmas and _hilited_gram(orig, trans, group[i]):
+    if c in trans.lemmas and _hilited_local(orig, trans, group[i]):
         return False
     if i in h.merge_rows or c == trans.word:
-        if _hilited_union(orig, trans, group[i], c):
+        if _hilited_irrelevant(orig, trans, group[i], c):
             return False
     return True
 
@@ -140,14 +140,14 @@ def _update_group(
 
     group = g.copy()
     for i in range(len(group)):
-        if not _hilited_gram(orig, trans, group[i]):
+        if not _hilited_local(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
 
         for c in orig.word_cols():
             group[i][c] = line[c]
-        if not _hilited_gram(orig, trans, group[i]):
+        if not _hilited_local(orig, trans, group[i]):
             for c in orig.lemn_cols():
-                if not _hilited_union(orig, trans, group[i], c):
+                if not _hilited_irrelevant(orig, trans, group[i], c):
                     group[i][c] = line[c]
             group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
 
