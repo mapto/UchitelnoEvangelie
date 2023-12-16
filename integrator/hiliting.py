@@ -42,7 +42,11 @@ def _hilited_local(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> 
 
 
 def _hilited_irrelevant(
-    osem: LangSemantics, tsem: LangSemantics, row: List[str], col: int = -1
+    osem: LangSemantics,
+    tsem: LangSemantics,
+    row: List[str],
+    col: int = -1,
+    symmetric: bool = True,
 ) -> bool:
     """highlighting in second lemma. Also checks if passed column is in second lemma, if passed at all.
     The usage is part of to the phrase, but is lexicographically irrelevant (i.e. does not need to show up in the phrase).
@@ -50,9 +54,12 @@ def _hilited_irrelevant(
     cols = [
         osem.lemmas[1],
         osem.other().lemmas[1],
-        tsem.lemmas[1],
-        tsem.other().lemmas[1],
     ]
+    if symmetric:
+        cols += [
+            tsem.lemmas[1],
+            tsem.other().lemmas[1],
+        ]
     if col != -1 and col not in cols:
         return False
     return any(_hilited_col(row, c) for c in cols)
