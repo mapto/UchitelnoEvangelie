@@ -14,6 +14,7 @@ class Alternative:
     but for variants, it's part of the dictionary
     """
 
+    # Working only with last lemma
     main_lemma: str = ""
     var_lemmas: Dict[Source, str] = field(default_factory=lambda: {})
     main_word: str = ""

@@ -36,7 +36,9 @@ def reorganise_special(
     olast = next(
         iter(i for i in range(len(orig.lemmas) - 1, -1, -1) if row[orig.lemmas[i]])
     )
-    special = row[orig.lemmas[olast]]
+    # get only the SPECIAL_CHARS from variant that might contain also source
+    special = row[orig.lemmas[olast]][0]
+    assert special in SPECIAL_CHARS
     row[orig.lemmas[olast]] = ""
     # add special_char sublemma to translation
     tlast = next(
@@ -147,7 +149,8 @@ def _agg_lemma(
         if nxt in SPECIAL_CHARS:
             row = reorganise_special(row, orig, trans)
             nxt = ""
-            # TODO: combination of multilemmas and standalone special symbols not implemented
+            # TODO: combination of multilemmas and standalone special symbols is only partially implemented.
+            # Is it possible that a special symbol is relevant to only one variant? What should we do in this case?
             multilemma = trans.multilemma(row)
             assert len(multilemma) == 1
             tlemma = next(iter(multilemma.values()))

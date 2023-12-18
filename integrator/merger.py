@@ -18,7 +18,7 @@ TRIGGER_SAME = -1
 
 
 def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
-    """*IN_PLACE*"""
+    """*IN_PLACE* DEPRECATED"""
     if row[sem.lemmas[1]].strip() in SPECIAL_CHARS:
         row[sem.lemmas[1]] = f"{row[sem.lemmas[1]]} {row[sem.lemmas[0]]}"
     return row
@@ -104,8 +104,9 @@ def preprocess(
             )
 
     # in lemmas
-    row = _expand_special_char(orig, row)
-    row = _expand_special_char(trans, row)
+    # This has been disabled, because it is also solved in aggregator->reorganise_special()
+    # row = _expand_special_char(orig, row)
+    # row = _expand_special_char(trans, row)
 
     repetitions.update(row)
 
