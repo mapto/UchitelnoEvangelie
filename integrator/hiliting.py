@@ -100,8 +100,11 @@ class Hiliting:
         #     r for r in self.non_gram_group_other if not _hilited_union(orig.other(), trans.other(), r)
         # ]
 
-        # if not hilited, means grouping is caused by SAME_CH
-        self.hilited = bool(self.group[0][STYLE_COL])
+        # if not hilited words, means grouping is caused by SAME_CH
+        self.hilited = any(
+            _hilited_col(self.group[0], c) != None
+            for c in orig.word_cols() + trans.word_cols()
+        )
 
     def __str__(self) -> str:
         return f"Grouping is due to {'hiliting' if self.hilited else 'sameness'}"

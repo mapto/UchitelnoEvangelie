@@ -29,6 +29,7 @@ def _close_same(
     orig: LangSemantics,
     trans: LangSemantics,
 ) -> List[List[str]]:
+    """Returns only second "same" row. The first one is concatenated in merge()"""
     if group[1][trans.word] == SAME_CH:
         group[1][trans.word] = group[0][trans.word]
     if group[1][orig.word] == SAME_CH:
@@ -146,6 +147,7 @@ def merge(
 
             row = preprocess(row, group, prev_row, orig, trans, repetitions)
 
+            # if same insert first row, because _close_same() returns only the second one
             if _same(row, orig) or _same(row, trans):
                 if not group_triggers:
                     group = [prev_row]
