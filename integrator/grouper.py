@@ -147,7 +147,7 @@ def _update_group(
             group[i][c] = line[c]
         if not _hilited_local(orig, trans, group[i]):
             for c in orig.lemn_cols():
-                if not _hilited_irrelevant(orig, trans, group[i], c):
+                if not _hilited_irrelevant(orig, trans, group[i], c, False):
                     group[i][c] = line[c]
             group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
 
