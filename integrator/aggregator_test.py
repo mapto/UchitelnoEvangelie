@@ -4,8 +4,8 @@ from config import FROM_LANG, TO_LANG
 from const import STYLE_COL
 
 from semantics import MainLangSemantics, VarLangSemantics
-from aggregator import present, _expand_and_aggregate, _agg_lemma, reorganise_special
-from aggregator import LAST_LEMMA
+from aggregator import present, _expand_and_aggregate
+from aggregator import reorganise_orig_special, reorganise_trans_special
 
 # semantics change from September 2021
 # with repetitions added (as if after merge)
@@ -127,7 +127,7 @@ def test_reorganise_special():
         + [""] * 14
         + ["1"] * 4
     )
-    row = reorganise_special(row, sl_sem, gr_sem)
+    row = reorganise_orig_special(row, sl_sem, gr_sem)
     assert row == (
         [""] * 4
         + ["05/17b12", "грѣхъм\ue205", "оубо ꙗко грѣ-", "грѣхъ"]
@@ -154,7 +154,7 @@ def test_reorganise_special_var():
         + ["τεθαραπευμένον", "θεραπεύω"]
         + [""] * 14
     )
-    row = reorganise_special(row, sl_sem.var, gr_sem)
+    row = reorganise_orig_special(row, sl_sem.var, gr_sem)
     assert (
         row
         == ["проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H", "проꙁьрѣт\ue205"]
@@ -193,7 +193,7 @@ def test_reorganise_special_var_vyara():
         + ["hl05:FFFCE4D6|hl11:FFFCE4D6"]
         + ["1"] * 4
     )
-    row = reorganise_special(row, sl_sem.var, gr_sem)
+    row = reorganise_orig_special(row, sl_sem.var, gr_sem)
     assert (
         row
         == [
@@ -211,6 +211,100 @@ def test_reorganise_special_var_vyara():
             "ἐγκώμιον μέγα",
             "ἐγκώμιον & μέγας",
             "# ἐγκώμιον μέγα",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCE4D6|hl11:FFFCE4D6"]
+        + ["1"] * 4
+    )
+
+
+def test_reorganise_special_var_vyara_trans():
+    row = (
+        [
+            "вѣрою хвальна G",
+            "вѣра & хвальнъ G",
+            "вѣра хвальна G",
+            "# G",
+            "34/156c21-d01",
+            "вѣра … вельꙗ",
+            "твор\ue205• \ue205 вѣ-",
+            "вѣра & вел\ue205\ue205",
+            "вѣра вел\ue205ꙗ",
+            "#",
+            "",
+            "ἐγκώμιον μέγα",
+            "ἐγκώμιον",
+            "ἐγκώμιον μέγα",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCE4D6|hl11:FFFCE4D6"]
+        + ["1"] * 4
+    )
+
+    row = reorganise_trans_special(row, sl_sem)
+    assert (
+        row
+        == [
+            "вѣрою хвальна G",
+            "вѣра & хвальнъ G",
+            "вѣра хвальна G",
+            "# G",
+            "34/156c21-d01",
+            "вѣра … вельꙗ",
+            "твор\ue205• \ue205 вѣ-",
+            "вѣра & вел\ue205\ue205",
+            "# вѣра вел\ue205ꙗ",
+            "",
+            "",
+            "ἐγκώμιον μέγα",
+            "ἐγκώμιον",
+            "ἐγκώμιον μέγα",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCE4D6|hl11:FFFCE4D6"]
+        + ["1"] * 4
+    )
+
+    row = (
+        [
+            "вѣрою хвальна G",
+            "вѣра & хвальнъ G",
+            "вѣра хвальна G",
+            "# G",
+            "34/156c21-d01",
+            "вѣра … вельꙗ",
+            "твор\ue205• \ue205 вѣ-",
+            "вѣра & вел\ue205\ue205",
+            "вѣра вел\ue205ꙗ",
+            "#",
+            "",
+            "ἐγκώμιον μέγα",
+            "ἐγκώμιον",
+            "ἐγκώμιον μέγα",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCE4D6|hl11:FFFCE4D6"]
+        + ["1"] * 4
+    )
+
+    row = reorganise_trans_special(row, sl_sem.var)
+    assert (
+        row
+        == [
+            "вѣрою хвальна G",
+            "вѣра & хвальнъ G",
+            "# вѣра хвальна G",
+            "",
+            "34/156c21-d01",
+            "вѣра … вельꙗ",
+            "твор\ue205• \ue205 вѣ-",
+            "вѣра & вел\ue205\ue205",
+            "вѣра вел\ue205ꙗ",
+            "#",
+            "",
+            "ἐγκώμιον μέγα",
+            "ἐγκώμιον",
+            "ἐγκώμιον μέγα",
         ]
         + [""] * 12
         + ["hl05:FFFCE4D6|hl11:FFFCE4D6"]

@@ -17,13 +17,6 @@ from grouper import _close_group, _hilited
 TRIGGER_SAME = -1
 
 
-def _expand_special_char(sem: LangSemantics, row: List[str]) -> List[str]:
-    """*IN_PLACE* DEPRECATED"""
-    if row[sem.lemmas[1]].strip() in SPECIAL_CHARS:
-        row[sem.lemmas[1]] = f"{row[sem.lemmas[1]]} {row[sem.lemmas[0]]}"
-    return row
-
-
 def _close_same(
     group: List[List[str]],
     orig: LangSemantics,
@@ -103,11 +96,6 @@ def preprocess(
                 "Повтарящи се леми може да не бъдат разграничени. "
                 "Препоръчително е въвеждането на адрес в първия ред на всяка група, дори когато словоупотребата не присъства в основния славянски текст. "
             )
-
-    # in lemmas
-    # This has been disabled, because it is also solved in aggregator->reorganise_special()
-    # row = _expand_special_char(orig, row)
-    # row = _expand_special_char(trans, row)
 
     repetitions.update(row)
 

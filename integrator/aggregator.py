@@ -26,20 +26,23 @@ def _multilemma(row: List[str], sem: LangSemantics, lidx: int = 0) -> Dict[Sourc
     return sem.multilemma(row, lidx)
 
 
-def reorganise_special(
+def reorganise_orig_special(
     row: List[str], orig: LangSemantics, trans: LangSemantics
 ) -> List[str]:
-    """In cases when a sublemma contains only a special character,
+    """In cases when in the original side of semantics,
+    a sublemma contains only a special character,
     this should not show up as a level in the lemma hierarchy,
     but appended to the translation word usage"""
     # remove sublemma
     olast = next(
         iter(i for i in range(len(orig.lemmas) - 1, -1, -1) if row[orig.lemmas[i]])
     )
+
     # get only the SPECIAL_CHARS from variant that might contain also source
     special = row[orig.lemmas[olast]][0]
     assert special in SPECIAL_CHARS
     row[orig.lemmas[olast]] = ""
+
     # add special_char sublemma to translation
     tlast = next(
         iter(i for i in range(len(trans.lemmas) - 1, -1, -1) if row[trans.lemmas[i]])
@@ -49,6 +52,25 @@ def reorganise_special(
     #     row[trans.lemmas[1]] = f"{special} {row[trans.lemmas[0]]}"
     # else:
     row[trans.lemmas[tlast]] = f"{special} {row[trans.lemmas[tlast]]}"
+    return row
+
+
+def reorganise_trans_special(row: List[str], trans: LangSemantics) -> List[str]:
+    """In cases when in the translation side of semantics,
+    a sublemma contains only a special character,
+    this should be appended to the previous lemma in the word usage"""
+
+    tlast = next(
+        iter(i for i in range(len(trans.lemmas) - 1, -1, -1) if row[trans.lemmas[i]])
+    )
+    assert tlast > 0
+
+    # get only the SPECIAL_CHARS from variant that might contain also source
+    special = row[trans.lemmas[tlast]][0]
+    assert special in SPECIAL_CHARS
+    row[trans.lemmas[tlast]] = ""
+
+    row[trans.lemmas[tlast - 1]] = f"{special} {row[trans.lemmas[tlast-1]]}"
     return row
 
 
@@ -147,7 +169,7 @@ def _agg_lemma(
             continue
         nxt = base_word(oli)
         if nxt in SPECIAL_CHARS:
-            row = reorganise_special(row, orig, trans)
+            row = reorganise_orig_special(row, orig, trans)
             nxt = ""
             # TODO: combination of multilemmas and standalone special symbols is only partially implemented.
             # Is it possible that a special symbol is relevant to only one variant? What should we do in this case?
@@ -183,6 +205,15 @@ def _expand_and_aggregate(
     assert orig  # for mypy
     assert trans  # for mypy
 
+    tother = trans.other()
+    inv_lemmas = [
+        tother.lemmas[i]
+        for i in range(len(tother.lemmas) - 1, -1, -1)
+        if row[tother.lemmas[i]]
+    ]
+    if inv_lemmas and row[inv_lemmas[0]][0] in SPECIAL_CHARS:
+        row = reorganise_trans_special(row, tother)
+
     result = _agg_lemma(row, orig, trans, d)
     return result
 
@@ -213,9 +244,9 @@ def aggregate(
         #    print(row)
 
         try:
-            _expand_and_aggregate(row, orig, trans, result)
+            _expand_and_aggregate(row.copy(), orig, trans, result)
             assert trans.var
-            _expand_and_aggregate(row, orig, trans.var, result)
+            _expand_and_aggregate(row.copy(), orig, trans.var, result)
         except Exception as e:
             log.error(
                 f"При кондензиране възникна проблем в ред {row[IDX_COL]} ({row[orig.word]}/{row[trans.word]})"

@@ -354,3 +354,98 @@ def test_vyara():
             }
         }
     }
+
+
+def test_vyara_inverse():
+    row = (
+        [
+            "вѣрою хвальна G",
+            "вѣра & хвальнъ G",
+            "вѣра хвальна G",
+            "# G",
+            "34/156c21-d01",
+            "вѣра … вельꙗ",
+            "твор\ue205• \ue205 вѣ-",
+            "вѣра & вел\ue205\ue205",
+            "вѣра вел\ue205ꙗ",
+            "#",
+            "",
+            "ἐγκώμιον μέγα",
+            "ἐγκώμιον",
+            "ἐγκώμιον μέγα",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCE4D6|hl11:FFFCE4D6"]
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = aggregate([row], gr_sem, sl_sem, result)
+    assert result == {
+        "ἐγκώμιον": {
+            "ἐγκώμιον μέγα": {
+                "": {
+                    "": {
+                        "# вѣра вел\ue205ꙗ → вѣра & вел\ue205\ue205": {
+                            ("ἐγκώμιον μέγα", "вѣра … вельꙗ"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("34/156c21-d1"),
+                                        orig=Usage(
+                                            lang="gr",
+                                            word="ἐγκώμιον μέγα",
+                                            lemmas=["ἐγκώμιον", "ἐγκώμιον μέγα"],
+                                        ),
+                                        trans=Usage(
+                                            lang="sl",
+                                            alt=Alternative(
+                                                var_lemmas={
+                                                    Source("G"): "# вѣра хвальна"
+                                                },
+                                                var_words={
+                                                    Source("G"): ("вѣрою хвальна G", 1)
+                                                },
+                                            ),
+                                            word="вѣра … вельꙗ",
+                                            lemmas=[
+                                                "вѣра & вел\ue205\ue205",
+                                                "вѣра вел\ue205ꙗ",
+                                                "#",
+                                            ],
+                                        ),
+                                    )
+                                ]
+                            )
+                        },
+                        "# вѣра хвальна → вѣра & хвальнъ": {
+                            ("ἐγκώμιον μέγα", "вѣрою хвальна G"): SortedSet(
+                                [
+                                    Alignment(
+                                        idx=Index("34/156c21-d1"),
+                                        orig=Usage(
+                                            lang="gr",
+                                            word="ἐγκώμιον μέγα",
+                                            lemmas=["ἐγκώμιον", "ἐγκώμιον μέγα"],
+                                        ),
+                                        trans=Usage(
+                                            lang="sl",
+                                            var=Source("G"),
+                                            alt=Alternative(
+                                                main_lemma="# вѣра вел\ue205ꙗ",
+                                                main_word="вѣра … вельꙗ",
+                                            ),
+                                            word="вѣрою хвальна G",
+                                            lemmas=[
+                                                "вѣра & хвальнъ",
+                                                "вѣра хвальна",
+                                                "#",
+                                            ],
+                                        ),
+                                    )
+                                ]
+                            )
+                        },
+                    }
+                }
+            }
+        }
+    }
