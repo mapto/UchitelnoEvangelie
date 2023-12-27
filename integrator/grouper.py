@@ -43,9 +43,10 @@ def _collect_main(
 ):
     """*IN_PLACE*"""
     line[osem.word] = osem.collect_word(group)
-    line[osem.lemmas[1]] = osem.collect_lemma(h.non_union_group, osem.lemmas[1])
+    rgroup = h.relevant_group(osem)
+    line[osem.lemmas[1]] = osem.collect_lemma(rgroup, osem.lemmas[1])
     for c in osem.lemmas[2:]:
-        line[c] = osem.collect_lemma(h.non_gram_group, c)
+        line[c] = osem.collect_lemma(h.non_local_group, c)
 
 
 # TODO
@@ -60,10 +61,10 @@ def _collect_other(
     # TODO: which trans should orig other depend on?
     # TODO: first lemma should be with V_LEMMA_SEP?
     line[orig.other().lemmas[0]] = orig.other().collect_lemma(
-        h.non_gram_group, orig.other().lemmas[0]
+        h.non_local_group, orig.other().lemmas[0]
     )
     for c in orig.other().lemmas[1:]:
-        line[c] = orig.collect_lemma(h.non_gram_group, c)
+        line[c] = orig.collect_lemma(h.non_local_group, c)
 
 
 def _collect_trans(
@@ -75,11 +76,12 @@ def _collect_trans(
     """*IN_PLACE*"""
     line[tsem.word] = tsem.collect_word(group)
     line[tsem.lemmas[0]] = tsem.collect_lemma(
-        h.non_gram_group, tsem.lemmas[0], V_LEMMA_SEP
+        h.non_local_group, tsem.lemmas[0], V_LEMMA_SEP
     )
-    line[tsem.lemmas[1]] = tsem.collect_lemma(h.non_union_group, tsem.lemmas[1])
+    rgroup = h.relevant_group(tsem)
+    line[tsem.lemmas[1]] = tsem.collect_lemma(rgroup, tsem.lemmas[1])
     for c in tsem.lemmas[2:]:
-        line[c] = tsem.collect_lemma(h.non_gram_group, c)
+        line[c] = tsem.collect_lemma(h.non_local_group, c)
     return line
 
 
@@ -94,9 +96,10 @@ def _collect_group(
     # Words from any type of highlighting are added to the merged line
     # line = _collect_main(group, orig, non_gram_group_main, non_union_group_main, line)
     line[orig.word] = orig.collect_word(group)
-    line[orig.lemmas[1]] = orig.collect_lemma(h.non_union_group, orig.lemmas[1])
+    rgroup = h.relevant_group(orig)
+    line[orig.lemmas[1]] = orig.collect_lemma(rgroup, orig.lemmas[1])
     for c in orig.lemmas[2:]:
-        line[c] = orig.collect_lemma(h.non_gram_group, c)
+        line[c] = orig.collect_lemma(h.non_local_group, c)
 
     # line = _collect_other(group, orig.other(), non_gram_group_main, non_union_group_main, line)
     line[orig.other().word] = orig.other().collect_word(group)
@@ -104,7 +107,7 @@ def _collect_group(
         group, orig.other().lemmas[0]  # , V_LEMMA_SEP
     )
     for c in orig.other().lemmas[1:]:
-        line[c] = orig.other().collect_lemma(h.non_gram_group, c)
+        line[c] = orig.other().collect_lemma(h.non_local_group, c)
 
     line = _collect_trans(group, trans, h, line)
     line = _collect_trans(group, trans.other(), h, line)
@@ -118,13 +121,9 @@ def _needs_update(
     trans: LangSemantics,
     i: int,
     c: int,
-    h: Hiliting,
-):
+) -> bool:
     if c in trans.lemmas and _hilited_local(orig, trans, group[i]):
         return False
-    if i in h.merge_rows or c == trans.word:
-        if _hilited_irrelevant(orig, trans, group[i], c):
-            return False
     return True
 
 
@@ -147,16 +146,22 @@ def _update_group(
             group[i][c] = line[c]
         if not _hilited_local(orig, trans, group[i]):
             for c in orig.lemn_cols():
-                if not _hilited_irrelevant(orig, trans, group[i], c, False):
+                if not _hilited_irrelevant(orig, group[i]):
                     group[i][c] = line[c]
             group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
 
-        for c in trans.cols():
-            # do not update lines that have union highlighting in translation
-            update = _needs_update(group, orig, trans, i, c, h)
-            if group[i][trans.other().word]:
-                update &= _needs_update(group, orig, trans.other(), i, c, h)
-            if update:
+        t: LangSemantics = trans
+        for c in [t.word] + t.lemmas:
+            if _needs_update(group, orig, t, i, c):
+                # do not update lines that have 2nd lemma (union/irrelevant) highlighting in translation
+                group[i][c] = line[c]
+
+        t = trans.other()
+        if not t:
+            continue
+        for c in [t.word] + t.lemmas:
+            if _needs_update(group, orig, t, i, c):
+                # do not update lines that have 2nd lemma (union/irrelevant) highlighting in translation
                 group[i][c] = line[c]
 
     return group

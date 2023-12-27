@@ -83,7 +83,7 @@ raw = [
     + [""] * 2
     + ["pass."]
     + [""] * 13
-    + ["hl05:FFFCD5B4|hl08:FFFFFFFF|hl09:FFB8CCE4"],
+    + ["hl05:FFFCD5B4|hl09:FFB8CCE4"],
 ]
 
 
@@ -114,7 +114,7 @@ def test_raspetou_inverse():
             "pass.",
         ]
         + [""] * 13
-        + ["hl05:FFFCD5B4|hl08:FFFFFFFF|hl09:FFB8CCE4"],
+        + ["hl05:FFFCD5B4|hl09:FFB8CCE4"],
     ]
 
 

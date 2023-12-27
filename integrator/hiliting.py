@@ -21,7 +21,7 @@ def _hilited_col(row: List[str], col: int) -> Optional[str]:
     if f"{HILITE_PREFIX}{col:02d}" in style:
         pos = style.index(f"{HILITE_PREFIX}{col:02d}")
         # log.debug(style[pos + 5 : pos + 13])
-        if style[pos + 5 : pos + 11] == "FFFFFF":
+        if style[pos + 5 : pos + 11].upper() == "FFFFFF":
             return None
         return style[pos + 5 : pos + 13]
     return None
@@ -41,28 +41,12 @@ def _hilited_local(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> 
     return any(_hilited_col(row, c) for c in cols)
 
 
-def _hilited_irrelevant(
-    osem: LangSemantics,
-    tsem: LangSemantics,
-    row: List[str],
-    col: int = -1,
-    symmetric: bool = True,
-) -> bool:
-    """highlighting in second lemma. Also checks if passed column is in second lemma, if passed at all.
+def _hilited_irrelevant(sem: LangSemantics, row: List[str]) -> bool:
+    """highlighting in second lemma. This is asymmetric annotation.
+    Also checks if passed column is in second lemma, if passed at all.
     The usage is part of to the phrase, but is lexicographically irrelevant (i.e. does not need to show up in the phrase).
     """
-    cols = [
-        osem.lemmas[1],
-        osem.other().lemmas[1],
-    ]
-    if symmetric:
-        cols += [
-            tsem.lemmas[1],
-            tsem.other().lemmas[1],
-        ]
-    if col != -1 and col not in cols:
-        return False
-    return any(_hilited_col(row, c) for c in cols)
+    return _hilited_col(row, sem.lemmas[1]) != None
 
 
 class Hiliting:
@@ -78,33 +62,13 @@ class Hiliting:
         self.merge_rows = set(
             i for i, r in enumerate(group) if not _hilited_local(orig, trans, r)
         )
-        # self.merge_rows_main = set(
-        #     i for i, r in enumerate(group) if not _hilited_gram(orig, trans, r)
-        # )
-        # self.merge_rows_var = set(
-        #     i for i, r in enumerate(group) if not _hilited_gram(orig, trans.other(), r)
-        # )
-        # self.merge_rows_other = self.merge_rows_main | self.merge_rows_var
 
         # Rows that are not indicated as grammatical
-        self.non_gram_group = [group[i] for i in self.merge_rows]
-        # self.non_gram_group_main = [group[i] for i in self.merge_rows_main]
-        # self.non_gram_group_var = [group[i] for i in self.merge_rows_var]
-        # self.non_gram_group_other = [group[i] for i in self.merge_rows_other]
+        self.non_local_group = [group[i] for i in self.merge_rows]
 
         # Rows that are not indicated as grammatical or union
-        self.non_union_group = [
-            r for r in self.non_gram_group if not _hilited_irrelevant(orig, trans, r)
-        ]
-        # self.non_union_group_main = [
-        #     r for r in self.non_gram_group_main if not _hilited_union(orig, trans, r)
-        # ]
-        # self.non_union_group_var = [
-        #     r for r in self.non_gram_group_var if not _hilited_union(orig, trans.other(), r)
-        # ]
-        # TODO: Actually not used
-        # self.non_union_group_other = [
-        #     r for r in self.non_gram_group_other if not _hilited_union(orig.other(), trans.other(), r)
+        # self.relevant_group = [
+        #     r for r in self.non_local_group #if not _hilited_irrelevant(orig, trans, r)
         # ]
 
         # if not hilited words, means grouping is caused by SAME_CH
@@ -112,6 +76,9 @@ class Hiliting:
             _hilited_col(self.group[0], c) != None
             for c in orig.word_cols() + trans.word_cols()
         )
+
+    def relevant_group(self, sem: LangSemantics):
+        return [r for r in self.non_local_group if not _hilited_irrelevant(sem, r)]
 
     def __str__(self) -> str:
         return f"Grouping is due to {'hiliting' if self.hilited else 'sameness'}"
