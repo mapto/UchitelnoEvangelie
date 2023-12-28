@@ -122,9 +122,7 @@ def _needs_update(
     i: int,
     c: int,
 ) -> bool:
-    if c in trans.lemmas and _hilited_local(orig, trans, group[i]):
-        return False
-    return True
+    return c not in trans.lemmas or not _hilited_local(orig, trans, group[i])
 
 
 def _update_group(
@@ -141,14 +139,13 @@ def _update_group(
     for i in range(len(group)):
         if not _hilited_local(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
+            for c in orig.lemn_cols():
+                if c in orig.lemmas[2:] or not _hilited_irrelevant(orig, group[i]):
+                    group[i][c] = line[c]
+            group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
 
         for c in orig.word_cols():
             group[i][c] = line[c]
-        if not _hilited_local(orig, trans, group[i]):
-            for c in orig.lemn_cols():
-                if not _hilited_irrelevant(orig, group[i]):
-                    group[i][c] = line[c]
-            group[i][orig.other().lemmas[0]] = line[orig.other().lemmas[0]]
 
         t: LangSemantics = trans
         for c in [t.word] + t.lemmas:
