@@ -28,14 +28,15 @@ def test_ord_letters():
                 b = chars2[0]
             assert _ord(a) < _ord(b)
 
-
     from util import SPECIALS
+
     for i, c in enumerate(SPECIALS):
         if i == 0:
             continue
-        assert _ord(SPECIALS[i-1]) < _ord(c)
+        assert _ord(SPECIALS[i - 1]) < _ord(c)
 
     assert _ord("≈") < _ord("Ø".lower())
+
 
 def test_ord_word():
     assert ord_word("свѣтъ") < ord_word("свѧтъ")
