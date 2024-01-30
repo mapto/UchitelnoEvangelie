@@ -12,10 +12,11 @@ from sortedcontainers import SortedSet  # type: ignore
 from config import FROM_LANG, TO_LANG
 from config import MAIN_SL, MAIN_GR
 from config import ALT_SL
-from const import SPECIAL_CHARS, V_LEMMA_SEP
+from const import SPECIAL_CHARS, V_LEMMA_SEP, EMPTY_CH, OMMIT_SUBLEMMA, ERR_SUBLEMMA
 
 from alphabet import gasps, number_postfix, remap, reduce
 
+SPECIALS = SPECIAL_CHARS.copy() + [EMPTY_CH.lower(), ERR_SUBLEMMA[0], OMMIT_SUBLEMMA[0]]
 
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
@@ -36,12 +37,19 @@ def chars(cells: List[List[str]]) -> Set:
 
 
 def _ord(a: str) -> float:
+    """
+    >>> _ord("≈")
+    1142
+
+    >>> _ord("Ø".lower())
+    1144
+    """
     assert len(a) == 1
     # Latin letters are special annotation, they should show up after Cyrillic or Greek
     if "a" <= a <= "z":
-        return ord("ѵ") - ord("a") + 1 + ord(a)
-    if a in SPECIAL_CHARS:
-        return ord("ѵ") + 2 + SPECIAL_CHARS.index(a)
+        return ord("ѵ") - ord("a") + len(SPECIALS) + ord(a)
+    if a in SPECIALS:
+        return ord("ѵ") + SPECIALS.index(a)
     if a in remap:
         return remap[a]
     return ord(a)
@@ -76,8 +84,15 @@ def clean_word(w: str) -> str:
 def ord_word(w: str, max_len=MAX_LEN) -> int:
     """Order needs to be:
     1. Greek or Cyrillic lemmas
-    2. Special annotations (using Latin alphabet)
-    3. Combined lemmas in Greek or Cyrilic
+    2. Lemmas with SPECIAL_CHARS
+    3. Special annotations: EMPTY_CH, OMMIT_SUBLEMMA, ERR_SUBLEMMA
+    4. Combined lemmas in Greek or Cyrilic
+
+    >>> ord_word("≈") < ord_word("Ø")
+    True
+
+    >>> ord_word("Ø") > ord_word("≈")
+    True
     """
     a = base_word(w).lower()
     a = a.replace("оу", "ѹ")
@@ -87,10 +102,16 @@ def ord_word(w: str, max_len=MAX_LEN) -> int:
         log.info(f"Unexpectedly long word: {a}")
     assert max_len > len(a)
     base = 2 * MAX_CHAR
+    # # if special, put at end of alphabet
+    # SPECIALS = SPECIAL_CHARS.copy() + [EMPTY_CH, OMMIT_SUBLEMMA[0], ERR_SUBLEMMA[0]]
+    # if a[0] in SPECIALS:
+    #     pass
     # if combined lemma, order after all other
     r = 1 if V_LEMMA_SEP in a else 0
+    # print(a)
     for ch in a:
         r = r * base + int(2 * _ord(ch))
+        # print(ch, _ord(ch), r)
         # print("%s%d"%(ch,r))
     # print(max_len - len(a))
     r *= base ** (max_len - len(a))

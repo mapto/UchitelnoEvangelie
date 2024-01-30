@@ -1,6 +1,5 @@
 from const import STYLE_COL
 from setup import sl_sem, gr_sem
-from semantics import MainLangSemantics, VarLangSemantics
 from merger import merge
 
 

@@ -1,5 +1,5 @@
 """The exporter specific to the indexgenerator"""
-from typing import Dict, Union
+from typing import Union
 import logging as log
 
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
@@ -7,12 +7,12 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from docx import Document  # type: ignore
 from docx.shared import Pt, Cm  # type: ignore
 
-from config import FROM_LANG, TO_LANG, other_lang
-from const import BULLET_CH, INDENT_CH, SPECIAL_CHARS
+from config import FROM_LANG, TO_LANG
+from const import INDENT_CH, SPECIAL_CHARS
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 from util import main_source, subscript
-from model import Alternative, Alignment, Usage
+from model import Alignment, Usage
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, fonts
@@ -124,7 +124,7 @@ def docx_result(par, usage: SortedSet, src_style: str) -> None:
 def _generate_counts(par, d: Union[SortedDict, dict], trans: bool = False) -> None:
     try:
         c = Counter.get_dict_counts(d).get_counts(trans)
-    except StopIteration as si:
+    except StopIteration:
         keys = []
         key = next(iter(d))
         if key:
@@ -229,7 +229,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
         else:
             try:
                 _generate_line(level + 1, lang, next_d, doc)
-            except AssertionError as ae:
+            except AssertionError:
                 log.error(
                     f"При генериране възникна проблем с една от {len(next_d)} употреби на {li}"
                 )

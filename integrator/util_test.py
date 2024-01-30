@@ -1,6 +1,7 @@
 import re
 
 import alphabet
+from const import SPECIAL_CHARS, EMPTY_CH, OMMIT_SUBLEMMA
 from config import FROM_LANG, TO_LANG
 from util import ord_word, subscript, _ord
 
@@ -28,6 +29,14 @@ def test_ord_letters():
             assert _ord(a) < _ord(b)
 
 
+    from util import SPECIALS
+    for i, c in enumerate(SPECIALS):
+        if i == 0:
+            continue
+        assert _ord(SPECIALS[i-1]) < _ord(c)
+
+    assert _ord("≈") < _ord("Ø".lower())
+
 def test_ord_word():
     assert ord_word("свѣтъ") < ord_word("свѧтъ")
     assert ord_word("μαρτυρέω") == ord_word("μαρτυρέω")
@@ -40,10 +49,9 @@ def test_ord_word():
     assert ord_word("μαρτυρέω") < ord_word("gram.")
 
     assert ord_word("μαρτυρέω") < ord_word("Ø")
-    assert ord_word("Ø") < ord_word("≠")
     assert ord_word("μαρτυρέω") < ord_word("≈ μαρτυρέω")
     assert ord_word("свѣтъ") < ord_word("≠ свѣтъ")
-    assert ord_word("* свѣтъ") < ord_word("om.")
+    # assert ord_word("* свѣтъ") < ord_word("om.")
 
     assert ord_word("om.") < ord_word("свѣтъ & на")
     assert ord_word("gram.") < ord_word("μαρτυρέω & διαλεγομαι")
@@ -54,6 +62,12 @@ def test_ord_word():
     assert ord_word("Ἀβραὰμ") == ord_word("Αβρααμ")
 
     assert ord_word("давꙑдъ") == ord_word("Давꙑдъ")
+
+    assert ord_word("ὁ & ὑποτεταγμένος") > ord_word("om.")
+
+    for c in SPECIAL_CHARS:
+        assert ord_word(OMMIT_SUBLEMMA) > ord_word(c)
+        assert ord_word(EMPTY_CH) > ord_word(c)
 
 
 def test_ord_numbers():

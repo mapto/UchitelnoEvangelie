@@ -1,6 +1,6 @@
-from .address import Index
-from .source import Source
-from .model import Alternative
-from .model import Path
-from .usage import Alignment, Usage
-from .counter import Counter
+from .address import Index  # noqa
+from .source import Source  # noqa
+from .model import Alternative  # noqa
+from .model import Path  # noqa
+from .usage import Alignment, Usage  # noqa
+from .counter import Counter  # noqa

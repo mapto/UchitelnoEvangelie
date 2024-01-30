@@ -19,7 +19,6 @@ from cli import expand_names, init, wrapup
 
 fnames = init("integrator", __doc__, __version__) if __name__ == "__main__" else []
 
-from os import path
 import logging as log
 
 logger = log.getLogger()

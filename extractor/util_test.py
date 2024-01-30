@@ -1,4 +1,4 @@
-from model import Index, Word, WordList
+from model import Index, Word
 from util import Buffer
 
 

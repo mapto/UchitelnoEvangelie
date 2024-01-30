@@ -234,7 +234,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
         else:
             try:
                 _export_line(level + 1, lang, next_d, doc)
-            except AssertionError as ae:
+            except AssertionError:
                 suffix = f", част от {d}" if not li else ""
                 log.error(
                     f"При генериране на ред в речника възникна проблем с една от {len(next_d)} употреби на {li}"

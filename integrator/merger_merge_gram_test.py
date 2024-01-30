@@ -1,6 +1,5 @@
-from const import IDX_COL
 from setup import sl_sem, gr_sem
-from merger import merge, _close, _close_group
+from merger import merge, _close
 
 raw = [
     [""] * 4

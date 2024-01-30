@@ -18,7 +18,6 @@ from cli import init, expand_names, wrapup
 
 fnames = init("indexgenerator", __doc__, __version__) if __name__ == "__main__" else []
 
-from os import path
 import logging as log
 
 logger = log.getLogger()

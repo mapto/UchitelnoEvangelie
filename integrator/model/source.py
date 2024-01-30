@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Set
+from typing import List, Optional
 
 from config import FROM_LANG, TO_LANG, VAR_SOURCES
 

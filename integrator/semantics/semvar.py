@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 import re
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
-from const import NON_COUNTABLE, H_LEMMA_SEP, ERR_SUBLEMMA, OMMIT_SUBLEMMA
+from const import NON_COUNTABLE, H_LEMMA_SEP, ERR_SUBLEMMA
 from const import EMPTY_CH, SPECIAL_CHARS
 from config import DEFAULT_SOURCES
 from model import Source
@@ -221,7 +221,6 @@ def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int
     while len(row) < self.cnt_col + 1:
         row += ["1"]
 
-    col = self.lemmas[0]
     # Counts should be ignored, as they clearly don't exist before coming here
     if not row[self.lemmas[0]]:
         return row_counts

@@ -22,6 +22,10 @@ mypy integrator
 mypy integrator/semantics
 mypy integrator/model
 
+echo '>>> Running Autoflake'
+autoflake --remove-all-unused-imports --remove-unused-variables -i -r extractor
+autoflake --remove-all-unused-imports --remove-unused-variables -i -r integrator
+
 echo '>>> Running Pytest'
 # processes also subdirectories
 pytest --doctest-modules -s extractor  #  -vv -o log_cli=true

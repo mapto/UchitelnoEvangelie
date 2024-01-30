@@ -13,7 +13,7 @@ from util import ord_word, base_word
 from model import Source
 
 from semantics import present
-from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
+from semantics import LangSemantics
 
 FIRST_LEMMA = -1
 LAST_LEMMA = -2

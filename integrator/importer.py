@@ -29,7 +29,6 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
     ws = wb.active
 
     result = []
-    blank = False
     for row in ws.iter_rows(max_col=STYLE_COL):
         line = [str(cell.value).strip() if cell.value else cell.value for cell in row]
         bgs = {
@@ -41,7 +40,6 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
         }
         line.append(_style2str(row[IDX_COL].font, bgs))
         result.append(line)
-        blank = not [l for l in line if l]
 
     return result
 

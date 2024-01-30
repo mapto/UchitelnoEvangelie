@@ -57,7 +57,7 @@ def expand_names(fnames) -> Tuple[List[str], List[str]]:
             try:
                 shutil.unpack_archive(fname, dest_dir)
                 to_clean += [dest_dir]
-            except ValueError as ve:
+            except ValueError:
                 logging.critical(
                     f"Файлът {fname} трябва да е във формат .xlsx. Като алтернатива, може да е директория или архив. Моля конвертирайте го"
                 )

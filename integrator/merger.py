@@ -3,12 +3,12 @@
 """A processor merging multiple lines when they are related.
 Takes care of construct grouping and repeated words counting"""
 
-from typing import Dict, List, Set
+from typing import List, Set
 import logging as log
 
-from const import IDX_COL, SAME_CH, SPECIAL_CHARS
+from const import IDX_COL, SAME_CH
 
-from semantics import LangSemantics, MainLangSemantics, present
+from semantics import LangSemantics, MainLangSemantics
 from util import clean_word
 from repetition import Repetitions
 from hiliting import Hiliting

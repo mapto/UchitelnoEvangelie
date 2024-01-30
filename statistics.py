@@ -53,11 +53,13 @@ if __name__ == "__main__":
             "гръцки вариант подлема",
             "гръцки вариант втора подлема",
             "гръцки вариант трета подлема",
-            ]
-        counter = [0]* len(columns)
+        ]
+        counter = [0] * len(columns)
         blank = False
         for row in ws.iter_rows(max_col=len(columns)):
-            line = [str(cell.value).strip() if cell.value else cell.value for cell in row]
+            line = [
+                str(cell.value).strip() if cell.value else cell.value for cell in row
+            ]
             # Two consequent blank lines
             if blank and not [l for l in line if l]:
                 break
@@ -70,7 +72,7 @@ if __name__ == "__main__":
         counters += [counter]
 
     with open("statistics.csv", "w") as fout:
-      w = csv.writer(fout)
-      w.writerow(["слово"] + columns)
-      for i in range(len(fnames)):
-          w.writerow([fnames[i].split("/")[-1]] + counters[i])
+        w = csv.writer(fout)
+        w.writerow(["слово"] + columns)
+        for i in range(len(fnames)):
+            w.writerow([fnames[i].split("/")[-1]] + counters[i])

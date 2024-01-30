@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional, Union
+from typing import Callable, List, Optional, Union
 import logging as log
 import re
 
@@ -46,8 +46,7 @@ class Index:
         restlen = len(rest)
         while rest:
             # print(Index.maxlen)
-            ci = len(self.data)
-            # print(ci)
+            # print(len(self.data))
             if rest[0].isnumeric():
                 m = re.search(numeric, rest)
                 if not m:

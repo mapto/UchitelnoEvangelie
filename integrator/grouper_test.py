@@ -1,6 +1,5 @@
 from model import Source
 from setup import sl_sem, gr_sem
-from hiliting import Hiliting
 
 from grouper import _merge_indices
 from grouper import _hilited, _hilited_local

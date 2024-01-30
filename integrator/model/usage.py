@@ -3,7 +3,6 @@
 from typing import List
 from dataclasses import dataclass, field
 
-from config import other_lang
 
 from .address import Index
 from .source import Source

@@ -2,7 +2,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from const import FROM_LANG, TO_LANG
 from config import FROM_LANG
-from const import IDX_COL, STYLE_COL
+from const import STYLE_COL
 
 from model import Alternative, Index, Source, Alignment, Usage
 from semantics import MainLangSemantics, VarLangSemantics

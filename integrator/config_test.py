@@ -1,6 +1,6 @@
 # TODO: test that verifies that same source siglas are not used for different languages
 
-from config import parse_sources, source_cfg
+from config import parse_sources
 
 
 def test_parse_sources():

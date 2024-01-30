@@ -1,6 +1,6 @@
-from typing import Dict, List, Optional, Set
+from typing import List, Optional
 
-from const import HILITE_PREFIX, IDX_COL, STYLE_COL, V_LEMMA_SEP
+from const import HILITE_PREFIX, STYLE_COL
 
 from semantics import LangSemantics, MainLangSemantics
 

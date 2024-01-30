@@ -1,7 +1,5 @@
 from sortedcontainers.sorteddict import SortedDict, SortedSet  # type: ignore
 
-from config import FROM_LANG, TO_LANG
-from const import STYLE_COL
 from model import Source
 from semantics import _is_variant_lemma
 from setup import sl_sem, gr_sem

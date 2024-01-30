@@ -1,6 +1,6 @@
 from config import FROM_LANG, TO_LANG
 from model import Source
-from semantics import MainLangSemantics, VarLangSemantics
+from semantics import VarLangSemantics
 from setup import sl_sem, gr_sem
 
 

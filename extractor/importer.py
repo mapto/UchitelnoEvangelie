@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-from typing import List, Dict, Set
+from typing import List, Dict
 import logging as log
 
 from pathlib import Path
-import re
 
 from docx import Document  # type: ignore
 from docx.table import _Cell  # type: ignore

@@ -1,4 +1,3 @@
-from const import OMMIT_SUBLEMMA
 from .semmain import collect_lemma
 
 
