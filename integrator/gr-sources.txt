@@ -46,6 +46,7 @@ Pn	PC195 Paris, BnF, Coislin 195
 
 Ve	Vat. gr. 1611 
 
+Ba	Basilios Magnus
 Ch	Chrysostomos
 
 Nt	NA

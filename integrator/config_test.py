@@ -51,6 +51,7 @@ def test_parse_sources():
             "Pm",
             "Pn",
             "Ve",
+            "Ba",
             "Ch",
             "Nt",
             "S",

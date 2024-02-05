@@ -10,6 +10,10 @@ rm -rf integrator/.pytest_cache
 rm -rf integrator/semantics/__pycache__
 rm -rf integrator/model/__pycache__
 
+echo '>>> Running Autoflake'
+autoflake --remove-all-unused-imports --remove-unused-variables -i -r extractor
+autoflake --remove-all-unused-imports --remove-unused-variables -i -r integrator
+
 echo '>>> Running Pylint'
 # pylint -E extractor/*.py
 pylint -E -v integrator/*.py
@@ -21,10 +25,6 @@ mypy extractor
 mypy integrator
 mypy integrator/semantics
 mypy integrator/model
-
-echo '>>> Running Autoflake'
-autoflake --remove-all-unused-imports --remove-unused-variables -i -r extractor
-autoflake --remove-all-unused-imports --remove-unused-variables -i -r integrator
 
 echo '>>> Running Pytest'
 # processes also subdirectories

@@ -20,8 +20,9 @@ EMPTY_CH = "Ø"  # used when text has intended to have no translation
 
 # TODO: These special characters are actually semantic annotation,
 # so it makes sense to have them represented in the Alignment model
-# we use '#' for contextual translation
-SPECIAL_CHARS = ["#", "≈", "≠"]  # , "*"]
+# '#' used for contextual translation
+# '*' is legacy annotation, but is present in tests
+SPECIAL_CHARS = ["#", "≈", "≠", "*"]
 
 ERR_SUBLEMMA = "err. pro"
 OMMIT_SUBLEMMA = "om."

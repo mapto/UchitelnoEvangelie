@@ -12,7 +12,7 @@ for FILENAME in *.docx; do
     unzip -q "$STRIPPED.xlsx" -d out
     for NEXT in $PARTS; do 
         if [ -n "$(diff expected/$NEXT out/$NEXT)" ]; then
-            diff expected/$NEXT out/$NEXT
+            # diff expected/$NEXT out/$NEXT
             echo "DIFFERENCES FOUND in $NEXT!"
             exit 0
         else
@@ -41,7 +41,7 @@ for FILENAME in *.xlsx; do
         unzip -q "$STRIPPED.docx" -d out
         for NEXT in $PARTS; do
             if [ -n "$(diff expected/$NEXT out/$NEXT)" ]; then
-                diff expected/$NEXT out/$NEXT
+                # diff expected/$NEXT out/$NEXT
                 echo "DIFFERENCES FOUND in $NEXT!"
                 exit 0
             else
@@ -71,7 +71,7 @@ for FILENAME in *.xlsx; do
         unzip -q "$STRIPPED.docx" -d out
         for NEXT in $PARTS; do 
             if [ -n "$(diff expected/$NEXT out/$NEXT)" ]; then
-                diff expected/$NEXT out/$NEXT
+                # diff expected/$NEXT out/$NEXT
                 echo "DIFFERENCES FOUND in $NEXT!"
                 exit 0
             else
