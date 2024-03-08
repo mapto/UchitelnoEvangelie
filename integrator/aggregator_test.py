@@ -265,6 +265,8 @@ def test_reorganise_special_var_vyara_trans():
         + ["1"] * 4
     )
 
+
+def test_reorganise_special_var_vyara_trans_var():
     row = (
         [
             "вѣрою хвальна G",
@@ -310,3 +312,53 @@ def test_reorganise_special_var_vyara_trans():
         + ["hl05:FFFCE4D6|hl11:FFFCE4D6"]
         + ["1"] * 4
     )
+
+
+def test_reorganise_var_special_prichatnik():
+    row = (
+        [
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 H",
+            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
+            "≈ GH",
+            "05/028c21-d01",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ",
+            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+            "≈",
+            "",
+            "ποιῆσαι κοινωνοὺς",
+            "ποιέω & κοινωνός",
+            "ποιέω κοινωνόν",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCD5B4|hl00:FFFCD5B4|hl11:FFFCD5B4"]
+        + ["1"] * 4
+    )
+    result = reorganise_trans_special(row, sl_sem.var)
+    assert (
+        result
+        == [
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 H",
+            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "≈ пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
+            "",
+            "05/028c21-d01",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ",
+            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+            "≈",
+            "",
+            "ποιῆσαι κοινωνοὺς",
+            "ποιέω & κοινωνός",
+            "ποιέω κοινωνόν",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCD5B4|hl00:FFFCD5B4|hl11:FFFCD5B4"]
+        + ["1"] * 4
+    )
+
+
+# TODO: Test for sl_sem.var

@@ -55,18 +55,16 @@ def test_monogenis():
                             Index("1/W168a25"),
                             Usage(
                                 FROM_LANG,
-                                alt=Alternative(
-                                    var_lemmas={
-                                        Source("H"): "\ue201д\ue205нородъ",
-                                        Source("G"): "\ue205но\ue20dѧдъ",
-                                    },
-                                    var_words={
-                                        Source("H"): ("\ue201д\ue205нородоу H", 1),
-                                        Source("G"): ("\ue205но\ue20dедаго G", 1),
-                                    },
-                                ),
                                 word="\ue201д\ue205но\ue20dедоу",
                                 lemmas=["\ue201д\ue205но\ue20dѧдъ"],
+                                var_alt={
+                                    Source("H"): Alternative(
+                                        "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                    ),
+                                    Source("G"): Alternative(
+                                        "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                    ),
+                                },
                             ),
                             Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         )
@@ -88,16 +86,17 @@ def test_monogenis():
                             Usage(
                                 "sl",
                                 var=Source("H"),
-                                alt=Alternative(
-                                    main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                    var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                                    main_word="\ue201д\ue205но\ue20dедоу",
-                                    var_words={
-                                        Source("G"): ("\ue205но\ue20dедаго G", 1)
-                                    },
-                                ),
                                 word="\ue201д\ue205нородоу H",
                                 lemmas=["\ue201д\ue205нородъ"],
+                                main_alt=Alternative(
+                                    "\ue201д\ue205но\ue20dедоу",
+                                    "\ue201д\ue205но\ue20dѧдъ",
+                                ),
+                                var_alt={
+                                    Source("G"): Alternative(
+                                        "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                    )
+                                },
                             ),
                             Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         )
@@ -114,16 +113,17 @@ def test_monogenis():
                             Usage(
                                 "sl",
                                 var=Source("G"),
-                                alt=Alternative(
-                                    main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                    var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                                    main_word="\ue201д\ue205но\ue20dедоу",
-                                    var_words={
-                                        Source("H"): ("\ue201д\ue205нородоу H", 1)
-                                    },
-                                ),
                                 word="\ue205но\ue20dедаго G",
                                 lemmas=["\ue205но\ue20dѧдъ"],
+                                main_alt=Alternative(
+                                    "\ue201д\ue205но\ue20dедоу",
+                                    "\ue201д\ue205но\ue20dѧдъ",
+                                ),
+                                var_alt={
+                                    Source("H"): Alternative(
+                                        "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                    )
+                                },
                             ),
                             Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         )

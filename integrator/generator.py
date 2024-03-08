@@ -22,14 +22,25 @@ BULLET_STYLE = "List Bullet"
 LEVEL_OFFSET = 0.4
 
 
+def _generate_usage_alt_main(par, uc: Usage, source_name: str) -> None:
+    alt = uc.main_alt
+    _generate_text(par, " ")
+    prefix = f"{alt.semantic} " if alt.semantic else ""
+    _generate_text(par, f"{prefix}{alt.lemma}", fonts[uc.lang])
+    _generate_text(par, f" {source_name}")
+    if alt.cnt > 1:
+        _generate_text(par, subscript(alt.cnt, uc.lang), subscript=True)
+
+
 def _generate_usage_alt_vars(par, uc: Usage) -> None:
     first = True
     _generate_text(par, f" {BRACE_OPEN[uc.lang]}")
-    for lsrc, lemma in uc.alt.var_lemmas.items():
+    for lsrc, alt in uc.var_alt.items():
+        # for lsrc, lemma in uc.alt.var_lemmas.items():
         args = [
             # tpl[1] for wsrc, tpl in alt_var.var_words.items() if wsrc and tpl[0] and wsrc.inside([lsrc])
-            tpl[1]
-            for wsrc, tpl in uc.alt.var_words.items()
+            tpl.cnt
+            for wsrc, tpl in uc.var_alt.items()
             if wsrc.inside([lsrc])
         ]
         cnt = max(args) if args else 1
@@ -37,7 +48,8 @@ def _generate_usage_alt_vars(par, uc: Usage) -> None:
             first = False
         else:
             _generate_text(par, ", ")
-        _generate_text(par, lemma, fonts[uc.lang])
+        prefix = f"{alt.semantic} " if alt.semantic else ""
+        _generate_text(par, f"{prefix}{alt.lemma}", fonts[uc.lang])
         if lsrc:
             _generate_text(par, str(lsrc._sort_vars()), superscript=True)
         if cnt > 1:
@@ -72,32 +84,22 @@ def _generate_index(par, u: Alignment) -> None:
 
 def _generate_usage(par, u: Alignment) -> None:
     _generate_index(par, u)
-    if not u.orig.alt and not u.trans.alt:
+    if not u.has_alternatives():
         return
 
     _generate_text(par, f" {CF_SEP}")
-    if u.orig.alt.main_lemma:
-        _generate_text(par, " ")
-        _generate_text(par, u.orig.alt.main_lemma, fonts[u.orig.lang])
-        _generate_text(par, f" {main_source(u.orig.lang, u.idx.data[2] == 'W')}")
-        if u.orig.alt.main_cnt > 1:
-            _generate_text(
-                par, subscript(u.orig.alt.main_cnt, u.orig.lang), subscript=True
-            )
+    if u.orig.main_alt:
+        source = main_source(u.orig.lang, u.idx.data[2] == "W")
+        _generate_usage_alt_main(par, u.orig, source)
 
-    if u.orig.alt.var_lemmas:
+    if u.orig.var_alt:
         _generate_usage_alt_vars(par, u.orig)
 
-    if u.trans.alt.main_lemma:
-        _generate_text(par, " ")
-        _generate_text(par, u.trans.alt.main_lemma, fonts[u.trans.lang])
-        _generate_text(par, f" {main_source(u.trans.lang, u.idx.data[2] == 'W')}")
-        if u.trans.alt.main_cnt > 1:
-            _generate_text(
-                par, subscript(u.trans.alt.main_cnt, u.trans.lang), subscript=True
-            )
+    if u.trans.main_alt:
+        source = main_source(u.trans.lang, u.idx.data[2] == "W")
+        _generate_usage_alt_main(par, u.trans, source)
 
-    if u.trans.alt.var_lemmas:
+    if u.trans.var_alt:
         _generate_usage_alt_vars(par, u.trans)
 
 

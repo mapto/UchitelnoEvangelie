@@ -6,46 +6,93 @@ from config import DEFAULT_SOURCES
 from model import Alternative, Path, Source
 
 
-def alternatives(self, row: List[str], my_var: Source = Source()) -> Alternative:
+def alternatives(
+    self, row: List[str], my_var: Source = Source()
+) -> Tuple[Alternative, Dict[Source, Alternative]]:
     """
     my_var is required for VarLangSemantics and ignored for MainLangSemantics
     """
     m = len(self.lemmas) - 1
     # lemma, word, repetition
-    alt_main = ("", "", 1)
+    alt_main = Alternative()
     # sources to lemmas, sources to words, repetition (TODO: unclear how to interpret this one)
-    alt_var: Tuple[Dict[Source, str], Dict[Source, Tuple[str, int]]] = ({}, {})
+    alt_var: Dict[Source, Alternative] = {}
+
+    # main
+    # print(row)
     for l in range(m, -1, -1):
-        if alt_main[0]:
+        if alt_main.lemma:
             break
         alt_main = self.level_main_alternatives(row, my_var, l)
-        if alt_main[0] in NON_LEMMAS:
-            alt_main = ("", "", 1)
+        # print(alt_main)
+        if alt_main.word in NON_LEMMAS:
+            alt_main = Alternative()
 
+    # var
     for l in range(m, -1, -1):
-        new_var = self.level_var_alternatives(row, my_var, l)
-        for v in new_var[0].values():
-            if v in NON_LEMMAS:
-                alt_var = ({}, {})
-                new_var = ({}, {})
-        for v in new_var[0].keys():
-            rem = v.remainder(alt_var[0].keys())
+        # print(l)
+        lvl_var = self.level_var_alternatives(row, my_var, l)
+        for v in lvl_var.values():
+            if v.lemma in NON_LEMMAS:
+                alt_var = {}
+                lvl_var = {}
+        for v in lvl_var.keys():
+            rem = v.remainder(alt_var.keys())
             if rem:
-                alt_var[0][rem] = new_var[0][v]
+                alt_var[rem] = lvl_var[v]
                 # iterate over sources in words, to catch all that are covered by this lemma
-                for lv in new_var[1].keys():
+                for lv in lvl_var.keys():
                     if lv in v:
-                        if rem in alt_var[1]:
+                        if rem in alt_var:
+                            # print("if")
                             # TODO: what to do with repetitions
-                            assert alt_var[1][rem][1] == new_var[1][lv][1]
-                            alt_var[1][rem] = (
-                                f"{alt_var[1][rem][0]} {new_var[1][lv][0]}",
-                                alt_var[1][rem][1],
+                            lem = (
+                                alt_var[rem].lemma
+                                if alt_var[rem].lemma
+                                else lvl_var[lv].lemma
                             )
+                            if alt_var[rem].semantic and lem.startswith(
+                                alt_var[rem].semantic
+                            ):
+                                lem = lem[2:]
+                            assert (
+                                alt_var[rem].cnt == lvl_var[lv].cnt
+                            ), f"Mismatch in counters at different levels between {alt_var} and {lvl_var}"
+                            # sem = new_var[lv].semantic if new_var[lv].semantic else alt_var[rem].semantic
+                            alt_var[lv] = Alternative(
+                                alt_var[rem].word,
+                                lem,
+                                alt_var[rem].cnt,
+                                alt_var[rem].semantic,
+                            )
+                            # alt_var[1][rem] = (
+                            #     f"{alt_var[1][rem][0]} {new_var[1][lv][0]}",
+                            #     alt_var[1][rem][1],
+                            # )
                         else:
-                            alt_var[1][rem] = new_var[1][lv]
+                            alt_var[rem] = lvl_var[lv]
+            else:
+                if v in alt_var:
+                    if not alt_var[v].lemma:
+                        alt_var[v] = Alternative(
+                            alt_var[v].word,
+                            lvl_var[v].lemma,
+                            alt_var[v].cnt,
+                            alt_var[v].semantic,
+                        )
+                else:
+                    for var in alt_var.keys():
+                        if var in v:
+                            alt_var[var] = Alternative(
+                                alt_var[var].word,
+                                lvl_var[v].lemma,
+                                alt_var[var].cnt,
+                                alt_var[var].semantic,
+                            )
 
-    return Alternative(alt_main[0], alt_var[0], alt_main[1], alt_var[1], alt_main[2])
+    # print(alt_var)
+    # return Alternative(alt_main[0], alt_var[0], alt_main[1], alt_var[1], alt_main[2])
+    return (alt_main, alt_var)
 
 
 def build_paths(self, row: List[str]) -> List[Path]:

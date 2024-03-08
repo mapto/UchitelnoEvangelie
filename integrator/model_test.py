@@ -6,8 +6,8 @@ from model import Alternative, Index, Source, Alignment, Usage
 
 def test_order_usage():
     assert Alignment(Index("1/6a8"), FROM_LANG) < Alignment(Index("1/6a17"), FROM_LANG)
-    assert Alignment(Index("1/6a8"), FROM_LANG) < Alignment(
-        Index("1/W167c4"), FROM_LANG
+    assert Alignment(Index("1/W167c4"), FROM_LANG) > Alignment(
+        Index("1/6a8"), FROM_LANG
     )
     assert Alignment(Index("2/6a8"), FROM_LANG) > Alignment(
         Index("2/W167c4"), FROM_LANG
@@ -48,16 +48,12 @@ def test_sort_usage():
         [
             Alignment(
                 Index("1/W168a25"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
                     FROM_LANG,
                     Source("G"),
-                    Alternative(
-                        "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
-                    ),
+                    main_alt=Alternative(lemma="\ue201д\ue205но\ue20dѧдъ"),
+                    var_alt={"H": Alternative(lemma="\ue201д\ue205нородъ")},
                 ),
             ),
             Alignment(
@@ -65,72 +61,56 @@ def test_sort_usage():
                 Usage(TO_LANG, word="μονογενὴς"),
                 Usage(
                     FROM_LANG,
-                    alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
+                    var_alt={"WH": Alternative(lemma="\ue201д\ue205но\ue20dѧдъ")},
                 ),
             ),
             Alignment(
                 Index("1/4c15"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
                     FROM_LANG,
-                    alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
+                    var_alt={"WH": Alternative(lemma="\ue201д\ue205но\ue20dѧдъ")},
                 ),
             ),
             Alignment(
                 Index("1/W168a25"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
                     FROM_LANG,
                     Source("H"),
-                    alt=Alternative(
-                        "\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}
-                    ),
+                    main_alt=Alternative(lemma="\ue201д\ue205но\ue20dѧдъ"),
+                    var_alt={"G": Alternative(lemma="\ue205но\ue20dѧдъ")},
                 ),
             ),
-            Alignment(
-                Index("1/W168a28"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
-            ),
+            Alignment(Index("1/W168a28"), Usage(TO_LANG, word="μονογενοῦς")),
             Alignment(
                 Index("1/W168a25"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
                     FROM_LANG,
-                    alt=Alternative(
-                        var_lemmas={
-                            "H": "\ue201д\ue205нородъ",
-                            "G": "\ue205но\ue20dѧдъ",
-                        }
-                    ),
+                    var_alt={
+                        "H": Alternative(lemma="\ue201д\ue205нородъ"),
+                        "G": Alternative(lemma="\ue205но\ue20dѧдъ"),
+                    },
                 ),
             ),
             Alignment(
                 Index("1/5a4"),
+                Usage(TO_LANG, word="μονογενὴς"),
                 Usage(
-                    TO_LANG,
-                    word="μονογενὴς",
+                    FROM_LANG,
+                    Source("WH"),
+                    main_alt=Alternative(lemma="\ue205но\ue20dѧдъ "),
                 ),
-                Usage(FROM_LANG, Source("WH"), alt=Alternative("\ue205но\ue20dѧдъ ")),
             ),
             Alignment(
                 Index("1/4c15"),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
+                    FROM_LANG,
+                    Source("WH"),
+                    main_alt=Alternative(lemma="\ue205но\ue20dѧдъ"),
                 ),
-                Usage(FROM_LANG, Source("WH"), alt=Alternative("\ue205но\ue20dѧдъ")),
             ),
         ]
     )
@@ -138,91 +118,68 @@ def test_sort_usage():
         [
             Alignment(
                 Index("1/4c15"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
                     FROM_LANG,
-                    alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
+                    var_alt={"WH": Alternative(lemma="\ue201д\ue205но\ue20dѧдъ")},
                 ),
             ),
             Alignment(
                 Index("1/4c15"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
-                Usage(FROM_LANG, Source("WH"), alt=Alternative("\ue205но\ue20dѧдъ")),
-            ),
-            Alignment(
-                Index("1/5a4"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενὴς",
-                ),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
                     FROM_LANG,
-                    alt=Alternative(var_lemmas={"WH": "\ue201д\ue205но\ue20dѧдъ"}),
+                    Source("WH"),
+                    main_alt=Alternative(lemma="\ue205но\ue20dѧдъ"),
                 ),
             ),
             Alignment(
                 Index("1/5a4"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενὴς",
-                ),
-                Usage(FROM_LANG, Source("WH"), alt=Alternative("\ue205но\ue20dѧдъ ")),
-            ),
-            Alignment(
-                Index("1/W168a25"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
+                Usage(TO_LANG, word="μονογενὴς"),
                 Usage(
                     FROM_LANG,
-                    alt=Alternative(
-                        var_lemmas={
-                            "H": "\ue201д\ue205нородъ",
-                            "G": "\ue205но\ue20dѧдъ",
-                        }
-                    ),
+                    var_alt={"WH": Alternative(lemma="\ue201д\ue205но\ue20dѧдъ")},
                 ),
             ),
             Alignment(
-                Index("1/W168a28"),
+                Index("1/5a4"),
+                Usage(TO_LANG, word="μονογενὴς"),
                 Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
+                    FROM_LANG,
+                    Source("WH"),
+                    main_alt=Alternative(lemma="\ue205но\ue20dѧдъ "),
                 ),
             ),
             Alignment(
                 Index("1/W168a25"),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
+                    FROM_LANG,
+                    var_alt={
+                        "H": Alternative(lemma="\ue201д\ue205нородъ"),
+                        "G": Alternative(lemma="\ue205но\ue20dѧдъ"),
+                    },
                 ),
+            ),
+            Alignment(Index("1/W168a28"), Usage(TO_LANG, word="μονογενοῦς")),
+            Alignment(
+                Index("1/W168a25"),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
                     FROM_LANG,
                     Source("G"),
-                    alt=Alternative(
-                        "\ue201д\ue205но\ue20dѧдъ", {"H": "\ue201д\ue205нородъ"}
-                    ),
+                    main_alt=Alternative(lemma="\ue201д\ue205но\ue20dѧдъ"),
+                    var_alt={"H": Alternative(lemma="\ue201д\ue205нородъ")},
                 ),
             ),
             Alignment(
                 Index("1/W168a25"),
-                Usage(
-                    TO_LANG,
-                    word="μονογενοῦς",
-                ),
+                Usage(TO_LANG, word="μονογενοῦς"),
                 Usage(
                     FROM_LANG,
                     Source("H"),
-                    alt=Alternative(
-                        "\ue201д\ue205но\ue20dѧдъ", {"G": "\ue205но\ue20dѧдъ"}
-                    ),
+                    main_alt=Alternative(lemma="\ue201д\ue205но\ue20dѧдъ"),
+                    var_alt={"G": Alternative(lemma="\ue205но\ue20dѧдъ")},
                 ),
             ),
         ]
@@ -231,13 +188,9 @@ def test_sort_usage():
 
 def test_alternative():
     assert Alternative(
-        main_lemma="невел\ue205\ue20dан\ue205\ue201",
-        main_word="невел\ue205\ue20dан\ue205\ue201",
-        main_cnt=1,
+        "невел\ue205\ue20dан\ue205\ue201", "невел\ue205\ue20dан\ue205\ue201"
     ) != Alternative(
-        main_lemma="невел\ue205\ue20dан\ue205\ue201",
-        main_word="невел\ue205\ue20dан\ue205\ue201",
-        main_cnt=2,
+        "невел\ue205\ue20dан\ue205\ue201", "невел\ue205\ue20dан\ue205\ue201", 2
     )
 
     assert Alignment(
@@ -245,12 +198,10 @@ def test_alternative():
         Usage(
             FROM_LANG,
             Source("WGH"),
-            alt=Alternative(
-                main_lemma="невел\ue205\ue20dан\ue205\ue201",
-                main_word="невел\ue205\ue20dан\ue205\ue201",
-                main_cnt=1,
+            "невел\ue205\ue20d\ue205\ue201 WGH",
+            main_alt=Alternative(
+                "невел\ue205\ue20dан\ue205\ue201", "невел\ue205\ue20dан\ue205\ue201"
             ),
-            word="невел\ue205\ue20d\ue205\ue201 WGH",
         ),
         Usage(TO_LANG, cnt=2),
     ) != Alignment(
@@ -258,12 +209,10 @@ def test_alternative():
         Usage(
             FROM_LANG,
             Source("WGH"),
-            alt=Alternative(
-                main_lemma="невел\ue205\ue20dан\ue205\ue201",
-                main_word="невел\ue205\ue20dан\ue205\ue201",
-                main_cnt=2,
+            "невел\ue205\ue20d\ue205\ue201 WGH",
+            main_alt=Alternative(
+                "невел\ue205\ue20dан\ue205\ue201", "невел\ue205\ue20dан\ue205\ue201", 2
             ),
-            word="невел\ue205\ue20d\ue205\ue201 WGH",
         ),
         Usage(TO_LANG, cnt=2),
     )

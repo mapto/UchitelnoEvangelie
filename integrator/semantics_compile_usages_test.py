@@ -36,8 +36,7 @@ def test_para():
         + ["1"] * 4
     )
 
-    d2 = SortedDict()
-    d2 = gr_sem.compile_usages(sl_sem, row, d2, "Instr.")
+    d2 = gr_sem.compile_usages(sl_sem, row, "Instr.", d=SortedDict())
     # print(d2)
     assert d2 == {
         "Instr.": {
@@ -66,8 +65,7 @@ def test_para():
         + [""] * 8
         + ["1"] * 4
     )
-    d3 = SortedDict()
-    d3 = gr_sem.var.compile_usages(sl_sem, row, d3, "ѹ", Source("Cs"))
+    d3 = gr_sem.var.compile_usages(sl_sem, row, "ѹ", Source("Cs"), SortedDict())
     assert d3 == {
         "ѹ": {
             ("παρ’ Cs", "оу"): SortedSet(
@@ -82,10 +80,7 @@ def test_para():
                         ),
                         Usage(
                             "sl",
-                            alt=Alternative(
-                                var_lemmas={Source("WGH"): "въ + Loc."},
-                                var_words={Source("WGH"): ("вь WGH", 1)},
-                            ),
+                            var_alt={Source("WGH"): Alternative("вь WGH", "въ + Loc.")},
                             word="оу",
                             lemmas=["ѹ"],
                         ),
@@ -126,12 +121,11 @@ def test_ipercliso():
         + ["1"] * 4,
     ]
 
-    d2 = SortedDict()
     d2 = gr_sem.var.compile_usages(
-        sl_sem, rows[0], d2, "\ue205сто\ue20dен\ue205\ue201", Source("Cs")
+        sl_sem, rows[0], "\ue205сто\ue20dен\ue205\ue201", Source("Cs"), SortedDict()
     )
     d2 = gr_sem.var.compile_usages(
-        sl_sem, rows[1], d2, "прѣ\ue205сто\ue20d\ue205т\ue205", Source("Cs")
+        sl_sem, rows[1], "прѣ\ue205сто\ue20d\ue205т\ue205", Source("Cs"), d2
     )
     assert d2 == {
         "прѣ\ue205сто\ue20d\ue205т\ue205": {
@@ -142,12 +136,9 @@ def test_ipercliso():
                         Usage(
                             "gr",
                             Source("Cs"),
-                            Alternative(
-                                main_lemma="ὑπερκλύζω",
-                                main_word="ὑπερκλύζων",
-                            ),
-                            "ὑπερβλύζων Cs",
-                            ["ὑπερβλύω"],
+                            main_alt=Alternative("ὑπερκλύζων", "ὑπερκλύζω"),
+                            word="ὑπερβλύζων Cs",
+                            lemmas=["ὑπερβλύω"],
                         ),
                         Usage(
                             "sl",
@@ -166,12 +157,9 @@ def test_ipercliso():
                         Usage(
                             "gr",
                             Source("Cs"),
-                            Alternative(
-                                main_lemma="ὑπερκλύζω",
-                                main_word="ὑπερκλύσαι",
-                            ),
-                            "ὑπερβλύσαι Cs",
-                            ["ὑπερβλύω", "inf."],
+                            main_alt=Alternative("ὑπερκλύσαι", "ὑπερκλύζω"),
+                            word="ὑπερβλύσαι Cs",
+                            lemmas=["ὑπερβλύω", "inf."],
                         ),
                         Usage(
                             "sl",
@@ -207,8 +195,7 @@ def test_verovat():
         + ["1"] * 4
     )
 
-    d1 = SortedDict()
-    d1 = sl_sem.compile_usages(gr_sem, row, d1, "πιστεύω")
+    d1 = sl_sem.compile_usages(gr_sem, row, "πιστεύω", d=SortedDict())
     assert d1 == {
         "πιστεύω": {
             ("вѣроують", "πιστεύσωσι"): SortedSet(
@@ -217,12 +204,9 @@ def test_verovat():
                         Index("1/7b19"),
                         Usage(
                             "sl",
-                            alt=Alternative(
-                                var_lemmas={Source("GH"): "вѣрѫ ѩт_"},
-                                var_words={Source("GH"): ("вѣроу GH", 1)},
-                            ),
                             word="вѣроують",
                             lemmas=["вѣроват_"],
+                            var_alt={Source("GH"): Alternative("вѣроу GH", "вѣрѫ ѩт_")},
                         ),
                         Usage("gr", word="πιστεύσωσι", lemmas=["πιστεύω"]),
                     )
@@ -231,8 +215,7 @@ def test_verovat():
         }
     }
 
-    d2 = SortedDict()
-    d2 = gr_sem.compile_usages(sl_sem, row, d2, "вѣроват_")
+    d2 = gr_sem.compile_usages(sl_sem, row, "вѣроват_", d=SortedDict())
     assert d2 == {
         "вѣроват_": {
             ("πιστεύσωσι", "вѣроують"): SortedSet(
@@ -246,12 +229,9 @@ def test_verovat():
                         ),
                         Usage(
                             "sl",
-                            alt=Alternative(
-                                var_lemmas={Source("GH"): "вѣрѫ ѩт_"},
-                                var_words={Source("GH"): ("вѣроу GH", 1)},
-                            ),
                             word="вѣроують",
                             lemmas=["вѣроват_"],
+                            var_alt={Source("GH"): Alternative("вѣроу GH", "вѣрѫ ѩт_")},
                         ),
                     )
                 ]
@@ -272,8 +252,7 @@ def test_mene():
         + ["1"] * 4
     )
 
-    d3 = SortedDict()
-    d3 = sl_sem.compile_usages(gr_sem.var, row, d3, "ἐγώ")
+    d3 = sl_sem.compile_usages(gr_sem.var, row, "ἐγώ", d=SortedDict())
     assert d3 == {
         "ἐγώ": {
             ("мене", "με Cs"): SortedSet(
@@ -287,8 +266,7 @@ def test_mene():
             )
         }
     }
-    d4 = SortedDict()
-    d4 = gr_sem.var.compile_usages(sl_sem, row, d4, "аꙁъ", Source("Cs"))
+    d4 = gr_sem.var.compile_usages(sl_sem, row, "аꙁъ", Source("Cs"), SortedDict())
     assert d4 == {
         "аꙁъ": {
             ("με Cs", "мене"): SortedSet(
@@ -320,8 +298,7 @@ def test_monogenis():
         + ["1"] * 4
     )
 
-    d0 = SortedDict()
-    d0 = sl_sem.compile_usages(gr_sem, row, d0, "μονογενής")
+    d0 = sl_sem.compile_usages(gr_sem, row, "μονογενής", d=SortedDict())
     assert d0 == {
         "μονογενής": {
             ("\ue205но\ue20dадꙑ\ue205", "μονογενὴς"): SortedSet(
@@ -330,14 +307,14 @@ def test_monogenis():
                         Index("1/5a4"),
                         Usage(
                             FROM_LANG,
-                            alt=Alternative(
-                                var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-                                var_words={
-                                    Source("WH"): ("\ue201д\ue205но\ue20dеды WH", 1)
-                                },
-                            ),
                             word="\ue205но\ue20dадꙑ\ue205",
                             lemmas=["\ue205но\ue20dѧдъ"],
+                            var_alt={
+                                Source("WH"): Alternative(
+                                    "\ue201д\ue205но\ue20dеды WH",
+                                    "\ue201д\ue205но\ue20dѧдъ",
+                                )
+                            },
                         ),
                         Usage(lang="gr", word="μονογενὴς", lemmas=["μονογενής"]),
                     )
@@ -346,11 +323,7 @@ def test_monogenis():
         }
     }
 
-    d01 = SortedDict()
-    # d01 = gr_sem.compile_usages(sl_sem.var, row, d01, "μονογενής", "\ue205но\ue20dѧдъ")
-    # assert d01 == SortedDict()
-
-    d01 = gr_sem.compile_usages(sl_sem, row, d01, "\ue205но\ue20dѧдъ")
+    d01 = gr_sem.compile_usages(sl_sem, row, "\ue205но\ue20dѧдъ", d=SortedDict())
     assert d01 == {
         "\ue205но\ue20dѧдъ": {
             ("μονογενὴς", "\ue205но\ue20dадꙑ\ue205"): SortedSet(
@@ -360,14 +333,14 @@ def test_monogenis():
                         Usage(TO_LANG, word="μονογενὴς", lemmas=["μονογενής"]),
                         Usage(
                             FROM_LANG,
-                            alt=Alternative(
-                                var_lemmas={Source("WH"): "\ue201д\ue205но\ue20dѧдъ"},
-                                var_words={
-                                    Source("WH"): ("\ue201д\ue205но\ue20dеды WH", 1)
-                                },
-                            ),
                             word="\ue205но\ue20dадꙑ\ue205",
                             lemmas=["\ue205но\ue20dѧдъ"],
+                            var_alt={
+                                Source("WH"): Alternative(
+                                    "\ue201д\ue205но\ue20dеды WH",
+                                    "\ue201д\ue205но\ue20dѧдъ",
+                                )
+                            },
                         ),
                     )
                 ]
@@ -396,8 +369,7 @@ def test_monogenis2():
         + ["1"] * 4
     )
 
-    d1 = SortedDict()
-    d1 = sl_sem.var.compile_usages(gr_sem, row, d1, "μονογενής", Source("G"))
+    d1 = sl_sem.var.compile_usages(gr_sem, row, "μονογενής", Source("G"), SortedDict())
     assert d1 == {
         "μονογενής": {
             ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
@@ -407,14 +379,16 @@ def test_monogenis2():
                         Usage(
                             "sl",
                             var=Source("G"),
-                            alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
-                            ),
                             word="\ue205но\ue20dедаго G",
                             lemmas=["\ue205но\ue20dѧдъ"],
+                            main_alt=Alternative(
+                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                            ),
+                            var_alt={
+                                Source("H"): Alternative(
+                                    "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                )
+                            },
                         ),
                         Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         bold=True,
@@ -425,8 +399,7 @@ def test_monogenis2():
         }
     }
 
-    d2 = SortedDict()
-    d2 = sl_sem.var.compile_usages(gr_sem, row, d2, "μονογενής", Source("H"))
+    d2 = sl_sem.var.compile_usages(gr_sem, row, "μονογενής", Source("H"), SortedDict())
     assert d2 == {
         "μονογενής": {
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
@@ -436,14 +409,16 @@ def test_monogenis2():
                         Usage(
                             "sl",
                             var=Source("H"),
-                            alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
-                            ),
                             word="\ue201д\ue205нородоу H",
                             lemmas=["\ue201д\ue205нородъ"],
+                            main_alt=Alternative(
+                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                            ),
+                            var_alt={
+                                Source("G"): Alternative(
+                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                )
+                            },
                         ),
                         Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                         bold=True,
@@ -474,8 +449,7 @@ def test_monogenis3():
         + ["1"] * 4
     )
 
-    d = SortedDict()
-    d = sl_sem.var.compile_usages(gr_sem, row, d, "μονογενής", Source("G"))
+    d = sl_sem.var.compile_usages(gr_sem, row, "μονογενής", Source("G"), SortedDict())
     # print(d)
     assert d == {
         "μονογενής": {
@@ -486,14 +460,16 @@ def test_monogenis3():
                         Usage(
                             "sl",
                             var=Source("G"),
-                            alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
-                            ),
                             word="\ue205но\ue20dедаго G",
                             lemmas=["\ue205но\ue20dѧдъ"],
+                            main_alt=Alternative(
+                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                            ),
+                            var_alt={
+                                Source("H"): Alternative(
+                                    "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                )
+                            },
                         ),
                         Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                     )
@@ -502,8 +478,7 @@ def test_monogenis3():
         }
     }
 
-    d = SortedDict()
-    d = sl_sem.var.compile_usages(gr_sem, row, d, "μονογενής", Source("H"))
+    d = sl_sem.var.compile_usages(gr_sem, row, "μονογενής", Source("H"), SortedDict())
     assert d == {
         "μονογενής": {
             ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
@@ -513,14 +488,16 @@ def test_monogenis3():
                         Usage(
                             "sl",
                             Source("H"),
-                            Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
-                            ),
                             word="\ue201д\ue205нородоу H",
                             lemmas=["\ue201д\ue205нородъ"],
+                            main_alt=Alternative(
+                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                            ),
+                            var_alt={
+                                Source("G"): Alternative(
+                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                )
+                            },
                         ),
                         Usage(lang="gr", word="μονογενοῦς", lemmas=["μονογενής"]),
                     )
@@ -529,8 +506,7 @@ def test_monogenis3():
         }
     }
 
-    d = SortedDict()
-    d = gr_sem.compile_usages(sl_sem, row, d, "\ue201д\ue205но\ue20dѧдъ")
+    d = gr_sem.compile_usages(sl_sem, row, "\ue201д\ue205но\ue20dѧдъ", d=SortedDict())
     assert d == {
         "\ue201д\ue205но\ue20dѧдъ": {
             ("μονογενοῦς", "\ue201д\ue205но\ue20dедоу"): SortedSet(
@@ -540,16 +516,14 @@ def test_monogenis3():
                         Usage(TO_LANG, word="μονογενοῦς", lemmas=["μονογενής"]),
                         Usage(
                             FROM_LANG,
-                            alt=Alternative(
-                                var_lemmas={
-                                    Source("H"): "\ue201д\ue205нородъ",
-                                    Source("G"): "\ue205но\ue20dѧдъ",
-                                },
-                                var_words={
-                                    Source("H"): ("\ue201д\ue205нородоу H", 1),
-                                    Source("G"): ("\ue205но\ue20dедаго G", 1),
-                                },
-                            ),
+                            var_alt={
+                                Source("H"): Alternative(
+                                    "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                ),
+                                Source("G"): Alternative(
+                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                ),
+                            },
                             word="\ue201д\ue205но\ue20dедоу",
                             lemmas=["\ue201д\ue205но\ue20dѧдъ"],
                         ),
@@ -559,8 +533,7 @@ def test_monogenis3():
         }
     }
 
-    d = SortedDict()
-    d = gr_sem.compile_usages(sl_sem.var, row, d, "\ue201д\ue205нородъ")
+    d = gr_sem.compile_usages(sl_sem.var, row, "\ue201д\ue205нородъ", d=SortedDict())
     assert d == {
         "\ue201д\ue205нородъ": {
             ("μονογενοῦς", "\ue201д\ue205нородоу H"): SortedSet(
@@ -575,14 +548,16 @@ def test_monogenis3():
                         Usage(
                             "sl",
                             var=Source("H"),
-                            alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("G"): "\ue205но\ue20dѧдъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("G"): ("\ue205но\ue20dедаго G", 1)},
-                            ),
                             word="\ue201д\ue205нородоу H",
                             lemmas=["\ue201д\ue205нородъ"],
+                            main_alt=Alternative(
+                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                            ),
+                            var_alt={
+                                Source("G"): Alternative(
+                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                )
+                            },
                         ),
                     )
                 ]
@@ -590,8 +565,7 @@ def test_monogenis3():
         }
     }
 
-    d = SortedDict()
-    d = gr_sem.compile_usages(sl_sem.var, row, d, "\ue205но\ue20dѧдъ")
+    d = gr_sem.compile_usages(sl_sem.var, row, "\ue205но\ue20dѧдъ", d=SortedDict())
     assert d == {
         "\ue205но\ue20dѧдъ": {
             ("μονογενοῦς", "\ue205но\ue20dедаго G"): SortedSet(
@@ -606,14 +580,16 @@ def test_monogenis3():
                         Usage(
                             "sl",
                             Source("G"),
-                            alt=Alternative(
-                                main_lemma="\ue201д\ue205но\ue20dѧдъ",
-                                var_lemmas={Source("H"): "\ue201д\ue205нородъ"},
-                                main_word="\ue201д\ue205но\ue20dедоу",
-                                var_words={Source("H"): ("\ue201д\ue205нородоу H", 1)},
-                            ),
                             word="\ue205но\ue20dедаго G",
                             lemmas=["\ue205но\ue20dѧдъ"],
+                            main_alt=Alternative(
+                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                            ),
+                            var_alt={
+                                Source("H"): Alternative(
+                                    "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                )
+                            },
                         ),
                     )
                 ]
@@ -633,8 +609,7 @@ def test_bozhii():
         + ["1"] * 4
     )
 
-    result = SortedDict()
-    result = sl_sem.var.compile_usages(gr_sem, r, result, "θεός", Source("H"))
+    result = sl_sem.var.compile_usages(gr_sem, r, "θεός", Source("H"), SortedDict())
     assert result == {
         "θεός Gen.": {
             (
@@ -646,13 +621,10 @@ def test_bozhii():
                         Index("1/7a4"),
                         Usage(
                             FROM_LANG,
-                            var=Source("H"),
-                            alt=Alternative(
-                                main_lemma="богъ",
-                                main_word="боꙁѣ",
-                            ),
-                            word="б\ue010жї\ue205 H",
-                            lemmas=["бож\ue205\ue205"],
+                            Source("H"),
+                            "б\ue010жї\ue205 H",
+                            ["бож\ue205\ue205"],
+                            main_alt=Alternative("боꙁѣ", "богъ"),
                         ),
                         Usage(lang="gr", word="Θεοῦ", lemmas=["θεός", "Gen."]),
                     )
@@ -673,8 +645,7 @@ def test_artos():
         + [""] * 9
         + ["1"] * 4
     )
-    result = SortedDict()
-    result = gr_sem.var.compile_usages(sl_sem, row, result, "хлѣбъ", Source("Ch"))
+    result = gr_sem.var.compile_usages(sl_sem, row, "хлѣбъ", Source("Ch"), SortedDict())
     assert result == {
         "хлѣбъ": {
             ("ἄρτους Ch", "хлѣбꙑ•"): SortedSet(
@@ -683,13 +654,10 @@ def test_artos():
                         Index("16/80a8"),
                         Usage(
                             "gr",
-                            var=Source("Ch"),
-                            alt=Alternative(
-                                main_lemma="om.",
-                                main_word="om.",
-                            ),
-                            word="ἄρτους Ch",
-                            lemmas=["ἄρτος"],
+                            Source("Ch"),
+                            "ἄρτους Ch",
+                            ["ἄρτος"],
+                            main_alt=Alternative("om.", "om."),
                         ),
                         Usage(lang="sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
                     )
@@ -732,8 +700,7 @@ def test_est_in_var_no_main():
         + ["hl03"]
         + ["1"] * 4
     )
-    result = SortedDict()
-    result = sl_sem.var.compile_usages(gr_sem, row, result, "Ø", Source("GH"))
+    result = sl_sem.var.compile_usages(gr_sem, row, "Ø", Source("GH"), SortedDict())
     assert result == {
         "Ø": {
             ("\ue201сть GH", "Ø"): SortedSet(
@@ -743,12 +710,9 @@ def test_est_in_var_no_main():
                         Usage(
                             "sl",
                             Source("GH"),
-                            Alternative(
-                                main_lemma="om.",
-                                main_word="om.",
-                            ),
                             "\ue201сть GH",
                             ["бꙑт\ue205", "", "gramm."],
+                            main_alt=Alternative("om.", "om."),
                         ),
                         Usage(lang="gr", word="Ø", lemmas=["Ø"]),
                     )
@@ -780,8 +744,7 @@ def test_hodom_spiti():
         + ["1"] * 4
     )
 
-    result = SortedDict()
-    result = gr_sem.compile_usages(sl_sem.var, row, result, "ходъ")
+    result = gr_sem.compile_usages(sl_sem.var, row, "ходъ", d=SortedDict())
     assert result == {
         "ходомь спѣт\ue205 → ходъ": {
             ("προβαίνοντες", "хⷪ҇домь WG"): SortedSet(
@@ -792,12 +755,11 @@ def test_hodom_spiti():
                         Usage(
                             "sl",
                             Source("WG"),
-                            alt=Alternative(
-                                main_lemma="≈ ход\ue205т\ue205 спѣѭще",
-                                main_word="ход\ue205мъ",
-                            ),
                             word="хⷪ҇домь WG",
                             lemmas=["ходъ", "ходомь спѣт\ue205"],
+                            main_alt=Alternative(
+                                "ход\ue205мъ", "ход\ue205т\ue205 спѣѭще", semantic="≈"
+                            ),
                         ),
                     )
                 ]
@@ -825,8 +787,9 @@ def test_put():
         + ["1"] * 4
     )
 
-    result = SortedDict()
-    result = sl_sem.var.compile_usages(gr_sem, row, result, "ὁδοιπορία", Source("H"))
+    result = sl_sem.var.compile_usages(
+        gr_sem, row, "ὁδοιπορία", Source("H"), SortedDict()
+    )
     assert result == {
         "ὁδοιπορία": {
             (
@@ -839,18 +802,15 @@ def test_put():
                         Usage(
                             "sl",
                             Source("H"),
-                            alt=Alternative(
-                                main_lemma="пѫтошьств",
-                                var_lemmas={
-                                    Source("G"): "шьст\ue205\ue201 пѫт\ue205",
-                                },
-                                main_word="поутошьствꙗ",
-                                var_words={
-                                    Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1),
-                                },
-                            ),
-                            word="шьств\ue205ꙗ пꙋт\ue205 H",
-                            lemmas=["пѫть", "шьств\ue205\ue201 пѫт\ue205"],
+                            "шьств\ue205ꙗ пꙋт\ue205 H",
+                            ["пѫть", "шьств\ue205\ue201 пѫт\ue205"],
+                            main_alt=Alternative("поутошьствꙗ", "пѫтошьств"),
+                            var_alt={
+                                Source("G"): Alternative(
+                                    "шьст\ue205ꙗ пꙋт\ue205 G",
+                                    "шьст\ue205\ue201 пѫт\ue205",
+                                ),
+                            },
                         ),
                         Usage(lang="gr", word="ὁδοιπορίας", lemmas=["ὁδοιπορία"]),
                     )
@@ -879,8 +839,7 @@ def test_prichatnik():
         + ["hl05:FFFCD5B4|hl11:FFFCD5B4"]
         + ["1"] * 4
     )
-    result = SortedDict()
-    result = sl_sem.var.compile_usages(gr_sem, row, result, "ποιέω", Source("GH"))
+    result = sl_sem.var.compile_usages(gr_sem, row, "ποιέω", Source("GH"), SortedDict())
     assert result == {
         "ποιέω κοινωνόν → ποιέω": {
             (
@@ -891,20 +850,20 @@ def test_prichatnik():
                     Alignment(
                         idx=Index("5/28c21"),
                         orig=Usage(
-                            lang="sl",
-                            var=Source("GH"),
-                            alt=Alternative(
-                                main_lemma="пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
-                                main_word="пр\ue205\ue20dьтьн\ue205ц\ue205",
-                            ),
-                            word="пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
-                            lemmas=[
+                            "sl",
+                            Source("GH"),
+                            "пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
+                            [
                                 "пр\ue205\ue20dѧстьн\ue205къ",
                                 "пр\ue205\ue20dѧстьн\ue205къ",
                             ],
+                            main_alt=Alternative(
+                                "пр\ue205\ue20dьтьн\ue205ц\ue205",
+                                "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                            ),
                         ),
                         trans=Usage(
-                            lang="gr",
+                            "gr",
                             word="ποιῆσαι",
                             lemmas=["ποιέω", "ποιέω κοινωνόν"],
                         ),
@@ -924,8 +883,7 @@ def test_greh():
         + [""] * 14
         + ["1"] * 4
     )
-    result = SortedDict()
-    result = sl_sem.compile_usages(gr_sem, row, result, "# υἱός")
+    result = sl_sem.compile_usages(gr_sem, row, "# υἱός", d=SortedDict())
     assert result == {
         "# υἱός": {
             ("грѣхъм\ue205", "υἱός"): SortedSet(
@@ -964,8 +922,9 @@ def test_special_mulitword():
         + [""] * 14
         + ["1"] * 4
     )
-    result = SortedDict()
-    result = sl_sem.var.compile_usages(gr_sem, row, result, "# θεραπεύω", Source("GH"))
+    result = sl_sem.var.compile_usages(
+        gr_sem, row, "# θεραπεύω", Source("GH"), SortedDict()
+    )
     assert result == {
         "# θεραπεύω": {
             ("проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G", "τεθαραπευμένον"): SortedSet(
@@ -973,14 +932,13 @@ def test_special_mulitword():
                     Alignment(
                         idx=Index("6/38b11"),
                         orig=Usage(
-                            lang="sl",
-                            var=Source("GH"),
-                            alt=Alternative(
-                                main_lemma="\ue205цѣл\ue205т\ue205",
-                                main_word="\ue205сцѣленоумоу",
+                            "sl",
+                            Source("GH"),
+                            "проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
+                            ["проꙁьрѣт\ue205"],
+                            main_alt=Alternative(
+                                "\ue205сцѣленоумоу", "\ue205цѣл\ue205т\ue205"
                             ),
-                            word="проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
-                            lemmas=["проꙁьрѣт\ue205"],
                         ),
                         trans=Usage(
                             lang="gr",

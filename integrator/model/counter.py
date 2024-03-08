@@ -82,7 +82,9 @@ class Counter:
         trans_var = VAR_GR if lang == FROM_LANG else VAR_SL
         r = Counter()
         for nxt in s:
-            assert nxt.orig.lang == lang
+            assert (
+                nxt.orig.lang == lang
+            ), f"Inconsistent language, {nxt.orig} is not in {lang}"
 
             found = False
             for v in Source(orig_var):

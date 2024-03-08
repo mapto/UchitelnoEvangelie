@@ -66,11 +66,15 @@ def parse_sources(lang: "str") -> Tuple[str, List[str]]:
 MAIN_SL, VAR_SL = parse_sources(FROM_LANG)
 ALT_SL = "W"  # for Wiener
 DEFAULT_SL: str = "".join(VAR_SL)
-assert DEFAULT_SL == "WGH"
+assert (
+    DEFAULT_SL == "WGH"
+), "Configuration not for Uchitelno Evangelie, remove this if working on another text"
 
 MAIN_GR, VAR_GR = parse_sources(TO_LANG)
 DEFAULT_GR: str = VAR_GR[0]
-assert DEFAULT_GR == "Cs"
+assert (
+    DEFAULT_GR == "Cs"
+), "Configuration not for Uchitelno Evangelie, remove this if working on another text"
 
 DEFAULT_SOURCES = {TO_LANG: DEFAULT_GR, FROM_LANG: DEFAULT_SL}
 VAR_SOURCES = {TO_LANG: VAR_GR, FROM_LANG: VAR_SL}

@@ -27,9 +27,10 @@ def import_mapping(fname: str, sem: TableSemantics) -> List[List[str]]:
     """
     wb = load_workbook(fname, read_only=True, data_only=True)
     ws = wb.active
+    assert ws, "non-null value required by mypy"
 
     result = []
-    for row in ws.iter_rows(max_col=STYLE_COL):
+    for row in ws.iter_rows(max_col=STYLE_COL):  # type: ignore
         line = [str(cell.value).strip() if cell.value else cell.value for cell in row]
         bgs = {
             f"{HILITE_PREFIX}{v:02d}{STYLE_SEP}{row[v].fill.start_color.rgb}": row[

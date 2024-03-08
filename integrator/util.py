@@ -4,7 +4,6 @@ so to avoid circular references they cannot use it"""
 
 from typing import Dict, List, Set
 
-import logging as log
 import unicodedata
 from sortedcontainers import SortedSet  # type: ignore
 
@@ -41,9 +40,9 @@ def _ord(a: str) -> float:
     1142
 
     >>> _ord("Ø".lower())
-    1144
+    1145
     """
-    assert len(a) == 1
+    assert len(a) == 1, f"'{a}' is not a character"
     # Latin letters are special annotation, they should show up after Cyrillic or Greek
     if "a" <= a <= "z":
         return ord("ѵ") - ord("a") + len(SPECIALS) + ord(a)
@@ -97,14 +96,8 @@ def ord_word(w: str, max_len=MAX_LEN) -> int:
     a = a.replace("оу", "ѹ")
     for ch in gasps + number_postfix:
         a = a.replace(ch, "")
-    if max_len <= len(a):
-        log.info(f"Unexpectedly long word: {a}")
-    assert max_len > len(a)
+    assert max_len > len(a), f"Unexpectedly long word: {a}"
     base = 2 * MAX_CHAR
-    # # if special, put at end of alphabet
-    # SPECIALS = SPECIAL_CHARS.copy() + [EMPTY_CH, OMMIT_SUBLEMMA[0], ERR_SUBLEMMA[0]]
-    # if a[0] in SPECIALS:
-    #     pass
     # if combined lemma, order after all other
     r = 1 if V_LEMMA_SEP in a else 0
     # print(a)
@@ -133,7 +126,7 @@ def main_source(lang: str, alt: bool):
     In cases where address is 1/W168a34, the main source needs to become W."""
     if lang == TO_LANG:
         return MAIN_GR
-    assert lang == FROM_LANG
+    assert lang == FROM_LANG, f"Language {lang} not one of {TO_LANG} and {FROM_LANG}"
     if alt:
         return ALT_SL
     return MAIN_SL

@@ -2,14 +2,15 @@
 
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
+from abc import ABC, abstractmethod
 from sortedcontainers import SortedDict  # type: ignore
 
 from const import IDX_COL, STYLE_COL
-from const import ERR_SUBLEMMA, SPECIAL_CHARS
+from const import SPECIAL_CHARS
 
 from .util import _add_usage
 from util import base_word
-from model import Index, Source, Alignment, Usage
+from model import Alignment, Alternative, Index, Source, Usage
 
 
 def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
@@ -20,11 +21,12 @@ def present(row: List[str], sem: Optional["LangSemantics"]) -> bool:
 def _build_content(
     row: List[str], sem: "LangSemantics", var: Source, word: str, cnt: int
 ) -> Usage:
-    oalt = sem.alternatives(row, var)
+    main_alt, var_alt = sem.alternatives(row, var)
     lemmas = []
     for lvl in range(0, len(sem.lemmas)):
         found = False
         ml = sem.multilemma(row, lvl)
+        # print(ml)
         for k, v in ml.items():
             if not k or var in k:
                 lemmas += [v]
@@ -34,7 +36,7 @@ def _build_content(
             lemmas += [""]
     while lemmas and not lemmas[-1]:
         lemmas.pop()
-    return Usage(sem.lang, var, oalt, word, lemmas, cnt)
+    return Usage(sem.lang, var, word, lemmas, cnt, main_alt, var_alt)
 
 
 def _is_variant_lemma(
@@ -44,8 +46,10 @@ def _is_variant_lemma(
     if not mlem:
         return False
     if not sem.is_variant():
-        assert not current_var
-        assert len(mlem) == 1
+        assert (
+            not current_var
+        ), f"Main variant should not have a source, but is {current_var}"
+        assert len(mlem) == 1, f"TODO: multilemmas not yet supported for {mlem}"
         return current_lemma in mlem[Source()]
     loc = current_var.inside(mlem)
     result = loc is not None and current_lemma in mlem[loc]
@@ -53,7 +57,7 @@ def _is_variant_lemma(
 
 
 @dataclass
-class LangSemantics:
+class LangSemantics(ABC):
     """Table column mapping for a language."""
 
     lang: str
@@ -83,6 +87,7 @@ class LangSemantics:
         """sublemmas (excluding first lemma)"""
         return self.lemmas[1:] + self.other().lemmas[1:]
 
+    @abstractmethod
     def other(self) -> "LangSemantics":
         """For main returns variant, for variant returns main.
         When implementing, be careful not to enter in infinite recursion"""
@@ -91,37 +96,45 @@ class LangSemantics:
     def is_variant(self) -> bool:
         return False
 
+    @abstractmethod
     def collect_word(self, group: List[List[str]]) -> str:
         raise NotImplementedError("abstract method")
 
+    @abstractmethod
     def collect_lemma(
         self, group: List[List[str]], cidx: int, separator: str = ""
     ) -> str:
         raise NotImplementedError("abstract method")
 
+    @abstractmethod
     def level_main_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Tuple[str, str, int]:
+    ) -> Alternative:
         """Get alternative lemmas in main.
         First return value is lemma, second word"""
         raise NotImplementedError("abstract method")
 
+    @abstractmethod
     def level_var_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Tuple[Dict[Source, str], Dict[Source, Tuple[str, int]]]:
+    ) -> Dict[Source, Alternative]:
         """Get alternative lemmas in variant.
         First return value is lemma, second word"""
         raise NotImplementedError("abstract method")
 
+    @abstractmethod
     def build_keys(self, row: List[str]) -> List[str]:
         raise NotImplementedError("abstract method")
 
+    @abstractmethod
     def multiword(self, row: List[str]) -> Dict[Source, str]:
         raise NotImplementedError("abstract method")
 
+    @abstractmethod
     def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
         raise NotImplementedError("abstract method")
 
+    @abstractmethod
     def compile_words_by_lemma(self, row: List[str], var: Source) -> Tuple[str, int]:
         raise NotImplementedError("abstract method")
 
@@ -129,9 +142,10 @@ class LangSemantics:
         self,
         trans: "LangSemantics",
         row: List[str],
-        d: SortedDict,
         rtlemma: str,
         rolv: Source = Source(),
+        d: SortedDict = SortedDict(),
+        special_char="",
     ) -> SortedDict:
         for tvar in trans.multilemma(row).keys():
             for nxt in trans.build_paths(row):
@@ -141,15 +155,18 @@ class LangSemantics:
                 (oword, ocnt) = self.compile_words_by_lemma(row, rolv)
                 (tword, tcnt) = trans.compile_words_by_lemma(row, tvar)
                 idx = Index(row[IDX_COL])
+                # print(repr(rolv), oword, ocnt)
                 ocontent = _build_content(row, self, rolv, oword, ocnt)
+                # print(ocontent)
                 tcontent = _build_content(row, trans, tvar, tword, tcnt)
                 b = "bold" in row[STYLE_COL]
                 i = "italic" in row[STYLE_COL]
-                val = Alignment(idx, ocontent, tcontent, b, i)
+                val = Alignment(idx, ocontent, tcontent, b, i, special_char)
                 key = (oword, tword)
                 d = _add_usage(val, nxt, key, d)
         return d
 
+    @abstractmethod
     def add_count(self, row: List[str], row_counts: Dict[str, int]) -> Dict[str, int]:
         raise NotImplementedError("abstract method")
 
@@ -166,7 +183,9 @@ class MainLangSemantics(LangSemantics):
         If there is variant, make sure add correct number of lemma columns.
         relevant, because different language/variant combinations have different number of lemma columns.
         """
-        assert self.lang == self.var.lang
+        assert (
+            self.lang == self.var.lang
+        ), f"Mismatch in language of related variants: main is {self.lang}, var is {self.var.lang}"
         self.main = self
         self.var.main = self
 
@@ -179,17 +198,17 @@ class MainLangSemantics(LangSemantics):
             self.lemmas += [STYLE_COL - 4 + i for i in range(-delta)]
 
     def other(self) -> "VarLangSemantics":
-        assert self.var  # for mypy
+        assert self.var, "non-null value required by mypy"
         return self.var
 
     def level_main_alternatives(
-        self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Tuple[str, str, int]:
+        self, row: List[str], my_var: Source = Source(""), lidx: int = 0
+    ) -> Alternative:
         """
         Main variant does not contain alternatives to itself.
         As part of this, my_var is ignored, because it is MainLangSemantics.
         """
-        return "", "", 1
+        return Alternative()
 
     def build_keys(self, row: List[str]) -> List[str]:
         if present(row, self) and self.word != None and bool(row[self.word]):
@@ -221,7 +240,7 @@ class VarLangSemantics(LangSemantics):
         self.var = self
 
     def other(self) -> "MainLangSemantics":
-        assert self.main  # for mypy
+        assert self.main, "non-null value required by mypy"
         return self.main
 
     def is_variant(self) -> bool:
@@ -229,25 +248,35 @@ class VarLangSemantics(LangSemantics):
 
     def level_main_alternatives(
         self, row: List[str], my_var: Source, lidx: int = 0
-    ) -> Tuple[str, str, int]:
+    ) -> Alternative:
+        # print(row)
+        # print(my_var, lidx)
         """Get alternative lemmas in main"""
-        main_lemma = ""
-        main_word = ""
+        mlemma = ""
+        mword = ""
         multilemma = self.multilemma(row, lidx)
+        semantic = ""
         if present(row, self.main):
-            assert self.main  # for mypy
+            assert self.main, "non-null value required by mypy"
             loc = my_var.inside(multilemma)
             if loc and row[self.main.lemmas[lidx]] != multilemma[loc]:
-                main_lemma = row[self.main.lemmas[lidx]]
-                main_word = row[self.main.word]
+                # TODO: we need to be able to compare all levels of lemmas and consider only the last one
+                # The currently proposed solution is to store all of them, and only on export/generation decide whether to show
+                # if loc:
+                mlemma = row[self.main.lemmas[lidx]]
+                mword = row[self.main.word]
                 # Get interpretative annotation from sublemma if any
-                if lidx == 0 and len(self.main.lemmas) > 1:
-                    for prefix in SPECIAL_CHARS + [ERR_SUBLEMMA]:
-                        if row[self.main.lemmas[1]].startswith(prefix):
-                            main_lemma = f"{prefix} {main_lemma}"
-                            break
+                last_main_lemma = next(l for l in self.main.lemmas[::-1] if row[l])
+                if row[last_main_lemma][0] in SPECIAL_CHARS:
+                    semantic = row[last_main_lemma][0]
 
-        return main_lemma, main_word, int(row[self.other().cnt_col])
+            if mlemma and semantic and mlemma.startswith(semantic):
+                mlemma = mlemma[2:]
+            result = Alternative(mword, mlemma, int(row[self.main.cnt_col]), semantic)
+        else:
+            result = Alternative()
+        # print(result)
+        return result
 
     def build_keys(self, row: List[str]) -> List[str]:
         if present(row, self) and self.word != None and bool(row[self.word]):

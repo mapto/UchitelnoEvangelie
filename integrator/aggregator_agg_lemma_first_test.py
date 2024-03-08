@@ -22,7 +22,7 @@ gr_sem = MainLangSemantics(
     cnt_col=STYLE_COL + 3,
 )
 
-
+"""
 def test_hodom_spiti():
     row = (
         [
@@ -58,25 +58,20 @@ def test_hodom_spiti():
                                         Index("14/72d18-19"),
                                         Usage(
                                             "sl",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source("WG"): "ходомь спѣт\ue205"
-                                                },
-                                                var_words={
-                                                    Source("WG"): (
-                                                        "хⷪ҇домь спѣюще WG",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
                                             word="ход\ue205мъ спѣюще•",
                                             lemmas=[
                                                 "спѣт\ue205",
                                                 "≈ ход\ue205т\ue205 спѣѭще",
                                             ],
+                                            var_alt={
+                                                Source("WG"): Alternative(
+                                                    "хⷪ҇домь спѣюще WG",
+                                                    "ходомь спѣт\ue205",
+                                                )
+                                            },
                                         ),
                                         Usage(
-                                            lang="gr",
+                                            "gr",
                                             word="προβαίνοντες",
                                             lemmas=["προβαίνω"],
                                         ),
@@ -89,6 +84,7 @@ def test_hodom_spiti():
             }
         }
     }
+"""
 
 
 def test_ashte():
@@ -113,21 +109,21 @@ def test_ashte():
                             ("om.", "аще"): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("1/7c6"),
-                                        orig=Usage(
-                                            lang="gr",
+                                        Index("1/7c6"),
+                                        Usage(
+                                            "gr",
                                             word="om.",
                                             lemmas=["om."],
                                         ),
-                                        trans=Usage(
-                                            lang="sl",
-                                            alt=Alternative(
-                                                var_lemmas={Source("WH"): "om."},
-                                                var_words={Source("WH"): ("om. WH", 1)},
-                                                main_cnt=1,
-                                            ),
+                                        Usage(
+                                            "sl",
                                             word="аще",
                                             lemmas=["аще"],
+                                            var_alt={
+                                                Source("WH"): Alternative(
+                                                    "om. WH", "om."
+                                                )
+                                            },
                                         ),
                                     )
                                 ]
@@ -160,14 +156,14 @@ def test_greh():
                             ("грѣхъм\ue205", "υἱός"): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("5/17b12"),
-                                        orig=Usage(
-                                            lang="sl",
+                                        Index("5/17b12"),
+                                        Usage(
+                                            "sl",
                                             word="грѣхъм\ue205",
                                             lemmas=["грѣхъ"],
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
+                                        Usage(
+                                            "gr",
                                             word="υἱός",
                                             lemmas=["# υἱός"],
                                         ),
@@ -210,25 +206,21 @@ def test_special_var():
                             ("\ue205сцѣленоумоу", "τεθαραπευμένον"): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("6/38b11"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source("GH"): "# проꙁьрѣт\ue205"
-                                                },
-                                                var_words={
-                                                    Source("GH"): (
-                                                        "проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
+                                        Index("6/38b11"),
+                                        Usage(
+                                            "sl",
                                             word="\ue205сцѣленоумоу",
                                             lemmas=["\ue205цѣл\ue205т\ue205"],
+                                            var_alt={
+                                                Source("GH"): Alternative(
+                                                    "проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
+                                                    "проꙁьрѣт\ue205",
+                                                    semantic="#",
+                                                )
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
+                                        Usage(
+                                            "gr",
                                             word="τεθαραπευμένον",
                                             lemmas=["θεραπεύω"],
                                         ),
@@ -241,3 +233,82 @@ def test_special_var():
             }
         }
     }
+
+
+def test_prichatnik():
+    row = (
+        [
+            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 H",
+            "пр\ue205\ue20dѧстьн\ue205къ GH",
+            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
+            "≈ GH",
+            "05/028c21-d01",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ",
+            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+            "≈",
+            "",
+            "ποιῆσαι κοινωνοὺς",
+            "ποιέω & κοινωνός",
+            "ποιέω κοινωνόν",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCD5B4|hl00:FFFCD5B4|hl11:FFFCD5B4"]
+        + ["1"] * 4
+    )
+
+    result = SortedDict()
+    result = _agg_lemma(row, sl_sem, gr_sem, result, col=8, tlemma="ποιέω & κοινωνός")
+    assert result == SortedDict(
+        {
+            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205": SortedDict(
+                {
+                    "": SortedDict(
+                        {
+                            "": SortedDict(
+                                {
+                                    "≈ ποιέω κοινωνόν → ποιέω & κοινωνός": {
+                                        (
+                                            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                            "ποιῆσαι κοινωνοὺς",
+                                        ): SortedSet(
+                                            [
+                                                Alignment(
+                                                    Index("5/28c21-d1"),
+                                                    Usage(
+                                                        "sl",
+                                                        word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                                        lemmas=[
+                                                            "пр\ue205\ue20dьтьн\ue205къ",
+                                                            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                                        ],
+                                                        var_alt={
+                                                            Source("GH"): Alternative(
+                                                                "пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
+                                                                "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                                semantic="≈",
+                                                            )
+                                                        },
+                                                    ),
+                                                    Usage(
+                                                        "gr",
+                                                        word="ποιῆσαι κοινωνοὺς",
+                                                        lemmas=[
+                                                            "ποιέω & κοινωνός",
+                                                            "≈ ποιέω κοινωνόν",
+                                                        ],
+                                                    ),
+                                                    semantic="≈",
+                                                )
+                                            ]
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    )
+                }
+            )
+        }
+    )

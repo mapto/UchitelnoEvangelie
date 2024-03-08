@@ -17,14 +17,14 @@ autoflake --remove-all-unused-imports --remove-unused-variables -i -r integrator
 echo '>>> Running Pylint'
 # pylint -E extractor/*.py
 pylint -E -v integrator/*.py
-# pylint -E -v integrator/model
+pylint -E -v integrator/model
 pylint -E -v integrator/semantics
 
 echo '>>> Running Mypy'
-mypy extractor
-mypy integrator
-mypy integrator/semantics
-mypy integrator/model
+mypy extractor # --install-types --ignore-missing-imports
+mypy integrator # --install-types --ignore-missing-imports
+mypy integrator/semantics # --install-types --ignore-missing-imports
+mypy integrator/model # --install-types --ignore-missing-imports
 
 echo '>>> Running Pytest'
 # processes also subdirectories

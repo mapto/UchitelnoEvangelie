@@ -1,3 +1,6 @@
+"""The Index class is actually an address up to a line.
+Not to be confused with a word index which is the complete output of the indexgenerator"""
+
 from typing import Callable, List, Optional, Union
 import logging as log
 import re
@@ -70,7 +73,7 @@ class Index:
                     restlen = len(rest)
             elif rest[0].isalpha():
                 m = re.search(alpha, rest)
-                assert m
+                assert m, f"Expected regex token is missing: {m}"
                 v = m.group(1)
                 """
                 if len(Index.maxlen) == len(self.data):
@@ -169,7 +172,9 @@ class Index:
                 f = f"{{:0{Index.maxlen[i]}d}}"
                 ld += [f.format(d)]
             else:
-                assert type(d) == str
+                assert (
+                    type(d) == str
+                ), f"{type(d)} is currently not supported for Address components"
                 ld += [d]  # type: ignore
         s = "".join(ld)
         if not self.end:
@@ -185,7 +190,9 @@ class Index:
                         lde += [f.format(self.end.data[j])]
                     else:
                         e = self.end.data[j]
-                        assert type(e) == str
+                        assert (
+                            type(e) == str
+                        ), f"{type(d)} is currently not supported for Address components"
                         lde += [e]  # type: ignore
                 return s + "-" + "".join(lde)
         raise Exception(f"ГРЕШКА: Съвпадащи начален и краен адрес/индекс")

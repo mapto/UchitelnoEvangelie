@@ -85,27 +85,20 @@ def test_prichatnik_biti_combined():
                                         Index("5/28c21-d1"),
                                         Usage(
                                             "sl",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source(
-                                                        "GH"
-                                                    ): "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"
-                                                },
-                                                var_words={
-                                                    Source("GH"): (
-                                                        "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
                                             lemmas=[
                                                 "бꙑт\ue205",
                                                 "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                             ],
+                                            var_alt={
+                                                Source("GH"): Alternative(
+                                                    "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                                    "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                )
+                                            },
                                         ),
                                         Usage(
-                                            lang="gr",
+                                            "gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
                                                 "ποιέω & κοινωνός",
@@ -171,30 +164,23 @@ def test_prichatnik_biti_combined():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("5/28c21-d1"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source(
-                                                        "GH"
-                                                    ): "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"
-                                                },
-                                                var_words={
-                                                    Source("GH"): (
-                                                        "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
+                                        Index("5/28c21-d1"),
+                                        Usage(
+                                            "sl",
                                             word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
                                             lemmas=[
                                                 "бꙑт\ue205",
                                                 "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                             ],
+                                            var_alt={
+                                                Source("GH"): Alternative(
+                                                    "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                                    "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                )
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
+                                        Usage(
+                                            "gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
                                                 "ποιέω & κοινωνός",
@@ -218,22 +204,22 @@ def test_prichatnik_biti_combined():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("5/28c21-d1"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("GH"),
-                                            alt=Alternative(
-                                                main_lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205",
-                                                main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                            ),
-                                            word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                            lemmas=[
+                                        Index("5/28c21-d1"),
+                                        Usage(
+                                            "sl",
+                                            Source("GH"),
+                                            "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
+                                            [
                                                 "бꙑт\ue205",
                                                 "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
                                             ],
+                                            main_alt=Alternative(
+                                                "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                            ),
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
+                                        Usage(
+                                            "gr",
                                             word="ποιῆσαι κοινωνοὺς",
                                             lemmas=[
                                                 "ποιέω & κοινωνός",
@@ -297,35 +283,27 @@ def test_sumeromadrost():
                             ("съмѣромоудрост\ue205", "ταπεινοφροσύνην Ch"): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            alt=Alternative(
-                                                var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость",
-                                                    Source("WG"): "съмѣрѹмѫдрость",
-                                                },
-                                                var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    ),
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
-                                                        1,
-                                                    ),
-                                                },
-                                            ),
+                                        Index("25/125a3"),
+                                        Usage(
+                                            "sl",
                                             word="съмѣромоудрост\ue205",
                                             lemmas=["съмѣромѫдрость"],
+                                            var_alt={
+                                                Source("H"): Alternative(
+                                                    "смѣрены\ue201 моудрост\ue205 H",
+                                                    "съмѣр\ue201наꙗ мѫдрость",
+                                                ),
+                                                Source("WG"): Alternative(
+                                                    "смѣроумоудрост\ue205 WG",
+                                                    "съмѣрѹмѫдрость",
+                                                ),
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
+                                        Usage(
+                                            "gr",
+                                            Source("Ch"),
+                                            "ταπεινοφροσύνην Ch",
+                                            ["ταπεινοφροσύνη"],
                                         ),
                                     )
                                 ]
@@ -389,25 +367,21 @@ def test_sumeromadrost_slvar():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                main_word="съмѣромоудрост\ue205",
+                                        Index("25/125a3"),
+                                        Usage(
+                                            "sl",
+                                            Source("H"),
+                                            "смѣрены\ue201 моудрост\ue205 H",
+                                            ["мѫдрость", "съмѣр\ue201наꙗ мѫдрость"],
+                                            main_alt=Alternative(
+                                                "съмѣромоудрост\ue205", "съмѣромѫдрость"
                                             ),
-                                            word="смѣрены\ue201 моудрост\ue205 H",
-                                            lemmas=[
-                                                "мѫдрость",
-                                                "съмѣр\ue201наꙗ мѫдрость",
-                                            ],
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
+                                        Usage(
+                                            "gr",
+                                            Source("Ch"),
+                                            "ταπεινοφροσύνην Ch",
+                                            ["ταπεινοφροσύνη"],
                                         ),
                                     )
                                 ]
@@ -428,33 +402,27 @@ def test_sumeromadrost_slvar():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("WG"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    )
-                                                },
+                                        Index("25/125a3"),
+                                        Usage(
+                                            "sl",
+                                            Source("WG"),
+                                            "смѣроумоудрост\ue205 WG",
+                                            ["съмѣрѹмѫдрость"],
+                                            main_alt=Alternative(
+                                                "съмѣромоудрост\ue205", "съмѣромѫдрость"
                                             ),
-                                            word="смѣроумоудрост\ue205 WG",
-                                            lemmas=["съмѣрѹмѫдрость"],
+                                            var_alt={
+                                                Source("H"): Alternative(
+                                                    "смѣрены\ue201 моудрост\ue205 H",
+                                                    "съмѣр\ue201наꙗ мѫдрость",
+                                                )
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
+                                        Usage(
+                                            "gr",
+                                            Source("Ch"),
+                                            "ταπεινοφροσύνην Ch",
+                                            ["ταπεινοφροσύνη"],
                                         ),
                                     )
                                 ]
@@ -475,34 +443,30 @@ def test_sumeromadrost_slvar():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source("WG"): "съмѣрѹмѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="смѣрены\ue201 моудрост\ue205 H",
-                                            lemmas=[
+                                        Index("25/125a3"),
+                                        Usage(
+                                            "sl",
+                                            Source("H"),
+                                            "смѣрены\ue201 моудрост\ue205 H",
+                                            [
                                                 "съмѣр\ue201нъ",
                                                 "съмѣр\ue201наꙗ мѫдрость",
                                             ],
+                                            main_alt=Alternative(
+                                                "съмѣромоудрост\ue205", "съмѣромѫдрость"
+                                            ),
+                                            var_alt={
+                                                Source("WG"): Alternative(
+                                                    "смѣроумоудрост\ue205 WG",
+                                                    "съмѣрѹмѫдрость",
+                                                )
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
+                                        Usage(
+                                            "gr",
+                                            Source("Ch"),
+                                            "ταπεινοφροσύνην Ch",
+                                            ["ταπεινοφροσύνη"],
                                         ),
                                     )
                                 ]
@@ -549,33 +513,27 @@ def test_sumeromadrost_slvar1():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("WG"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
+                                        Index("25/125a3"),
+                                        Usage(
+                                            "sl",
+                                            Source("WG"),
                                             word="смѣроумоудрост\ue205 WG",
                                             lemmas=["съмѣрѹмѫдрость"],
+                                            main_alt=Alternative(
+                                                "съмѣромоудрост\ue205", "съмѣромѫдрость"
+                                            ),
+                                            var_alt={
+                                                Source("H"): Alternative(
+                                                    "смѣрены\ue201 моудрост\ue205 H",
+                                                    "съмѣр\ue201наꙗ мѫдрость",
+                                                )
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
+                                        Usage(
+                                            "gr",
+                                            Source("Ch"),
+                                            "ταπεινοφροσύνην Ch",
+                                            ["ταπεινοφροσύνη"],
                                         ),
                                     )
                                 ]
@@ -596,34 +554,30 @@ def test_sumeromadrost_slvar1():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source("WG"): "съмѣрѹмѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
+                                        Index("25/125a3"),
+                                        Usage(
+                                            "sl",
+                                            Source("H"),
                                             word="смѣрены\ue201 моудрост\ue205 H",
                                             lemmas=[
                                                 "съмѣр\ue201нъ",
                                                 "съмѣр\ue201наꙗ мѫдрость",
                                             ],
+                                            main_alt=Alternative(
+                                                "съмѣромоудрост\ue205", "съмѣромѫдрость"
+                                            ),
+                                            var_alt={
+                                                Source("WG"): Alternative(
+                                                    "смѣроумоудрост\ue205 WG",
+                                                    "съмѣрѹмѫдрость",
+                                                )
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
+                                        Usage(
+                                            "gr",
+                                            Source("Ch"),
+                                            "ταπεινοφροσύνην Ch",
+                                            ["ταπεινοφροσύνη"],
                                         ),
                                     )
                                 ]
@@ -670,33 +624,27 @@ def test_sumeromadrost_slvar1_grvar():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("WG"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source(
-                                                        "H"
-                                                    ): "съмѣр\ue201наꙗ мѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("H"): (
-                                                        "смѣрены\ue201 моудрост\ue205 H",
-                                                        1,
-                                                    )
-                                                },
+                                        Index("25/125a3"),
+                                        Usage(
+                                            "sl",
+                                            Source("WG"),
+                                            "смѣроумоудрост\ue205 WG",
+                                            ["съмѣрѹмѫдрость"],
+                                            main_alt=Alternative(
+                                                "съмѣромоудрост\ue205", "съмѣромѫдрость"
                                             ),
-                                            word="смѣроумоудрост\ue205 WG",
-                                            lemmas=["съмѣрѹмѫдрость"],
+                                            var_alt={
+                                                Source("H"): Alternative(
+                                                    "смѣрены\ue201 моудрост\ue205 H",
+                                                    "съмѣр\ue201наꙗ мѫдрость",
+                                                )
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
+                                        Usage(
+                                            "gr",
+                                            Source("Ch"),
+                                            "ταπεινοφροσύνην Ch",
+                                            ["ταπεινοφροσύνη"],
                                         ),
                                     )
                                 ]
@@ -717,34 +665,30 @@ def test_sumeromadrost_slvar1_grvar():
                             ): SortedSet(
                                 [
                                     Alignment(
-                                        idx=Index("25/125a3"),
-                                        orig=Usage(
-                                            lang="sl",
-                                            var=Source("H"),
-                                            alt=Alternative(
-                                                main_lemma="съмѣромѫдрость",
-                                                var_lemmas={
-                                                    Source("WG"): "съмѣрѹмѫдрость"
-                                                },
-                                                main_word="съмѣромоудрост\ue205",
-                                                var_words={
-                                                    Source("WG"): (
-                                                        "смѣроумоудрост\ue205 WG",
-                                                        1,
-                                                    )
-                                                },
-                                            ),
-                                            word="смѣрены\ue201 моудрост\ue205 H",
-                                            lemmas=[
+                                        Index("25/125a3"),
+                                        Usage(
+                                            "sl",
+                                            Source("H"),
+                                            "смѣрены\ue201 моудрост\ue205 H",
+                                            [
                                                 "съмѣр\ue201нъ",
                                                 "съмѣр\ue201наꙗ мѫдрость",
                                             ],
+                                            main_alt=Alternative(
+                                                "съмѣромоудрост\ue205", "съмѣромѫдрость"
+                                            ),
+                                            var_alt={
+                                                Source("WG"): Alternative(
+                                                    "смѣроумоудрост\ue205 WG",
+                                                    "съмѣрѹмѫдрость",
+                                                )
+                                            },
                                         ),
-                                        trans=Usage(
-                                            lang="gr",
-                                            var=Source("Ch"),
-                                            word="ταπεινοφροσύνην Ch",
-                                            lemmas=["ταπεινοφροσύνη"],
+                                        Usage(
+                                            "gr",
+                                            Source("Ch"),
+                                            "ταπεινοφροσύνην Ch",
+                                            ["ταπεινοφροσύνη"],
                                         ),
                                     )
                                 ]
@@ -797,13 +741,10 @@ def test_repeated_om():
                                         Usage("gr", word="om.", lemmas=["om."]),
                                         Usage(
                                             "sl",
-                                            var=Source("WH"),
-                                            alt=Alternative(
-                                                main_lemma="аще",
-                                                main_word="аще",
-                                            ),
-                                            word="om. WH",
-                                            lemmas=["om."],
+                                            Source("WH"),
+                                            "om. WH",
+                                            ["om."],
+                                            main_alt=Alternative("аще", "аще"),
                                         ),
                                     ),
                                     Alignment(
@@ -811,13 +752,12 @@ def test_repeated_om():
                                         Usage("gr", word="om.", lemmas=["om."]),
                                         Usage(
                                             "sl",
-                                            var=Source("WH"),
-                                            alt=Alternative(
-                                                main_lemma="\ue205 conj.",
-                                                main_word="\ue205",
+                                            Source("WH"),
+                                            "om. WH",
+                                            ["om."],
+                                            main_alt=Alternative(
+                                                "\ue205", "\ue205 conj."
                                             ),
-                                            word="om. WH",
-                                            lemmas=["om."],
                                         ),
                                     ),
                                 ]
@@ -831,10 +771,11 @@ def test_repeated_om():
                                         Usage("gr", word="om.", lemmas=["om."]),
                                         Usage(
                                             "sl",
-                                            alt=Alternative(
-                                                var_lemmas={Source("WH"): "om."},
-                                                var_words={Source("WH"): ("om. WH", 1)},
-                                            ),
+                                            var_alt={
+                                                Source("WH"): Alternative(
+                                                    "om. WH", "om."
+                                                )
+                                            },
                                             word="аще",
                                             lemmas=["аще"],
                                         ),
@@ -850,10 +791,11 @@ def test_repeated_om():
                                         Usage("gr", word="om.", lemmas=["om."]),
                                         Usage(
                                             "sl",
-                                            alt=Alternative(
-                                                var_lemmas={Source("WH"): "om."},
-                                                var_words={Source("WH"): ("om. WH", 1)},
-                                            ),
+                                            var_alt={
+                                                Source("WH"): Alternative(
+                                                    "om. WH", "om."
+                                                )
+                                            },
                                             word="\ue205",
                                             lemmas=["\ue205 conj."],
                                         ),

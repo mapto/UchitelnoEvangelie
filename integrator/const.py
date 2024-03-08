@@ -18,10 +18,9 @@ SAME_CH = "="
 MISSING_CH = "ₓ"  # used when untranslatable
 EMPTY_CH = "Ø"  # used when text has intended to have no translation
 
-# TODO: These special characters are actually semantic annotation,
-# so it makes sense to have them represented in the Alignment model
-# '#' used for contextual translation
-# '*' is legacy annotation, but is present in tests
+# Meaning of special characters is documented in README.md#semantic-relationships
+# Warning: In case of refactoring, be careful that at some places this is treated as List[str],
+# so just str (array of chars) would behave differently
 SPECIAL_CHARS = ["#", "≈", "≠", "*"]
 
 ERR_SUBLEMMA = "err. pro"

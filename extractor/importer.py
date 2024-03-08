@@ -28,7 +28,7 @@ def parse_comments(doc: Document) -> Dict[int, Comment]:
         return result
 
     root = etree.fromstring(xml)
-    for next in root.getchildren():
+    for next in root.getchildren():  # type: ignore
         c = Comment.fromXml(next)
         result[c.id] = c
 

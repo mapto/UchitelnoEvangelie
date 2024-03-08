@@ -7,7 +7,7 @@ from sortedcontainers import SortedDict, SortedSet  # type: ignore
 from const import NON_COUNTABLE, H_LEMMA_SEP, ERR_SUBLEMMA
 from const import EMPTY_CH, SPECIAL_CHARS
 from config import DEFAULT_SOURCES
-from model import Source
+from model import Alternative, Source
 
 from regex import multiword_regex, multilemma_regex
 
@@ -95,21 +95,19 @@ def collect_lemma(
 
 def level_var_alternatives(
     self, row: List[str], my_var: Source, lidx: int = 0
-) -> Tuple[Dict[Source, str], Dict[Source, Tuple[str, int]]]:
+) -> Dict[Source, Alternative]:
     """Get alternative lemmas in variant"""
     multilemma = self.multilemma(row, lidx)
     alt_lemmas = {k: v for k, v in multilemma.items() if my_var not in k}
     # Get interpretative annotation from sublemma if any
+    semantics = {}
     if lidx == 0 and len(self.lemmas) > 1:
         l2 = self.multilemma(row, 1)
         for k2, v2 in l2.items():
             for prefix in SPECIAL_CHARS + [ERR_SUBLEMMA]:
                 if v2.startswith(prefix):
-                    for k1 in alt_lemmas.keys():
-                        if k1.inside(k2):
-                            alt_lemmas[k1] = f"{prefix} {alt_lemmas[k1]}"
+                    semantics[k2] = prefix
                     break
-
     aw = {
         k: self.compile_words_by_lemma(row, k)
         for k, v in self.multiword(row).items()
@@ -117,7 +115,30 @@ def level_var_alternatives(
     }
     alt_words = {k: (v[0], v[1]) for k, v in aw.items()}
 
-    return alt_lemmas, alt_words
+    result: Dict[Source, Alternative] = {}
+    for wk, (wv, wc) in alt_words.items():
+        found = False
+        for lk, lv in alt_lemmas.items():
+            if wk in lk:
+                semantic = semantics[wk] if wk in semantics else ""
+                assert (
+                    not semantic or alt_lemmas[lk][0] == semantic
+                ), f"Mismatch between semantic {semantic} and lemmas {alt_lemmas} with variant {lk}"
+                lem = alt_lemmas[lk][2:] if semantic else alt_lemmas[lk]
+                result[wk] = Alternative(wv, lem, wc, semantic=semantic)
+                found = True
+        if not found:
+            # expected that several words have same lemma so their sources are merged
+            for lk, lv in alt_lemmas.items():
+                if lk.inside(wk) and lk not in result:
+                    semantic = semantics[lk] if lk in semantics else ""
+                    assert (
+                        not semantic or lv[0] == semantic
+                    ), f"Mismatch between semantic {semantic} and lemmas {alt_lemmas} with variant {lk}"
+                    lem = lv[2:] if semantic else lv
+                    result[lk] = Alternative(wv, lem, wc, semantic=semantic)
+
+    return result
 
 
 def multiword(self, row: List[str]) -> Dict[Source, str]:

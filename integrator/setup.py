@@ -51,8 +51,10 @@ def address_less(a: Index, b: Index) -> bool:
 
     if a.data[0] == b.data[0] == 24:
         if a.data[2] == "W" and b.data[2] != "W":
-            assert type(b.data[2]) == type(b.data[4]) == int  # for mypy
-            assert type(b.data[3]) == str  # for mypy
+            assert (
+                type(b.data[2]) == type(b.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(b.data[3]) == str, "non-null value required by mypy"
             return (
                 b.data[2] > 119
                 or b.data[2] == 119
@@ -62,8 +64,10 @@ def address_less(a: Index, b: Index) -> bool:
                 and b.data[4] > 4
             )
         if a.data[2] != "W" and b.data[2] == "W":
-            assert type(a.data[2]) == type(a.data[4]) == int  # for mypy
-            assert type(a.data[3]) == str  # for mypy
+            assert (
+                type(a.data[2]) == type(a.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(a.data[3]) == str, "non-null value required by mypy"
             return (
                 a.data[2] < 119
                 or a.data[2] == 119
@@ -75,8 +79,10 @@ def address_less(a: Index, b: Index) -> bool:
 
     if a.data[0] == b.data[0] == 37:
         if a.data[2] == "W" and b.data[2] != "W":
-            assert type(b.data[2]) == type(b.data[4]) == int  # for mypy
-            assert type(b.data[3]) == str  # for mypy
+            assert (
+                type(b.data[2]) == type(b.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(b.data[3]) == str, "non-null value required by mypy"
             return (
                 b.data[2] > 169
                 or b.data[2] == 169
@@ -86,8 +92,10 @@ def address_less(a: Index, b: Index) -> bool:
                 and b.data[4] > 9
             )
         if a.data[2] != "W" and b.data[2] == "W":
-            assert type(a.data[2]) == type(a.data[4]) == int  # for mypy
-            assert type(a.data[3]) == str  # for mypy
+            assert (
+                type(a.data[2]) == type(a.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(a.data[3]) == str, "non-null value required by mypy"
             return (
                 a.data[2] < 169
                 or a.data[2] == 169
@@ -106,8 +114,10 @@ def address_less(a: Index, b: Index) -> bool:
 
     if a.data[0] == b.data[0] == 46:
         if a.data[2] == "W" and b.data[2] != "W":
-            assert type(b.data[2]) == type(b.data[4]) == int  # for mypy
-            assert type(b.data[3]) == str  # for mypy
+            assert (
+                type(b.data[2]) == type(b.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(b.data[3]) == str, "non-null value required by mypy"
             return (
                 b.data[2] > 208
                 or b.data[2] == 208
@@ -117,8 +127,10 @@ def address_less(a: Index, b: Index) -> bool:
                 and b.data[4] > 13
             )
         if a.data[2] != "W" and b.data[2] == "W":
-            assert type(a.data[2]) == type(a.data[4]) == int  # for mypy
-            assert type(a.data[3]) == str  # for mypy
+            assert (
+                type(a.data[2]) == type(a.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(a.data[3]) == str, "non-null value required by mypy"
             return (
                 a.data[2] < 208
                 or a.data[2] == 208
@@ -130,8 +142,10 @@ def address_less(a: Index, b: Index) -> bool:
 
     if a.data[0] == b.data[0] == 47:
         if a.data[2] == "W" and b.data[2] != "W":
-            assert type(b.data[2]) == type(b.data[4]) == int  # for mypy
-            assert type(b.data[3]) == str  # for mypy
+            assert (
+                type(b.data[2]) == type(b.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(b.data[3]) == str, "non-null value required by mypy"
             return (
                 b.data[2] > 211
                 or b.data[2] == 211
@@ -141,8 +155,10 @@ def address_less(a: Index, b: Index) -> bool:
                 and b.data[4] > 1
             )
         if a.data[2] != "W" and b.data[2] == "W":
-            assert type(a.data[2]) == type(a.data[4]) == int  # for mypy
-            assert type(a.data[3]) == str  # for mypy
+            assert (
+                type(a.data[2]) == type(a.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(a.data[3]) == str, "non-null value required by mypy"
             return (
                 a.data[2] < 211
                 or a.data[2] == 211
@@ -154,8 +170,10 @@ def address_less(a: Index, b: Index) -> bool:
 
     if a.data[0] == b.data[0] == 48:
         if a.data[2] == "W" and b.data[2] != "W":
-            assert type(b.data[2]) == type(b.data[4]) == int  # for mypy
-            assert type(b.data[3]) == str  # for mypy
+            assert (
+                type(b.data[2]) == type(b.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(b.data[3]) == str, "non-null value required by mypy"
             return (
                 b.data[2] > 216
                 or b.data[2] == 216
@@ -165,8 +183,10 @@ def address_less(a: Index, b: Index) -> bool:
                 and b.data[4] > 12
             )  # type: ignore
         if a.data[2] != "W" and b.data[2] == "W":
-            assert type(a.data[2]) == type(a.data[4]) == int  # for mypy
-            assert type(a.data[3]) == str  # for mypy
+            assert (
+                type(a.data[2]) == type(a.data[4]) == int
+            ), "non-null value required by mypy"
+            assert type(a.data[3]) == str, "non-null value required by mypy"
             return (
                 a.data[2] < 216
                 or a.data[2] == 216

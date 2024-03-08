@@ -1,7 +1,6 @@
 """Shared utilities for the word processor export"""
 
 from typing import Optional, Union
-import logging as log
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from docx.shared import RGBColor, Pt, Cm  # type: ignore
@@ -51,5 +50,5 @@ def any_grandchild(d: SortedDict) -> Union[SortedDict, SortedSet]:
     for child in d.values():
         for grandchild in child.values():
             return grandchild
-    log.error(d)
-    raise AssertionError("Collections tree should not be empty")
+    # log.error(d)
+    raise AssertionError(f"Collections tree should not be empty for {d}")

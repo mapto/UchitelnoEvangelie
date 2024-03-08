@@ -22,8 +22,8 @@ class Comment:
 
     @classmethod
     def fromXml(self, node: _Element):
-        id = int(node.xpath("./@w:id", namespaces=ns)[0])
-        content = "".join(node.xpath(".//w:t/text()", namespaces=ns))
+        id = int(node.xpath("./@w:id", namespaces=ns)[0])  # type: ignore
+        content = "".join(node.xpath(".//w:t/text()", namespaces=ns))  # type: ignore
         parts = re.split(r"\+", content)
         assert 1 <= len(parts)
         annotation = content if len(parts) == 2 and not parts[1] else parts[0]

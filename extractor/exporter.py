@@ -134,7 +134,7 @@ def export_sheet(data: WordList, fname: str) -> None:
             if cell.value:
                 cell.font = Font(CYRILLIC_FONT)
                 cell.border = BORDER
-                if cell.value.startswith("=IF"):
+                if cell.value.startswith("=IF"):  # type: ignore
                     cell.fill = BG_RESERVED
                 # elif cell.value.startswith("=_xlfn.IFNA"):
                 # cell.fill = BG_EDIT

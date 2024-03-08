@@ -1,5 +1,5 @@
 # Bilingual Word Indices to Medieval Slavonic Translations and Copies
-A toolset for the generation of bilingual dictionaries for the medieval Slavonic translations of Greek and their copies. These tools support philology researchers in the ellaboration of the word-level alignment between the two texts. The project has started to serve the research on <a href="https://uchitelnoevangelie.eu/?lang=en">„Учително евангелие“</a> (Uchitel’noe evangelie - Didactic Gospel) by Constantine of Preslav, but is designed to also be used on other Slavonic-Greek parallel texts. Wider application could also be possible, we encourage researchers to get in contact to discuss applicability.
+A toolset for the generation of bilingual dictionaries for the medieval Slavonic translations of Greek and their copies. These tools support philology researchers in the ellaboration of the word-level alignment between the two texts. The project has started to serve the research on [„Учително евангелие“](https://uchitelnoevangelie.eu/?lang=en) (Uchitel’noe evangelie - Didactic Gospel) by Constantine of Preslav, but is designed to also be used on other Slavonic-Greek parallel texts. Wider application could also be possible, we encourage researchers to get in contact to discuss applicability.
 
 Three software tools (used from the command line interface or via drag & drop) are at the core of this project:
 1. [extractor](extractor/) - for the transformation of word usages from original Old Church Slavonic texts into tabular form to be used as a basis of the database (in .xlsx spreadsheets for easy manual editing), later enriched and annotated by the language experts.
@@ -47,18 +47,13 @@ Compilation is not a requirement. Executable binaries could be created using Lin
 
     sudo ./build.sh
 
-This will create binaries for Linux and Windows in the `dist` directory.
-
-Alternative (also on Mac) is using pyinstaller, for example for integrator:
-
-    pip install pyinstaller
-    pyinstaller --clean -y --dist ./dist/linux --workpath /tmp integrator.spec
+This will create binaries for Linux, Windows and Mac in the `dist` directory.
 
 # Usage
 
 The program can be compiled and/or used with a current version of python (3.6+).
 
-Make sure when using `integrator` and `indexgenerator` to provide the source list configuration files, see [`sl-sources.txt`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/sl-sources.txt) and [`gr-sources.txt`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](https://github.com/mapto/UchitelnoEvangelie/blob/master/integrator/config.py#L54).
+Make sure when using `integrator` and `indexgenerator` to provide the source list configuration files, see [`sl-sources.txt`](integrator/sl-sources.txt) and [`gr-sources.txt`](integrator/gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](integrator/config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](integrator/config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](integrator/config.py#L54).
 
 The font face <a href="https://www.starobulglit.eu/OC10U.ttf">*Cyrillica Ochrid 10U*</a> needs to be downloaded and installed on the host system for visualisation of the Cyrillic script. Alternatively, configure an alternative font for both [exporter](extractor/exporter.py#L23) and [integrator](integrator/wordproc.py#L12).
 
@@ -70,15 +65,15 @@ To work without compilation, first the necessary dependencies need to be install
 
 The programs are executed with:
 
-    python3 extractor.py <docx>
-    python3 integrator.py <xlsx>
-    python3 indexgenerator.py <xlsx>
+    python extractor.py <docx>
+    python integrator.py <xlsx>
+    python indexgenerator.py <xlsx>
 
 ## Compiled version
 
 If you posses a compiled version, it suffices to drag and drop the file to be processed on the tool. For extractor, acceptable are .docx files, and for integrator and indexgenerator, .xlsx files.
 
-The extractor tool also has a command line interface, whose parameters could be seen by starting the program without parameters or in the <a href="https://github.com/mapto/UchitelnoEvangelie/blob/master/extractor.py">inline documentation</a>.
+The extractor tool also has a command line interface, whose parameters could be seen by starting the program without parameters or in the <a href="extractor/extractor.py">inline documentation</a>.
 
 # Reporting errors
 
@@ -118,5 +113,5 @@ For the creation of the icons, the FontAwesome <a href="https://fontawesome.com/
 # Acknowledgments
 
 This work is part of the project _The Vocabulary of Constantine of Preslav’s Uchitel’noe
-evangelie (’Didactic Gospel’): Old Bulgarian-Greek and Greek-Old Bulgarian Word Indices_, funded
+evangelie (’Didactic Gospel’): Old Bulgarian-Greek and Greek-Old Bulgarian Word Indices_, https://uchitelnoevangelie.eu/, funded
 by the Bulgarian National Science Fund (contract КП-06-Н50/2 of 30.11.2020).

@@ -11,7 +11,7 @@ from hiliting import Hiliting, _hilited_col, _hilited_local, _hilited_irrelevant
 def _group_variants(group: List[List[str]], sem: LangSemantics) -> Source:
     """Returns a list of variants (excluding main) that are present in this group"""
     variants = set()
-    assert sem.var  # for mypy
+    assert sem.var, "non-null value required by mypy"
     for row in group:
         for var in [k for k, val in sem.var.multiword(row).items() if val]:
             variants.add(var)
@@ -30,7 +30,9 @@ def _merge_indices(group: List[List[str]]) -> Index:
             if not s_end or r[IDX_COL] > s_end:
                 s_end = r[IDX_COL]
 
-    assert s_start
+    assert (
+        s_start
+    ), f"Could not find start of address group {(r[IDX_COL] for r in group)}"
     return Index(f"{s_start}-{s_end}") if s_start != s_end else Index(s_start)
 
 
@@ -187,7 +189,7 @@ def _close_group(
     group: List[List[str]], orig: LangSemantics, trans: MainLangSemantics, h: Hiliting
 ) -> List[List[str]]:
     """Close a group formed by highlighting."""
-    assert orig.main  # for mypy
+    assert orig.main, "non-null value required by mypy"
     variants = _group_variants(group, orig.main)
     if variants:
         for row in group:

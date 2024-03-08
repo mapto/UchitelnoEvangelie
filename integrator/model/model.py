@@ -1,63 +1,58 @@
-from typing import Dict, List, Tuple
+from typing import List
 from dataclasses import dataclass, field
 
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS
-from .source import Source
 
 
 @dataclass(frozen=True)
 class Alternative:
     """Word occurences in a line are counted.
     For main alternative this is in a separate variable,
-    but for variants, it's part of the dictionary
+    but for variants, it's part of the dictionary.
+
+    In case of semantic relationships (see README.md#semantic-relationships),
+    these are stored in the model, and interpreted during export.
+    Currently, this is not the approach used in the broader alignment
     """
 
     # Working only with last lemma
-    main_lemma: str = ""
-    var_lemmas: Dict[Source, str] = field(default_factory=lambda: {})
-    main_word: str = ""
-    var_words: Dict[Source, Tuple[str, int]] = field(default_factory=lambda: {})
-    main_cnt: int = 1
+    word: str = ""
+    lemma: str = ""
+    # TODO: keep full lemmas stack
+    # lemmas: List[str] = field(default_factory=lambda: [])
+    cnt: int = 1
+    # SPECIAL_CHARS indicate what type of correspondence it is, when non exact
+    semantic: str = ""
 
     def __hash__(self):
-        vl = "/".join([f"{v} {k}" for k, v in self.var_lemmas.items()])
-        vw = "/".join([f"{v[0]}{v[1]} {k}" for k, v in self.var_words.items()])
-        return hash((self.main_lemma, vl, self.main_word, vw, self.main_cnt))
+        # vl = "/".join([f"{v} {k}" for k, v in self.var_lemmas.items()])
+        # vw = "/".join([f"{v[0]}{v[1]} {k}" for k, v in self.var_words.items()])
+        return hash((self.lemma, self.word, self.cnt))
 
     def __bool__(self) -> bool:
-        return bool(self.main_lemma) or bool(self.var_lemmas)
+        """
+        >>> bool(Alternative())
+        False
+        >>> bool(Alternative("аще", "аще"))
+        True
+        """
+        return bool(self.lemma)
 
     def __lt__(self, other) -> bool:
         """
-        >>> Alternative("аще", main_word="аще") < Alternative("\ue205 conj.", main_word="\ue205")
+        >>> Alternative("аще", "аще") < Alternative("\ue205", "\ue205 conj.")
         True
         """
-        if self.main_word < other.main_word:
+        if self.word < other.word:
             return True
-        elif self.main_word > other.main_word:
+        elif self.word > other.word:
             return False
 
-        self_var_word_keys = str(Source("".join(str(k) for k in self.var_words.keys())))
-        other_var_word_keys = str(
-            Source("".join(str(k) for k in other.var_words.keys()))
-        )
-        if self_var_word_keys < other_var_word_keys:
+        if self.cnt < other.cnt:
             return True
-        elif self_var_word_keys > other_var_word_keys:
-            return False
-
-        self_var_word_values = "".join(v[0] for v in self.var_words.values())
-        other_var_word_values = "".join(v[0] for v in other.var_words.values())
-        if self_var_word_values < other_var_word_values:
-            return True
-        elif self_var_word_values > other_var_word_values:
-            return False
-
-        if self.main_cnt < other.main_cnt:
-            return True
-        elif self.main_cnt > other.main_cnt:
+        elif self.cnt > other.cnt:
             return False
 
         return False
@@ -77,13 +72,14 @@ class Path:
     """The full collection of lemmas is considered a backtracking path in the final usage hierarchy.
     Gramatical annotation is handled exceptionally.
     >>> Path(['# υἱός'])
-    Path(parts=['# υἱός'], annotation='')
+    Path(parts=['# υἱός'], annotation='', semantics='')
     >>> Path(["θεός", "Gen."])
-    Path(parts=['θεός', 'Gen.'], annotation='')
+    Path(parts=['θεός', 'Gen.'], annotation='', semantics='')
     """
 
     parts: List[str] = field(default_factory=lambda: [])
     annotation: str = ""
+    semantics: str = ""
 
     def __iadd__(self, s: str):
         self.parts += [s]
@@ -108,13 +104,17 @@ class Path:
         parts = self.parts.copy()
         if len(parts) > 1:
             if parts[-1][0] in SPECIAL_CHARS:
+                self.semantics = parts[-1][0]
                 if len(parts[-1]) == 1:
                     parts[-2] = f"{parts[-1]} {parts[-2]}"
                     parts.pop(-1)
                 elif parts[-1].endswith(parts[-2]):
                     parts.pop(-2)
             content = PATH_SEP.join(parts[::-1])
-            return f"{content} {self.annotation}" if self.annotation else content
+            prefix = f"{self.semantics} " if self.semantics else ""
+            return (
+                f"{prefix}{content} {self.annotation}" if self.annotation else content
+            )
         elif len(parts) == 1:
             return f"{parts[0]} {self.annotation}" if self.annotation else parts[0]
         return self.annotation if self.annotation else ""

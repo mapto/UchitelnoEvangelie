@@ -14,32 +14,44 @@ from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
 
 from util import main_source, subscript
-from model import Source, Alignment
+from model import Source, Alignment, Alternative, Usage
 
 from wordproc import _generate_text, any_grandchild
 from wordproc import GENERIC_FONT, fonts, colors
 
 
+def _generate_usage_alt_main(par, uc: Usage, source_name: str) -> None:
+    alt = uc.main_alt
+    _generate_text(par, " ")
+    prefix = f"{alt.semantic} " if alt.semantic else ""
+    _generate_text(par, f"{prefix}{alt.word}", fonts[uc.lang])
+    _generate_text(par, f" {source_name}")
+    if alt.cnt > 1:
+        _generate_text(par, subscript(alt.cnt, uc.lang), subscript=True)
+
+
 def _generate_usage_alt_vars(
-    par, u: Alignment, lang: str, alt_var: Dict[Source, Tuple[str, int]]
+    par, u: Alignment, lang: str, alt_var: Dict[Source, Alternative]
 ) -> None:
     # Word is stored in Index only for orig.
     # Thus the check u.lang == lang
     if u.orig.lang == lang and not any(
-        v[0] not in u.orig.word for v in alt_var.values()
+        v.word not in u.orig.word for v in alt_var.values()
     ):
         return
 
     first = True
     _generate_text(par, f" {BRACE_OPEN[lang]}")
-    for word, cnt in alt_var.values():
+    for alt in alt_var.values():
+        word, cnt = alt.word, alt.cnt
         if u.orig.lang == lang and word in u.orig.word:
             continue
         if first:
             first = False
         else:
             _generate_text(par, ", ")
-        _generate_text(par, word, fonts[lang])
+        prefix = f"{alt.semantic} " if alt.semantic else ""
+        _generate_text(par, f"{prefix}{word}", fonts[lang])
         subs = subscript(cnt, lang)
         if subs:
             _generate_text(par, subs, subscript=True)
@@ -71,74 +83,26 @@ def _generate_index(par, u: Alignment) -> None:
             _generate_text(par, subscript(gr_cnt, TO_LANG), subscript=True)
 
 
-def _is_orig_alt(u: Alignment) -> bool:
-    """
-    >>> from model import Alternative, Index, Usage
-    >>> i = Index("5/28d18")
-
-    >>> vl0 = {Source("H"): "шьств\ue205\ue201 пѫт\ue205", Source("G"): "other"}
-    >>> vw0 = {Source("G"): ("other", 1), Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)}
-    >>> oa0 = Alternative(var_lemmas=vl0, var_words=vw0)
-    >>> uc0 = Usage("sl", Source("GH"), oa0, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
-    >>> u0 = Alignment(i, uc0)
-    >>> _is_orig_alt(u0)
-    True
-
-    >>> vl = {Source("H"): "шьств\ue205\ue201 пѫт\ue205", Source("G"): "шьст\ue205\ue201 пѫт\ue205"}
-    >>> vw = {Source("G"): ("шьст\ue205ꙗ пꙋт\ue205 G", 1), Source("H"): ("шьств\ue205ꙗ пꙋт\ue205 H", 1)}
-    >>> oa1 = Alternative("пѫтошьств\ue205\ue201", vl, "поутошьств\ue205ꙗ", vw)
-    >>> uc1 = Usage("sl", Source("GH"), oa1, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
-    >>> u1 = Alignment(i, uc1)
-    >>> _is_orig_alt(u1)
-    True
-
-    >>> oa2 = Alternative(var_lemmas=vl, var_words=vw)
-    >>> uc2 = Usage("sl", Source("GH"), oa2, word="шьств\ue205ꙗ пꙋт\ue205 H шьст\ue205ꙗ пꙋт\ue205 G", lemmas=["пѫть"])
-    >>> u2 = Alignment(i, uc2)
-    >>> _is_orig_alt(u2)
-    False
-    """
-    alt = u.orig.alt
-    word = u.orig.word
-    return bool(alt) and (
-        alt.main_word
-        and alt.main_word not in word
-        or bool(u.orig.alt.var_words)
-        and any(v[0] not in word for v in alt.var_words.values())
-    )
-
-
 def _generate_usage(par, u: Alignment) -> None:
     _generate_index(par, u)
-    if not _is_orig_alt(u) and not u.trans.alt:
-        # if not u.orig.alt and not u.trans.alt:
+    if not u.has_alternatives():
         return
 
     _generate_text(par, f" {CF_SEP}")
-    if u.orig.alt.main_word and u.orig.alt.main_word not in u.orig.word:
-        _generate_text(par, " ")
-        _generate_text(par, u.orig.alt.main_word, fonts[u.orig.lang])
-        _generate_text(par, f" {main_source(u.orig.lang, u.idx.data[2] == 'W')}")
-        if u.orig.alt.main_cnt > 1:
-            _generate_text(
-                par, subscript(u.orig.alt.main_cnt, u.orig.lang), subscript=True
-            )
+    if u.orig.main_alt.word:
+        source = main_source(u.orig.lang, u.idx.data[2] == "W")
+        _generate_usage_alt_main(par, u.orig, source)
 
-    if u.orig.alt.var_words:
-        _generate_usage_alt_vars(par, u, u.orig.lang, u.orig.alt.var_words)
+    if u.orig.var_alt:
+        _generate_usage_alt_vars(par, u, u.orig.lang, u.orig.var_alt)
 
     # previous addition certainly finished with GENERIC_FONT
-    if u.trans.alt.main_word:
-        _generate_text(par, " ")
-        _generate_text(par, u.trans.alt.main_word, fonts[u.trans.lang])
-        _generate_text(par, f" {main_source(u.trans.lang, u.idx.data[2] == 'W')}")
-        if u.trans.alt.main_cnt > 1:
-            _generate_text(
-                par, subscript(u.trans.alt.main_cnt, u.trans.lang), subscript=True
-            )
+    if u.trans.main_alt.word:
+        source = main_source(u.trans.lang, u.idx.data[2] == "W")
+        _generate_usage_alt_main(par, u.trans, source)
 
-    if u.trans.alt.var_words:
-        _generate_usage_alt_vars(par, u, u.trans.lang, u.trans.alt.var_words)
+    if u.trans.var_alt:
+        _generate_usage_alt_vars(par, u, u.trans.lang, u.trans.var_alt)
 
 
 def docx_usage(par, key: Tuple[str, str], usage: SortedSet, src_style: str) -> None:
@@ -214,7 +178,7 @@ def _export_line(level: int, lang: str, d: SortedDict, doc: Document):
 
             prefix = "" if li[0] in SPECIAL_CHARS else f"{INDENT_CH} " * level
             _generate_text(
-                par, f"{prefix} {li}", fonts[lang], size=Pt(14 if level == 0 else 12)
+                par, f"{prefix}{li}", fonts[lang], size=Pt(14 if level == 0 else 12)
             )
 
         try:

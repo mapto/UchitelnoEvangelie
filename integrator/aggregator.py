@@ -22,7 +22,7 @@ LAST_LEMMA = -2
 def _multilemma(row: List[str], sem: LangSemantics, lidx: int = 0) -> Dict[Source, str]:
     if not present(row, sem):
         return {}
-    assert sem
+    assert sem, "non-null value required by mypy"
     return sem.multilemma(row, lidx)
 
 
@@ -40,7 +40,9 @@ def reorganise_orig_special(
 
     # get only the SPECIAL_CHARS from variant that might contain also source
     special = row[orig.lemmas[olast]][0]
-    assert special in SPECIAL_CHARS
+    assert (
+        special in SPECIAL_CHARS
+    ), f"Last lemma {row[orig.lemmas[olast]]} does not start with special character"
     row[orig.lemmas[olast]] = ""
 
     # add special_char sublemma to translation
@@ -58,7 +60,7 @@ def reorganise_orig_special(
 def reorganise_trans_special(row: List[str], trans: LangSemantics) -> List[str]:
     """In cases when in the translation side of semantics,
     a sublemma contains only a special character,
-    this should be appended to the previous lemma in the word usage"""
+    this should be appended to the last lemma and to the word usage"""
 
     tlast = next(
         iter(i for i in range(len(trans.lemmas) - 1, -1, -1) if row[trans.lemmas[i]])
@@ -94,7 +96,7 @@ def breakdown_multilemmas(
             val = cp.pop(oliv)
             cp[olemvar] = val
             rem = oliv.remainder(olemvar)
-            assert rem  # for mypy
+            assert rem, "non-null value required by mypy"
             cp[rem] = val
 
     return cp if change else None
@@ -104,10 +106,11 @@ def _agg_lemma(
     row: List[str],
     orig: LangSemantics,
     trans: LangSemantics,
-    d: SortedDict,
+    d: SortedDict = SortedDict(),
     col: int = FIRST_LEMMA,
     olemvar: Source = Source(),
     tlemma: str = "",
+    special_char="",
 ) -> SortedDict:
     """Adds a lemma. Recursion ensures that this works with variable depth.
 
@@ -122,6 +125,7 @@ def _agg_lemma(
     Returns:
         SortedDict: *IN PLACE* hierarchical dictionary
     """
+    # print(col, repr(olemvar), tlemma)
     lem_cols = orig.lemmas
     omultilemmas = {}
     tmultilemmas = {}
@@ -129,8 +133,9 @@ def _agg_lemma(
         col = lem_cols[0]
         tmultilemmas = _multilemma(row, trans)
     elif col == LAST_LEMMA:  # exhausted
-        assert row[IDX_COL]
-        return orig.compile_usages(trans, row, d, tlemma, olemvar)
+        assert row[IDX_COL], f"Row expected to contain Address {row}"
+        # print(f".{tlemma}.{repr(olemvar)}.")
+        return orig.compile_usages(trans, row, tlemma, olemvar, d, special_char)
     lidx = lem_cols.index(col)
     omultilemmas = _multilemma(row, orig, lidx)
 
@@ -150,13 +155,7 @@ def _agg_lemma(
             if "" not in d:
                 d[""] = SortedDict(ord_word)
             d[""] = _agg_lemma(
-                row,
-                orig,
-                trans,
-                d[""],
-                next_col,
-                missing,
-                tlemma,
+                row, orig, trans, d[""], next_col, missing, tlemma, special_char
             )
     breakdown = breakdown_multilemmas(omultilemmas, olemvar)
     omultilemmas = breakdown if breakdown else omultilemmas
@@ -168,13 +167,15 @@ def _agg_lemma(
         if oliv and olemvar and oliv not in olemvar:
             continue
         nxt = base_word(oli)
-        if nxt in SPECIAL_CHARS:
+        if nxt and nxt[0] in SPECIAL_CHARS:
             row = reorganise_orig_special(row, orig, trans)
-            nxt = ""
-            # TODO: combination of multilemmas and standalone special symbols is only partially implemented.
+            special_char = nxt[0]
+            nxt = nxt[2:]
             # Is it possible that a special symbol is relevant to only one variant? What should we do in this case?
             multilemma = trans.multilemma(row)
-            assert len(multilemma) == 1
+            assert (
+                len(multilemma) == 1
+            ), "TODO: combination of multilemmas and standalone special symbols is only partially implemented"
             tlemma = next(iter(multilemma.values()))
         if nxt not in d:
             d[nxt] = SortedDict(ord_word)
@@ -183,13 +184,7 @@ def _agg_lemma(
         for tli in tmultilemmas.values():
             tl = tlemma if tlemma else tli
             d[nxt] = _agg_lemma(
-                row,
-                orig,
-                trans,
-                d[nxt],
-                next_col,
-                olv,
-                tl,
+                row, orig, trans, d[nxt], next_col, olv, tl, special_char
             )
     return d
 
@@ -198,12 +193,12 @@ def _expand_and_aggregate(
     row: List[str],
     orig: LangSemantics,
     trans: LangSemantics,
-    d: SortedDict,
+    d: SortedDict = SortedDict(),
 ) -> SortedDict:
     if not present(row, orig) or not present(row, trans):
         return d
-    assert orig  # for mypy
-    assert trans  # for mypy
+    assert orig, "non-null value required by mypy"
+    assert trans, "non-null value required by mypy"
 
     tother = trans.other()
     inv_lemmas = [
@@ -214,6 +209,15 @@ def _expand_and_aggregate(
     if inv_lemmas and row[inv_lemmas[0]][0] in SPECIAL_CHARS:
         row = reorganise_trans_special(row, tother)
 
+    oother = orig.other()
+    inv_lemmas = [
+        oother.lemmas[i]
+        for i in range(len(oother.lemmas) - 1, -1, -1)
+        if row[oother.lemmas[i]]
+    ]
+    if inv_lemmas and row[inv_lemmas[0]][0] in SPECIAL_CHARS:
+        row = reorganise_trans_special(row, oother)
+
     result = _agg_lemma(row, orig, trans, d)
     return result
 
@@ -222,7 +226,7 @@ def aggregate(
     corpus: List[List[str]],
     orig: LangSemantics,
     trans: LangSemantics,
-    result: SortedDict,
+    result: SortedDict = SortedDict(),
 ) -> SortedDict:
     """Generate an aggregated index of translations. Recursion ensures that this works with variable depth.
 
@@ -245,7 +249,7 @@ def aggregate(
 
         try:
             _expand_and_aggregate(row.copy(), orig, trans, result)
-            assert trans.var
+            assert trans.var, f"No variant for {trans} configured in setup.py"
             _expand_and_aggregate(row.copy(), orig, trans.var, result)
         except Exception as e:
             log.error(

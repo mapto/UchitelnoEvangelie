@@ -34,8 +34,8 @@ from aggregator import aggregate
 from generator import generate_docx
 
 if __name__ == "__main__":
-    assert sl_sem.var  # for mypy
-    assert gr_sem.var  # for mypy
+    assert sl_sem.var, "non-null value required by mypy"
+    assert gr_sem.var, "non-null value required by mypy"
 
     sla = SortedDict(ord_word)
     gre = SortedDict(ord_word)
