@@ -10,11 +10,11 @@ from sortedcontainers import SortedSet  # type: ignore
 from config import FROM_LANG, TO_LANG
 from config import MAIN_SL, MAIN_GR
 from config import ALT_SL
-from const import SPECIAL_CHARS, V_LEMMA_SEP, EMPTY_CH, OMMIT_SUBLEMMA, ERR_SUBLEMMA
+from const import SPECIAL_CHARS, V_LEMMA_SEP, EMPTY_CH, OMMIT_SUBLEMMA
 
 from alphabet import gasps, number_postfix, remap, reduce
 
-SPECIALS = SPECIAL_CHARS.copy() + [EMPTY_CH.lower(), ERR_SUBLEMMA[0], OMMIT_SUBLEMMA[0]]
+SPECIALS = SPECIAL_CHARS.copy() + [EMPTY_CH.lower(), OMMIT_SUBLEMMA[0]]
 
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
 # max([max([len(str(e)) for e in r if e]) for r in i if [e for e in r if e]])
@@ -83,7 +83,7 @@ def ord_word(w: str, max_len=MAX_LEN) -> int:
     """Order needs to be:
     1. Greek or Cyrillic lemmas
     2. Lemmas with SPECIAL_CHARS
-    3. Special annotations: EMPTY_CH, OMMIT_SUBLEMMA, ERR_SUBLEMMA
+    3. Special annotations: EMPTY_CH, OMMIT_SUBLEMMA
     4. Combined lemmas in Greek or Cyrilic
 
     >>> ord_word("≈") < ord_word("Ø")

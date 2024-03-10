@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Tuple
 
-from const import NON_COUNTABLE, ERR_SUBLEMMA
+from const import NON_COUNTABLE
 from const import MISSING_CH, SAME_CH, SPECIAL_CHARS
 from const import OMMIT_SUBLEMMA
 from model import Alternative, Source
@@ -54,7 +54,7 @@ def level_var_alternatives(
     # if lidx == 0 and len(self.var.lemmas) > 1:
     l2 = self.var.multilemma(row, lidx)
     for k2, v2 in l2.items():
-        for prefix in SPECIAL_CHARS + [ERR_SUBLEMMA]:
+        for prefix in SPECIAL_CHARS:
             if v2.startswith(prefix):
                 semantics[k2] = prefix
                 break

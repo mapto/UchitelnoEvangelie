@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 import re
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
-from const import NON_COUNTABLE, H_LEMMA_SEP, ERR_SUBLEMMA
+from const import NON_COUNTABLE, H_LEMMA_SEP
 from const import EMPTY_CH, SPECIAL_CHARS
 from config import DEFAULT_SOURCES
 from model import Alternative, Source
@@ -104,7 +104,7 @@ def level_var_alternatives(
     if lidx == 0 and len(self.lemmas) > 1:
         l2 = self.multilemma(row, 1)
         for k2, v2 in l2.items():
-            for prefix in SPECIAL_CHARS + [ERR_SUBLEMMA]:
+            for prefix in SPECIAL_CHARS:
                 if v2.startswith(prefix):
                     semantics[k2] = prefix
                     break

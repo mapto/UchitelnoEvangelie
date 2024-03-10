@@ -23,7 +23,6 @@ EMPTY_CH = "Ø"  # used when text has intended to have no translation
 # so just str (array of chars) would behave differently
 SPECIAL_CHARS = ["#", "≈", "≠", "*"]
 
-ERR_SUBLEMMA = "err. pro"
 OMMIT_SUBLEMMA = "om."
 
 NON_COUNTABLE = [EMPTY_CH, MISSING_CH, OMMIT_SUBLEMMA]
