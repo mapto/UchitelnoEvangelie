@@ -25,8 +25,7 @@ LEVEL_OFFSET = 0.4
 def _generate_usage_alt_main(par, uc: Usage, source_name: str) -> None:
     alt = uc.main_alt
     _generate_text(par, " ")
-    prefix = f"{alt.semantic} " if alt.semantic else ""
-    _generate_text(par, f"{prefix}{alt.lemma}", fonts[uc.lang])
+    _generate_text(par, alt.lemma(), fonts[uc.lang])
     _generate_text(par, f" {source_name}")
     if alt.cnt > 1:
         _generate_text(par, subscript(alt.cnt, uc.lang), subscript=True)
@@ -48,8 +47,7 @@ def _generate_usage_alt_vars(par, uc: Usage) -> None:
             first = False
         else:
             _generate_text(par, ", ")
-        prefix = f"{alt.semantic} " if alt.semantic else ""
-        _generate_text(par, f"{prefix}{alt.lemma}", fonts[uc.lang])
+        _generate_text(par, alt.lemma(), fonts[uc.lang])
         if lsrc:
             _generate_text(par, str(lsrc._sort_vars()), superscript=True)
         if cnt > 1:

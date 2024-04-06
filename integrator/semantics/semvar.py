@@ -5,9 +5,9 @@ import re
 from sortedcontainers import SortedDict, SortedSet  # type: ignore
 
 from const import NON_COUNTABLE, H_LEMMA_SEP
-from const import EMPTY_CH, SPECIAL_CHARS
+from const import EMPTY_CH
 from config import DEFAULT_SOURCES
-from model import Alternative, Source
+from model import Source
 
 from regex import multiword_regex, multilemma_regex
 
@@ -93,54 +93,6 @@ def collect_lemma(
     return f" {H_LEMMA_SEP} ".join(g)
 
 
-def level_var_alternatives(
-    self, row: List[str], my_var: Source, lidx: int = 0
-) -> Dict[Source, Alternative]:
-    """Get alternative lemmas in variant"""
-    multilemma = self.multilemma(row, lidx)
-    alt_lemmas = {k: v for k, v in multilemma.items() if my_var not in k}
-    # Get interpretative annotation from sublemma if any
-    semantics = {}
-    if lidx == 0 and len(self.lemmas) > 1:
-        l2 = self.multilemma(row, 1)
-        for k2, v2 in l2.items():
-            for prefix in SPECIAL_CHARS:
-                if v2.startswith(prefix):
-                    semantics[k2] = prefix
-                    break
-    aw = {
-        k: self.compile_words_by_lemma(row, k)
-        for k, v in self.multiword(row).items()
-        if k.inside(alt_lemmas)
-    }
-    alt_words = {k: (v[0], v[1]) for k, v in aw.items()}
-
-    result: Dict[Source, Alternative] = {}
-    for wk, (wv, wc) in alt_words.items():
-        found = False
-        for lk, lv in alt_lemmas.items():
-            if wk in lk:
-                semantic = semantics[wk] if wk in semantics else ""
-                assert (
-                    not semantic or alt_lemmas[lk][0] == semantic
-                ), f"Mismatch between semantic {semantic} and lemmas {alt_lemmas} with variant {lk}"
-                lem = alt_lemmas[lk][2:] if semantic else alt_lemmas[lk]
-                result[wk] = Alternative(wv, lem, wc, semantic=semantic)
-                found = True
-        if not found:
-            # expected that several words have same lemma so their sources are merged
-            for lk, lv in alt_lemmas.items():
-                if lk.inside(wk) and lk not in result:
-                    semantic = semantics[lk] if lk in semantics else ""
-                    assert (
-                        not semantic or lv[0] == semantic
-                    ), f"Mismatch between semantic {semantic} and lemmas {alt_lemmas} with variant {lk}"
-                    lem = lv[2:] if semantic else lv
-                    result[lk] = Alternative(wv, lem, wc, semantic=semantic)
-
-    return result
-
-
 def multiword(self, row: List[str]) -> Dict[Source, str]:
     result: Dict[Source, str] = SortedDict()
     m = re.search(multiword_regex, row[self.word].strip())
@@ -164,23 +116,33 @@ def multiword(self, row: List[str]) -> Dict[Source, str]:
 
 
 def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
+    """Extract contents of multiple variants in a lemma as a dictionary.
+    Args:
+        row: List[str]
+        lidx: int - sublemma level, index in the semantics list
+    """
     result = SortedDict()
     m = re.search(multilemma_regex, row[self.lemmas[lidx]].strip())
     while m:
+        # semantic and lemma
         v = m.group(1) if m.group(1) else ""
-        v = v + m.group(2) if m.group(2) else v
+        # lemma annotation with plus
+        v = v + m.group(4) if m.group(4) else v
         v = v.strip()
 
-        k = m.group(3) if m.group(3) else ""
+        # sources
+        k = m.group(5) if m.group(5) else ""
         result[Source(k)] = v
-        rest = m.group(6) if len(m.groups()) == 6 else ""
+
+        # remainder for next iteration
+        rest = m.group(8) if len(m.groups()) == 8 else ""
         m = re.search(multilemma_regex, rest.strip())
 
     # When lemma in variant does not have source, read source from word or previous lemma
     # When in some variants word is missing, get lemma for this variant from main
     # When different variants have same lemma, unite. Case present only when deduced from different multiwords
     # TODO: When sublemma for some variants missing...
-    if len(result) == 1 and next(iter(result.keys())) == "":
+    if len(result) == 1 and next(iter(result.keys())) == Source():
         previdx = lidx - 1
         # find previous level with content
         while not row[self.lemmas[previdx]] and previdx >= 0:

@@ -76,8 +76,15 @@ assert (
     DEFAULT_GR == "Cs"
 ), "Configuration not for Uchitelno Evangelie, remove this if working on another text"
 
+"""The name/signature of the main source, i.e. the first in the corresponding language"""
+MAIN_SOURCES = {TO_LANG: MAIN_GR, FROM_LANG: MAIN_SL}
+
+"""The default for variants (to be used when ommitted).
+This follows language-specific logic, e.g. WGH for Slavic and Cs for Greek"""
 DEFAULT_SOURCES = {TO_LANG: DEFAULT_GR, FROM_LANG: DEFAULT_SL}
+
 VAR_SOURCES = {TO_LANG: VAR_GR, FROM_LANG: VAR_SL}
+ORDERED_SOURCES = VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG]
 
 
 if __name__ == "__main__":

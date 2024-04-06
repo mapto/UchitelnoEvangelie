@@ -2,6 +2,8 @@ C   	Cramer, main text
 Cs  	Cramer supplementum, default variant
 
 Ab	Athina, EBE, 56
+Ac	Athina, EBE, 95
+At	Athos, Μ. Βατοπεδίου, 662
 Fa	F6/5 Firenze, BML, Plut.6.5
 Fb	F8/29 Firenze, BML, Plut.8.29
 Fc	Firenze, BML, Plut. 8.14
@@ -50,4 +52,4 @@ Ba	Basilios Magnus
 Ch	Chrysostomos
 
 Nt	NA
-S	Septuaginta
+Se	Septuaginta

@@ -80,7 +80,11 @@ def test_para():
                         ),
                         Usage(
                             "sl",
-                            var_alt={Source("WGH"): Alternative("вь WGH", "въ + Loc.")},
+                            var_alt={
+                                Source("WGH"): Alternative(
+                                    "вь WGH", ["въ", "въ + Loc."]
+                                ),
+                            },
                             word="оу",
                             lemmas=["ѹ"],
                         ),
@@ -136,7 +140,7 @@ def test_ipercliso():
                         Usage(
                             "gr",
                             Source("Cs"),
-                            main_alt=Alternative("ὑπερκλύζων", "ὑπερκλύζω"),
+                            main_alt=Alternative("ὑπερκλύζων", ["ὑπερκλύζω"]),
                             word="ὑπερβλύζων Cs",
                             lemmas=["ὑπερβλύω"],
                         ),
@@ -157,7 +161,7 @@ def test_ipercliso():
                         Usage(
                             "gr",
                             Source("Cs"),
-                            main_alt=Alternative("ὑπερκλύσαι", "ὑπερκλύζω"),
+                            main_alt=Alternative("ὑπερκλύσαι", ["ὑπερκλύζω", "inf."]),
                             word="ὑπερβλύσαι Cs",
                             lemmas=["ὑπερβλύω", "inf."],
                         ),
@@ -206,7 +210,11 @@ def test_verovat():
                             "sl",
                             word="вѣроують",
                             lemmas=["вѣроват_"],
-                            var_alt={Source("GH"): Alternative("вѣроу GH", "вѣрѫ ѩт_")},
+                            var_alt={
+                                Source("GH"): Alternative(
+                                    "вѣроу GH", ["вѣра", "вѣрѫ ѩт_"]
+                                ),
+                            },
                         ),
                         Usage("gr", word="πιστεύσωσι", lemmas=["πιστεύω"]),
                     )
@@ -231,7 +239,11 @@ def test_verovat():
                             "sl",
                             word="вѣроують",
                             lemmas=["вѣроват_"],
-                            var_alt={Source("GH"): Alternative("вѣроу GH", "вѣрѫ ѩт_")},
+                            var_alt={
+                                Source("GH"): Alternative(
+                                    "вѣроу GH", ["вѣра", "вѣрѫ ѩт_"]
+                                ),
+                            },
                         ),
                     )
                 ]
@@ -312,8 +324,8 @@ def test_monogenis():
                             var_alt={
                                 Source("WH"): Alternative(
                                     "\ue201д\ue205но\ue20dеды WH",
-                                    "\ue201д\ue205но\ue20dѧдъ",
-                                )
+                                    ["\ue201д\ue205но\ue20dѧдъ"],
+                                ),
                             },
                         ),
                         Usage(lang="gr", word="μονογενὴς", lemmas=["μονογενής"]),
@@ -338,8 +350,8 @@ def test_monogenis():
                             var_alt={
                                 Source("WH"): Alternative(
                                     "\ue201д\ue205но\ue20dеды WH",
-                                    "\ue201д\ue205но\ue20dѧдъ",
-                                )
+                                    ["\ue201д\ue205но\ue20dѧдъ"],
+                                ),
                             },
                         ),
                     )
@@ -382,11 +394,12 @@ def test_monogenis2():
                             word="\ue205но\ue20dедаго G",
                             lemmas=["\ue205но\ue20dѧдъ"],
                             main_alt=Alternative(
-                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                                "\ue201д\ue205но\ue20dедоу",
+                                ["\ue201д\ue205но\ue20dѧдъ"],
                             ),
                             var_alt={
                                 Source("H"): Alternative(
-                                    "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                    "\ue201д\ue205нородоу H", ["\ue201д\ue205нородъ"]
                                 )
                             },
                         ),
@@ -412,11 +425,12 @@ def test_monogenis2():
                             word="\ue201д\ue205нородоу H",
                             lemmas=["\ue201д\ue205нородъ"],
                             main_alt=Alternative(
-                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                                "\ue201д\ue205но\ue20dедоу",
+                                ["\ue201д\ue205но\ue20dѧдъ"],
                             ),
                             var_alt={
                                 Source("G"): Alternative(
-                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                    "\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"]
                                 )
                             },
                         ),
@@ -463,11 +477,12 @@ def test_monogenis3():
                             word="\ue205но\ue20dедаго G",
                             lemmas=["\ue205но\ue20dѧдъ"],
                             main_alt=Alternative(
-                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                                "\ue201д\ue205но\ue20dедоу",
+                                ["\ue201д\ue205но\ue20dѧдъ"],
                             ),
                             var_alt={
                                 Source("H"): Alternative(
-                                    "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                    "\ue201д\ue205нородоу H", ["\ue201д\ue205нородъ"]
                                 )
                             },
                         ),
@@ -491,11 +506,12 @@ def test_monogenis3():
                             word="\ue201д\ue205нородоу H",
                             lemmas=["\ue201д\ue205нородъ"],
                             main_alt=Alternative(
-                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                                "\ue201д\ue205но\ue20dедоу",
+                                ["\ue201д\ue205но\ue20dѧдъ"],
                             ),
                             var_alt={
                                 Source("G"): Alternative(
-                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                    "\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"]
                                 )
                             },
                         ),
@@ -517,11 +533,11 @@ def test_monogenis3():
                         Usage(
                             FROM_LANG,
                             var_alt={
-                                Source("H"): Alternative(
-                                    "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
-                                ),
                                 Source("G"): Alternative(
-                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                    "\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"]
+                                ),
+                                Source("H"): Alternative(
+                                    "\ue201д\ue205нородоу H", ["\ue201д\ue205нородъ"]
                                 ),
                             },
                             word="\ue201д\ue205но\ue20dедоу",
@@ -551,11 +567,12 @@ def test_monogenis3():
                             word="\ue201д\ue205нородоу H",
                             lemmas=["\ue201д\ue205нородъ"],
                             main_alt=Alternative(
-                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                                "\ue201д\ue205но\ue20dедоу",
+                                ["\ue201д\ue205но\ue20dѧдъ"],
                             ),
                             var_alt={
                                 Source("G"): Alternative(
-                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                    "\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"]
                                 )
                             },
                         ),
@@ -583,11 +600,12 @@ def test_monogenis3():
                             word="\ue205но\ue20dедаго G",
                             lemmas=["\ue205но\ue20dѧдъ"],
                             main_alt=Alternative(
-                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                                "\ue201д\ue205но\ue20dедоу",
+                                ["\ue201д\ue205но\ue20dѧдъ"],
                             ),
                             var_alt={
                                 Source("H"): Alternative(
-                                    "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                    "\ue201д\ue205нородоу H", ["\ue201д\ue205нородъ"]
                                 )
                             },
                         ),
@@ -624,7 +642,7 @@ def test_bozhii():
                             Source("H"),
                             "б\ue010жї\ue205 H",
                             ["бож\ue205\ue205"],
-                            main_alt=Alternative("боꙁѣ", "богъ"),
+                            main_alt=Alternative("боꙁѣ", ["богъ", "Dat."]),
                         ),
                         Usage(lang="gr", word="Θεοῦ", lemmas=["θεός", "Gen."]),
                     )
@@ -657,7 +675,7 @@ def test_artos():
                             Source("Ch"),
                             "ἄρτους Ch",
                             ["ἄρτος"],
-                            main_alt=Alternative("om.", "om."),
+                            main_alt=Alternative("om.", ["om."]),
                         ),
                         Usage(lang="sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
                     )
@@ -712,7 +730,7 @@ def test_est_in_var_no_main():
                             Source("GH"),
                             "\ue201сть GH",
                             ["бꙑт\ue205", "", "gramm."],
-                            main_alt=Alternative("om.", "om."),
+                            main_alt=Alternative("om.", ["om."]),
                         ),
                         Usage(lang="gr", word="Ø", lemmas=["Ø"]),
                     )
@@ -758,7 +776,9 @@ def test_hodom_spiti():
                             word="хⷪ҇домь WG",
                             lemmas=["ходъ", "ходомь спѣт\ue205"],
                             main_alt=Alternative(
-                                "ход\ue205мъ", "ход\ue205т\ue205 спѣѭще", semantic="≈"
+                                "ход\ue205мъ",
+                                ["ход\ue205т\ue205", "ход\ue205т\ue205 спѣѭще"],
+                                semantic="≈",
                             ),
                         ),
                     )
@@ -804,11 +824,11 @@ def test_put():
                             Source("H"),
                             "шьств\ue205ꙗ пꙋт\ue205 H",
                             ["пѫть", "шьств\ue205\ue201 пѫт\ue205"],
-                            main_alt=Alternative("поутошьствꙗ", "пѫтошьств"),
+                            main_alt=Alternative("поутошьствꙗ", ["пѫтошьств"]),
                             var_alt={
                                 Source("G"): Alternative(
                                     "шьст\ue205ꙗ пꙋт\ue205 G",
-                                    "шьст\ue205\ue201 пѫт\ue205",
+                                    ["пѫть", "шьст\ue205\ue201 пѫт\ue205"],
                                 ),
                             },
                         ),
@@ -859,7 +879,10 @@ def test_prichatnik():
                             ],
                             main_alt=Alternative(
                                 "пр\ue205\ue20dьтьн\ue205ц\ue205",
-                                "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                [
+                                    "пр\ue205\ue20dьтьн\ue205къ",
+                                    "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                ],
                             ),
                         ),
                         trans=Usage(
@@ -937,7 +960,7 @@ def test_special_mulitword():
                             "проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
                             ["проꙁьрѣт\ue205"],
                             main_alt=Alternative(
-                                "\ue205сцѣленоумоу", "\ue205цѣл\ue205т\ue205"
+                                "\ue205сцѣленоумоу", ["\ue205цѣл\ue205т\ue205"]
                             ),
                         ),
                         trans=Usage(

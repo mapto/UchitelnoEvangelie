@@ -3,8 +3,9 @@
 import logging as log
 
 from config import FROM_LANG, TO_LANG
+from config import MAIN_SOURCES, DEFAULT_SOURCES
 from model import Index
-from semantics import MainLangSemantics, VarLangSemantics
+from semantics import LangSemantics, MainLangSemantics, VarLangSemantics
 
 
 def address_less(a: Index, b: Index) -> bool:
@@ -229,3 +230,9 @@ sl_sem = MainLangSemantics(
 gr_sem = MainLangSemantics(
     TO_LANG, 11, [12, 13, 14, 15], VarLangSemantics(TO_LANG, 16, [17, 18, 19, 20])
 )
+
+
+def default_var(sem: LangSemantics) -> str:
+    if sem == sem.var:
+        return DEFAULT_SOURCES[sem.lang]
+    return MAIN_SOURCES[sem.lang]

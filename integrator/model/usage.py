@@ -33,9 +33,9 @@ class Usage:
         """
         >>> Usage("sl", word="аще", lemmas=["аще"]).has_alternatives()
         False
-        >>> Usage("sl", Source("WH"), word="аще", lemmas=["аще"], main_alt=Alternative("om. WH", "om.")).has_alternatives()
+        >>> Usage("sl", Source("WH"), word="аще", lemmas=["аще"], main_alt=Alternative("om. WH", ["om."])).has_alternatives()
         True
-        >>> Usage("sl", word="аще", lemmas=["аще"], var_alt={Source("WH"):Alternative("om. WH", "om.")}).has_alternatives()
+        >>> Usage("sl", word="аще", lemmas=["аще"], var_alt={Source("WH"):Alternative("om. WH", ["om."])}).has_alternatives()
         True
         """
         return bool(self.main_alt) or bool(self.var_alt)
@@ -57,8 +57,8 @@ class Usage:
     def __lt__(self, other) -> bool:
         """
         >>> s = Source("WH")
-        >>> a = Usage("sl", s, "om.", main_alt=Alternative("аще", "аще"))
-        >>> b = Usage("sl", s, "om.", main_alt=Alternative("\ue205", "\ue205 conj."))
+        >>> a = Usage("sl", s, "om.", main_alt=Alternative("аще", ["аще"]))
+        >>> b = Usage("sl", s, "om.", main_alt=Alternative("\ue205", ["\ue205 conj."]))
         >>> a < b
         True
 
@@ -115,17 +115,17 @@ class Alignment:
 
     def __eq__(self, other) -> bool:
         """
-        >>> tma1 = Alternative(lemma="\ue201д\ue205но\ue20dѧдъ")
-        >>> tva1 = {"G": Alternative(lemma="\ue205но\ue20dѧдъ")}
-        >>> tma2 = Alternative(lemma="\ue201д\ue205но\ue20dѧдъ")
-        >>> tva2 = {"H": Alternative(lemma="\ue201д\ue205нородъ")}
+        >>> tma1 = Alternative(lemmas=["\ue201д\ue205но\ue20dѧдъ"])
+        >>> tva1 = {"G": Alternative(lemmas=["\ue205но\ue20dѧдъ"])}
+        >>> tma2 = Alternative(lemmas=["\ue201д\ue205но\ue20dѧдъ"])
+        >>> tva2 = {"H": Alternative(lemmas=["\ue201д\ue205нородъ"])}
         >>> a = Alignment(Index("1/W168a25"), Usage("gr", word="μονογενοῦς"), Usage("sl", Source("H"), main_alt=tma1, var_alt=tva1))
         >>> b = Alignment(Index("1/W168a25"), Usage("gr", word="μονογενοῦς"), Usage("sl", Source("G"), main_alt=tma2, var_alt=tva2))
         >>> a == b
         False
 
-        >> oa1 = {Source("GH"): Alternative("пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G", "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205")}
-        >> oa2 = Alternative(lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205", word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть")
+        >> oa1 = {Source("GH"): Alternative("пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G", ["пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"])}
+        >> oa2 = Alternative(lemmas=["пр\ue205\ue20dьтьн\ue205къ быт\ue205"], word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть")
         >> a = Alignment(Index("5/28c21-d1"), Usage("sl", var_alt=oa1, word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть"))
         >> b = Alignment(Index("5/28c21-d1"), Usage("sl", Source("GH"), main_alt=oa2, word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G"))
         >> a == b
@@ -175,15 +175,15 @@ class Alignment:
         """
         >>> i = Index("1/7c6")
         >>> s = Source("WH")
-        >>> a = Alignment(i, Usage("sl", s, "om.", main_alt=Alternative("аще", "аще")))
-        >>> b = Alignment(i, Usage("sl", s, "om.", main_alt=Alternative("\ue205", "\ue205 conj.")))
+        >>> a = Alignment(i, Usage("sl", s, "om.", main_alt=Alternative("аще", ["аще"])))
+        >>> b = Alignment(i, Usage("sl", s, "om.", main_alt=Alternative("\ue205", ["\ue205 conj."])))
         >>> a < b
         True
 
         >>> i = Index("5/22b5")
         >>> s = Source("GH")
-        >>> a = Alignment(i, Usage("sl", s, "оуслышат\ue205 GH", main_alt=Alternative("слꙑшат\ue205", "слꙑшат\ue205")))
-        >>> b = Alignment(i, Usage("sl", s, "оуслышат\ue205 GH", main_alt=Alternative("послꙑшат\ue205", "послꙑшат\ue205"), cnt=2))
+        >>> a = Alignment(i, Usage("sl", s, "оуслышат\ue205 GH", main_alt=Alternative("слꙑшат\ue205", ["слꙑшат\ue205"])))
+        >>> b = Alignment(i, Usage("sl", s, "оуслышат\ue205 GH", main_alt=Alternative("послꙑшат\ue205", ["послꙑшат\ue205"]), cnt=2))
         >>> a < b
         True
         """

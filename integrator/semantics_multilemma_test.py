@@ -392,12 +392,12 @@ def test_gen_lemma2():
         + [""] * 3
         + ["διηνεκῶς"] * 2
         + [""] * 3
-        + ["διὰ MVPa", "διά", "διά + Gen", "διὰ παντός"]
+        + ["διὰ MVPa", "διά", "διά + Gen.", "διὰ παντός"]
         + [""] * 6
         + ["hl16:FFFCD5B5|hl18:FF92D050"]
     )
 
-    assert gr_sem.var.multilemma(row, 1) == {Source("MVPa"): "διά + Gen"}
+    assert gr_sem.var.multilemma(row, 1) == {Source("MVPa"): "διά + Gen."}
 
 
 def test_mutliple_gen_lemma2():

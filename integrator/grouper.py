@@ -36,7 +36,7 @@ def _merge_indices(group: List[List[str]]) -> Index:
     return Index(f"{s_start}-{s_end}") if s_start != s_end else Index(s_start)
 
 
-def _collect_main(
+def _collect_orig(
     group: List[List[str]],
     osem: LangSemantics,
     h: Hiliting,
@@ -87,7 +87,7 @@ def _collect_group(
 
     line = [""] * STYLE_COL
 
-    line = _collect_main(group, orig, h, line)
+    line = _collect_orig(group, orig, h, line)
     line = _collect_other(group, orig.other(), h, line)
     line = _collect_trans(group, trans, h, line)
     line = _collect_trans(group, trans.other(), h, line)
@@ -130,7 +130,7 @@ def _update_group(
     idx = _merge_indices(g)
 
     group = g.copy()
-    for i in range(len(group)):
+    for i, _ in enumerate(group):
         # main
         if not _hilited_local(orig, trans, group[i]):
             group[i][IDX_COL] = idx.longstr()
@@ -204,6 +204,8 @@ def _close_group(
             elif orig == orig.var and row[orig.lemmas[0]]:
                 ml = orig.multilemma(row).keys()
                 mw = orig.multiword(row).keys()
+                if not ml:
+                    continue
                 lv = str(next(iter(ml)))
                 wv = str(next(iter(mw)))
                 if (
@@ -213,14 +215,14 @@ def _close_group(
                 ):
                     row[orig.lemmas[0]] = f"{row[orig.lemmas[0]]} {wv}"
                     ml = orig.multilemma(row).keys()
-                mls = Source([str(s) for s in ml])
-                if mls in variants:
-                    v = variants - mls
-                    if not v:
-                        continue
-                    row[orig.lemmas[0]] = _collect_missing_var_lemma(
-                        group, orig, row, v
-                    )
+                # mls = Source([str(s) for s in ml])
+                # if mls in variants:
+                #     v = variants - mls
+                #     if not v:
+                #         continue
+                #     row[orig.lemmas[0]] = _collect_missing_var_lemma(
+                #         group, orig, row, v
+                #     )
 
     line = _collect_group(group, orig, trans, h)
     try:

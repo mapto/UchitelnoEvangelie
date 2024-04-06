@@ -118,7 +118,7 @@ def test_expand_and_aggregate():
     assert len(d) == 0
 
 
-def test_reorganise_special():
+def test_reorganise_orig_special():
     row = (
         [""] * 4
         + ["05/17b12", "грѣхъм\ue205", "оубо ꙗко грѣ-", "грѣхъ", "#"]
@@ -138,7 +138,7 @@ def test_reorganise_special():
     )
 
 
-def test_reorganise_special_var():
+def test_reorganise_orig_special_var():
     row = (
         [
             "проꙁрѣвшоѡмоу G  проꙁрѣвшоумоу H",
@@ -171,7 +171,7 @@ def test_reorganise_special_var():
     )
 
 
-def test_reorganise_special_var_vyara():
+def test_reorganise_orig_special_var_vyara():
     row = (
         [
             "вѣрою хвальна G",
@@ -218,7 +218,54 @@ def test_reorganise_special_var_vyara():
     )
 
 
-def test_reorganise_special_var_vyara_trans():
+def test_reorganise_orig_special_var_prichatnik():
+    row = (
+        [
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 боудоть G пр\ue205\ue20dестн\ue205ц\ue205 боудоть H",
+            "пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205 GH",
+            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
+            "≈ GH",
+            "05/028c21-d01",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ & бꙑт\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+            "≈",
+            "",
+            "ποιῆσαι κοινωνοὺς",
+            "ποιέω",
+            "ποιέω κοινωνόν",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCD5B4|hl11:FFFCD5B4"]
+        + ["1"] * 4
+    )
+    row = reorganise_orig_special(row, sl_sem.var, gr_sem)
+    assert (
+        row
+        == [
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 боудоть G пр\ue205\ue20dестн\ue205ц\ue205 боудоть H",
+            "пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205 GH",
+            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
+            "",
+            "05/028c21-d01",
+            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
+            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ & бꙑт\ue205",
+            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+            "≈",
+            "",
+            "ποιῆσαι κοινωνοὺς",
+            "ποιέω",
+            "≈ ποιέω κοινωνόν",
+        ]
+        + [""] * 12
+        + ["hl05:FFFCD5B4|hl11:FFFCD5B4"]
+        + ["1"] * 4
+    )
+
+
+def test_reorganise_trans_special_var_vyara():
     row = (
         [
             "вѣрою хвальна G",
@@ -266,7 +313,7 @@ def test_reorganise_special_var_vyara_trans():
     )
 
 
-def test_reorganise_special_var_vyara_trans_var():
+def test_reorganise_trans_special_var_vyara_var():
     row = (
         [
             "вѣрою хвальна G",
@@ -314,7 +361,7 @@ def test_reorganise_special_var_vyara_trans_var():
     )
 
 
-def test_reorganise_var_special_prichatnik():
+def test_reorganise_trans_var_special_prichatnik():
     row = (
         [
             "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 H",

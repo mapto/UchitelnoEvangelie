@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS
+from regex import annot_regex
 
 
 @dataclass(frozen=True)
@@ -14,14 +15,17 @@ class Alternative:
 
     In case of semantic relationships (see README.md#semantic-relationships),
     these are stored in the model, and interpreted during export.
-    Currently, this is not the approach used in the broader alignment
+    Currently, this is not the approach used in the broader alignment.
+
+    For indices a dedicated logic is defined in the lemma() method.
+    For lists, the word is being shown.
     """
 
     # Working only with last lemma
     word: str = ""
-    lemma: str = ""
+    # lemma: str = ""
     # TODO: keep full lemmas stack
-    # lemmas: List[str] = field(default_factory=lambda: [])
+    lemmas: List[str] = field(default_factory=lambda: [])
     cnt: int = 1
     # SPECIAL_CHARS indicate what type of correspondence it is, when non exact
     semantic: str = ""
@@ -29,20 +33,20 @@ class Alternative:
     def __hash__(self):
         # vl = "/".join([f"{v} {k}" for k, v in self.var_lemmas.items()])
         # vw = "/".join([f"{v[0]}{v[1]} {k}" for k, v in self.var_words.items()])
-        return hash((self.lemma, self.word, self.cnt))
+        return hash((tuple(self.lemmas), self.word, self.cnt))
 
     def __bool__(self) -> bool:
         """
         >>> bool(Alternative())
         False
-        >>> bool(Alternative("аще", "аще"))
+        >>> bool(Alternative("аще", ["аще"]))
         True
         """
-        return bool(self.lemma)
+        return bool(self.lemmas)
 
     def __lt__(self, other) -> bool:
         """
-        >>> Alternative("аще", "аще") < Alternative("\ue205", "\ue205 conj.")
+        >>> Alternative("аще", ["аще"]) < Alternative("\ue205", ["\ue205 conj."])
         True
         """
         if self.word < other.word:
@@ -65,6 +69,26 @@ class Alternative:
 
     def __ge__(self, other) -> bool:
         return not self < other
+
+    def same(self, other: "Alternative") -> bool:
+        """Tolerates differences in word use, but not in lemmas"""
+        return (
+            tuple(self.lemmas) == tuple(other.lemmas)
+            and self.cnt == other.cnt
+            and self.semantic == other.semantic
+        )
+
+    def lemma(self) -> str:
+        """The lemma that is needed for generating indices"""
+        # print(self.semantic)
+        result = f"{self.semantic} " if self.semantic else ""
+        if len(self.lemmas) == 1:
+            result += self.lemmas[0]
+        elif re.match(r"^" + annot_regex + "$", self.lemmas[-1]):
+            result += f"{self.lemmas[-2]} {self.lemmas[-1]}"
+        else:
+            result += self.lemmas[-1]
+        return result
 
 
 @dataclass
@@ -100,6 +124,10 @@ class Path:
         '≈ съкаꙁа\ue201мо → съкаꙁат\ue205'
         >>> str(Path(['# υἱός']))
         '# υἱός'
+        >>> str(Path(['Χαναάν', 'Gen.']))
+        'Gen. → Χαναάν'
+        >>> str(Path(['Χαναάν', '≠ Gen.']))
+        '≠ Gen. → Χαναάν'
         """
         parts = self.parts.copy()
         if len(parts) > 1:

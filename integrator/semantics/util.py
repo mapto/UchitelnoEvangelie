@@ -7,7 +7,7 @@ from typing import Dict, List, Set, Tuple
 import unicodedata
 from sortedcontainers import SortedSet, SortedDict  # type: ignore
 
-from model import Path, Source, Alignment
+from model import Alignment, Alternative, Path, Source
 
 
 MAX_CHAR = ord("ѵ") - ord(" ") + 30
@@ -93,7 +93,8 @@ def collect(group: List[List[str]], col: int) -> List[str]:
 
 
 def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
-    """
+    """Used in merger/grouper
+
     >>> regroup({Source('H'): 'шьств\ue205ꙗ', Source('G'): 'шьст\ue205ꙗ', Source('GH'): 'пꙋт\ue205'})
     {Source('G'): 'шьст\ue205ꙗ пꙋт\ue205', Source('H'): 'шьств\ue205ꙗ пꙋт\ue205'}
     >>> regroup({Source('H'): 'шьств\ue205\ue201', Source('G'): 'шьст\ue205\ue201', Source('GH'): 'пѫть'}, " & ")
@@ -144,6 +145,62 @@ def regroup(d: Dict[Source, str], glue: str = " ") -> Dict[Source, str]:
         Source(v): k
         for k, v in sorted(flipped.items(), key=lambda x: Source(x[1]).key())
     }
+
+
+def simplify_alternatives(alts: Dict[Source, Alternative]) -> Dict[Source, Alternative]:
+    """Used as post-processing at end of aggregator
+    >>> simplify_alternatives({'G': Alternative(word='пр\ue205\ue20dестьн\ue205ц\ue205 быт\ue205', lemmas=['пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205', 'пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205'], cnt=1, semantic=''), 'H': Alternative(word='пр\ue205\ue20dестн\ue205ц\ue205 быт\ue205', lemmas=['пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205', 'пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205'], cnt=1, semantic='')})
+    {Source('GH'): Alternative(word='пр\ue205\ue20dестьн\ue205ц\ue205 быт\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 быт\ue205 H', lemmas=['пр\ue205\ue20dѧстьн\ue205къ & бꙑт\ue205', 'пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205'], cnt=1, semantic='')}
+
+    >>> simplify_alternatives({'G': Alternative(word='шьст\ue205ꙗ пꙋт\ue205', lemmas=['шьст\ue205\ue201 & пѫть', 'шьст\ue205\ue201 пѫт\ue205'], cnt=1, semantic=''), 'H': Alternative(word='шьств\ue205ꙗ пꙋт\ue205', lemmas=['шьств\ue205\ue201 & пѫть', 'шьств\ue205\ue201 пѫт\ue205'], cnt=1, semantic='')})
+    {Source('G'): Alternative(word='шьст\ue205ꙗ пꙋт\ue205 G', lemmas=['шьст\ue205\ue201 & пѫть', 'шьст\ue205\ue201 пѫт\ue205'], cnt=1, semantic=''), Source('H'): Alternative(word='шьств\ue205ꙗ пꙋт\ue205 H', lemmas=['шьств\ue205\ue201 & пѫть', 'шьств\ue205\ue201 пѫт\ue205'], cnt=1, semantic='')}
+
+    >>> simplify_alternatives({'G': Alternative(word='хⷪ҇домь спѣюще', lemmas=['ходъ & спѣт\ue205', 'ходомь спѣт\ue205'], cnt=1, semantic=''), 'W': Alternative(word='хⷪ҇домь спѣюще', lemmas=['ходъ & спѣт\ue205', 'ходомь спѣт\ue205'], cnt=1, semantic='')})
+    {Source('WG'): Alternative(word='хⷪ҇домь спѣюще WG', lemmas=['ходъ & спѣт\ue205', 'ходомь спѣт\ue205'], cnt=1, semantic='')}
+
+    >>> simplify_alternatives({'G': Alternative(word='шьст\ue205ꙗ пꙋт\ue205', lemmas=['шьст\ue205\ue201', 'шьст\ue205\ue201 пѫт\ue205'], cnt=1, semantic='')})
+    {Source('G'): Alternative(word='шьст\ue205ꙗ пꙋт\ue205 G', lemmas=['шьст\ue205\ue201', 'шьст\ue205\ue201 пѫт\ue205'], cnt=1, semantic='')}
+    """
+    # print(alts)
+    sources: dict[str, Source] = {}
+    words: dict[str, dict[str, set[Source]]] = {}
+    cnts: dict[str, int] = {}
+    sems: dict[str, str] = {}
+    lemmas: dict[str, list[str]] = {}
+    for s, a in alts.items():
+        w = a.word
+        l = a.lemmas[-1]
+        lemmas[l] = a.lemmas
+        if l in sources:
+            sources[l] += Source(s)
+            if w not in words[l]:
+                words[l][w] = set()
+            words[l][w] |= {s}
+            assert (
+                a.cnt == cnts[l]
+            ), f"Misaligned counts. So far: {a.cnt}, now: {cnts[l]}"
+            assert (
+                not sems[l] or a.semantic == sems[l]
+            ), f"Misaligned semantics. So far: {a.semantic}, now: {sems[l]}"
+        else:
+            sources[l] = Source(s)
+            words[l] = {w: {s}}
+            cnts[l] = a.cnt
+            sems[l] = a.semantic
+
+    res = SortedDict()
+    for l in sources.keys():
+        # fwords = SortedDict()
+        # for k,v in words[l].items():
+        #     fwords[Source(''.join(v))] = k
+        fwords = SortedDict(
+            {Source("".join(str(v) for v in s)): k for k, s in words[l].items()}
+        )
+        compiled_words = " ".join(f"{w} {s}" for s, w in fwords.items())
+        res[sources[l]] = Alternative(compiled_words, lemmas[l], cnts[l], sems[l])
+
+    # return dict(reversed(res.items()))
+    return dict(res.items())
 
 
 def _add_usage(

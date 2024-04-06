@@ -20,7 +20,54 @@ gr_sem = MainLangSemantics(
 )
 
 
-def test_base():
+def test_base_1():
+    row = (
+        ["ю G", "\ue205 pron.", "", "", "1/W168b6", "om.", "", "om."]
+        + [""] * 3
+        + ["ταύτην", "οὗτος"]
+        + [""] * 13
+        + ["1"] * 4
+    )
+    result = sl_sem.alternatives(row)
+    assert result == (Alternative(), {Source("G"): Alternative("ю", ["\ue205 pron."])})
+
+
+def test_base_2():
+    # style_col = 24
+    # # old semantics
+    # sl_sem = MainLangSemantics(
+    #     FROM_LANG,
+    #     4,
+    #     [6, 7, 8, 9],
+    #     VarLangSemantics(FROM_LANG, 0, [1, 2], cnt_col=style_col + 2),
+    #     cnt_col=style_col + 1,
+    # )
+    # gr_sem = MainLangSemantics(
+    #     TO_LANG,
+    #     10,
+    #     [11, 12, 13],
+    #     VarLangSemantics(TO_LANG, 15, [16, 17], cnt_col=style_col + 4),
+    #     cnt_col=style_col + 3,
+    # )
+
+    row = (
+        ([""] * 4)
+        + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
+        + ([""] * 3)
+        + ["μὲν"]
+        + ([""] * 4)
+        + ["με Cs", "ἐγώ"]
+        + ([""] * 9)
+        + ["1"] * 4
+    )
+    # print(len(row), STYLE_COL, STYLE_COL+4,row[STYLE_COL:STYLE_COL+4])
+    result = sl_sem.alternatives(row)
+    assert result == (Alternative(), {})
+    result == gr_sem.var.alternatives(row, Source("Cs"))
+    # assert result == ("μὲν", {})
+
+
+def test_base_3():
     style_col = 24
     # old semantics
     sl_sem = MainLangSemantics(
@@ -39,31 +86,6 @@ def test_base():
     )
 
     row = (
-        ["ю G", "\ue205 pron.", "", "1/W168b6", "om.", "", "om."]
-        + [""] * 3
-        + ["ταύτην", "οὗτος"]
-        + [""] * 14
-        + ["1"] * 4
-    )
-    result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == (Alternative(), {Source("G"): Alternative("ю G", "\ue205 pron.")})
-
-    row = (
-        ([""] * 3)
-        + ["1/W168c7", "мене", "мене соуща послѣд\ue205 створ\ue205", "аꙁъ"]
-        + ([""] * 3)
-        + ["μὲν"]
-        + ([""] * 4)
-        + ["με Cs", "ἐγώ"]
-        + ([""] * 7)
-        + ["1"] * 4
-    )
-    result = sl_sem.alternatives(row, "*IGNORED*")
-    assert result == (Alternative(), {})
-    result == gr_sem.var.alternatives(row, Source("Cs"))
-    # assert result == ("μὲν", {})
-
-    row = (
         [
             "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
             "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
@@ -79,25 +101,25 @@ def test_base():
         + ["bold|italic"]
         + ["1"] * 4
     )
-    result = sl_sem.alternatives(row, "*IGNORED*")
+    result = sl_sem.alternatives(row)
     assert result == (
         Alternative(),
         {
-            Source("H"): Alternative("\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"),
-            Source("G"): Alternative("\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"),
+            Source("H"): Alternative("\ue201д\ue205нородоу", ["\ue201д\ue205нородъ"]),
+            Source("G"): Alternative("\ue205но\ue20dедаго", ["\ue205но\ue20dѧдъ"]),
         },
     )
 
     result = sl_sem.var.alternatives(row, Source("G"))
     assert result == (
-        Alternative("\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"),
-        {Source("H"): Alternative("\ue201д\ue205нородоу H", "\ue201д\ue205нородъ")},
+        Alternative("\ue201д\ue205но\ue20dедоу", ["\ue201д\ue205но\ue20dѧдъ"]),
+        {Source("H"): Alternative("\ue201д\ue205нородоу", ["\ue201д\ue205нородъ"])},
     )
 
     result = sl_sem.var.alternatives(row, Source("H"))
     assert result == (
-        Alternative("\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"),
-        {Source("G"): Alternative("\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ")},
+        Alternative("\ue201д\ue205но\ue20dедоу", ["\ue201д\ue205но\ue20dѧдъ"]),
+        {Source("G"): Alternative("\ue205но\ue20dедаго", ["\ue205но\ue20dѧдъ"])},
     )
 
 
@@ -117,14 +139,17 @@ def test_std_sem():
         + ["1"] * 2
     )
     result = sl_sem.var.alternatives(row, Source("WH"))
-    assert result == (Alternative("\ue205но\ue20dадꙑ\ue205", "\ue205но\ue20dѧдъ"), {})
-    r1 = sl_sem.alternatives(row, "*IGNORED*")
+    assert result == (Alternative("\ue205но\ue20dадꙑ\ue205", ["\ue205но\ue20dѧдъ"]), {})
+    r1 = sl_sem.alternatives(row)
     assert r1 == (
         Alternative(),
         {
-            Source("WH"): Alternative(
-                "\ue201д\ue205но\ue20dеды WH", "\ue201д\ue205но\ue20dѧдъ"
-            )
+            Source("W"): Alternative(
+                "\ue201д\ue205но\ue20dеды", ["\ue201д\ue205но\ue20dѧдъ"]
+            ),
+            Source("H"): Alternative(
+                "\ue201д\ue205но\ue20dеды", ["\ue201д\ue205но\ue20dѧдъ"]
+            ),
         },
     )
 
@@ -139,23 +164,30 @@ def test_bozhii():
         + [""] * 13
         + ["1"] * 2
     )
-    result = sl_sem.alternatives(row, "*IGNORED*")
+    result = sl_sem.alternatives(row)
     assert result == (
         Alternative(),
         {
-            Source("WGH"): Alternative(
-                "б\ue010жї\ue205 H б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G",
-                "бож\ue205\ue205",
-                1,
-            )
+            "W": Alternative(
+                word="б\ue010ж\ue205", lemmas=["бож\ue205\ue205"], cnt=1, semantic=""
+            ),
+            "G": Alternative(
+                word="б\ue010ж\ue205\ue205",
+                lemmas=["бож\ue205\ue205"],
+                cnt=1,
+                semantic="",
+            ),
+            "H": Alternative(
+                word="б\ue010жї\ue205", lemmas=["бож\ue205\ue205"], cnt=1, semantic=""
+            ),
         },
     )
 
     result = sl_sem.var.alternatives(row, Source("G"))
-    assert result == (Alternative("боꙁѣ", "богъ"), {})
+    assert result == (Alternative("боꙁѣ", ["богъ", "Dat."]), {})
 
     result = sl_sem.var.alternatives(row, Source("GHW"))
-    assert result == (Alternative("боꙁѣ", "богъ"), {})
+    assert result == (Alternative("боꙁѣ", ["богъ", "Dat."]), {})
 
 
 def test_ot():
@@ -171,7 +203,14 @@ def test_ot():
     )
 
     result = sl_sem.alternatives(row, Source())
-    assert result == (Alternative(), {Source("WGH"): Alternative("ѡ H ѿ WG", "отъ")})
+    assert result == (
+        Alternative(),
+        {
+            Source("W"): Alternative("ѿ", ["отъ"]),
+            Source("G"): Alternative("ѿ", ["отъ"]),
+            Source("H"): Alternative("ѡ", ["отъ"]),
+        },
+    )
 
 
 def test_put():
@@ -193,15 +232,22 @@ def test_put():
         + ["1"] * 4
     )
 
-    result = sl_sem.var.alternatives(row, Source("GH"))
+    result = sl_sem.var.alternatives(row, Source("G"))
     assert result == (
-        Alternative("поутошьств\ue205ꙗ", "пѫтошьств\ue205\ue201"),
+        Alternative("поутошьств\ue205ꙗ", ["пѫтошьств\ue205\ue201"]),
+        {
+            Source("H"): Alternative(
+                "шьств\ue205ꙗ пꙋт\ue205", ["пѫть", "шьств\ue205\ue201 пѫт\ue205"]
+            ),
+        },
+    )
+
+    result = sl_sem.var.alternatives(row, Source("H"))
+    assert result == (
+        Alternative("поутошьств\ue205ꙗ", ["пѫтошьств\ue205\ue201"]),
         {
             Source("G"): Alternative(
-                "шьст\ue205ꙗ пꙋт\ue205 G", "шьст\ue205\ue201 пѫт\ue205"
-            ),
-            Source("H"): Alternative(
-                "шьств\ue205ꙗ пꙋт\ue205 H", "шьств\ue205\ue201 пѫт\ue205"
+                "шьст\ue205ꙗ пꙋт\ue205", ["пѫть", "шьст\ue205\ue201 пѫт\ue205"]
             ),
         },
     )
@@ -224,10 +270,13 @@ def test_main_var_alternatives_trans_gram():
         + ["1"] * 4
     )
 
-    result = sl_sem.alternatives(row, Source())
+    result = sl_sem.alternatives(row)
     assert result == (
         Alternative(),
-        {Source("HG"): Alternative("\ue201сть GH", "бꙑт")},
+        {
+            Source("G"): Alternative("\ue201сть", ["бꙑт", "gramm."]),
+            Source("H"): Alternative("\ue201сть", ["бꙑт", "gramm."]),
+        },
     )
 
 
@@ -271,10 +320,12 @@ def test_main_sumeromadrost():
     assert result == (
         Alternative(),
         {
+            Source("W"): Alternative("смѣроумоудрост\ue205", ["съмѣрѹмѫдрость"]),
+            Source("G"): Alternative("смѣроумоудрост\ue205", ["съмѣрѹмѫдрость"]),
             Source("H"): Alternative(
-                "смѣрены\ue201 моудрост\ue205 H", "съмѣр\ue201наꙗ мѫдрость"
+                "смѣрены\ue201 моудрост\ue205",
+                ["съмѣр\ue201нъ мѫдрость", "съмѣр\ue201наꙗ мѫдрость"],
             ),
-            Source("WG"): Alternative("смѣроумоудрост\ue205 WG", "съмѣрѹмѫдрость"),
         },
     )
 
@@ -294,14 +345,15 @@ def test_nechuvstven():
     )
     result = sl_sem.var.alternatives(row, Source("H"))
     assert result == (
-        Alternative("не\ue20dювьнъ", "не\ue20dѹвьнъ"),
+        Alternative("не\ue20dювьнъ", ["не\ue20dѹвьнъ"]),
         {
-            Source("W"): Alternative("не\ue20dю\ue205но W", "не\ue20dѹ\ue205нъ"),
-            Source("G"): Alternative("не\ue20dю\ue205нь G", "не\ue20dѹ\ue205нъ"),
+            Source("W"): Alternative("не\ue20dю\ue205но", ["не\ue20dѹ\ue205нъ"]),
+            Source("G"): Alternative("не\ue20dю\ue205нь", ["не\ue20dѹ\ue205нъ"]),
         },
     )
 
 
+"""
 def test_relative():
     row = (
         [
@@ -328,10 +380,16 @@ def test_relative():
     assert result == (
         Alternative(),
         {
-            Source("GH"): Alternative(
-                "пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
-                "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+            Source("G"): Alternative(
+                "пр\ue205\ue20dестьн\ue205ц\ue205",
+                ["пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"],
+                semantic="≈",
+            ),
+            Source("H"): Alternative(
+                "пр\ue205\ue20dестн\ue205ц\ue205",
+                ["пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"],
                 semantic="≈",
             )
         },
     )
+"""

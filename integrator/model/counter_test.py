@@ -20,7 +20,7 @@ def test_dict_ipercliso():
                                     Usage(
                                         TO_LANG,
                                         Source("Cs"),
-                                        main_alt=Alternative(lemma="ὑπερκλύζω"),
+                                        main_alt=Alternative(lemmas=["ὑπερκλύζω"]),
                                         word="ὑπερβλύζων",
                                         lemmas=["ὑπερβλύω"],
                                     ),
@@ -44,7 +44,7 @@ def test_dict_ipercliso():
                                     Usage(
                                         TO_LANG,
                                         Source("Cs"),
-                                        main_alt=Alternative(lemma="ὑπερκλύζω"),
+                                        main_alt=Alternative(lemmas=["ὑπερκλύζω"]),
                                         word="ὑπερβλύσαι",
                                         lemmas=["ὑπερβλύω"],
                                     ),
@@ -71,7 +71,9 @@ def test_dict_ipercliso():
                                     Index("1/W168c17"),
                                     Usage(
                                         TO_LANG,
-                                        var_alt={"Cs": Alternative(lemma="ὑπερβλύω")},
+                                        var_alt={
+                                            "Cs": Alternative(lemmas=["ὑπερβλύω"])
+                                        },
                                         word="ὑπερκλύζων",
                                         lemmas=["ὑπερκλύζω"],
                                     ),
@@ -135,10 +137,12 @@ def test_dict_monogenis():
                                         FROM_LANG,
                                         Source("H"),
                                         main_alt=Alternative(
-                                            lemma="\ue201д\ue205но\ue20dѧдъ"
+                                            lemmas=["\ue201д\ue205но\ue20dѧдъ"]
                                         ),
                                         var_alt={
-                                            "G": Alternative(lemma="\ue205но\ue20dѧдъ")
+                                            "G": Alternative(
+                                                lemmas=["\ue205но\ue20dѧдъ"]
+                                            )
                                         },
                                     ),
                                 )
@@ -169,9 +173,11 @@ def test_dict_monogenis():
                                         FROM_LANG,
                                         var_alt={
                                             "H": Alternative(
-                                                lemma="\ue201д\ue205нородъ"
+                                                lemmas=["\ue201д\ue205нородъ"]
                                             ),
-                                            "G": Alternative(lemma="\ue205но\ue20dѧдъ"),
+                                            "G": Alternative(
+                                                lemmas=["\ue205но\ue20dѧдъ"]
+                                            ),
                                         },
                                     ),
                                     bold=True,
@@ -190,9 +196,13 @@ def test_dict_monogenis():
                                     Usage(
                                         FROM_LANG,
                                         Source("WH"),
-                                        main_alt=Alternative(lemma="\ue205но\ue20dѧдъ"),
+                                        main_alt=Alternative(
+                                            lemmas=["\ue205но\ue20dѧдъ"]
+                                        ),
                                         var_alt={
-                                            "G": Alternative(lemma="\ue205но\ue20dѧдъ")
+                                            "G": Alternative(
+                                                lemmas=["\ue205но\ue20dѧдъ"]
+                                            )
                                         },
                                     ),
                                 )
@@ -210,10 +220,12 @@ def test_dict_monogenis():
                                         FROM_LANG,
                                         Source("WH"),
                                         main_alt=Alternative(
-                                            lemma="\ue205но\ue20dѧдъ "
+                                            lemmas=["\ue205но\ue20dѧдъ "]
                                         ),
                                         var_alt={
-                                            "G": Alternative(lemma="\ue205но\ue20dѧдъ ")
+                                            "G": Alternative(
+                                                lemmas=["\ue205но\ue20dѧдъ "]
+                                            )
                                         },
                                     ),
                                 )
@@ -234,7 +246,7 @@ def test_dict_monogenis():
                                         Source("G"),
                                         var_alt={
                                             "WH": Alternative(
-                                                lemma="\ue201д\ue205но\ue20dѧдъ"
+                                                lemmas=["\ue201д\ue205но\ue20dѧдъ"]
                                             )
                                         },
                                     ),
@@ -253,7 +265,7 @@ def test_dict_monogenis():
                                         FROM_LANG,
                                         var_alt={
                                             "WH": Alternative(
-                                                lemma="\ue201д\ue205но\ue20dѧдъ"
+                                                lemmas=["\ue201д\ue205но\ue20dѧдъ"]
                                             )
                                         },
                                     ),
@@ -272,7 +284,7 @@ def test_dict_monogenis():
                                         FROM_LANG,
                                         Source("G"),
                                         main_alt=Alternative(
-                                            lemma="\ue201д\ue205но\ue20dѧдъ"
+                                            lemmas=["\ue201д\ue205но\ue20dѧдъ"]
                                         ),
                                         var_alt={
                                             "H": Alternative("\ue201д\ue205нородъ")
@@ -293,7 +305,7 @@ def test_dict_monogenis():
                                         FROM_LANG,
                                         var_alt={
                                             "WH": Alternative(
-                                                lemma="\ue201д\ue205но\ue20dѧдъ"
+                                                lemmas=["\ue201д\ue205но\ue20dѧдъ"]
                                             )
                                         },
                                     ),
@@ -362,7 +374,7 @@ def test_dict_prichatnik_biti():
                                         Usage("sl",
                                             Source("GH"),
                                             alt=Alternative(
-                                                main_lemma="пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                                main_lemmas=["пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                                 main_word="пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
                                             ),
                                             word="пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",

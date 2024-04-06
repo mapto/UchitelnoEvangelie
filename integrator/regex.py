@@ -1,6 +1,8 @@
-from const import V_LEMMA_SEP, H_LEMMA_SEP
-
-# built with regex101.com
+"""To debug use:
+https://www.debuggex.com/ for visualisation
+https://regex101.com/ for breakdown
+"""
+from const import V_LEMMA_SEP, H_LEMMA_SEP, SPECIAL_CHARS
 
 # two numbers encoding repetition index: in original and in translation
 counter_regex = r"(\[(\d)\])?(\{(\d)\})?"
@@ -15,7 +17,9 @@ address_regex = (
 
 # uppercase Latin letters and + have special function,
 # thus used as delimiters in regex, even if reading continues in lemmas
-word_regex = r"(\S[^A-Z\+]*)"
+sem_regex = r"([" + "".join(SPECIAL_CHARS) + "] )?"
+word_regex = r"([^A-Z\r\n\t\f\v\+]+)"
+annot_regex = r"\w+\."
 
 sources_regex = r"([A-Z]\w*)"
 
@@ -25,11 +29,17 @@ multiword_regex = r"^" + word_regex + "(" + sources_regex + r"+)(.*)$"
 
 # TODO: accepting both & and / as separators is not neccessary
 # TODO: & is not expected to be used
+# Only last lemma could contain semantics
 multilemma_regex = (
     # r"^([^A-Z\+]+)(\+\s\w+\.\s?)?("
     r"^"
+    + "("
+    + sem_regex
     + word_regex
-    + r"(\+\s?\w+\.?\s?)?("
+    + ")"
+    + r"(\+?\s?"
+    + annot_regex
+    + r"\s?)?("
     + sources_regex
     + r"+)?(\s*["
     + f"\\{V_LEMMA_SEP}\\{H_LEMMA_SEP}"

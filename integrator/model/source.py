@@ -1,12 +1,12 @@
 from typing import List, Optional
 
-from config import FROM_LANG, TO_LANG, VAR_SOURCES
+from config import FROM_LANG, TO_LANG, VAR_SOURCES, ORDERED_SOURCES
 
 
 def _values(src: str) -> List[str]:
     """
     >>> _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
-    ['W', 'G', 'H', 'Cs', 'Ab', 'Fa', 'Fb', 'Fc', 'La', 'M', 'Mi', 'Md', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pp', 'R', 'T', 'V', 'Va', 'Vb', 'Vc', 'Vd', 'Y', 'Za', 'A', 'Fd', 'L', 'Ma', 'B', 'P', 'Pa', 'Po', 'Sp', 'Z', 'Pm', 'Pn', 'Ve', 'Ba', 'Ch', 'Nt', 'S']
+    ['W', 'G', 'H', 'Cs', 'Ab', 'Ac', 'At', 'Fa', 'Fb', 'Fc', 'La', 'M', 'Mi', 'Md', 'Pb', 'Pc', 'Pd', 'Pe', 'Pf', 'Pg', 'Ph', 'Pi', 'Pk', 'Pl', 'Pp', 'R', 'T', 'V', 'Va', 'Vb', 'Vc', 'Vd', 'Y', 'Za', 'A', 'Fd', 'L', 'Ma', 'B', 'P', 'Pa', 'Po', 'Sp', 'Z', 'Pm', 'Pn', 'Ve', 'Ba', 'Ch', 'Nt', 'Se']
     >>> _values('MB')
     ['M', 'B']
     >>> _values('V')
@@ -25,10 +25,6 @@ def _values(src: str) -> List[str]:
     if prev:
         split += [prev]
     return split
-
-
-# ORDERED_SOURCES = _values(VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG])
-ORDERED_SOURCES = VAR_SOURCES[FROM_LANG] + VAR_SOURCES[TO_LANG]
 
 
 def remove_repetitions(src: str = "") -> str:
@@ -126,6 +122,12 @@ class Source:
         return self._sort_vars()
 
     def __repr__(self) -> str:
+        """
+        >>> Source('HWG')
+        Source('WGH')
+        >>> repr(Source('HWG'))
+        "Source('WGH')"
+        """
         return f"Source('{self}')"
         # return f"'{self.src}'"
 
@@ -141,6 +143,8 @@ class Source:
         """
         >>> (Source('G') + 'W')._sort_vars()
         'WG'
+        >>> sum([Source('H'), Source('G'), Source('W')])
+        Source('WGH')
         """
         # this if serves only to enable the sum() function
         if type(other) == int and other == 0:
@@ -251,6 +255,8 @@ class Source:
         True
         >>> Source("WHPb") < Source("WHPa")
         True
+        >>> sorted([Source("W"), Source("G"), Source("H")])
+        [Source('W'), Source('G'), Source('H')]
         """
         if len(other) > len(self):
             return True
@@ -259,10 +265,10 @@ class Source:
 
         s = list(self)
         o = list(other)
-        for i in range(len(s)):
-            if o[i] > s[i]:
+        for i, v in enumerate(s):
+            if ORDERED_SOURCES.index(o[i]) < ORDERED_SOURCES.index(v):
                 return False
-            if o[i] < s[i]:
+            if ORDERED_SOURCES.index(o[i]) > ORDERED_SOURCES.index(v):
                 return True
 
         return False

@@ -11,6 +11,8 @@ def test_parse_sources():
         [
             "Cs",
             "Ab",
+            "Ac",
+            "At",
             "Fa",
             "Fb",
             "Fc",
@@ -54,7 +56,7 @@ def test_parse_sources():
             "Ba",
             "Ch",
             "Nt",
-            "S",
+            "Se",
         ],
     )
 

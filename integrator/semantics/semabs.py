@@ -1,9 +1,34 @@
 """Functions for LangSemantics"""
 from typing import Dict, List, Tuple
+from sortedcontainers import SortedDict  # type: ignore
 
-from const import NON_LEMMAS
-from config import DEFAULT_SOURCES
+from const import NON_LEMMAS, SPECIAL_CHARS, EMPTY_CH
+from config import DEFAULT_SOURCES, ORDERED_SOURCES
 from model import Alternative, Path, Source
+
+from .util import simplify_alternatives
+
+
+def var_alt_lemmas(self, row: List[str]) -> Dict[Source, List[str]]:
+    assert self.var, "non-null value required by mypy"
+    # vars = self.multiword(row)
+    # print(row)
+    result: Dict[Source, List[str]] = {}
+    # for v in vars.keys():
+    for l, _ in enumerate(self.var.lemmas):
+        ml = self.var.multilemma(row, l)
+        # for s in v:
+        for k, v in ml.items():
+            if not v:
+                continue
+            for s in k:
+                if s not in result:
+                    assert (
+                        l == 0
+                    ), f"Source {s} is not initialised in {result}. But this should be done in first lemma, not at level {l}"
+                    result[s] = []
+                result[s] += [v]
+    return result
 
 
 def alternatives(
@@ -12,86 +37,66 @@ def alternatives(
     """
     my_var is required for VarLangSemantics and ignored for MainLangSemantics
     """
-    m = len(self.lemmas) - 1
     # lemma, word, repetition
     alt_main = Alternative()
     # sources to lemmas, sources to words, repetition (TODO: unclear how to interpret this one)
-    alt_var: Dict[Source, Alternative] = {}
+    alt_var = SortedDict()
 
     # main
-    # print(row)
-    for l in range(m, -1, -1):
-        if alt_main.lemma:
-            break
-        alt_main = self.level_main_alternatives(row, my_var, l)
-        # print(alt_main)
-        if alt_main.word in NON_LEMMAS:
-            alt_main = Alternative()
+    if self.main.lemmas[0] and self.main.word not in NON_LEMMAS:
+        main_lemmas = self.main_alt_lemmas(row, my_var)
+        semantic = ""
+        # print(main_lemmas)
+        if main_lemmas:
+            if main_lemmas[-1][0] in SPECIAL_CHARS:
+                semantic = main_lemmas[-1][0]
+                assert (
+                    len(main_lemmas[-1]) > 2
+                ), f"Unexpected semantic positioning in main lemmas {main_lemmas}."
+                main_lemmas[-1] = main_lemmas[-1][2:]
+            alt_main = Alternative(
+                row[self.main.word], main_lemmas, int(row[self.main.cnt_col]), semantic
+            )
 
     # var
-    for l in range(m, -1, -1):
-        # print(l)
-        lvl_var = self.level_var_alternatives(row, my_var, l)
-        for v in lvl_var.values():
-            if v.lemma in NON_LEMMAS:
-                alt_var = {}
-                lvl_var = {}
-        for v in lvl_var.keys():
-            rem = v.remainder(alt_var.keys())
-            if rem:
-                alt_var[rem] = lvl_var[v]
-                # iterate over sources in words, to catch all that are covered by this lemma
-                for lv in lvl_var.keys():
-                    if lv in v:
-                        if rem in alt_var:
-                            # print("if")
-                            # TODO: what to do with repetitions
-                            lem = (
-                                alt_var[rem].lemma
-                                if alt_var[rem].lemma
-                                else lvl_var[lv].lemma
-                            )
-                            if alt_var[rem].semantic and lem.startswith(
-                                alt_var[rem].semantic
-                            ):
-                                lem = lem[2:]
-                            assert (
-                                alt_var[rem].cnt == lvl_var[lv].cnt
-                            ), f"Mismatch in counters at different levels between {alt_var} and {lvl_var}"
-                            # sem = new_var[lv].semantic if new_var[lv].semantic else alt_var[rem].semantic
-                            alt_var[lv] = Alternative(
-                                alt_var[rem].word,
-                                lem,
-                                alt_var[rem].cnt,
-                                alt_var[rem].semantic,
-                            )
-                            # alt_var[1][rem] = (
-                            #     f"{alt_var[1][rem][0]} {new_var[1][lv][0]}",
-                            #     alt_var[1][rem][1],
-                            # )
-                        else:
-                            alt_var[rem] = lvl_var[lv]
-            else:
-                if v in alt_var:
-                    if not alt_var[v].lemma:
-                        alt_var[v] = Alternative(
-                            alt_var[v].word,
-                            lvl_var[v].lemma,
-                            alt_var[v].cnt,
-                            alt_var[v].semantic,
-                        )
-                else:
-                    for var in alt_var.keys():
-                        if var in v:
-                            alt_var[var] = Alternative(
-                                alt_var[var].word,
-                                lvl_var[v].lemma,
-                                alt_var[var].cnt,
-                                alt_var[var].semantic,
-                            )
+    if row[self.var.lemmas[0]]:
+        vml = self.var.multiword(row)
+        var_lemmas = self.var_alt_lemmas(row)
+        for mw_src, mw_word in vml.items():
+            if mw_word == EMPTY_CH:
+                continue
+            for s in mw_src:
+                # if variant in word usages, but not in lemmas, ignore it?
+                if s not in var_lemmas:
+                    continue
+                # if s in my_var:
+                #     continue
+                semantic = ""
+                # print(var_lemmas)
+                if var_lemmas[s][-1][0] in SPECIAL_CHARS:
+                    semantic = var_lemmas[s][-1][0]
+                    # if remainder contains actual lemma (i.e. not empty or source only)
+                    if len(var_lemmas[s][-1][0]) > 2 and any(
+                        s for s in var_lemmas[s][-1][2:] if s not in ORDERED_SOURCES
+                    ):
+                        var_lemmas[s][-1] = var_lemmas[s][-1][2:]
+                    else:
+                        var_lemmas[s].pop(-1)
+                # print(self.var.cnt_col)
+                alt_var[s] = Alternative(
+                    mw_word, var_lemmas[s], int(row[self.var.cnt_col]), semantic
+                )
+                # print(alt_var)
+
+    my_alt = alt_main if self.main == self else alt_var[next(iter(my_var))]
+
+    # remove equal to mine
+    if my_alt.same(alt_main):
+        alt_main = Alternative()
+    alt_var = {s: a for s, a in alt_var.items() if not a.same(my_alt)}
+    alt_var = simplify_alternatives(alt_var)
 
     # print(alt_var)
-    # return Alternative(alt_main[0], alt_var[0], alt_main[1], alt_var[1], alt_main[2])
     return (alt_main, alt_var)
 
 
@@ -126,6 +131,7 @@ def build_paths(self, row: List[str]) -> List[Path]:
                 if pk.inside([k]) is not None:
                     path += v.strip()
 
+    # WIP
     for k, path in paths.items():
         path.compile()
 
