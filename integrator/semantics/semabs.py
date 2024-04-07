@@ -50,10 +50,10 @@ def alternatives(
         if main_lemmas:
             if main_lemmas[-1][0] in SPECIAL_CHARS:
                 semantic = main_lemmas[-1][0]
-                assert (
-                    len(main_lemmas[-1]) > 2
-                ), f"Unexpected semantic positioning in main lemmas {main_lemmas}."
-                main_lemmas[-1] = main_lemmas[-1][2:]
+                if len(main_lemmas[-1]) > 2:
+                    main_lemmas[-1] = main_lemmas[-1][2:]
+                else:
+                    main_lemmas.pop(-1)
             alt_main = Alternative(
                 row[self.main.word], main_lemmas, int(row[self.main.cnt_col]), semantic
             )
@@ -76,7 +76,7 @@ def alternatives(
                 if var_lemmas[s][-1][0] in SPECIAL_CHARS:
                     semantic = var_lemmas[s][-1][0]
                     # if remainder contains actual lemma (i.e. not empty or source only)
-                    if len(var_lemmas[s][-1][0]) > 2 and any(
+                    if len(var_lemmas[s][-1]) > 2 and any(
                         s for s in var_lemmas[s][-1][2:] if s not in ORDERED_SOURCES
                     ):
                         var_lemmas[s][-1] = var_lemmas[s][-1][2:]

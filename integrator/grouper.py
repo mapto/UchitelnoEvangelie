@@ -56,7 +56,9 @@ def _collect_other(
 ) -> List[str]:
     """*IN_PLACE*"""
     line[other.word] = other.collect_word(group)
-    line[other.lemmas[0]] = other.collect_lemma(h.non_local_group, other.lemmas[0], V_LEMMA_SEP)
+    line[other.lemmas[0]] = other.collect_lemma(
+        h.non_local_group, other.lemmas[0], V_LEMMA_SEP
+    )
     for c in other.lemmas[1:]:
         line[c] = other.collect_lemma(h.non_local_group, c)
     return line

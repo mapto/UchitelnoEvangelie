@@ -3,6 +3,7 @@
 """A processor aggregating different usages into a dictionary hierarchy"""
 
 from typing import List, Optional, Dict
+import logging as log
 from sortedcontainers import SortedDict  # type: ignore
 
 from const import IDX_COL, MISSING_CH, SPECIAL_CHARS
@@ -149,7 +150,7 @@ def _agg_lemma(
     # if a source was indicated in previous lemmas, but not in this one,
     # just add empties to fill rest of lemma hierarchy for it.
     # Clearly, a requirement is that there are sources indicated here at all.
-    omlemmas_present = len(omultilemmas) > 1 or next(iter(omultilemmas.keys()))
+    omlemmas_present = len(omultilemmas) > 1 or next(iter(omultilemmas.keys()))  # type: ignore
     if lidx > 0 and olemvar and omlemmas_present:
         missing = olemvar.remainder(omultilemmas.keys())
         if missing:
