@@ -29,6 +29,7 @@ def _hilited_col(row: List[str], col: int) -> Optional[str]:
 
 def _hilited_local(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> bool:
     """highlighting in third lemma and further.
+    Used from "gram.", etc.
     This highlighting has impact on variants. If undesired better create separate rows in variants.
     This highlighted sublemma is relevant only to this usage and not to the whole phrase.
     """
@@ -43,6 +44,7 @@ def _hilited_local(osem: LangSemantics, tsem: LangSemantics, row: List[str]) -> 
 
 def _hilited_irrelevant(sem: LangSemantics, row: List[str]) -> bool:
     """highlighting in second lemma. This is asymmetric annotation.
+    Used for declinations, etc.
     Also checks if passed column is in second lemma, if passed at all.
     The usage is part of to the phrase, but is lexicographically irrelevant (i.e. does not need to show up in the phrase).
     """
