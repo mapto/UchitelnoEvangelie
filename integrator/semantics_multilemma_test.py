@@ -6,7 +6,7 @@ from config import FROM_LANG, TO_LANG
 from setup import sl_sem, gr_sem
 
 
-def test_basic():
+def test_basic_1():
     # old semantics
     sl_sem = MainLangSemantics(
         FROM_LANG, 4, [6, 7, 8, 9], VarLangSemantics(FROM_LANG, 0, [1, 2])
@@ -24,6 +24,15 @@ def test_basic():
     result = sl_sem.var.multilemma(row)
     assert result == {"G": "\ue205 pron."}
 
+def test_basic_2():
+    # old semantics
+    sl_sem = MainLangSemantics(
+        FROM_LANG, 4, [6, 7, 8, 9], VarLangSemantics(FROM_LANG, 0, [1, 2])
+    )
+    gr_sem = MainLangSemantics(
+        TO_LANG, 10, [11, 12, 13], VarLangSemantics(TO_LANG, 15, [16, 17])
+    )
+
     row = (
         ["вь WGH", "въ", "въ + Loc.", "1/7d1", "оу", "оу насъ", "ѹ"]
         + [""] * 3
@@ -36,6 +45,15 @@ def test_basic():
     assert result == {Source("WGH"): "въ"}
     result = gr_sem.var.multilemma(row)
     assert result == {"Cs": "παρά"}
+
+def test_basic_3():
+    # old semantics
+    sl_sem = MainLangSemantics(
+        FROM_LANG, 4, [6, 7, 8, 9], VarLangSemantics(FROM_LANG, 0, [1, 2])
+    )
+    gr_sem = MainLangSemantics(
+        TO_LANG, 10, [11, 12, 13], VarLangSemantics(TO_LANG, 15, [16, 17])
+    )
 
     row = (
         ([""] * 3)
@@ -415,3 +433,6 @@ def test_mutliple_gen_lemma2():
         Source("Fb"): "κατά + Gen.",
         Source("Cs"): "μετά + Acc.",
     }
+
+if __name__ == "__main__":
+    test_basic_1()

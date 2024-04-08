@@ -60,6 +60,23 @@ When unrecognised sources are encountered, the program reports an error.
 
 ## Multivariant annotation
 
+Since the number of source variants could be very big (currently about 30 for Greek), it is imperative that all this variation can be represented in a manageable number of columns. As a consequence, for each language, within the variants column, multiple variants can be encoded. To make this possible, a single cell could contain multiple lemmas. Such cells are parsed with regular expressions, defined in [`regex.py`](regex.py) and visualised here using https://debuggex.com.
+
+![A regular expression showing how multilemma cells are parsed](../docs/multilemma-regex.png) 
+
+A guide to regex groups follows:
+
+1. Possible semantic and lemma group
+2. A group representing a possible semantic relationship (defined in [`const.py`](const.py))
+3. A possible lemma
+4. A possible annotation, including ommissions, grammar, declinations, etc. (some of these defined for other purposes in [`const.py`](const.py))
+5. Possible `+` indicating e.g. that the lemma is used with a particular decliation
+6. The group of all possible sources
+7. A source sigle (as parsed by [`config.py`](config.py))
+8. A potential separator (used only at top lemma level, defined in [`const.py`](const.py))
+9. potential other patterns (following the same pattern)
+
+
 This feature is shortly mentioned in the [related publications](../docs/) and illustrated in the [tests](./test/).
 
 ## Data Model
