@@ -25,7 +25,7 @@ def test_mulitword():
 
 
 def test_multilemma():
-    print(multilemma_regex)
+    # print(multilemma_regex)
     m = re.search(multilemma_regex, "διά + Gen.")
     assert m.group(1) == "διά "
     assert m.group(2) == None
@@ -104,6 +104,7 @@ def test_multilemma():
     m = re.search(multilemma_regex, "\ue205 pron.")
     assert m.group(3) == "\ue205 "
     assert m.group(4) == "pron."
+
 
 def test_multilemma_multi():
     m = re.search(multilemma_regex, "μετά Cs / κατά Fb")

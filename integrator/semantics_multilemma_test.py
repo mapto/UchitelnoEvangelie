@@ -24,6 +24,7 @@ def test_basic_1():
     result = sl_sem.var.multilemma(row)
     assert result == {"G": "\ue205 pron."}
 
+
 def test_basic_2():
     # old semantics
     sl_sem = MainLangSemantics(
@@ -45,6 +46,7 @@ def test_basic_2():
     assert result == {Source("WGH"): "въ"}
     result = gr_sem.var.multilemma(row)
     assert result == {"Cs": "παρά"}
+
 
 def test_basic_3():
     # old semantics
@@ -433,6 +435,7 @@ def test_mutliple_gen_lemma2():
         Source("Fb"): "κατά + Gen.",
         Source("Cs"): "μετά + Acc.",
     }
+
 
 if __name__ == "__main__":
     test_basic_1()

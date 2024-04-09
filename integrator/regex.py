@@ -27,7 +27,7 @@ annot_regex = r"\w+\."
 # The regex parser is greedy. Thus we want "Ma" to show before "M", so that it gets it.
 UNIFIED_SOURCES = VAR_SL + VAR_GR
 UNIFIED_SOURCES.sort()
-sources_regex = r"(" + "|".join(UNIFIED_SOURCES[::-1]) +  ")"
+sources_regex = r"(" + "|".join(UNIFIED_SOURCES[::-1]) + ")"
 
 # multiword_regex = r"^([^A-Z]+)(" + sources_regex + r"+)(.*)$"
 # multiword_regex = r"^(\w[^A-Z]*)(" + sources_regex + r"+)(.*)$"

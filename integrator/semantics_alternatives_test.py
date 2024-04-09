@@ -29,7 +29,7 @@ def test_base_1():
         + ["1"] * 4
     )
     result = sl_sem.alternatives(row)
-    assert result == (Alternative(), {Source("G"): Alternative("ю", ["\ue205 pron."])})
+    assert result == (Alternative(), {Source("G"): Alternative("ю G", ["\ue205 pron."])})
 
 
 def test_base_2():
@@ -105,21 +105,21 @@ def test_base_3():
     assert result == (
         Alternative(),
         {
-            Source("H"): Alternative("\ue201д\ue205нородоу", ["\ue201д\ue205нородъ"]),
-            Source("G"): Alternative("\ue205но\ue20dедаго", ["\ue205но\ue20dѧдъ"]),
+            Source("H"): Alternative("\ue201д\ue205нородоу H", ["\ue201д\ue205нородъ"]),
+            Source("G"): Alternative("\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"]),
         },
     )
 
     result = sl_sem.var.alternatives(row, Source("G"))
     assert result == (
         Alternative("\ue201д\ue205но\ue20dедоу", ["\ue201д\ue205но\ue20dѧдъ"]),
-        {Source("H"): Alternative("\ue201д\ue205нородоу", ["\ue201д\ue205нородъ"])},
+        {Source("H"): Alternative("\ue201д\ue205нородоу H", ["\ue201д\ue205нородъ"])},
     )
 
     result = sl_sem.var.alternatives(row, Source("H"))
     assert result == (
         Alternative("\ue201д\ue205но\ue20dедоу", ["\ue201д\ue205но\ue20dѧдъ"]),
-        {Source("G"): Alternative("\ue205но\ue20dедаго", ["\ue205но\ue20dѧдъ"])},
+        {Source("G"): Alternative("\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"])},
     )
 
 
@@ -144,11 +144,8 @@ def test_std_sem():
     assert r1 == (
         Alternative(),
         {
-            Source("W"): Alternative(
-                "\ue201д\ue205но\ue20dеды", ["\ue201д\ue205но\ue20dѧдъ"]
-            ),
-            Source("H"): Alternative(
-                "\ue201д\ue205но\ue20dеды", ["\ue201д\ue205но\ue20dѧдъ"]
+            Source("WH"): Alternative(
+                "\ue201д\ue205но\ue20dеды WH", ["\ue201д\ue205но\ue20dѧдъ"]
             ),
         },
     )
@@ -168,17 +165,9 @@ def test_bozhii():
     assert result == (
         Alternative(),
         {
-            "W": Alternative(
-                word="б\ue010ж\ue205", lemmas=["бож\ue205\ue205"], cnt=1, semantic=""
-            ),
-            "G": Alternative(
-                word="б\ue010ж\ue205\ue205",
+            Source("WGH"): Alternative(
+                word="б\ue010ж\ue205 W б\ue010ж\ue205\ue205 G б\ue010жї\ue205 H",
                 lemmas=["бож\ue205\ue205"],
-                cnt=1,
-                semantic="",
-            ),
-            "H": Alternative(
-                word="б\ue010жї\ue205", lemmas=["бож\ue205\ue205"], cnt=1, semantic=""
             ),
         },
     )
@@ -206,9 +195,7 @@ def test_ot():
     assert result == (
         Alternative(),
         {
-            Source("W"): Alternative("ѿ", ["отъ"]),
-            Source("G"): Alternative("ѿ", ["отъ"]),
-            Source("H"): Alternative("ѡ", ["отъ"]),
+            Source("WGH"): Alternative("ѡ H ѿ WG", ["отъ"]),
         },
     )
 
@@ -237,7 +224,7 @@ def test_put():
         Alternative("поутошьств\ue205ꙗ", ["пѫтошьств\ue205\ue201"]),
         {
             Source("H"): Alternative(
-                "шьств\ue205ꙗ пꙋт\ue205", ["пѫть", "шьств\ue205\ue201 пѫт\ue205"]
+                "шьств\ue205ꙗ пꙋт\ue205 H", ["пѫть", "шьств\ue205\ue201 пѫт\ue205"]
             ),
         },
     )
@@ -247,7 +234,7 @@ def test_put():
         Alternative("поутошьств\ue205ꙗ", ["пѫтошьств\ue205\ue201"]),
         {
             Source("G"): Alternative(
-                "шьст\ue205ꙗ пꙋт\ue205", ["пѫть", "шьст\ue205\ue201 пѫт\ue205"]
+                "шьст\ue205ꙗ пꙋт\ue205 G", ["пѫть", "шьст\ue205\ue201 пѫт\ue205"]
             ),
         },
     )
@@ -274,8 +261,7 @@ def test_main_var_alternatives_trans_gram():
     assert result == (
         Alternative(),
         {
-            Source("G"): Alternative("\ue201сть", ["бꙑт", "gramm."]),
-            Source("H"): Alternative("\ue201сть", ["бꙑт", "gramm."]),
+            Source("GH"): Alternative("\ue201сть GH", ["бꙑт", "gramm."]),
         },
     )
 
@@ -320,10 +306,9 @@ def test_main_sumeromadrost():
     assert result == (
         Alternative(),
         {
-            Source("W"): Alternative("смѣроумоудрост\ue205", ["съмѣрѹмѫдрость"]),
-            Source("G"): Alternative("смѣроумоудрост\ue205", ["съмѣрѹмѫдрость"]),
+            Source("WG"): Alternative("смѣроумоудрост\ue205 WG", ["съмѣрѹмѫдрость"]),
             Source("H"): Alternative(
-                "смѣрены\ue201 моудрост\ue205",
+                "смѣрены\ue201 моудрост\ue205 H",
                 ["съмѣр\ue201нъ мѫдрость", "съмѣр\ue201наꙗ мѫдрость"],
             ),
         },
@@ -347,8 +332,9 @@ def test_nechuvstven():
     assert result == (
         Alternative("не\ue20dювьнъ", ["не\ue20dѹвьнъ"]),
         {
-            Source("W"): Alternative("не\ue20dю\ue205но", ["не\ue20dѹ\ue205нъ"]),
-            Source("G"): Alternative("не\ue20dю\ue205нь", ["не\ue20dѹ\ue205нъ"]),
+            Source("WG"): Alternative(
+                "не\ue20dю\ue205но W не\ue20dю\ue205нь G", ["не\ue20dѹ\ue205нъ"]
+            )
         },
     )
 
@@ -393,3 +379,17 @@ def test_relative():
         },
     )
 """
+
+
+def test_zemen():
+    row = (
+        [""] * 4
+        + ["19/94d08", "ₓ ꙁемьнꙑ\ue205", "", "ₓ"]
+        + [""] * 8
+        + ["τῶν ἐπὶ γῆς Ch", "ὁ"]
+        + [""] * 8
+        + ["hl16:FFF8CBAD|hl19:FFB4C7E7"]
+        + ["1"] * 4
+    )
+    result = gr_sem.var.alternatives(row)
+    assert result == (None, {})

@@ -120,7 +120,7 @@ def test_build_paths_special():
     )
     res = sl_sem.build_paths(row)
     assert [str(p) for p in res] == ["≈ вьсѣмъ → вьсь"]
-    assert res == [Path(parts=["вьсь", "≈ вьсѣмъ"], semantics="≈")]
+    assert res == [Path(parts=["вьсь", "вьсѣмъ"], semantics="≈")]
     assert [str(r) for r in res] == ["≈ вьсѣмъ → вьсь"]
 
     row = (
@@ -137,11 +137,9 @@ def test_build_paths_special():
         + [""] * 14
     )
     res = sl_sem.build_paths(row)
-    assert [str(p) for p in res] == ["≠ на\ue20dѧт\ue205"]
-    assert res == [
-        Path(parts=["на\ue20dѧт\ue205", "≠ на\ue20dѧт\ue205"], semantics="≠")
-    ]
-    assert [str(r) for r in res] == ["≠ на\ue20dѧт\ue205"]
+    assert [str(p) for p in res] == ["≠ на\ue20dѧт\ue205 → на\ue20dѧт\ue205"]
+    assert res == [Path(parts=["на\ue20dѧт\ue205", "на\ue20dѧт\ue205"], semantics="≠")]
+    assert [str(r) for r in res] == ["≠ на\ue20dѧт\ue205 → на\ue20dѧт\ue205"]
 
 
 def test_build_paths_puteshestive():

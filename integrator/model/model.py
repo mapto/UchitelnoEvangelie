@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS
-from regex import annot_regex
+from regex import annot_regex, sem_regex
 
 
 @dataclass(frozen=True)
@@ -120,45 +120,117 @@ class Path:
     def __len__(self):
         return len(self.parts)
 
-    def __contains__(self, item: str):
-        return item in self.parts or item == self.annotation
-
     def __str__(self):
         """We want to see results in reverse order.
         Also, if last part is special character, display it smarter
-        >>> str(Path(["θεός", "Gen."]))
-        'Gen. → θεός'
-        >>> str(Path(['съкаꙁат\ue205', 'съкаꙁа\ue201мо', '≈']))
+        >>> str(Path(["θεός", "Gen."]).compile())
+        'θεός Gen.'
+        >>> str(Path(['съкаꙁат\ue205', 'съкаꙁа\ue201мо', '≈']).compile())
         '≈ съкаꙁа\ue201мо → съкаꙁат\ue205'
-        >>> str(Path(['# υἱός']))
+        >>> str(Path(['# υἱός']).compile())
         '# υἱός'
-        >>> str(Path(['Χαναάν', 'Gen.']))
-        'Gen. → Χαναάν'
-        >>> str(Path(['Χαναάν', '≠ Gen.']))
-        '≠ Gen. → Χαναάν'
-        """
-        parts = self.parts.copy()
-        if len(parts) > 1:
-            if parts[-1][0] in SPECIAL_CHARS:
-                self.semantics = parts[-1][0]
-                if len(parts[-1]) == 1:
-                    parts[-2] = f"{parts[-1]} {parts[-2]}"
-                    parts.pop(-1)
-                elif parts[-1].endswith(parts[-2]):
-                    parts.pop(-2)
-            content = PATH_SEP.join(parts[::-1])
-            prefix = f"{self.semantics} " if self.semantics else ""
-            return (
-                f"{prefix}{content} {self.annotation}" if self.annotation else content
-            )
-        elif len(parts) == 1:
-            return f"{parts[0]} {self.annotation}" if self.annotation else parts[0]
-        return self.annotation if self.annotation else ""
+        >>> str(Path(['Χαναάν', 'Gen.']).compile())
+        'Χαναάν Gen.'
+        >>> str(Path(['Χαναάν', '≠ Gen.']).compile())
+        '≠ Χαναάν Gen.'
 
-    def compile(self):
-        """Remove empty steps, extract annotations"""
-        for cur in range(len(self.parts) - 1, -1, -1):
-            if not self.parts[cur]:
-                self.parts.pop(cur)
-            elif re.match(r"^[a-zA-z\.]+$", self.parts[cur]):
-                self.annotation = self.parts.pop(cur)
+        >>> str(Path(['Χαναάν', 'Gen.']).compile())
+        'Χαναάν Gen.'
+
+        >>> str(Path(['Χαναάν', '≠ Gen.']).compile())
+        '≠ Χαναάν Gen.'
+
+        >>> str(Path(['pass.']).compile())
+        'pass.'
+        """
+        prefix = f"{self.semantics} " if self.semantics else ""
+        content = PATH_SEP.join(self.parts[::-1])
+        annotation = f" {self.annotation}" if self.annotation else ""
+        return f"{prefix}{content}{annotation}".strip()
+
+    def __contains__(self, other) -> bool:
+        """
+        Annotations are taken only from last lemma.
+        >>> '≈ ἀμελέω' in Path(['ἀμελέω'], semantics='≈')
+        True
+
+        >>> 'не & твор\ue205т\ue205' in Path(['не & твор\ue205т\ue205', 'не твор\ue205т\ue205'], semantics='≈')
+        True
+
+        >>> 'pass.' in Path([], 'pass.')
+        True
+
+        >>> 'бꙑт\ue205 & подъ & \ue205 pron.' in Path(['бꙑт\ue205 & подъ & \ue205 pron.', 'сꙑ подъ н\ue205м\ue205'])
+        True
+
+        >>> 'μετά' in Path(parts=['μετά', 'μετά + Acc.'])
+        True
+        """
+        if type(other) != str:
+            return False
+        if other[0] in SPECIAL_CHARS and other[0] != self.semantics:
+            return False
+        word = other[2:] if other[0] in SPECIAL_CHARS else other
+
+        if not self.parts:
+            return other == self.annotation
+
+        if self.annotation and self.parts[-1][-1] == ".":
+            lparts = self.parts[-1].split(" ")
+            if lparts[-1] != self.annotation:
+                return False
+            if " ".join(lparts[:-1]) == word:
+                return True
+
+        return word in self.parts or (not word and not self.parts)
+
+    def compile(self) -> "Path":
+        """Remove empty steps, extract annotations.
+        It is necessary that this is done post-construction,
+        because there are modifications taking place during parsing.
+        In other words, class is not immutable, and compilation should be done at end.
+
+        >> Path(['# υἱός']).compile()
+        Path(parts=['υἱός'], annotation='', semantics='#')
+
+        >>> Path(['≈ ἀμελέω']).compile()
+        Path(parts=['ἀμελέω'], annotation='', semantics='≈')
+
+        >>> Path(["θεός", "Gen."]).compile()
+        Path(parts=['θεός'], annotation='Gen.', semantics='')
+
+        >>> Path(['Χαναάν', 'Gen.']).compile()
+        Path(parts=['Χαναάν'], annotation='Gen.', semantics='')
+
+        >>> Path(['Χαναάν', '≠ Gen.']).compile()
+        Path(parts=['Χαναάν'], annotation='Gen.', semantics='≠')
+
+        >>> Path(['бꙑт\ue205 & подъ & \ue205 pron.', 'сꙑ подъ н\ue205м\ue205']).compile()
+        Path(parts=['бꙑт\ue205 & подъ & \ue205 pron.', 'сꙑ подъ н\ue205м\ue205'], annotation='', semantics='')
+        """
+        regex = r"^" + sem_regex + annot_regex + "$"
+        result = []
+        for cur, lem in enumerate(self.parts[::-1]):
+            if not lem:
+                continue
+
+            if re.match(regex, lem):
+                last = lem
+                if last[0] in SPECIAL_CHARS:
+                    self.semantics = last[0]
+                    self.annotation = last[2:]
+                else:
+                    self.annotation = last
+                continue
+
+            if lem[0] in SPECIAL_CHARS:
+                self.semantics = lem[0]
+                if len(lem) > 2:
+                    result += [lem[2:]]
+                continue
+
+            result += [lem]
+
+        self.parts = result[::-1]
+
+        return self

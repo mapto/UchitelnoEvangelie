@@ -126,16 +126,18 @@ def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
     while m:
         # semantic and lemma
         v = m.group(1) if m.group(1) else ""
-        # lemma annotation with plus
+        # lemma annotation (possibly with plus)
         v = v + m.group(4) if m.group(4) else v
         v = v.strip()
 
         # sources
-        k = m.group(5) if m.group(5) else ""
+        k = m.group(6) if m.group(6) else ""
+        if not v:
+            break
         result[Source(k)] = v
 
         # remainder for next iteration
-        rest = m.group(8) if len(m.groups()) == 8 else ""
+        rest = m.group(9) if len(m.groups()) == 9 else ""
         m = re.search(multilemma_regex, rest.strip())
 
     # When lemma in variant does not have source, read source from word or previous lemma
