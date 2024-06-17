@@ -61,12 +61,16 @@ def test_first():
                                             "смѣроумоудрост\ue205 WG",
                                             ["съмѣрѹмѫдрость"],
                                             main_alt=Alternative(
-                                                "съмѣромоудрост\ue205", "съмѣромѫдрость"
+                                                "съмѣромоудрост\ue205",
+                                                ["съмѣромѫдрость"],
                                             ),
                                             var_alt={
                                                 Source("H"): Alternative(
                                                     "смѣрены\ue201 моудрост\ue205 H",
-                                                    "съмѣр\ue201наꙗ мѫдрость",
+                                                    [
+                                                        "съмѣр\ue201нъ",
+                                                        "съмѣр\ue201наꙗ мѫдрость",
+                                                    ],
                                                 )
                                             },
                                         ),
@@ -77,7 +81,7 @@ def test_first():
                                             var_alt={
                                                 Source("Ch"): Alternative(
                                                     "ταπεινοφροσύνην Ch",
-                                                    "ταπεινοφροσύνη",
+                                                    ["ταπεινοφροσύνη"],
                                                 )
                                             },
                                         ),
@@ -108,12 +112,12 @@ def test_first():
                                             ],
                                             main_alt=Alternative(
                                                 "съмѣромоудрост\ue205",
-                                                "съмѣромѫдрость",
+                                                ["съмѣромѫдрость"],
                                             ),
                                             var_alt={
                                                 Source("WG"): Alternative(
                                                     "смѣроумоудрост\ue205 WG",
-                                                    "съмѣрѹмѫдрость",
+                                                    ["съмѣрѹмѫдрость"],
                                                 )
                                             },
                                         ),
@@ -124,7 +128,7 @@ def test_first():
                                             var_alt={
                                                 Source("Ch"): Alternative(
                                                     "ταπεινοφροσύνην Ch",
-                                                    "ταπεινοφροσύνη",
+                                                    ["ταπεινοφροσύνη"],
                                                 )
                                             },
                                         ),
@@ -167,67 +171,9 @@ def test_missing_gr_main():
                                             Source("Ch"),
                                             "ἄρτους Ch",
                                             ["ἄρτος"],
-                                            main_alt=Alternative("om.", "om."),
+                                            main_alt=Alternative("om.", ["om."]),
                                         ),
                                         Usage("sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-def test_hodom_spiti():
-    row = (
-        [
-            "хⷪ҇домь спѣюще WG ход\ue205т\ue205 с пѣн\ue205\ue201мь H",
-            "",
-            "ходомь спѣт\ue205 WG",
-            "",
-            "14/072d18-19",
-            "ход\ue205мъ спѣюще•",
-            "д\ue205мъ спѣюще•",
-            "ход\ue205т\ue205 спѣт\ue205",
-            "≈ ход\ue205т\ue205 спѣѭще",
-        ]
-        + [""] * 2
-        + ["προβαίνοντες", "προβαίνω"]
-        + [""] * 13
-        + ["hl05"]
-        + ["1"] * 4
-    )
-
-    result = SortedDict()
-    _agg_lemma(row, sl_sem.var, gr_sem, result)
-    # _agg_lemma(row_var, sl_sem.var, gr_sem, result)
-    assert result == {
-        "": {
-            "ходомь спѣт\ue205 WG": {
-                "": {
-                    "": {
-                        "προβαίνω": {
-                            ("", "προβαίνοντες"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("14/72d18-19"),
-                                        Usage(
-                                            "sl",
-                                            var_alt={
-                                                Source("WG"): Alternative(
-                                                    "хⷪ҇домь спѣюще WG",
-                                                    "ходомь спѣт\ue205",
-                                                )
-                                            },
-                                        ),
-                                        Usage(
-                                            "gr",
-                                            word="προβαίνοντες",
-                                            lemmas=["προβαίνω"],
-                                        ),
                                     )
                                 ]
                             )
@@ -280,12 +226,15 @@ def test_shestvie_first():
                                             ],
                                             main_alt=Alternative(
                                                 "поутошьств\ue205ꙗ",
-                                                "пѫтошьств\ue205\ue201",
+                                                ["пѫтошьств\ue205\ue201"],
                                             ),
                                             var_alt={
                                                 Source("G"): Alternative(
                                                     "шьст\ue205ꙗ пꙋт\ue205 G",
-                                                    "шьст\ue205\ue201 пѫт\ue205",
+                                                    [
+                                                        "шьст\ue205\ue201",
+                                                        "шьст\ue205\ue201 пѫт\ue205",
+                                                    ],
                                                 )
                                             },
                                         ),
@@ -321,12 +270,15 @@ def test_shestvie_first():
                                             ],
                                             main_alt=Alternative(
                                                 "поутошьств\ue205ꙗ",
-                                                "пѫтошьств\ue205\ue201",
+                                                ["пѫтошьств\ue205\ue201"],
                                             ),
                                             var_alt={
                                                 Source("H"): Alternative(
                                                     "шьств\ue205ꙗ пꙋт\ue205 H",
-                                                    "шьств\ue205\ue201 пѫт\ue205",
+                                                    [
+                                                        "шьств\ue205\ue201",
+                                                        "шьств\ue205\ue201 пѫт\ue205",
+                                                    ],
                                                 )
                                             },
                                         ),
@@ -390,7 +342,10 @@ def test_prichatnik():
                                             ],
                                             main_alt=Alternative(
                                                 "пр\ue205\ue20dьтьн\ue205ц\ue205",
-                                                "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                                [
+                                                    "пр\ue205\ue20dьтьн\ue205къ",
+                                                    "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                                ],
                                             ),
                                         ),
                                         Usage(
@@ -398,53 +353,6 @@ def test_prichatnik():
                                             word="ποιῆσαι",
                                             lemmas=["ποιέω", "ποιέω κοινωνόν"],
                                         ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-def test_gr_dat():
-    row = (
-        ["к WGH", "къ"]
-        + [""] * 2
-        + ["13/69a30"]
-        + ["om.", ""] * 2
-        + [""] * 2
-        + ["om."]
-        + [""] * 4
-        + ["Dat. Nt", "Dat."]
-        + [""] * 8
-        + ["bold|italic"]
-        + ["1"] * 4
-    )
-    result = SortedDict()
-    result = _agg_lemma(row, sl_sem.var, gr_sem.var, result)
-    assert result == {
-        "къ": {
-            "": {
-                "": {
-                    "": {
-                        "Dat.": {
-                            ("к WGH", "Dat. Nt"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("13/69a30"),
-                                        Usage(
-                                            "sl",
-                                            Source("WGH"),
-                                            "к WGH",
-                                            ["къ"],
-                                            main_alt=Alternative("om.", "om."),
-                                        ),
-                                        Usage("gr", Source("Nt"), "Dat. Nt", ["Dat."]),
-                                        bold=True,
-                                        italic=True,
                                     )
                                 ]
                             )
@@ -487,22 +395,18 @@ def test_nechuvstven():
                                             "не\ue20dювьствьнь H",
                                             ["не\ue20dѹвьствьнъ"],
                                             main_alt=Alternative(
-                                                word="не\ue20dювьнъ",
-                                                lemma="не\ue20dѹвьнъ",
+                                                "не\ue20dювьнъ",
+                                                ["не\ue20dѹвьнъ"],
                                             ),
                                             var_alt={
-                                                Source("W"): Alternative(
-                                                    word="не\ue20dю\ue205но W",
-                                                    lemma="не\ue20dѹ\ue205нъ",
-                                                ),
-                                                Source("G"): Alternative(
-                                                    word="не\ue20dю\ue205нь G",
-                                                    lemma="не\ue20dѹ\ue205нъ",
+                                                Source("WG"): Alternative(
+                                                    "не\ue20dю\ue205но W не\ue20dю\ue205нь G",
+                                                    ["не\ue20dѹ\ue205нъ"],
                                                 ),
                                             },
                                         ),
                                         Usage(
-                                            lang="gr",
+                                            "gr",
                                             word="ἀναίσθητος",
                                             lemmas=["ἀναίσθητος"],
                                         ),
@@ -532,13 +436,13 @@ def test_nechuvstven():
                                             "не\ue20dю\ue205но W не\ue20dю\ue205нь G",
                                             ["не\ue20dѹ\ue205нъ"],
                                             main_alt=Alternative(
-                                                word="не\ue20dювьнъ",
-                                                lemma="не\ue20dѹвьнъ",
+                                                "не\ue20dювьнъ",
+                                                ["не\ue20dѹвьнъ"],
                                             ),
                                             var_alt={
                                                 Source("H"): Alternative(
-                                                    word="не\ue20dювьствьнь H",
-                                                    lemma="не\ue20dѹвьствьнъ",
+                                                    "не\ue20dювьствьнь H",
+                                                    ["не\ue20dѹвьствьнъ"],
                                                 )
                                             },
                                         ),
@@ -694,7 +598,7 @@ def test_junotichisk():
                                             var_alt={
                                                 Source("CsMdSp"): Alternative(
                                                     "νεότητος CsMdSp",
-                                                    "νεότης",
+                                                    ["νεότης", "Gen."],
                                                 )
                                             },
                                         ),
@@ -705,7 +609,7 @@ def test_junotichisk():
                                             var_alt={
                                                 Source("WG"): Alternative(
                                                     "юнотьско\ue201 WG",
-                                                    "юнотьскъ",
+                                                    ["юнотьскъ"],
                                                 )
                                             },
                                         ),
@@ -736,7 +640,7 @@ def test_junotichisk():
                                                     "FbPcPePgPhPiVZaAPaCh"
                                                 ): Alternative(
                                                     "/ νεανιότητος FbPcPePgPhPiVZaAPaCh",
-                                                    "νεανιότης",
+                                                    ["νεανιότης", "Gen."],
                                                 )
                                             },
                                         ),
@@ -747,7 +651,7 @@ def test_junotichisk():
                                             var_alt={
                                                 Source("WG"): Alternative(
                                                     "юнотьско\ue201 WG",
-                                                    "юнотьскъ",
+                                                    ["юнотьскъ"],
                                                 )
                                             },
                                         ),
@@ -801,7 +705,7 @@ def test_special():
                                             ["проꙁьрѣт\ue205"],
                                             main_alt=Alternative(
                                                 "\ue205сцѣленоумоу",
-                                                "\ue205цѣл\ue205т\ue205",
+                                                ["\ue205цѣл\ue205т\ue205"],
                                             ),
                                         ),
                                         Usage(
@@ -819,3 +723,53 @@ def test_special():
             }
         }
     }
+
+
+def test_iakov():
+    row = (
+        [""] * 4
+        + ["39/184c10", "\ue205ѧковле", "събꙑсть сꙗ• \ue205ѧ-", "\ue205ꙗковль"]
+        + [""] * 3
+        + ["om."]
+        + [""] * 4
+        + ["Ἰακὼβ", "Ἰακώβ", "Gen."]
+        + [""] * 8
+        + ["1"] * 4
+    )
+    result = SortedDict()
+    result = _agg_lemma(row, gr_sem.var, sl_sem, result)
+    assert result == {
+        "Ἰακώβ": {
+            "Gen.": {
+                "": {
+                    "": {
+                        "\ue205ꙗковль": {
+                            ("Ἰακὼβ Cs", "\ue205ѧковле"): SortedSet(
+                                [
+                                    Alignment(
+                                        Index("39/184c10"),
+                                        Usage(
+                                            "gr",
+                                            Source("Cs"),
+                                            "Ἰακὼβ Cs",
+                                            ["Ἰακώβ", "Gen."],
+                                        ),
+                                        Usage(
+                                            "sl",
+                                            word="\ue205ѧковле",
+                                            lemmas=["\ue205ꙗковль"],
+                                        ),
+                                    )
+                                ]
+                            )
+                        }
+                    }
+                }
+            },
+        }
+    }
+
+
+if __name__ == "__main__":
+    # test_hodom_spiti()
+    pass

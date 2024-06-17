@@ -111,6 +111,28 @@ def test_puteshestive():
     }
 
 
+def test_zaniu():
+    assert sl_sem.var.multiword(["+ ꙁане WGH"]) == {Source("WGH"): "+ ꙁане"}
+
+
+def test_ashte():
+    assert sl_sem.var.multiword(["om. WH"]) == {Source("WH"): "om."}
+
+
+def test_nevedom():
+    assert sl_sem.var.multiword(["pr. невѣдомыхь WG"]) == {
+        Source("WG"): "pr. невѣдомыхь"
+    }
+
+
+def test_jedin():
+    assert sl_sem.var.multiword(["дна WGH"]) == {Source("WGH"): "дна"}
+
+
+def test_v_brezi():
+    assert sl_sem.var.multiword(["вь брьꙁѣ H"]) == {Source("H"): "вь брьꙁѣ"}
+
+
 def test_iako_obrazom():
     row = (
         [
@@ -132,7 +154,6 @@ def test_iako_obrazom():
     # assert result == {Source("H"): ""}
     assert result == {Source("WG"): "om."}
 
-
 def test_gr_dat():
     row = (
         ["к WGH", "къ"]
@@ -149,3 +170,7 @@ def test_gr_dat():
     )
     result = gr_sem.var.multiword(row)
     assert result == {Source("Nt"): "Dat."}
+
+
+if __name__ == "__main__":
+    test_gr_dat()

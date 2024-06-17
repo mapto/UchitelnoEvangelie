@@ -21,7 +21,10 @@ def test_counter():
 
 
 def test_mulitword():
-    re.search(multiword_regex, "Dat. Nt")
+    # re.search(multiword_regex, "Dat. Nt")
+    m = re.search(multiword_regex, "συναλλάγματα ... τὰς ἐμπορίας Ch")
+    assert m.group(1) == "συναλλάγματα ... τὰς ἐμπορίας "
+    assert m.group(3) == "Ch"
 
 
 def test_multilemma():

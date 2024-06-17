@@ -58,11 +58,12 @@ def test_monogenis():
                                 word="\ue201д\ue205но\ue20dедоу",
                                 lemmas=["\ue201д\ue205но\ue20dѧдъ"],
                                 var_alt={
-                                    Source("H"): Alternative(
-                                        "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
-                                    ),
                                     Source("G"): Alternative(
-                                        "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                        "\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"]
+                                    ),
+                                    Source("H"): Alternative(
+                                        "\ue201д\ue205нородоу H",
+                                        ["\ue201д\ue205нородъ"],
                                     ),
                                 },
                             ),
@@ -90,11 +91,11 @@ def test_monogenis():
                                 lemmas=["\ue201д\ue205нородъ"],
                                 main_alt=Alternative(
                                     "\ue201д\ue205но\ue20dедоу",
-                                    "\ue201д\ue205но\ue20dѧдъ",
+                                    ["\ue201д\ue205но\ue20dѧдъ"],
                                 ),
                                 var_alt={
                                     Source("G"): Alternative(
-                                        "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                        "\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"]
                                     )
                                 },
                             ),
@@ -117,11 +118,12 @@ def test_monogenis():
                                 lemmas=["\ue205но\ue20dѧдъ"],
                                 main_alt=Alternative(
                                     "\ue201д\ue205но\ue20dедоу",
-                                    "\ue201д\ue205но\ue20dѧдъ",
+                                    ["\ue201д\ue205но\ue20dѧдъ"],
                                 ),
                                 var_alt={
                                     Source("H"): Alternative(
-                                        "\ue201д\ue205нородоу H", "\ue201д\ue205нородъ"
+                                        "\ue201д\ue205нородоу H",
+                                        ["\ue201д\ue205нородъ"],
                                     )
                                 },
                             ),

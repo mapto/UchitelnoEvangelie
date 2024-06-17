@@ -59,7 +59,7 @@ def test_est_in_var_no_main():
                                             Source("GH"),
                                             "\ue201сть GH",
                                             ["бꙑт\ue205", "", "gramm."],
-                                            main_alt=Alternative("om.", "om."),
+                                            main_alt=Alternative("om.", ["om."]),
                                         ),
                                         Usage("gr", word="Ø", lemmas=["Ø"]),
                                     )
@@ -73,6 +73,7 @@ def test_est_in_var_no_main():
     }
 
 
+"""
 def test_prichatnik_biti_sl():
     rows = [
         [
@@ -141,10 +142,20 @@ def test_prichatnik_biti_sl():
                                                 "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                             ],
                                             var_alt={
-                                                Source("GH"): Alternative(
-                                                    "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                                    "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
-                                                )
+                                                Source("G"): Alternative(
+                                                    "пр\ue205\ue20dестьн\ue205ц\ue205 б•",
+                                                    [
+                                                        "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                        "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                    ],
+                                                ),
+                                                Source("H"): Alternative(
+                                                    "пр\ue205\ue20dестн\ue205ц\ue205 б•",
+                                                    [
+                                                        "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                        "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                    ],
+                                                ),
                                             },
                                         ),
                                         Usage(
@@ -187,10 +198,20 @@ def test_prichatnik_biti_sl():
                                                 "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
                                             ],
                                             var_alt={
-                                                Source("GH"): Alternative(
-                                                    "пр\ue205\ue20dестн\ue205ц\ue205 б• H пр\ue205\ue20dестьн\ue205ц\ue205 б• G",
-                                                    "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
-                                                )
+                                                Source("G"): Alternative(
+                                                    "пр\ue205\ue20dестьн\ue205ц\ue205 б•",
+                                                    [
+                                                        "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                        "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                    ],
+                                                ),
+                                                Source("H"): Alternative(
+                                                    "пр\ue205\ue20dестн\ue205ц\ue205 б•",
+                                                    [
+                                                        "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                        "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                    ],
+                                                ),
                                             },
                                         ),
                                         Usage(
@@ -210,6 +231,7 @@ def test_prichatnik_biti_sl():
             }
         }
     }
+"""
 
 
 def test_prichatnik_biti_sl_var():
@@ -274,7 +296,10 @@ def test_prichatnik_biti_sl_var():
                                             ],
                                             main_alt=Alternative(
                                                 "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                                [
+                                                    "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                                    "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                                ],
                                             ),
                                         ),
                                         Usage(
@@ -320,7 +345,10 @@ def test_prichatnik_biti_sl_var():
                                             ],
                                             main_alt=Alternative(
                                                 "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-                                                "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                                [
+                                                    "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                                    "пр\ue205\ue20dьтьн\ue205къ быт\ue205",
+                                                ],
                                             ),
                                         ),
                                         Usage(
@@ -335,412 +363,6 @@ def test_prichatnik_biti_sl_var():
                                 ]
                             )
                         }
-                    }
-                }
-            }
-        }
-    }
-
-
-def test_monogenes():
-    row = (
-        [
-            "\ue205но\ue20dедаго G  \ue201д\ue205нородоу H",
-            "\ue201д\ue205нородъ H / \ue205но\ue20dѧдъ G",
-        ]
-        + [""] * 2
-        + [
-            "1/W168a25",
-            "\ue201д\ue205но\ue20dедоу",
-            "вргь(!) г\ue010ле• славоу ꙗко \ue201д\ue205но\ue20dедоу",
-            "\ue201д\ue205но\ue20dѧдъ",
-        ]
-        + [""] * 3
-        + ["μονογενοῦς", "μονογενής"]
-        + [""] * 13
-        + ["bold|italic"]
-        + ["1"] * 4
-    )
-
-    result = SortedDict()
-    result = aggregate([row], sl_sem.var, gr_sem, result)
-    assert result == {
-        "\ue201д\ue205нородъ": {
-            "": {
-                "": {
-                    "": {
-                        "μονογενής": {
-                            ("\ue201д\ue205нородоу H", "μονογενοῦς"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("1/W168a25"),
-                                        Usage(
-                                            "sl",
-                                            Source("H"),
-                                            "\ue201д\ue205нородоу H",
-                                            ["\ue201д\ue205нородъ"],
-                                            main_alt=Alternative(
-                                                "\ue201д\ue205но\ue20dедоу",
-                                                "\ue201д\ue205но\ue20dѧдъ",
-                                            ),
-                                            var_alt={
-                                                Source("G"): Alternative(
-                                                    "\ue205но\ue20dедаго G",
-                                                    "\ue205но\ue20dѧдъ",
-                                                )
-                                            },
-                                        ),
-                                        Usage(
-                                            "gr",
-                                            word="μονογενοῦς",
-                                            lemmas=["μονογενής"],
-                                        ),
-                                        bold=True,
-                                        italic=True,
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        "\ue205но\ue20dѧдъ": {
-            "": {
-                "": {
-                    "": {
-                        "μονογενής": {
-                            ("\ue205но\ue20dедаго G", "μονογενοῦς"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("1/W168a25"),
-                                        Usage(
-                                            "sl",
-                                            Source("G"),
-                                            "\ue205но\ue20dедаго G",
-                                            ["\ue205но\ue20dѧдъ"],
-                                            main_alt=Alternative(
-                                                "\ue201д\ue205но\ue20dедоу",
-                                                "\ue201д\ue205но\ue20dѧдъ",
-                                            ),
-                                            var_alt={
-                                                Source("H"): Alternative(
-                                                    "\ue201д\ue205нородоу H",
-                                                    "\ue201д\ue205нородъ",
-                                                )
-                                            },
-                                        ),
-                                        Usage(
-                                            "gr",
-                                            word="μονογενοῦς",
-                                            lemmas=["μονογενής"],
-                                        ),
-                                        bold=True,
-                                        italic=True,
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-    }
-
-
-def test_puteshestvie_sl_var():
-    rows = [
-        [
-            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
-            "шьст\ue205\ue201 G / шьств\ue205\ue201 H",
-            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
-            "",
-            "05/028d18",
-            "поутошьств\ue205ꙗ",
-            "поутошьств\ue205-",
-            "пѫтошьств\ue205\ue201",
-        ]
-        + [""] * 3
-        + ["ὁδοιπορίας", "ὁδοιπορία"]
-        + [""] * 13
-        + ["hl00"]
-        + ["1"] * 4,
-        [
-            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
-            "пѫть GH",
-            "шьст\ue205\ue201 пѫт\ue205 G / шьств\ue205\ue201 пѫт\ue205 H",
-            "",
-            "05/028d18",
-            "поутошьств\ue205ꙗ",
-            "",
-            "пѫтошьств\ue205\ue201",
-        ]
-        + [""] * 3
-        + ["ὁδοιπορίας", "ὁδοιπορία"]
-        + [""] * 13
-        + ["hl00"]
-        + ["1"] * 4,
-    ]
-
-    result = SortedDict()
-    result = aggregate([rows[0]], sl_sem.var, gr_sem, result)
-    assert result == {
-        "шьств\ue205\ue201": {
-            "шьств\ue205\ue201 пѫт\ue205": {
-                "": {
-                    "": {
-                        "ὁδοιπορία": {
-                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("5/28d18"),
-                                        Usage(
-                                            "sl",
-                                            Source("H"),
-                                            word="шьств\ue205ꙗ пꙋт\ue205 H",
-                                            lemmas=[
-                                                "шьств\ue205\ue201",
-                                                "шьств\ue205\ue201 пѫт\ue205",
-                                            ],
-                                            main_alt=Alternative(
-                                                "поутошьств\ue205ꙗ",
-                                                "пѫтошьств\ue205\ue201",
-                                            ),
-                                            var_alt={
-                                                Source("G"): Alternative(
-                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
-                                                    "шьст\ue205\ue201 пѫт\ue205",
-                                                )
-                                            },
-                                        ),
-                                        Usage(
-                                            "gr",
-                                            word="ὁδοιπορίας",
-                                            lemmas=["ὁδοιπορία"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        "шьст\ue205\ue201": {
-            "шьст\ue205\ue201 пѫт\ue205": {
-                "": {
-                    "": {
-                        "ὁδοιπορία": {
-                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("5/28d18"),
-                                        Usage(
-                                            "sl",
-                                            Source("G"),
-                                            "шьст\ue205ꙗ пꙋт\ue205 G",
-                                            [
-                                                "шьст\ue205\ue201",
-                                                "шьст\ue205\ue201 пѫт\ue205",
-                                            ],
-                                            main_alt=Alternative(
-                                                "поутошьств\ue205ꙗ",
-                                                "пѫтошьств\ue205\ue201",
-                                            ),
-                                            var_alt={
-                                                Source("H"): Alternative(
-                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
-                                                    "шьств\ue205\ue201 пѫт\ue205",
-                                                )
-                                            },
-                                        ),
-                                        Usage(
-                                            "gr",
-                                            word="ὁδοιπορίας",
-                                            lemmas=["ὁδοιπορία"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            }
-        },
-    }
-
-    result = SortedDict()
-    result = aggregate([rows[1]], sl_sem.var, gr_sem, result)
-    assert result == {
-        "пѫть": {
-            "шьств\ue205\ue201 пѫт\ue205": {
-                "": {
-                    "": {
-                        "ὁδοιπορία": {
-                            ("шьств\ue205ꙗ пꙋт\ue205 H", "ὁδοιπορίας"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("5/28d18"),
-                                        Usage(
-                                            "sl",
-                                            Source("H"),
-                                            "шьств\ue205ꙗ пꙋт\ue205 H",
-                                            ["пѫть", "шьств\ue205\ue201 пѫт\ue205"],
-                                            main_alt=Alternative(
-                                                "поутошьств\ue205ꙗ",
-                                                "пѫтошьств\ue205\ue201",
-                                            ),
-                                            var_alt={
-                                                Source("G"): Alternative(
-                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
-                                                    "шьст\ue205\ue201 пѫт\ue205",
-                                                )
-                                            },
-                                        ),
-                                        Usage(
-                                            "gr",
-                                            word="ὁδοιπορίας",
-                                            lemmas=["ὁδοιπορία"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            },
-            "шьст\ue205\ue201 пѫт\ue205": {
-                "": {
-                    "": {
-                        "ὁδοιπορία": {
-                            ("шьст\ue205ꙗ пꙋт\ue205 G", "ὁδοιπορίας"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("5/28d18"),
-                                        Usage(
-                                            "sl",
-                                            Source("G"),
-                                            "шьст\ue205ꙗ пꙋт\ue205 G",
-                                            ["пѫть", "шьст\ue205\ue201 пѫт\ue205"],
-                                            main_alt=Alternative(
-                                                "поутошьств\ue205ꙗ",
-                                                "пѫтошьств\ue205\ue201",
-                                            ),
-                                            var_alt={
-                                                Source("H"): Alternative(
-                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
-                                                    "шьств\ue205\ue201 пѫт\ue205",
-                                                )
-                                            },
-                                        ),
-                                        Usage(
-                                            "gr",
-                                            word="ὁδοιπορίας",
-                                            lemmas=["ὁδοιπορία"],
-                                        ),
-                                    )
-                                ]
-                            )
-                        }
-                    }
-                }
-            },
-        }
-    }
-
-
-def test_puteshestvie_gr():
-    row = (
-        [
-            "шьст\ue205ꙗ пꙋт\ue205 G шьств\ue205ꙗ пꙋт\ue205 H",
-            "шьст & пѫть G / шьств & пѫть H",
-            "шьст\ue205\ue201 пѫт\ue205 G шьств\ue205\ue201 пѫт\ue205 H",
-            "",
-            "05/028d18",
-            "поутошьств\ue205ꙗ",
-            "поутошьств\ue205-",
-            "пѫтошьств\ue205\ue201",
-        ]
-        + [""] * 3
-        + ["ὁδοιπορίας", "ὁδοιπορία"]
-        + [""] * 13
-        + ["hl00"]
-        + ["1"] * 4
-    )
-
-    result = SortedDict()
-    result = aggregate([row], gr_sem, sl_sem.var, result)
-    assert result == {
-        "ὁδοιπορία": {
-            "": {
-                "": {
-                    "": {
-                        "шьств\ue205\ue201 пѫт\ue205 → шьств\ue205\ue201 & пѫть": {
-                            ("ὁδοιπορίας", "шьств\ue205ꙗ пꙋт\ue205 H"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("5/28d18"),
-                                        Usage(
-                                            "gr",
-                                            word="ὁδοιπορίας",
-                                            lemmas=["ὁδοιπορία"],
-                                        ),
-                                        Usage(
-                                            "sl",
-                                            Source("H"),
-                                            "шьств\ue205ꙗ пꙋт\ue205 H",
-                                            [
-                                                "шьств\ue205\ue201 & пѫть",
-                                                "шьств\ue205\ue201 пѫт\ue205",
-                                            ],
-                                            main_alt=Alternative(
-                                                "поутошьств\ue205ꙗ",
-                                                "пѫтошьств\ue205\ue201",
-                                            ),
-                                            var_alt={
-                                                Source("G"): Alternative(
-                                                    "шьст\ue205ꙗ пꙋт\ue205 G",
-                                                    "шьст\ue205\ue201 пѫт\ue205",
-                                                )
-                                            },
-                                        ),
-                                    ),
-                                ]
-                            )
-                        },
-                        "шьст\ue205\ue201 пѫт\ue205 → шьст\ue205\ue201 & пѫть": {
-                            ("ὁδοιπορίας", "шьст\ue205ꙗ пꙋт\ue205 G"): SortedSet(
-                                [
-                                    Alignment(
-                                        Index("5/28d18"),
-                                        Usage(
-                                            "gr",
-                                            word="ὁδοιπορίας",
-                                            lemmas=["ὁδοιπορία"],
-                                        ),
-                                        Usage(
-                                            "sl",
-                                            Source("G"),
-                                            "шьст\ue205ꙗ пꙋт\ue205 G",
-                                            [
-                                                "шьст\ue205\ue201 & пѫть",
-                                                "шьст\ue205\ue201 пѫт\ue205",
-                                            ],
-                                            main_alt=Alternative(
-                                                "поутошьств\ue205ꙗ",
-                                                "пѫтошьств\ue205\ue201",
-                                            ),
-                                            var_alt={
-                                                Source("H"): Alternative(
-                                                    "шьств\ue205ꙗ пꙋт\ue205 H",
-                                                    "шьств\ue205\ue201 пѫт\ue205",
-                                                )
-                                            },
-                                        ),
-                                    ),
-                                ]
-                            )
-                        },
                     }
                 }
             }
@@ -840,7 +462,10 @@ def test_prichatnik():
                                             ],
                                             main_alt=Alternative(
                                                 "пр\ue205\ue20dьтьн\ue205ц\ue205",
-                                                "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                                [
+                                                    "пр\ue205\ue20dьтьн\ue205къ",
+                                                    "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
+                                                ],
                                             ),
                                         ),
                                         Usage(

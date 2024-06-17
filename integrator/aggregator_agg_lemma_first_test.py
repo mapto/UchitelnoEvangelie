@@ -121,7 +121,7 @@ def test_ashte():
                                             lemmas=["аще"],
                                             var_alt={
                                                 Source("WH"): Alternative(
-                                                    "om. WH", "om."
+                                                    "om. WH", ["om."]
                                                 )
                                             },
                                         ),
@@ -213,8 +213,8 @@ def test_special_var():
                                             lemmas=["\ue205цѣл\ue205т\ue205"],
                                             var_alt={
                                                 Source("GH"): Alternative(
-                                                    "проꙁрѣвшоумоу H проꙁрѣвшоѡмоу G",
-                                                    "проꙁьрѣт\ue205",
+                                                    "проꙁрѣвшоѡмоу G проꙁрѣвшоумоу H",
+                                                    ["проꙁьрѣт\ue205"],
                                                     semantic="#",
                                                 )
                                             },
@@ -285,8 +285,11 @@ def test_prichatnik():
                                                         ],
                                                         var_alt={
                                                             Source("GH"): Alternative(
-                                                                "пр\ue205\ue20dестн\ue205ц\ue205 H пр\ue205\ue20dестьн\ue205ц\ue205 G",
-                                                                "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                                "пр\ue205\ue20dестьн\ue205ц\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 H",
+                                                                [
+                                                                    "пр\ue205\ue20dѧстьн\ue205къ",
+                                                                    "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205",
+                                                                ],
                                                                 semantic="≈",
                                                             )
                                                         },

@@ -50,7 +50,7 @@ def test_missing_gr_main():
                             Source("Ch"),
                             "ἄρτους Ch",
                             ["ἄρτος"],
-                            main_alt=Alternative("om.", "om."),
+                            main_alt=Alternative("om.", ["om."]),
                         ),
                         Usage("sl", word="хлѣбꙑ•", lemmas=["хлѣбъ"]),
                     )
@@ -99,7 +99,7 @@ def test_est_in_var_no_main():
                             Source("GH"),
                             "\ue201сть GH",
                             ["бꙑт\ue205", "", "gramm."],
-                            main_alt=Alternative("om.", "om."),
+                            main_alt=Alternative("om.", ["om."]),
                         ),
                         Usage("gr", word="Ø", lemmas=["Ø"]),
                     )
@@ -150,11 +150,12 @@ def test_monogenis():
                             "\ue201д\ue205нородоу H",
                             ["\ue201д\ue205нородъ"],
                             main_alt=Alternative(
-                                "\ue201д\ue205но\ue20dедоу", "\ue201д\ue205но\ue20dѧдъ"
+                                "\ue201д\ue205но\ue20dедоу",
+                                ["\ue201д\ue205но\ue20dѧдъ"],
                             ),
                             var_alt={
                                 Source("G"): Alternative(
-                                    "\ue205но\ue20dедаго G", "\ue205но\ue20dѧдъ"
+                                    "\ue205но\ue20dедаго G", ["\ue205но\ue20dѧдъ"]
                                 )
                             },
                         ),
@@ -209,12 +210,15 @@ def test_shestvie_last():
                             "шьст\ue205ꙗ пꙋт\ue205 G",
                             ["шьст\ue205\ue201", "шьст\ue205\ue201 пѫт\ue205"],
                             main_alt=Alternative(
-                                "поутошьств\ue205ꙗ", "пѫтошьств\ue205\ue201"
+                                "поутошьств\ue205ꙗ", ["пѫтошьств\ue205\ue201"]
                             ),
                             var_alt={
                                 Source("H"): Alternative(
                                     "шьств\ue205ꙗ пꙋт\ue205 H",
-                                    "шьств\ue205\ue201 пѫт\ue205",
+                                    [
+                                        "шьств\ue205\ue201",
+                                        "шьств\ue205\ue201 пѫт\ue205",
+                                    ],
                                 )
                             },
                         ),
@@ -247,12 +251,12 @@ def test_shestvie_last():
                             "шьств\ue205ꙗ пꙋт\ue205 H",
                             ["шьств\ue205\ue201", "шьств\ue205\ue201 пѫт\ue205"],
                             main_alt=Alternative(
-                                "поутошьств\ue205ꙗ", "пѫтошьств\ue205\ue201"
+                                "поутошьств\ue205ꙗ", ["пѫтошьств\ue205\ue201"]
                             ),
                             var_alt={
                                 Source("G"): Alternative(
                                     "шьст\ue205ꙗ пꙋт\ue205 G",
-                                    "шьст\ue205\ue201 пѫт\ue205",
+                                    ["шьст\ue205\ue201", "шьст\ue205\ue201 пѫт\ue205"],
                                 )
                             },
                         ),
@@ -302,12 +306,12 @@ def test_put():
                             "шьств\ue205ꙗ пꙋт\ue205 H",
                             ["пѫть", "шьств\ue205\ue201 пѫт\ue205"],
                             main_alt=Alternative(
-                                "поутошьств\ue205ꙗ", "пѫтошьств\ue205\ue201"
+                                "поутошьств\ue205ꙗ", ["пѫтошьств\ue205\ue201"]
                             ),
                             var_alt={
                                 Source("G"): Alternative(
                                     "шьст\ue205ꙗ пꙋт\ue205 G",
-                                    "шьст\ue205\ue201 пѫт\ue205",
+                                    ["пѫть", "шьст\ue205\ue201 пѫт\ue205"],
                                 ),
                             },
                         ),

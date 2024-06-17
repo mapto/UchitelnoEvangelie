@@ -29,7 +29,10 @@ def test_base_1():
         + ["1"] * 4
     )
     result = sl_sem.alternatives(row)
-    assert result == (Alternative(), {Source("G"): Alternative("ю G", ["\ue205 pron."])})
+    assert result == (
+        Alternative(),
+        {Source("G"): Alternative("ю G", ["\ue205 pron."])},
+    )
 
 
 def test_base_2():
@@ -337,59 +340,3 @@ def test_nechuvstven():
             )
         },
     )
-
-
-"""
-def test_relative():
-    row = (
-        [
-            "боудемь W пр\ue205\ue20dестьн\ue205ц\ue205 G пр\ue205\ue20dестн\ue205ц\ue205 H",
-            "пр\ue205\ue20dѧстьн\ue205къ GH",
-            "пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205 GH",
-            "≈ GH",
-            "05/028c21-d01",
-            "пр\ue205\ue20dьтьн\ue205ц\ue205 боудоуть",
-            "да пр\ue205\ue20dьтьн\ue205ц\ue205",
-            "пр\ue205\ue20dьтьн\ue205къ",
-            "пр\ue205\ue20dьтьн\ue205къ бꙑт\ue205",
-            "≈",
-            "",
-            "ποιῆσαι κοινωνοὺς",
-            "ποιέω & κοινωνός",
-            "ποιέω κοινωνόν",
-        ]
-        + [""] * 12
-        + ["hl05:FFFCD5B4|hl00:FFFCD5B4|hl11:FFFCD5B4"]
-        + ["1"] * 4
-    )
-    result = sl_sem.alternatives(row)
-    assert result == (
-        Alternative(),
-        {
-            Source("G"): Alternative(
-                "пр\ue205\ue20dестьн\ue205ц\ue205",
-                ["пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"],
-                semantic="≈",
-            ),
-            Source("H"): Alternative(
-                "пр\ue205\ue20dестн\ue205ц\ue205",
-                ["пр\ue205\ue20dѧстьн\ue205къ бꙑт\ue205"],
-                semantic="≈",
-            )
-        },
-    )
-"""
-
-
-def test_zemen():
-    row = (
-        [""] * 4
-        + ["19/94d08", "ₓ ꙁемьнꙑ\ue205", "", "ₓ"]
-        + [""] * 8
-        + ["τῶν ἐπὶ γῆς Ch", "ὁ"]
-        + [""] * 8
-        + ["hl16:FFF8CBAD|hl19:FFB4C7E7"]
-        + ["1"] * 4
-    )
-    result = gr_sem.var.alternatives(row)
-    assert result == (None, {})
