@@ -97,12 +97,17 @@ def multiword(self, row: List[str]) -> Dict[Source, str]:
     result: Dict[Source, str] = SortedDict()
     m = re.search(multiword_regex, row[self.word].strip())
     while m:
-        s = Source(m.group(2))
+        s = Source(m.group(3))
         v = m.group(1).strip()
         result[s] = " ".join([result[s], v]) if s in result else v
-        rest = m.group(4).strip()
+        rest = m.group(5).strip()
         m = re.search(multiword_regex, rest)
     if not result:
+        return {Source(DEFAULT_SOURCES[self.lang]): row[self.word].strip()}
+    if len(result) == 1 and "" in result:
+        assert (
+            result[Source()] == row[self.word].strip()
+        ), f"Default source content '{result[Source()]}' does not match cell content '{row[self.word].strip()}'"
         return {Source(DEFAULT_SOURCES[self.lang]): row[self.word].strip()}
         # return {'': row[self.word].strip()}
 

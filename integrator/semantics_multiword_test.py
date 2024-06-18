@@ -154,6 +154,7 @@ def test_iako_obrazom():
     # assert result == {Source("H"): ""}
     assert result == {Source("WG"): "om."}
 
+
 def test_gr_dat():
     row = (
         ["к WGH", "къ"]
@@ -173,4 +174,4 @@ def test_gr_dat():
 
 
 if __name__ == "__main__":
-    test_gr_dat()
+    test_basic()

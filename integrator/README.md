@@ -60,8 +60,21 @@ When unrecognised sources are encountered, the program reports an error.
 
 ## Multivariant annotation
 
-Since the number of source variants could be very big (currently about 30 for Greek), it is imperative that all this variation can be represented in a manageable number of columns. As a consequence, for each language, within the variants column, multiple variants can be encoded. To make this possible, a single cell could contain multiple lemmas. Such cells are parsed with regular expressions, defined in [`regex.py`](regex.py) and visualised here using https://debuggex.com.
+Since the number of source variants could be very big (currently about 30 for Greek), it is imperative that all this variation can be represented in a manageable number of columns. As a consequence, for each language, within the variants column, multiple variants can be encoded. To make this possible, a single cell could contain multiple word usages or lemmas. Such cells are parsed with regular expressions, defined in [`regex.py`](regex.py). This feature is shortly mentioned in the [related publications](../docs/), verified in the [tests](./test/) and visualised here using https://debuggex.com and interpeted (see guides to regex groups) with https://regex101.com/.
 
+### Variant Word
+![A regular expression showing how multiword cells are parsed](../docs/multiword-regex.png) 
+
+A guide to regex groups follows:
+
+1. Possible word usage and/or anotation group
+2. The last part of potentially repetitive elements of group 1
+3. The group of all possible sources
+4. A source sigle (as parsed by [`config.py`](config.py))
+5. potential other patterns (following the same pattern)
+
+
+### Variant Lemmas
 ![A regular expression showing how multilemma cells are parsed](../docs/multilemma-regex.png) 
 
 A guide to regex groups follows:
@@ -76,8 +89,6 @@ A guide to regex groups follows:
 8. A potential separator (used only at top lemma level, defined in [`const.py`](const.py))
 9. potential other patterns (following the same pattern)
 
-
-This feature is shortly mentioned in the [related publications](../docs/) and illustrated in the [tests](./test/).
 
 ## Data Model
 

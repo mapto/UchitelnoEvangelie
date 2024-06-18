@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
 """To debug use:
 https://www.debuggex.com/ for visualisation
 https://regex101.com/ for breakdown
 """
 import logging as log
-log.DEBUG = 100
+
+if __name__ == "__main__":
+    log.DEBUG = 100
 
 from const import V_LEMMA_SEP, H_LEMMA_SEP, SPECIAL_CHARS
 from config import VAR_GR, VAR_SL
@@ -24,18 +27,19 @@ address_regex = (
 sem_regex = r"([" + "".join(SPECIAL_CHARS) + "] )?"
 # word_regex = r"([^A-Z\r\n\t\f\v\+]+)"
 lemma_regex = r"([^A-Za-z\r\n\t\f\v\+]*)"
-word_regex = r"([^([A-Za-z](a-z)?)\r\n\t\f\v]*)"
 annot_regex = r"\w+\."
+word_regex = r"(([^A-Za-z\r\n\t\f]|" + annot_regex + ")+)"
 # sources_regex = r"([A-Z]\w*)"
 
 # The regex parser is greedy. Thus we want "Ma" to show before "M", so that it gets it.
 UNIFIED_SOURCES = VAR_SL + VAR_GR
 UNIFIED_SOURCES.sort()
 sources_regex = r"(" + "|".join(UNIFIED_SOURCES[::-1]) + ")"
+sources_block_regex = r"(" + sources_regex + r"+)?"
 
 # multiword_regex = r"^([^A-Z]+)(" + sources_regex + r"+)(.*)$"
 # multiword_regex = r"^(\w[^A-Z]*)(" + sources_regex + r"+)(.*)$"
-multiword_regex = r"^" + word_regex + "(" + sources_regex + r"+)(.*)$"
+multiword_regex = r"^" + word_regex + sources_block_regex + "(.*)$"
 # multiword_regex = (
 #     r"^"
 #     + lemma_regex
@@ -60,9 +64,9 @@ multilemma_regex = (
     + ")"
     + r"( ?(\+ )?"
     + annot_regex
-    + r"\s?)?("
-    + sources_regex
-    + r"+)?(\s*["
+    + r"\s?)?"
+    + sources_block_regex
+    + r"(\s*["
     + f"\\{V_LEMMA_SEP}\\{H_LEMMA_SEP}"
     + r"])?(.*)$"
 )
