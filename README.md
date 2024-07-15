@@ -5,6 +5,7 @@ Three software tools (used from the command line interface or via drag & drop) a
 1. [extractor](extractor/) - for the transformation of word usages from original Old Church Slavonic texts into tabular form to be used as a basis of the database (in .xlsx spreadsheets for easy manual editing), later enriched and annotated by the language experts.
 2. [integrator](integrator/) - for the interpretation of the lexicographic annotations from that database and the creation of indexes used for validation. These are indices for both Slavonic to Greek and Greek to Slavonic and include annotations for variations in copies. This tool allows the language expert to iteratively correct possible mistakes in the annotation.
 3. [indexgenerator](integrator/) (also in the integrator directory, due to shared codebase) - for the generation of final bilingual indices to be published.
+4. [atergogenerator](integrator/) (also in the integrator directory, due to shared codebase) - for the generation of a-tergo (reverse) bilingual indices to be published.
 
 There are further two auxiliary instruments:
 
@@ -23,7 +24,7 @@ graph LR
     D --> E(Integration<br/><i>integrator</i>)
     E --> F(Consolidation<br/><i>LOWriter</i>)
     F --> C
-    F --> G(Index Generation<br/><i>indexgenerator</i>)
+    F --> G(Index Generation<br/><i>indexgenerator</i>), H(A-tergo Generation<br/><i>atergogenerator</i>) 
 ```
 
 1. Digitalization - digitialisation of the texts (on how to use Transkribus, see this <a href="https://www.youtube.com/watch?v=X1NxWYWCe9g">presentation by Achim Rabus</a>).
@@ -53,7 +54,7 @@ This will create binaries for Linux, Windows and Mac in the `dist` directory.
 
 The program can be compiled and/or used with a current version of python (3.6+).
 
-Make sure when using `integrator` and `indexgenerator` to provide the source list configuration files, see [`sl-sources.txt`](integrator/sl-sources.txt) and [`gr-sources.txt`](integrator/gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](integrator/config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](integrator/config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](integrator/config.py#L54).
+Make sure when using `integrator`, `indexgenerator` and `atergogenerator` to provide the source list configuration files, see [`sl-sources.txt`](integrator/sl-sources.txt) and [`gr-sources.txt`](integrator/gr-sources.txt). The first line in each contains the main manuscript reference. For the way how default (implicit) variant source is indicated, see implementation in [`config.py`](integrator/config.py), lines [`DEFAULT_SL: str = "".join(VAR_SL)`](integrator/config.py#L52) and [`DEFAULT_GR: str = VAR_GR[0]`](integrator/config.py#L54).
 
 The font face <a href="https://www.starobulglit.eu/OC10U.ttf">*Cyrillica Ochrid 10U*</a> needs to be downloaded and installed on the host system for visualisation of the Cyrillic script. Alternatively, configure an alternative font for both [exporter](extractor/exporter.py#L23) and [integrator](integrator/wordproc.py#L12).
 
@@ -68,6 +69,7 @@ The programs are executed with:
     python extractor.py <docx>
     python integrator.py <xlsx>
     python indexgenerator.py <xlsx>
+    python atergogenerator.py <xlsx>
 
 ## Compiled version
 

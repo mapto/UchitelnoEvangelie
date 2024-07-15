@@ -1,10 +1,10 @@
 # Integrator and Index Generator
 
-Main difference between `integrator` and `indexgenerator` is that their output is respectively produced by [exporter.py](exporter.py) and [generator.py](generator.py). Otherwise, they follow a similar pipeline.
+Main difference between `integrator`, `indexgenerator` and `atergogenerator` is that their output is respectively produced by [exporter.py](exporter.py), [generator.py](generator.py) and [atergo.py](atergo.py). Otherwise, they follow a similar pipeline.
 
 ```mermaid
 graph LR
-  importer --> merger --> aggregator --> generator & exporter
+  importer --> merger --> aggregator --> generator & exporter & atergo
 ```
 
 ## Biblical citations
@@ -25,7 +25,9 @@ This image shows what in the index is different from the list.
 
 ![An image showing an example of what the index generator does](../docs/indexgenerator-demo.gif) [src](https://docs.google.com/presentation/d/1QJGfndGEz3s0MTzaVZ7T3PywzJ_DmIANtfSbkfgmQBs)
 
-See futher examples for both in [test](test/)
+The atergo dictionary is based on the index, but simpler in that it does not show any correspondences. And, of course, it is ordered differently (alphabetically by reverse spelling).
+
+See futher corresponding examples in [test](test/)
 
 ### Translation Asymmetries
 
@@ -58,6 +60,10 @@ The range of sources are provided in [`sl-sources.txt`](sl-sources.txt) and [`gr
 
 When unrecognised sources are encountered, the program reports an error.
 
+### Alphabetic ordering
+
+In old writing there are also non-UTF-8 symbols. These still need to be ordered alphabetically. Our approach is to reorder them to fit the conventional alphabet. Sometimes this means reordering them between other letters, in other cases making them equivalent to simpler transcriptions. This is all defined in [`alphabet.py`](alphabet.py) and used in [`util.py](util.py). For [Cyrillic symbols](https://www.fileformat.info/info/unicode/block/cyrillic/list.htm) [the first approach](alphabet.py#L14) is more common, whereas fro [Greek](https://www.fileformat.info/info/unicode/block/greek_extended/list.htm), [the second](alphabet.py#L188) is possible. Further possible relevant ranges could be explored here: https://www.fileformat.info/info/unicode/block/index.htm
+
 ## Multivariant annotation
 
 Since the number of source variants could be very big (currently about 30 for Greek), it is imperative that all this variation can be represented in a manageable number of columns. As a consequence, for each language, within the variants column, multiple variants can be encoded. To make this possible, a single cell could contain multiple word usages or lemmas. Such cells are parsed with regular expressions, defined in [`regex.py`](regex.py). This feature is shortly mentioned in the [related publications](../docs/), verified in the [tests](./test/) and visualised here using https://debuggex.com and interpeted (see guides to regex groups) with https://regex101.com/.
@@ -67,7 +73,7 @@ Since the number of source variants could be very big (currently about 30 for Gr
 
 A guide to regex groups follows:
 
-1. Possible word usage and/or anotation group
+1. Possible word usage and/or annotation group
 2. The last part of potentially repetitive elements of group 1
 3. The group of all possible sources
 4. A source sigle (as parsed by [`config.py`](config.py))
@@ -97,23 +103,23 @@ classDiagram
 direction LR
 
 class Address
-Address : List[str|int] data
+  Address : list[str|int] data
 class Alignment
-Alignment : bool quote
+  Alignment : bool quote
 class Usage
-Usage : str lang
-Usage : str word
-Usage : List[str] lemmas
-Usage : int count
-Usage : Dict[Source, Alternative] var_alt
-Usage : 
+  Usage : str lang
+  Usage : str word
+  Usage : list[str] lemmas
+  Usage : int count
+  Usage : dict[Source, Alternative] var_alt
+  Usage : 
 class Alternative
-Alternative: str word
-Alternative: str lemma
-Alternative: int count
-Alternative: str semantics
+  Alternative: str word
+  Alternative: str lemma
+  Alternative: int count
+  Alternative: str semantics
 class Source
-Source: List[str] sources
+  Source: list[str] sources
 
 Alignment *-- "1" Address
 Address *-- "0..1" Address: end
@@ -163,9 +169,10 @@ graph LR
   wordproc --> config
   exporter --> usage
 
-  exporter & generator --> util & wordproc
+  exporter & generator & atergo --> util & wordproc
   integrator --> exporter
-  generator --> counter
+  generator & atergo --> counter
   indexgenerator --> generator
-  integrator & indexgenerator -->  setup & importer & merger & aggregator & cli
+  atergogenerator --> atergo
+  integrator & indexgenerator & atergogenerator -->  setup & importer & merger & aggregator & cli
 ```
