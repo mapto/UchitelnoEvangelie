@@ -24,7 +24,7 @@ graph LR
     D --> E(Integration<br/><i>integrator</i>)
     E --> F(Consolidation<br/><i>LOWriter</i>)
     F --> C
-    F --> G(Index Generation<br/><i>indexgenerator</i>), H(A-tergo Generation<br/><i>atergogenerator</i>) 
+    F --> G(Index Generation<br/><i>indexgenerator</i>) & H("A-tergo Generation<br/><i>atergogenerator</i>") 
 ```
 
 1. Digitalization - digitialisation of the texts (on how to use Transkribus, see this <a href="https://www.youtube.com/watch?v=X1NxWYWCe9g">presentation by Achim Rabus</a>).
@@ -35,6 +35,7 @@ graph LR
 5. Integration - processing of the spreadsheet, generating verification indices, see [animation](integrator/).
 6. Consolidation - review of the intermediary index to locate and remove mistakes.
 7. Index Generation - final generation of the word indices, see [illustration](integrator/).
+7. A-tergo Generation - final generation of the a-tergo indices, see [examples](integrator/test/).
 
 # Download
 
@@ -101,7 +102,11 @@ The screenshot is saved to the Pictures > Screenshot folder on your computer
 
 Please cite as:
 
-Ruskov, M., Taseva, L. (2022), _Computer-Aided Modelling of the Bilingual Word Indices to the Nineth-Century Uchitel'noe evangelie_, Proceedings of 1st International Workshop on Digital Platforms and Resources for Access to Literary Heritage, Padua, Italy [[pdf](docs/ruskov-taseva-DIPRAL2022.pdf)|[bib](docs/ref.bib)]
+[en] Ruskov, M., Taseva, L. (2022), _Computer-Aided Modelling of the Bilingual Word Indices to the Nineth-Century Uchitel'noe evangelie_, Proceedings of 1st International Workshop on Digital Platforms and Resources for Access to Literary Heritage, Padua, Italy, September 20, 2022. (CEUR-WS 3246), 19-30. https://ceur-ws.org/Vol-3246/03_paper-6921.pdf
+
+[bg] Ruskov, M., & Taseva, L. (2024). Специализирани софтуерни инструменти за създаването на речниците към Учителното евангелие / Software Support Tools for the Creation of Word Indices to the Constantine of Preslav’s Didactic Gospel. Учителното Евангелие На Константин Преславски и Южнославянските Преводи На Хомилетични Текстове (IX–XIII в.). Филологически и Интердисциплинарни Ракурси. Доклади От Международната Научна Конференция в София 25–27 Април 2023 г. / Constantine of Preslav’s Didactic Gospel and the South Slavonic Homiletic Texts (9th-13th Century) Philological and Interdisciplinary Aspects: : Proceedings of the International Scientific Conference in Sofia, April 25-27, 2023. (Studia Balcanica 37), 431-451. https://doi.org/10.62761/491.SB37.18
+
+Citations also available as [BibTex](docs/ref.bib).
 
 # Copyrights
 
