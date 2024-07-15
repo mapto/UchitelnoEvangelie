@@ -12,7 +12,7 @@ from config import MAIN_SL, MAIN_GR
 from config import ALT_SL
 from const import SPECIAL_CHARS, V_LEMMA_SEP, EMPTY_CH, OMMIT_SUBLEMMA
 
-from alphabet import gasps, number_postfix, remap, reduce
+from alphabet import gasps, number_postfix, remap, reduce, remap_ranges
 
 SPECIALS = SPECIAL_CHARS.copy() + [EMPTY_CH.lower(), OMMIT_SUBLEMMA[0]]
 
@@ -34,6 +34,13 @@ def chars(cells: List[List[str]]) -> Set:
     return s
 
 
+def remap_by_range(ch: str) -> int:
+    for (s, e), v in remap_ranges.items():
+        if s <= ch <= e:
+            return v
+    return 0
+
+
 def _ord(a: str) -> float:
     """
     >>> _ord("≈")
@@ -50,6 +57,9 @@ def _ord(a: str) -> float:
         return ord("ѵ") + SPECIALS.index(a)
     if a in remap:
         return remap[a]
+    r = remap_by_range(a)
+    if r:
+        return r
     return ord(a)
 
 

@@ -3,7 +3,8 @@ import re
 import alphabet
 from const import SPECIAL_CHARS, EMPTY_CH, OMMIT_SUBLEMMA
 from config import FROM_LANG, TO_LANG
-from util import ord_word, subscript, _ord
+from alphabet import remap
+from util import ord_word, subscript, _ord, remap_by_range
 
 
 def test_ord_letters():
@@ -66,6 +67,12 @@ def test_ord_word():
 
     assert ord_word("ὁ & ὑποτεταγμένος") > ord_word("om.")
 
+    assert ord_word("πρᾷος") < ord_word("πτωχός")
+    assert ord_word("σ") < ord_word("φ")
+    assert ord_word("ζω") < ord_word("τίζω")
+    assert ord_word("σωζω") < ord_word("φωτίζω")
+    assert ord_word("σῴζω") < ord_word("φωτίζω")
+
     for c in SPECIAL_CHARS:
         assert ord_word(OMMIT_SUBLEMMA) > ord_word(c)
         assert ord_word(EMPTY_CH) > ord_word(c)
@@ -93,3 +100,10 @@ def test_subscript():
     assert subscript(1, TO_LANG) == ""
     assert subscript(2, FROM_LANG) == "2"
     assert subscript(2, TO_LANG) == "β"
+
+
+def test_remap():
+    for k, v in remap.items():
+        r = remap_by_range(k)
+        if r:
+            assert r == v
