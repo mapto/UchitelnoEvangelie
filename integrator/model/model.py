@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 import re
 
 from const import PATH_SEP, SPECIAL_CHARS
-from regex import annot_regex, sem_regex
+from regex import l_annot_regex, sem_regex
 
 
 @dataclass(frozen=True)
@@ -92,7 +92,7 @@ class Alternative:
         result = f"{self.semantic} " if self.semantic else ""
         if len(self.lemmas) == 1:
             result += self.lemmas[0]
-        elif re.match(r"^" + annot_regex + "$", self.lemmas[-1]):
+        elif re.match(r"^" + l_annot_regex + "$", self.lemmas[-1]):
             result += f"{self.lemmas[-2]} {self.lemmas[-1]}"
         else:
             result += self.lemmas[-1]
@@ -208,7 +208,7 @@ class Path:
         >>> Path(['бꙑт\ue205 & подъ & \ue205 pron.', 'сꙑ подъ н\ue205м\ue205']).compile()
         Path(parts=['бꙑт\ue205 & подъ & \ue205 pron.', 'сꙑ подъ н\ue205м\ue205'], annotation='', semantics='')
         """
-        regex = r"^" + sem_regex + annot_regex + "$"
+        regex = r"^" + sem_regex + l_annot_regex + "$"
         result = []
         for cur, lem in enumerate(self.parts[::-1]):
             if not lem:

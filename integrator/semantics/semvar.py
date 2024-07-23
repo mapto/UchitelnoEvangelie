@@ -10,6 +10,7 @@ from config import DEFAULT_SOURCES
 from model import Source
 
 from regex import multiword_regex, multilemma_regex
+from regex import LP_ANN, LP_SRC, LP_OTHER
 
 from .const import UNSPECIFIED
 from .util import regroup
@@ -132,17 +133,17 @@ def multilemma(self, row: List[str], lidx: int = 0) -> Dict[Source, str]:
         # semantic and lemma
         v = m.group(1) if m.group(1) else ""
         # lemma annotation (possibly with plus)
-        v = v + m.group(4) if m.group(4) else v
+        v = v + m.group(LP_ANN) if m.group(LP_ANN) else v
         v = v.strip()
 
         # sources
-        k = m.group(6) if m.group(6) else ""
+        k = m.group(LP_SRC) if m.group(LP_SRC) else ""
         if not v:
             break
         result[Source(k)] = v
 
         # remainder for next iteration
-        rest = m.group(9) if len(m.groups()) == 9 else ""
+        rest = m.group(LP_OTHER) if len(m.groups()) == LP_OTHER else ""
         m = re.search(multilemma_regex, rest.strip())
 
     # When lemma in variant does not have source, read source from word or previous lemma

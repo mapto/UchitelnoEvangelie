@@ -83,17 +83,18 @@ A guide to regex groups follows:
 ### Variant Lemmas
 ![A regular expression showing how multilemma cells are parsed](../docs/multilemma-regex.png) 
 
-A guide to regex groups follows:
+A guide to regex groups can be found in [`regex.py`](regex.py).
 
 1. Possible semantic and lemma group
-2. A group representing a possible semantic relationship (defined in [`const.py`](const.py))
-3. A possible lemma
-4. A possible annotation, including ommissions, grammar, declinations, etc. (some of these defined for other purposes in [`const.py`](const.py))
+2. A group representing a possible semantic relationship (defined in [`const.py`](const.py)) (LP_PRE)
+3. A possible lemma (LP_LEM)
+4. A possible annotation, including ommissions, grammar, declinations, etc. (some of these defined for other purposes in [`const.py`](const.py)) (LP_ANN)
 5. Possible `+` indicating e.g. that the lemma is used with a particular decliation
-6. The group of all possible sources
-7. A source sigle (as parsed by [`config.py`](config.py))
-8. A potential separator (used only at top lemma level, defined in [`const.py`](const.py))
-9. potential other patterns (following the same pattern)
+6. Content part of the annotation
+7. The group of all possible sources (LP_SRC)
+8. A source sigle (as parsed by [`config.py`](config.py)) 
+9. A potential separator (used only at top lemma level, defined in [`const.py`](const.py)) (LP_SEP)
+10. potential other patterns (following the same pattern) (LP_OTHER)
 
 
 ## Data Model
