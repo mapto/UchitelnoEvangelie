@@ -163,6 +163,7 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         par = doc.add_paragraph()
         par.style = doc.styles[BULLET_STYLE]
         par.style.font.name = GENERIC_FONT
+        par.paragraph_format.line_spacing = Pt(12)
         par.paragraph_format.space_before = Cm(0)
         par.paragraph_format.space_after = Cm(0)
         par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 4)
@@ -199,6 +200,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
         if li:
             par = doc.add_paragraph()
             par.style.font.name = GENERIC_FONT
+            # TODO: Less distance between lines, make exact number
             par.paragraph_format.space_before = Cm(0)
             par.paragraph_format.space_after = Cm(0)
             if level > 0:
@@ -209,7 +211,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
                 par,
                 f"{prefix}{li}",
                 fonts[lang],
-                size=Pt(14 if level == 0 else 12),
+                size=Pt(12 if level == 0 else 11),
                 bold=level == 0,
                 indent=Cm(LEVEL_OFFSET * level),
             )
