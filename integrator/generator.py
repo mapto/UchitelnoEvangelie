@@ -11,6 +11,7 @@ from config import FROM_LANG, TO_LANG
 from const import INDENT_CH, SPECIAL_CHARS
 from const import CF_SEP
 from const import BRACE_OPEN, BRACE_CLOSE
+from sysenv import data_dir
 from util import main_source, subscript
 from model import Alignment, Usage
 
@@ -160,15 +161,28 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         # if not c[0] and not c[1]:
         #    return
 
+        total = SortedSet(e for s in bottom_d.values() for e in s)
+        semantics = set(u.semantic for u in total if u.semantic)
+        assert (
+            len(semantics) <= 1
+        ), f"Not all results in line have same semantics: {total}"
+        bullet_style = (
+            f"{BULLET_STYLE} {SPECIAL_CHARS.index(next(iter(semantics)))}"
+            if semantics
+            else BULLET_STYLE
+        )
+
         par = doc.add_paragraph()
-        par.style = doc.styles[BULLET_STYLE]
+        par.style = doc.styles[bullet_style]
         par.style.font.name = GENERIC_FONT
-        par.paragraph_format.line_spacing = Pt(12)
+        par.paragraph_format.line_spacing = Pt(13)
         par.paragraph_format.space_before = Cm(0)
         par.paragraph_format.space_after = Cm(0)
         par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 4)
         # ft = t if t[0] in SPECIAL_CHARS else f"{BULLET_CH} {t}"
 
+        if len(semantics) == 1:
+            t = t[2:]
         _generate_text(par, t, fonts[trans_lang])
         _generate_counts(par, bottom_d, True)
 
@@ -200,9 +214,11 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
         if li:
             par = doc.add_paragraph()
             par.style.font.name = GENERIC_FONT
-            # TODO: Less distance between lines, make exact number
+            par.style.font.size = Pt(11)
+            par.paragraph_format.line_spacing = Pt(13)
             par.paragraph_format.space_before = Cm(0)
             par.paragraph_format.space_after = Cm(0)
+            par.paragraph_format
             if level > 0:
                 par.paragraph_format.first_line_indent = Cm(LEVEL_OFFSET * level)
 
@@ -238,7 +254,7 @@ def _generate_line(level: int, lang: str, d: SortedDict, doc: Document) -> None:
 
 
 def generate_docx(d: SortedDict, lang: str, fname: str) -> None:
-    doc = Document()
+    doc = Document(f"{data_dir}/Template.docx")
     doc.styles["Normal"].font.name = GENERIC_FONT
     _generate_line(0, lang, d, doc)
 

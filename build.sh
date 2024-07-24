@@ -24,7 +24,7 @@ for APP in $APPS; do
             EXT=""
         fi
         printf "\n\n>> Building $APP for $VAR\n\n"
-        docker run -v "$(pwd):/src/" "$IMAGE/pyinstaller-$VAR:$TAG"
+        docker run -v "$(pwd):/src/" --env "SPECFILE=./$APP.spec" "$IMAGE/pyinstaller-$VAR:$TAG"
         mv dist/$APP$EXT ../dist/$APP-$VER-$VAR$EXT
     done
 

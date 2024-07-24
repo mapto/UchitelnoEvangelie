@@ -170,6 +170,7 @@ graph LR
   wordproc --> config
   exporter --> usage
 
+  generator --> sysenv
   exporter & generator & atergo --> util & wordproc
   integrator --> exporter
   generator & atergo --> counter
