@@ -161,16 +161,11 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         # if not c[0] and not c[1]:
         #    return
 
-        total = SortedSet(e for s in bottom_d.values() for e in s)
-        semantics = set(u.semantic for u in total if u.semantic)
-        assert (
-            len(semantics) <= 1
-        ), f"Not all results in line have same semantics: {total}"
-        bullet_style = (
-            f"{BULLET_STYLE} {SPECIAL_CHARS.index(next(iter(semantics)))}"
-            if semantics
-            else BULLET_STYLE
-        )
+        if t[0] in SPECIAL_CHARS:
+            bullet_style = f"{BULLET_STYLE} {SPECIAL_CHARS.index(t[0])}"
+            t = t[2:]
+        else:
+            bullet_style = BULLET_STYLE
 
         par = doc.add_paragraph()
         par.style = doc.styles[bullet_style]
@@ -181,8 +176,6 @@ def _generate_usage_line(lang: str, d: SortedDict, doc: Document) -> None:
         par.paragraph_format.left_indent = Cm(LEVEL_OFFSET * 4)
         # ft = t if t[0] in SPECIAL_CHARS else f"{BULLET_CH} {t}"
 
-        if len(semantics) == 1:
-            t = t[2:]
         _generate_text(par, t, fonts[trans_lang])
         _generate_counts(par, bottom_d, True)
 

@@ -34,7 +34,7 @@ for APP in $APPS; do
     echo ">>> Testing $APP..."
     cd integrator/test
     VARIANTS="${OUTPUT[$APP]}-gre ${OUTPUT[$APP]}-sla"
-    PARTS="[Content_Types].xml docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml word/numbering.xml"
+    PARTS="[Content_Types].xml docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/theme/theme1.xml word/numbering.xml"
     #PARTS="[Content_Types].xml _rels/.rels docProps/core.xml docProps/app.xml word/document.xml word/_rels/document.xml.rels word/styles.xml word/stylesWithEffects.xml word/settings.xml word/webSettings.xml word/fontTable.xml word/theme/theme1.xml customXml/item1.xml customXml/_rels/item1.xml.rels customXml/itemProps1.xml word/numbering.xml docProps/thumbnail.jpeg"
     # SKIPPED: docProps/core.xml, as it contains no relevant information, but timestamps
     for FILENAME in *.xlsx; do

@@ -108,6 +108,7 @@ class Alignment:
     bold: bool = False
     italic: bool = False
     # SPECIAL_CHARS indicate what type of correspondence it is, when non exact
+    # TODO: Investigate: Appears to be specified only for sl, and not for gr
     semantic: str = ""
 
     def __hash__(self):
