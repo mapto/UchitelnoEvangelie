@@ -8,6 +8,14 @@ def test_index_longstr():
 
     assert Index("1/7c4-68a1").longstr() == "01/007c04-068a01"
 
+    i = Index("06/33c11")
+    i.end = Index("06/33c11*")
+    assert i.longstr() == "06/033c11"
+
+    i = Index("07/43c13*")
+    i.end = Index("07/43c13")
+    assert i.longstr() == "07/043c13*"
+
 
 def test_index_unpack():
     assert str(Index("1/6c4")) == "1/6c4"

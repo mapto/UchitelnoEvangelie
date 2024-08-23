@@ -180,8 +180,8 @@ class Index:
         if not self.end:
             return s
         for i, v in enumerate(self.end.data):
-            # print(f"{i}: {self.data[i]}/{v}")
-            if self.data[i] != v:
+            # print(f"{i}: {self.data} {self.data[i] if i < len(self.data) else None}/{v}")
+            if i < len(self.data) and self.data[i] != v:
                 lde = []
                 for j in range(i, len(self.end.data)):
                     # print(f"{j}: {self.data[j]}/{self.end.data[j]}")
@@ -195,7 +195,21 @@ class Index:
                         ), f"{type(d)} is currently not supported for Address components"
                         lde += [e]  # type: ignore
                 return s + "-" + "".join(lde)
-        raise Exception(f"ГРЕШКА: Съвпадащи начален и краен адрес/индекс")
+        if len(self.data) == len(self.end.data):
+            raise Exception(
+                f"ГРЕШКА: Съвпадащи начален ({self.data}) и краен ({self.end.data}) адрес/индекс с различни символи"
+            )
+        else:
+            dif = (
+                set(self.data) - set(self.end.data)
+                if len(self.data) > len(self.end.data)
+                else set(self.end.data) - set(self.data)
+            )
+            log.warning(
+                f"ВНИМАНИЕ: При {self.end} един адрес/индекс включва символи,"
+                f"които не са в останалите: {dif}"
+            )
+        return s
 
     def __repr__(self) -> str:
         """
