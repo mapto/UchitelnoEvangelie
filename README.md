@@ -2,7 +2,7 @@
 A toolset for the generation of bilingual dictionaries for the medieval Slavonic translations of Greek and their copies. These tools support philology researchers in the ellaboration of the word-level alignment between the two texts. The project has started to serve the research on [„Учително евангелие“](https://uchitelnoevangelie.eu/?lang=en) (Uchitel’noe evangelie - Didactic Gospel) by Constantine of Preslav, but is designed to also be used on other Slavonic-Greek parallel texts. Wider application could also be possible, we encourage researchers to get in contact to discuss applicability.
 
 Three software tools (used from the command line interface or via drag & drop) are at the core of this project:
-1. [extractor](extractor/) - for the transformation of word usages from original Old Church Slavonic texts into tabular form to be used as a basis of the database (in .xlsx spreadsheets for easy manual editing), later enriched and annotated by the language experts.
+1. [extractor](extractor/) - for the transformation of word usages from original Old Church Slavonic texts into tabular form to be used as a basis of the database (in .xlsx spreadsheets for easy manual editing), later enriched and annotated by the language experts. This is basically tokenizing the text into one word per line.
 2. [integrator](integrator/) - for the interpretation of the lexicographic annotations from that database and the creation of indexes used for validation. These are indices for both Slavonic to Greek and Greek to Slavonic and include annotations for variations in copies. This tool allows the language expert to iteratively correct possible mistakes in the annotation.
 3. [indexgenerator](integrator/) (also in the integrator directory, due to shared codebase) - for the generation of final bilingual indices to be published.
 4. [atergogenerator](integrator/) (also in the integrator directory, due to shared codebase) - for the generation of a-tergo (reverse) bilingual indices to be published.
@@ -18,7 +18,7 @@ The tools are used within the following workflow using only freely available ins
 ```mermaid
 graph LR
     A(Digitalization<br/><i>Transkribus</i>) --> AA(Enrichment<br/><i>LOWriter</i>) 
-    AA --> B(Tokenizer<br/><i>extractor</i>)
+    AA --> B(Tokenization<br/><i>extractor</i>)
     B --> C(Alignment<br/><i>LOCalc</i>)
     C --> D(Lemmatization<br/><i>LOCalc</i>)
     D --> E(Integration<br/><i>integrator</i>)
