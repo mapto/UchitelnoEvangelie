@@ -106,7 +106,7 @@ Please cite as:
 
 [bg] Ruskov, M., & Taseva, L. (2024). Специализирани софтуерни инструменти за създаването на речниците към Учителното евангелие / Software Support Tools for the Creation of Word Indices to the Constantine of Preslav’s Didactic Gospel. Учителното Евангелие На Константин Преславски и Южнославянските Преводи На Хомилетични Текстове (IX–XIII в.). Филологически и Интердисциплинарни Ракурси. Доклади От Международната Научна Конференция в София 25–27 Април 2023 г. / Constantine of Preslav’s Didactic Gospel and the South Slavonic Homiletic Texts (9th-13th Century) Philological and Interdisciplinary Aspects: : Proceedings of the International Scientific Conference in Sofia, April 25-27, 2023. (Studia Balcanica 37), 431-451. https://doi.org/10.62761/491.SB37.18
 
-Citations also available as [BibTex](docs/ref.bib).
+Citations also available as [BibTex](docs/refs.bib).
 
 # Copyrights
 
