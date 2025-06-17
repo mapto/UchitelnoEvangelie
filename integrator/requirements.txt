@@ -1,4 +1,4 @@
 docopt==0.6.2
-openpyxl==3.1.2
+openpyxl==3.1.5
 python-docx-ng==0.9.7
 sortedcontainers==2.4.0
